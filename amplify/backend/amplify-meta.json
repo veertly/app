@@ -1,0 +1,29 @@
+{
+  "providers": {
+    "awscloudformation": {
+      "AuthRoleName": "veertly-prod-20190822232449-authRole",
+      "UnauthRoleArn": "arn:aws:iam::058722180086:role/veertly-prod-20190822232449-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::058722180086:role/veertly-prod-20190822232449-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "veertly-prod-20190822232449-deployment",
+      "UnauthRoleName": "veertly-prod-20190822232449-unauthRole",
+      "StackName": "veertly-prod-20190822232449",
+      "StackId": "arn:aws:cloudformation:us-east-1:058722180086:stack/veertly-prod-20190822232449/2ed69800-c54d-11e9-9c36-0aa7a65c926c"
+    }
+  },
+  "api": {
+    "Veertly": {
+      "service": "AppSync",
+      "output": {
+        "securityType": "API_KEY",
+        "GraphQLAPIIdOutput": "5x5fxbl42bapvkvogaplxmjgu4",
+        "GraphQLAPIEndpointOutput": "https://brurje5uu5hdjjmpkl5zjowysy.appsync-api.us-east-1.amazonaws.com/graphql",
+        "additionalAuthenticationProviders": [],
+        "name": "Veertly",
+        "region": "us-east-1",
+        "GraphQLAPIKeyOutput": "da2-wtor2yhb3vcndgdnyzoygl2lxy"
+      },
+      "lastPushTimeStamp": "2019-08-23T02:33:35.742Z"
+    }
+  }
+}

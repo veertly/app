@@ -1,0 +1,47 @@
+{
+  "name": "aws-mobile-appsync-events-starter-react",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@apollo/react-hooks": "^3.0.1",
+    "@auth0/auth0-spa-js": "^1.2.3",
+    "@aws-amplify/cli": "^1.12.0",
+    "@material-ui/core": "^4.3.3",
+    "@material-ui/icons": "^4.2.1",
+    "apollo-client": "^2.6.3",
+    "aws-appsync": "^1.2.1",
+    "aws-appsync-react": "^1.0.21",
+    "firebase": "^6.6.0",
+    "firebaseui": "^4.2.0",
+    "graphql": "^0.11.7",
+    "graphql-tag": "^2.5.0",
+    "material-ui-snackbar-provider": "^1.4.0",
+    "moment": "^2.19.2",
+    "moment-duration-format": "^2.3.2",
+    "react": "^16.8.0",
+    "react-apollo": "^2.5.8",
+    "react-beforeunload": "^2.1.0",
+    "react-datepicker": "^0.61.0",
+    "react-dom": "^16.8.0",
+    "react-draggable": "^3.3.2",
+    "react-firebase-hooks": "^2.1.0",
+    "react-firebaseui": "^4.0.0",
+    "react-hook-form": "^5.1.1",
+    "react-markdown": "^4.2.2",
+    "react-router-dom": "^5.1.2",
+    "react-scripts": "1.0.17",
+    "react-share": "^3.0.1",
+    "semantic-ui-css": "^2.2.12",
+    "use-combined-reducers": "^1.0.4",
+    "uuid": "^3.3.3"
+  },
+  "resolutions": {
+    "apollo-client": "2.6.3"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
+}
