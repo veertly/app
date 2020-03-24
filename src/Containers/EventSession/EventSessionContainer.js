@@ -208,7 +208,9 @@ export default withRouter(props => {
 
   const handleCreateConference = async () => {
     if (!user.isAnonymous) {
-      createConference(sessionId, userId);
+      setCreatingEvent(true);
+      await createConference(sessionId, userId);
+      setCreatingEvent(false);
     }
   };
 

@@ -68,7 +68,7 @@ export default function(props) {
     // console.log({ sessionParticipant });
     if (!participant) {
       // console.log(users);
-      console.error("Couldn't find participant for user: '" + userId + "'");
+      // console.error("Couldn't find participant for user: '" + userId + "'");
       return false;
     }
     if (
