@@ -34,3 +34,4 @@ build/
 dist/
 aws-exports.js
 awsconfiguration.json
+.DS_Store

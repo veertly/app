@@ -65,7 +65,7 @@ export default withRouter(props => {
   const [lastLiveGroupsJson, setLastLiveGroupsJson] = useState("");
   const [composedEventSession, setComposedEventSession] = useState(null);
   const [creatingEvent, setCreatingEvent] = useState(false);
-  const userId = user.uid;
+  const userId = user ? user.uid : null;
 
   let [isInConferenceRoom, setIsInConferenceRoom] = useState(false);
 

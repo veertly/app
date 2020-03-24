@@ -1,0 +1,14 @@
+projects:
+  Veertly:
+    schemaPath: src/graphql/schema.json
+    includes:
+      - src/GraphQL/**.js
+    excludes:
+      - ./amplify/**
+    extensions:
+      amplify:
+        codeGenTarget: javascript
+        generatedFileName: ''
+        docsFilePath: src/graphql
+        region: us-east-1
+        maxDepth: 2

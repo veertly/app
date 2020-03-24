@@ -94,7 +94,7 @@ export default () => {
       </main>
       {/* Footer */}
       <footer className={classes.footer}>
-        <Container maxWidth="xs" className={classes.subscriptionContainer}>
+        {/* <Container maxWidth="xs" className={classes.subscriptionContainer}>
           <Grid container direction="row" justify="center" alignItems="center">
             {!submitted && (
               <React.Fragment>
@@ -124,7 +124,7 @@ export default () => {
               </Typography>
             )}
           </Grid>
-        </Container>
+        </Container> */}
         <Typography variant="subtitle1" align="center" color="textSecondary" component="p">
           info@veertly.com{" "}
         </Typography>
