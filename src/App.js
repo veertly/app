@@ -3,10 +3,10 @@ import { BrowserRouter, Route, Switch } from "react-router-dom";
 import "semantic-ui-css/semantic.min.css";
 import "react-datepicker/dist/react-datepicker.css";
 
-import appSyncConfig from "./aws-exports";
-import { ApolloProvider } from "react-apollo";
-import { ApolloProvider as ApolloHooksProvider } from "@apollo/react-hooks";
-import AWSAppSyncClient, { defaultDataIdFromObject } from "aws-appsync";
+// import appSyncConfig from "./aws-exports";
+// import { ApolloProvider } from "react-apollo";
+// import { ApolloProvider as ApolloHooksProvider } from "@apollo/react-hooks";
+// import AWSAppSyncClient, { defaultDataIdFromObject } from "aws-appsync";
 import routes from "./Config/routes";
 
 import "./App.css";
@@ -95,38 +95,38 @@ const App = () => {
   );
 };
 
-const client = new AWSAppSyncClient({
-  url: appSyncConfig.aws_appsync_graphqlEndpoint,
-  region: appSyncConfig.aws_appsync_region,
-  auth: {
-    type: appSyncConfig.aws_appsync_authenticationType,
-    apiKey: appSyncConfig.aws_appsync_apiKey
-  },
-  cacheOptions: {
-    dataIdFromObject: obj => {
-      let id = defaultDataIdFromObject(obj);
+// const client = new AWSAppSyncClient({
+//   url: appSyncConfig.aws_appsync_graphqlEndpoint,
+//   region: appSyncConfig.aws_appsync_region,
+//   auth: {
+//     type: appSyncConfig.aws_appsync_authenticationType,
+//     apiKey: appSyncConfig.aws_appsync_apiKey
+//   },
+//   cacheOptions: {
+//     dataIdFromObject: obj => {
+//       let id = defaultDataIdFromObject(obj);
 
-      if (!id) {
-        const { __typename: typename } = obj;
-        switch (typename) {
-          case "Comment":
-            return `${typename}:${obj.commentId}`;
-          default:
-            return id;
-        }
-      }
+//       if (!id) {
+//         const { __typename: typename } = obj;
+//         switch (typename) {
+//           case "Comment":
+//             return `${typename}:${obj.commentId}`;
+//           default:
+//             return id;
+//         }
+//       }
 
-      return id;
-    }
-  }
-});
+//       return id;
+//     }
+//   }
+// });
 
 const WithProvider = () => (
-  <ApolloProvider client={client}>
-    <ApolloHooksProvider client={client}>
-      <App />
-    </ApolloHooksProvider>
-  </ApolloProvider>
+  // <ApolloProvider client={client}>
+  //   <ApolloHooksProvider client={client}>
+  <App />
+  //   </ApolloHooksProvider>
+  // </ApolloProvider>
 );
 
 export default WithProvider;
