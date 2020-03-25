@@ -35,3 +35,4 @@ dist/
 aws-exports.js
 awsconfiguration.json
 .DS_Store
+.firebase/hosting*

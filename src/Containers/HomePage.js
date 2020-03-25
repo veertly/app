@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from "react";
-import Button from "@material-ui/core/Button";
+import React, { useEffect } from "react";
+// import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import Grid from "@material-ui/core/Grid";
+// import Grid from "@material-ui/core/Grid";
 
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
-import Container from "@material-ui/core/Container";
+// import Container from "@material-ui/core/Container";
 import Link from "@material-ui/core/Link";
 import CenteredTopbar from "./Layouts/CenteredTopbar";
 import HomeComponent from "../Components/HomeComponent";
-import TextField from "@material-ui/core/TextField";
-import { subscribeNewsletter } from "../Modules/meetupOperations";
+// import TextField from "@material-ui/core/TextField";
+// import { subscribeNewsletter } from "../Modules/meetupOperations";
 
 function Copyright() {
   return (
@@ -72,19 +72,19 @@ const useStyles = makeStyles(theme => ({
 
 export default () => {
   const classes = useStyles();
-  const [newsletterEmail, setNewsletterEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
+  // const [newsletterEmail, setNewsletterEmail] = useState("");
+  // const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
     window.analytics.page("Home");
   }, []);
 
-  const handleSubscribeNewsletter = () => {
-    if (newsletterEmail.trim() !== "") {
-      subscribeNewsletter(newsletterEmail);
-      setSubmitted(true);
-    }
-  };
+  // const handleSubscribeNewsletter = () => {
+  //   if (newsletterEmail.trim() !== "") {
+  //     subscribeNewsletter(newsletterEmail);
+  //     setSubmitted(true);
+  //   }
+  // };
   return (
     <React.Fragment>
       <CssBaseline />
