@@ -43,5 +43,4 @@ jobs:
       - name: Deploy
         run: |
           firebase use --token ${{ secrets.PROD_FIREBASE_DEPLOY_KEY }} veertly
-          firebase use veertly
-          firebase deploy
+          firebase deploy -m "Deployed from github actions (${{ github.run_id }}) by ${{ github.actor }}" --token ${{ secrets.PROD_FIREBASE_DEPLOY_KEY }}
