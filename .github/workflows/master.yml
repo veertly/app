@@ -15,7 +15,7 @@ jobs:
     
     strategy:
       matrix:
-        node-version: [8.x, 10.x, 12.x]
+        node-version: [10.x]
     
     steps:
       - uses: actions/checkout@master
@@ -26,6 +26,7 @@ jobs:
       - name: Install and Test
         run: |
           yarn
+          yarn build
         env:
           CI: true
     
