@@ -13,19 +13,15 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [10.x, 12.x]
-
     steps:
     - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
+    - uses: borales/actions-yarn@v2.0.0
       with:
-        node-version: ${{ matrix.node-version }}
-
-    - run: npm install -g yarn # Extra Step
-    - run: yarn
-    - run: yarn run build
+        cmd: install # will run `yarn install` command
+ 
+    - uses: borales/actions-yarn@v2.0.0
+      with:
+        cmd: build # will run `yarn install` command
+ 
       env:
         CI: true
