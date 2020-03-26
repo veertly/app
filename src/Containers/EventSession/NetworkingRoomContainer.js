@@ -17,8 +17,8 @@ export default props => {
   const [lastRoomLoaded, setLastRoomLoaded] = useState(null);
 
   useEffect(() => {
-    window.analytics.page("NetworkingRoom/"+eventSession.id);
-    window.analytics.track('Entered Networking Room', {
+    window.analytics.page("NetworkingRoom/" + eventSession.id);
+    window.analytics.track("Entered Networking Room", {
       eventSessionId: eventSession.id
     });
   }, []);
@@ -57,7 +57,7 @@ export default props => {
       }
       api.addEventListener("videoConferenceLeft", event => {
         console.log("videoConferenceLeft: ", event);
-        window.analytics.track('[Jitsi] Left Call (videoConferenceLeft)', {
+        window.analytics.track("[Jitsi] Left Call (videoConferenceLeft)", {
           eventSessionId: eventSession.id,
           roomName
         });
@@ -65,13 +65,13 @@ export default props => {
       });
       api.addEventListener("readyToClose", event => {
         console.log("readyToClose: ", event);
-        window.analytics.track('[Jitsi] Left Call (readyToClose)', {
+        window.analytics.track("[Jitsi] Left Call (readyToClose)", {
           eventSessionId: eventSession.id,
           roomName
         });
         handleCallEnded();
       });
-      window.analytics.track('[Jitsi] Joined Call', {
+      window.analytics.track("[Jitsi] Joined Call", {
         eventSessionId: eventSession.id,
         roomName
       });
@@ -79,11 +79,12 @@ export default props => {
       setJitsiApi(api);
     }
     return () => {
-      if (jitsiApi) {
-        console.log("ON DISPOSE");
-        jitsiApi.executeCommand("hangup");
-        jitsiApi.dispose();
-      }
+      //TODO: correctly handle the leaving of calls
+      // if (jitsiApi) {
+      //   console.log("ON DISPOSE");
+      //   jitsiApi.executeCommand("hangup");
+      //   jitsiApi.dispose();
+      // }
     };
   }, [loaded, currentGroup]);
 

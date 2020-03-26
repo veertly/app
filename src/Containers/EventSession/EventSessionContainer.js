@@ -189,8 +189,8 @@ export default withRouter(props => {
                 console.log("Was not able to find the group with the id " + groupId);
               }
 
-              // am I the last one in the group?
-
+              console.log("Group is different, will update it...");
+              console.log({ currentGroup, group });
               setCurrentGroup(group);
               setCurrentGroupId(groupId);
               // setLiveAt(eventSession.liveAt);
@@ -282,7 +282,7 @@ export default withRouter(props => {
           <Typography align="center" variant="overline" style={{ display: "block" }}>
             Conference room not found!
           </Typography>
-          {!user.isAnonymous && (
+          {user && !user.isAnonymous && (
             <div style={{ width: "100%", textAlign: "center", marginTop: 16 }}>
               <Button variant="contained" color="secondary" className={classes.button} onClick={handleCreateConference}>
                 Create Conference {sessionId}
@@ -290,7 +290,7 @@ export default withRouter(props => {
             </div>
           )}
 
-          {user.isAnonymous && (
+          {user && user.isAnonymous && (
             <div style={{ width: "100%", textAlign: "center", marginTop: 16 }}>
               <Typography variant="caption" align="center">
                 You are connected as a guest, if you want to create an event, please login using your email
@@ -311,6 +311,8 @@ export default withRouter(props => {
   // console.log({ now: new Date().getTime(), liveAt: eventSession.liveAt });
   let isLive = composedEventSession.liveAt ? new Date().getTime() / 1000 > composedEventSession.liveAt : true;
   // console.lo({ composedEventSession });
+
+  console.log({ currentGroup });
   return (
     <div
       className={clsx({
