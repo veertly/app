@@ -12,15 +12,12 @@ const useStyles = makeStyles(theme => ({
 
 export default props => {
   const classes = useStyles();
-  const { currentGroup, user, eventSession, jitsiApi, setJitsiApi } = props;
+  const { user, eventSession, jitsiApi, setJitsiApi } = props;
   const [loaded, error] = useScript("https://meet.jit.si/external_api.js");
   const [lastRoomLoaded, setLastRoomLoaded] = useState(null);
 
   useEffect(() => {
-    window.analytics.page("NetworkingRoom/" + eventSession.id);
-    window.analytics.track("Entered Networking Room", {
-      eventSessionId: eventSession.id
-    });
+    window.analytics.page("ConferenceRoom/" + eventSession.id);
   }, []);
 
   const handleCallEnded = () => {
@@ -29,9 +26,9 @@ export default props => {
 
   useEffect(() => {
     let prefix = process.env.REACT_APP_JITSI_ROOM_PREFIX;
-    let prefixStr = prefix !== undefined ? `${prefix}-` : "";
+    let prefixStr = prefix !== undefined ? `-${prefix}-` : "";
 
-    const roomName = prefixStr + currentGroup.videoConferenceAddress.replace("https://meet.jit.si/", "");
+    const roomName = "veertly" + prefixStr + "session-" + eventSession.id;
 
     if (loaded && lastRoomLoaded !== roomName) {
       // dispose existing jitsi
@@ -52,6 +49,9 @@ export default props => {
         }
       };
       /*eslint-disable no-undef*/
+
+      // TRY: You can disable it as follows: use a URL like so https://meet.jit.si/test123#config.p2p.enabled=false
+
       const api = new JitsiMeetExternalAPI(domain, options);
       /*eslint-enable no-undef*/
       api.executeCommand("displayName", user.displayName);
@@ -60,36 +60,24 @@ export default props => {
       }
       api.addEventListener("videoConferenceLeft", event => {
         console.log("videoConferenceLeft: ", event);
-        window.analytics.track("[Jitsi] Left Call (videoConferenceLeft)", {
-          eventSessionId: eventSession.id,
-          roomName
-        });
         handleCallEnded();
       });
       api.addEventListener("readyToClose", event => {
         console.log("readyToClose: ", event);
-        window.analytics.track("[Jitsi] Left Call (readyToClose)", {
-          eventSessionId: eventSession.id,
-          roomName
-        });
         handleCallEnded();
       });
-      window.analytics.track("[Jitsi] Joined Call", {
-        eventSessionId: eventSession.id,
-        roomName
-      });
+
       setLastRoomLoaded(roomName);
       setJitsiApi(api);
     }
     return () => {
-      //TODO: correctly handle the leaving of calls
       // if (jitsiApi) {
       //   console.log("ON DISPOSE");
       //   jitsiApi.executeCommand("hangup");
       //   jitsiApi.dispose();
       // }
     };
-  }, [loaded, currentGroup]);
+  }, [loaded]);
 
   if (error) {
     console.log(error);
