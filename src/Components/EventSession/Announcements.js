@@ -1,8 +1,5 @@
-import React, { useState, useEffect } from "react";
-import useScript from "../../Hooks/useScript";
+import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { leaveCall } from "../../Modules/eventSessionOperations";
-import NoVideoImage from "../../Assets/illustrations/undraw_video_call_kxyp.svg";
 import { Typography } from "@material-ui/core";
 
 const useStyles = makeStyles(theme => ({
