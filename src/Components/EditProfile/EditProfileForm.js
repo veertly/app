@@ -52,6 +52,7 @@ function EditProfileForm(props) {
   const { register, handleSubmit, setValue, watch } = useForm({ defaultValues: getUserDefaultValues(user) });
 
   let [values, setValues] = React.useState(getUserDefaultValues(user));
+  let [fetched, setFetched] = React.useState(false);
 
   let mounted = true;
   let fetching = false;
@@ -66,91 +67,113 @@ function EditProfileForm(props) {
   //   history.push(callbackUrl);
   // };
 
-  const handleUpdateField = name => () => {};
+  const handleUpdateField = name => e => {
+    let res = { ...values };
+    res[name] = e.target.value;
+    setValues(res);
+  };
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      fetching = true;
+  // useEffect(() => {
+  //   const fetchUser = async () => {
+  //     fetching = true;
 
-      let uid = user.uid;
-      let userDb = await getUserDb(uid);
-      console.log({ userDb });
-      debugger;
-      if (mounted && userDb) {
-        setValue("firstName", userDb.firstName);
-        setValue("lastName", userDb.lastName);
-        setValue("linkedin", userDb.linkedinUrl ? userDb.linkedinUrl.replace(linkedinUrlStatic, "") : "");
-        setValue("twitter", userDb.twitterUrl ? userDb.twitterUrl.replace(twitterUrlStatic, "") : "");
-      }
-    };
-    if (!fetching) {
-      fetchUser();
-    }
-    return () => {
-      mounted = false;
-    };
-  }, []);
+  //     let uid = user.uid;
+  //     let userDb = await getUserDb(uid);
+  //     console.log({ userDb });
+  //     debugger;
+  //     if (mounted && userDb) {
+  //       setValues({
+  //         ...values,
+  //         firstName: userDb.firstName,
+  //         lastName: userDb.lastName,
+  //         linkedin: userDb.linkedinUrl ? userDb.linkedinUrl.replace(linkedinUrlStatic, "") : "",
+  //         twitter: userDb.twitterUrl ? userDb.twitterUrl.replace(twitterUrlStatic, "") : ""
+  //       });
+  //       setFetched(true);
+  //     }
+  //   };
+  //   if (!fetching && !fetched) {
+  //     fetchUser();
+  //   }
+  //   return () => {
+  //     mounted = false;
+  //   };
+  // }, []);
 
   return (
     <React.Fragment>
       {/* <TitledPaper title="Set your profile"> */}
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Typography align="left" variant="h5" style={{ textTransform: "uppercase" }}>
-          Edit Profile
-        </Typography>
-        {/* <TextField fullWidth value={user.displayName} label="Name" /> */}
-        <Grid container justify="space-between" className={classes.textField}>
-          <TextField
-            fullWidth
-            label="First Name"
-            name="firstName"
-            variant="outlined"
-            inputRef={register({ required: true })}
-            className={classes.textField}
-            value={watch("firstName")}
-            required
-            style={{ width: "48%" }}
-            // className={clsx(classes.flexGrow, classes.textField)}
-          />
-          <TextField
-            fullWidth
-            label="Last Name"
-            name="lastName"
-            variant="outlined"
-            inputRef={register()}
-            className={classes.textField}
-            value={watch("lastName")}
-            style={{ width: "48%" }}
-            // className={clsx(classes.flexGrow, classes.textField)}
-          />
-        </Grid>
+      {/* <form onSubmit={handleSubmit§(onSubmit)}> */}
+      <Typography align="left" variant="h5" style={{ textTransform: "uppercase" }}>
+        Edit Profile
+      </Typography>
+      {/* <TextField fullWidth value={user.displayName} label="Name" /> */}
+      <TextField
+        fullWidth
+        label="First Name"
+        name="firstName"
+        variant="outlined"
+        // inputRef={register({ required: true })}
+        className={classes.textField}
+        value={values.firstName}
+        // required
+        // style={{ width: "48%" }}
+        onChange={handleUpdateField("firstName")}
+        // className={clsx(classes.flexGrow, classes.textField)}
+      />
+      <Grid container justify="space-between" className={classes.textField}>
         <TextField
           fullWidth
-          label="LinkedIn Profile"
-          name="linkedin"
+          label="First Name"
+          name="firstName"
           variant="outlined"
-          inputRef={register()}
+          // inputRef={register({ required: true })}
           className={classes.textField}
-          value={watch("linkedin")}
-          InputProps={{
-            startAdornment: <InputAdornment position="start">{linkedinUrlStatic}</InputAdornment>
-          }}
+          value={values.firstName}
+          required
+          style={{ width: "48%" }}
+          onChange={handleUpdateField("firstName")}
           // className={clsx(classes.flexGrow, classes.textField)}
         />
         <TextField
           fullWidth
-          label="Twitter Profile"
-          name="twitter"
+          label="Last Name"
+          name="lastName"
           variant="outlined"
-          inputRef={register()}
+          // inputRef={register()}
           className={classes.textField}
-          value={watch("twitter")}
-          InputProps={{
-            startAdornment: <InputAdornment position="start">{twitterUrlStatic}</InputAdornment>
-          }}
+          value={values.lastName}
+          style={{ width: "48%" }}
           // className={clsx(classes.flexGrow, classes.textField)}
         />
-        {/* <TextField
+      </Grid>
+      <TextField
+        fullWidth
+        label="LinkedIn Profile"
+        name="linkedin"
+        variant="outlined"
+        // inputRef={register()}
+        className={classes.textField}
+        // value={values.linkedin}
+        InputProps={{
+          startAdornment: <InputAdornment position="start">{linkedinUrlStatic}</InputAdornment>
+        }}
+        // className={clsx(classes.flexGrow, classes.textField)}
+      />
+      <TextField
+        fullWidth
+        label="Twitter Profile"
+        name="twitter"
+        variant="outlined"
+        // inputRef={register()}
+        className={classes.textField}
+        value={values.twitter}
+        InputProps={{
+          startAdornment: <InputAdornment position="start">{twitterUrlStatic}</InputAdornment>
+        }}
+        // className={clsx(classes.flexGrow, classes.textField)}
+      />
+      {/* <TextField
             fullWidth
             label="First Name"
             name="firstName"
@@ -158,12 +181,12 @@ function EditProfileForm(props) {
             inputRef={register()}
             className={clsx(classes.flexGrow, classes.textField)}
           /> */}
-        <div className={classes.bottom}>
-          <Button variant="contained" color="secondary" type="submit" className={classes.button}>
-            Update Profile
-          </Button>
-        </div>
-      </form>
+      <div className={classes.bottom}>
+        <Button variant="contained" color="secondary" type="submit" className={classes.button}>
+          Update Profile
+        </Button>
+      </div>
+      {/* </form> */}
       {/* </TitledPaper> */}
     </React.Fragment>
   );
