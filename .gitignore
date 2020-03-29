@@ -38,3 +38,4 @@ aws-exports.js
 awsconfiguration.json
 .DS_Store
 .firebase/hosting*
+yarn.lock

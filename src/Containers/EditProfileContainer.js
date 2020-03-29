@@ -2,7 +2,7 @@ import React from "react";
 import Layout from "./Layouts/CenteredLayout";
 import { useAuthState } from "react-firebase-hooks/auth";
 import firebase from "../Modules/firebaseApp";
-import EditProfile from "../Components/EditProfile/EditProfile";
+import EditProfileForm from "../Components/EditProfile/EditProfileForm";
 
 export default () => {
   const [user, initialising, error] = useAuthState(firebase.auth());
@@ -17,7 +17,7 @@ export default () => {
   }
   return (
     <Layout maxWidth="sm">
-      <div style={{ margin: 48 }}>{user && <EditProfile user={user} />}</div>
+      <div style={{ margin: 48 }}>{user && <EditProfileForm user={user} />}</div>
     </Layout>
   );
 };

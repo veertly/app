@@ -5,6 +5,7 @@ import { Button, TextField } from "@material-ui/core";
 import { useForm } from "react-hook-form/dist/react-hook-form.ie11"; // needed because of a minimifying issue: https://github.com/react-hook-form/react-hook-form/issues/773
 import { registerNewUser, getUserDb } from "../../Modules/userOperations";
 import { useHistory, useLocation } from "react-router-dom";
+import Grid from "@material-ui/core/Grid";
 
 const styles = theme => ({
   row: {
@@ -33,7 +34,7 @@ const getUserDefaultValues = user => {
   return { firstName, lastName };
 };
 
-function EditProfile(props) {
+function EditProfileForm(props) {
   const { classes, user } = props;
   const history = useHistory();
   const location = useLocation();
@@ -72,9 +73,10 @@ function EditProfile(props) {
 
   return (
     <React.Fragment>
-      <TitledPaper title="Set your profile">
-        <form onSubmit={handleSubmit(onSubmit)}>
-          {/* <TextField fullWidth value={user.displayName} label="Name" /> */}
+      {/* <TitledPaper title="Set your profile"> */}
+      <form onSubmit={handleSubmit(onSubmit)}>
+        {/* <TextField fullWidth value={user.displayName} label="Name" /> */}
+        <Grid container justify="space-between" className={classes.textField}>
           <TextField
             fullWidth
             label="First Name"
@@ -96,7 +98,8 @@ function EditProfile(props) {
             value={watch("lastName")}
             // className={clsx(classes.flexGrow, classes.textField)}
           />
-          {/* <TextField
+        </Grid>
+        {/* <TextField
             fullWidth
             label="First Name"
             name="firstName"
@@ -104,15 +107,15 @@ function EditProfile(props) {
             inputRef={register()}
             className={clsx(classes.flexGrow, classes.textField)}
           /> */}
-          <div className={classes.bottom}>
-            <Button variant="contained" color="secondary" type="submit" className={classes.button}>
-              Set Profile
-            </Button>
-          </div>
-        </form>
-      </TitledPaper>
+        <div className={classes.bottom}>
+          <Button variant="contained" color="secondary" type="submit" className={classes.button}>
+            Set Profile
+          </Button>
+        </div>
+      </form>
+      {/* </TitledPaper> */}
     </React.Fragment>
   );
 }
 
-export default withStyles(styles)(EditProfile);
+export default withStyles(styles)(EditProfileForm);
