@@ -30,7 +30,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default props => {
-  const { eventSession } = props;
+  const { eventSession, userProfile } = props;
   const history = useHistory();
   const location = useLocation();
 

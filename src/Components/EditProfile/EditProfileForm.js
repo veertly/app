@@ -1,11 +1,12 @@
 import React, { useEffect } from "react";
 import TitledPaper from "../Core/TitledPaper";
 import { withStyles } from "@material-ui/core/styles";
-import { Button, TextField } from "@material-ui/core";
+import { Button, TextField, Typography } from "@material-ui/core";
 import { useForm } from "react-hook-form/dist/react-hook-form.ie11"; // needed because of a minimifying issue: https://github.com/react-hook-form/react-hook-form/issues/773
 import { registerNewUser, getUserDb } from "../../Modules/userOperations";
 import { useHistory, useLocation } from "react-router-dom";
 import Grid from "@material-ui/core/Grid";
+import InputAdornment from "@material-ui/core/InputAdornment";
 
 const styles = theme => ({
   row: {
@@ -31,26 +32,41 @@ const getUserDefaultValues = user => {
   let splitted = displayName.split(" ");
   let firstName = splitted[0];
   let lastName = splitted[splitted.length - 1];
-  return { firstName, lastName };
+  return { firstName, lastName, linkedin: "", twitter: "" };
 };
+
+const linkedinUrlStatic = "https://linkedin.com/in/";
+const twitterUrlStatic = "https://twitter.com";
 
 function EditProfileForm(props) {
   const { classes, user } = props;
   const history = useHistory();
   const location = useLocation();
+  // const [userProfile, loadingUserProfile, errorUserProfile] = useDocumentData(
+  //   firebase
+  //     .firestore()
+  //     .collection("users")
+  //     .doc(user.uid)
+  // );
+
   const { register, handleSubmit, setValue, watch } = useForm({ defaultValues: getUserDefaultValues(user) });
+
+  let [values, setValues] = React.useState(getUserDefaultValues(user));
+
   let mounted = true;
   let fetching = false;
   let callbackUrl = location.search.replace("?callback=", ""); // queryValues.callback ? queryValues.callback : "/";
 
   console.log("user", user);
 
-  const onSubmit = async data => {
-    console.log({ data });
-    let newUser = { ...user, displayName: `${data.firstName} ${data.lastName}` };
-    registerNewUser(newUser);
-    history.push(callbackUrl);
-  };
+  // const onSubmit = async data => {
+  //   console.log({ data });
+  //   let newUser = { ...user, displayName: `${data.firstName} ${data.lastName}` };
+  //   registerNewUser(newUser);
+  //   history.push(callbackUrl);
+  // };
+
+  const handleUpdateField = name => () => {};
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -58,9 +74,13 @@ function EditProfileForm(props) {
 
       let uid = user.uid;
       let userDb = await getUserDb(uid);
+      console.log({ userDb });
+      debugger;
       if (mounted && userDb) {
         setValue("firstName", userDb.firstName);
         setValue("lastName", userDb.lastName);
+        setValue("linkedin", userDb.linkedinUrl ? userDb.linkedinUrl.replace(linkedinUrlStatic, "") : "");
+        setValue("twitter", userDb.twitterUrl ? userDb.twitterUrl.replace(twitterUrlStatic, "") : "");
       }
     };
     if (!fetching) {
@@ -75,6 +95,9 @@ function EditProfileForm(props) {
     <React.Fragment>
       {/* <TitledPaper title="Set your profile"> */}
       <form onSubmit={handleSubmit(onSubmit)}>
+        <Typography align="left" variant="h5" style={{ textTransform: "uppercase" }}>
+          Edit Profile
+        </Typography>
         {/* <TextField fullWidth value={user.displayName} label="Name" /> */}
         <Grid container justify="space-between" className={classes.textField}>
           <TextField
@@ -86,6 +109,7 @@ function EditProfileForm(props) {
             className={classes.textField}
             value={watch("firstName")}
             required
+            style={{ width: "48%" }}
             // className={clsx(classes.flexGrow, classes.textField)}
           />
           <TextField
@@ -96,9 +120,36 @@ function EditProfileForm(props) {
             inputRef={register()}
             className={classes.textField}
             value={watch("lastName")}
+            style={{ width: "48%" }}
             // className={clsx(classes.flexGrow, classes.textField)}
           />
         </Grid>
+        <TextField
+          fullWidth
+          label="LinkedIn Profile"
+          name="linkedin"
+          variant="outlined"
+          inputRef={register()}
+          className={classes.textField}
+          value={watch("linkedin")}
+          InputProps={{
+            startAdornment: <InputAdornment position="start">{linkedinUrlStatic}</InputAdornment>
+          }}
+          // className={clsx(classes.flexGrow, classes.textField)}
+        />
+        <TextField
+          fullWidth
+          label="Twitter Profile"
+          name="twitter"
+          variant="outlined"
+          inputRef={register()}
+          className={classes.textField}
+          value={watch("twitter")}
+          InputProps={{
+            startAdornment: <InputAdornment position="start">{twitterUrlStatic}</InputAdornment>
+          }}
+          // className={clsx(classes.flexGrow, classes.textField)}
+        />
         {/* <TextField
             fullWidth
             label="First Name"
@@ -109,7 +160,7 @@ function EditProfileForm(props) {
           /> */}
         <div className={classes.bottom}>
           <Button variant="contained" color="secondary" type="submit" className={classes.button}>
-            Set Profile
+            Update Profile
           </Button>
         </div>
       </form>
