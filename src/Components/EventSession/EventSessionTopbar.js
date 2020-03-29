@@ -11,6 +11,9 @@ import VeertlyLogo from "../../Assets/Veertly_white.svg";
 import AvatarLogin from "../Topbar/AvatarLogin";
 import GoToNetworkingRoomDialog from "./GoToNetworkingRoomDialog";
 import GoToConferenceRoomDialog from "./GoToConferenceRoomDialog";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+import { useTheme } from "@material-ui/core/styles";
+
 // import routes from "../../Config/routes";
 const useStyles = makeStyles(theme => ({
   root: {
@@ -80,6 +83,9 @@ export default withRouter(props => {
   const { isInConferenceRoom, setIsInConferenceRoom, isInNetworkingCall, isNetworkingAvailable, eventSession } = props;
   let [goToNetworkingDialog, setGoToNetworkingDialog] = useState(false);
   let [goToConferenceDialog, setGoToConferenceDialog] = useState(false);
+  const theme = useTheme();
+
+  const isMobile = useMediaQuery(theme.breakpoints.down("xs"));
 
   const classes = useStyles();
 
@@ -98,9 +104,9 @@ export default withRouter(props => {
   return (
     <React.Fragment>
       <AppBar className={clsx(classes.root)}>
-        <Toolbar>
+        <Toolbar style={{ position: "relative" }}>
           <img alt="Logo" src={VeertlyLogo} className={classes.logo} />
-          {eventSession !== null && (
+          {!isMobile && eventSession && (
             <div className={classes.roomButtonsContainer}>
               <RoomButton isCurrentRoom={isInConferenceRoom} onClick={handleConferenceRoomClick}>
                 Conference Room
@@ -115,8 +121,14 @@ export default withRouter(props => {
             </div>
           )}
           {/* </RouterLink> */}
-          <div className={classes.flexGrow} />
-          <AvatarLogin />
+          <div className={classes.flexGrow}>
+            {!isMobile && eventSession && (
+              <Typography variant="h5" align="left" style={{ fontWeight: "lighter" }}>
+                {eventSession.title}
+              </Typography>
+            )}
+          </div>
+          <AvatarLogin eventSession={eventSession} />
         </Toolbar>
       </AppBar>
       <GoToNetworkingRoomDialog

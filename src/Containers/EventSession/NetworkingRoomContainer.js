@@ -28,7 +28,10 @@ export default props => {
   };
 
   useEffect(() => {
-    const roomName = currentGroup.videoConferenceAddress.replace("https://meet.jit.si/", "");
+    let prefix = process.env.REACT_APP_JITSI_ROOM_PREFIX;
+    let prefixStr = prefix !== undefined ? `${prefix}-` : "";
+
+    const roomName = prefixStr + currentGroup.videoConferenceAddress.replace("https://meet.jit.si/", "");
 
     if (loaded && lastRoomLoaded !== roomName) {
       // dispose existing jitsi

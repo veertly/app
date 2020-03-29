@@ -16,3 +16,13 @@ export const registerToEvent = (eventId, userId) => {
     .update(updateObj);
   //TODO: Move action to the backend
 };
+
+export const conferenceExists = async sessionId => {
+  let docRef = firebase
+    .firestore()
+    .collection("eventSessions")
+    .doc(sessionId);
+
+  let docSnapshot = await docRef.get();
+  return docSnapshot.exists;
+};

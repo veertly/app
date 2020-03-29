@@ -2,11 +2,31 @@ import React, { useState, useEffect } from "react";
 import useScript from "../../Hooks/useScript";
 import { makeStyles } from "@material-ui/core/styles";
 import { leaveCall } from "../../Modules/eventSessionOperations";
+import NoVideoImage from "../../Assets/illustrations/undraw_video_call_kxyp.svg";
+import { Typography } from "@material-ui/core";
 
 const useStyles = makeStyles(theme => ({
   root: {
     width: "100%",
     height: "100%"
+  },
+  videoContainer: {
+    width: "100%",
+    height: "100%",
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    right: 0,
+    left: 0
+  },
+  noVideoImage: {
+    maxWidth: "100%",
+    maxHeight: "100%",
+    position: "absolute",
+    bottom: 0,
+    margin: "auto",
+    width: "100%",
+    height: "60%"
   }
 }));
 
@@ -25,9 +45,12 @@ export default props => {
   };
 
   useEffect(() => {
-    const roomName = "veertly-session-" + eventSession.id;
+    let prefix = process.env.REACT_APP_JITSI_ROOM_PREFIX;
+    let prefixStr = prefix !== undefined ? `-${prefix}-` : "";
 
-    if (loaded && lastRoomLoaded !== roomName) {
+    const roomName = "veertly" + prefixStr + "session-" + eventSession.id;
+
+    if (eventSession.conferenceVideoType === "JITSI" && loaded && lastRoomLoaded !== roomName) {
       // dispose existing jitsi
       if (jitsiApi) {
         jitsiApi.executeCommand("hangup");
@@ -68,11 +91,11 @@ export default props => {
       setJitsiApi(api);
     }
     return () => {
-      if (jitsiApi) {
-        console.log("ON DISPOSE");
-        jitsiApi.executeCommand("hangup");
-        jitsiApi.dispose();
-      }
+      // if (jitsiApi) {
+      //   console.log("ON DISPOSE");
+      //   jitsiApi.executeCommand("hangup");
+      //   jitsiApi.dispose();
+      // }
     };
   }, [loaded]);
 
@@ -82,6 +105,38 @@ export default props => {
   }
   if (!loaded) return <div id="conference-container">Loading...</div>;
   if (loaded) {
+    const getYoutubeFrame = videoId => {
+      return (
+        <iframe
+          className={classes.videoContainer}
+          src={`https://www.youtube.com/embed/${videoId}?autoplay=1&fs=0&modestbranding=0`}
+          frameBorder="0"
+          allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          title="livestream"
+        ></iframe>
+      );
+    };
+    switch (eventSession.conferenceVideoType) {
+      case "YOUTUBE":
+        let videoId = eventSession.conferenceRoomYoutubeVideoId;
+        return getYoutubeFrame(videoId);
+
+      case "JITSI":
+        return <div id="conference-container" className={classes.root} />;
+      default:
+        return (
+          <div className={classes.videoContainer}>
+            <Typography align="center" gutterBottom style={{ marginTop: 64 }}>
+              Livestream not correctly configured...
+            </Typography>
+            <Typography variant="caption" display="block" align="center">
+              Please contact the event organizer or Veertly team
+            </Typography>
+            <img alt="No Video available" src={NoVideoImage} className={classes.noVideoImage} />
+          </div>
+        );
+    }
     // return (
     //   <div className={classes.root}>
     //     <Typography variant="caption">
@@ -91,6 +146,5 @@ export default props => {
     //     </Typography>
     //   </div>
     // );
-    return <div id="conference-container" className={classes.root} />;
   }
 };

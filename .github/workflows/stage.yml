@@ -1,0 +1,49 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI - STAGE
+
+on:
+  push:
+    branches: [stage]
+  pull_request:
+    branches: [stage]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [10.x]
+
+    steps:
+      - uses: actions/checkout@master
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@master
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install firebase tools
+        run: npm install -g firebase-tools
+
+      - name: Install
+        run: yarn
+
+      - name: Build
+        run: yarn build
+        env:
+          CI: true
+          REACT_APP_FIREBASE_API_KEY: ${{ secrets.STAGE_REACT_APP_FIREBASE_API_KEY }}
+          REACT_APP_FIREBASE_DATABASE_URL: ${{ secrets.STAGE_REACT_APP_FIREBASE_DATABASE_URL }}
+          REACT_APP_FIREBASE_AUTH_DOMAIN: ${{ secrets.STAGE_REACT_APP_FIREBASE_AUTH_DOMAIN }}
+          REACT_APP_FIREBASE_PROJECT_ID: ${{ secrets.STAGE_REACT_APP_FIREBASE_PROJECT_ID }}
+          REACT_APP_FIREBASE_STORAGE_BUCKET: ${{ secrets.STAGE_REACT_APP_FIREBASE_STORAGE_BUCKET }}
+          REACT_APP_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.STAGE_REACT_APP_FIREBASE_MESSAGING_SENDER_ID }}
+          REACT_APP_FIREBASE_APP_ID: ${{ secrets.STAGE_REACT_APP_FIREBASE_APP_ID }}
+          REACT_APP_JITSI_ROOM_PREFIX: stage
+          REACT_APP_ENV: STAGE
+
+      - name: Deploy
+        run: |
+          firebase use --token ${{ secrets.STAGE_FIREBASE_DEPLOY_KEY }} veertly-stage
+          firebase deploy -m "Deployed from github actions (${{ github.run_id }}) by ${{ github.actor }}" --token ${{ secrets.STAGE_FIREBASE_DEPLOY_KEY }}
