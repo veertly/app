@@ -23,6 +23,7 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme } from "@material-ui/core/styles";
 import { useHistory } from "react-router-dom";
 import routes from "../../Config/routes";
+import { initFirebasePresenceSync } from "../../Modules/userOperations";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -169,6 +170,7 @@ export default withRouter(props => {
           // console.lo({ eventSession });
           // console.lo("ON effect to set as available...");
           setAsAvailable(tempComposedEventSession, userId);
+          initFirebasePresenceSync(tempComposedEventSession.id, userId);
           setInitCompleted(true);
         }
       }

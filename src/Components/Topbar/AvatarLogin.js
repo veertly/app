@@ -10,6 +10,7 @@ import Avatar from "@material-ui/core/Avatar";
 import routes from "../../Config/routes";
 import { useAuthState } from "react-firebase-hooks/auth";
 import firebase from "../../Modules/firebaseApp";
+import { logout } from "../../Modules/userOperations";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -28,16 +29,16 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default props => {
-  // const { history, location } = props;
+  const { eventSession } = props;
   const history = useHistory();
   const location = useLocation();
 
   const classes = useStyles();
-
+  console.log({ location });
   const [user /* , initialising, error */] = useAuthState(firebase.auth());
-  const logout = () => {
-    window.analytics.track("Logged out");
-    firebase.auth().signOut();
+  const handleLogout = () => {
+    let sessionId = eventSession ? eventSession.id : null;
+    logout(sessionId);
   };
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
@@ -89,7 +90,7 @@ export default props => {
             onClose={handleClose}
           >
             {/* <MenuItem onClick={() => history.push(routes.EDIT_PROFILE())}>Profile</MenuItem> */}
-            <MenuItem onClick={() => logout()}>Log out</MenuItem>
+            <MenuItem onClick={handleLogout}>Log out</MenuItem>
           </Menu>
         </div>
       )}

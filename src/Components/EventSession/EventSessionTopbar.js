@@ -123,12 +123,12 @@ export default withRouter(props => {
           {/* </RouterLink> */}
           <div className={classes.flexGrow}>
             {!isMobile && eventSession && (
-              <Typography variant="h6" align="left">
+              <Typography variant="h5" align="left" style={{ fontWeight: "lighter" }}>
                 {eventSession.title}
               </Typography>
             )}
           </div>
-          <AvatarLogin />
+          <AvatarLogin eventSession={eventSession} />
         </Toolbar>
       </AppBar>
       <GoToNetworkingRoomDialog
