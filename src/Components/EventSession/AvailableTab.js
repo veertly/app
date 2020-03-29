@@ -72,12 +72,16 @@ export default function(props) {
       return false;
     }
     if (
-      (onConferenceRoom && sessionParticipant.inNetworkingRoom) ||
-      (!onConferenceRoom && !sessionParticipant.inNetworkingRoom)
+      // (onConferenceRoom && sessionParticipant.inNetworkingRoom) ||
+      (!onConferenceRoom && !sessionParticipant.inNetworkingRoom) ||
+      sessionParticipant.groupId
     ) {
       return false;
     }
-    if (!sessionParticipant.isOnline || sessionParticipant.groupId) {
+    // if (!sessionParticipant.isOnline || sessionParticipant.groupId) {
+    //   return false;
+    // }
+    if (!sessionParticipant.isOnline) {
       return false;
     }
     return true;

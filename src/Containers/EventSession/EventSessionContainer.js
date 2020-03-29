@@ -73,12 +73,17 @@ export default withRouter(props => {
   let originalSessionId = props.match.params.sessionId;
 
   let sessionId = originalSessionId ? originalSessionId.toLowerCase() : null;
+
   const classes = useStyles();
   const theme = useTheme();
   const isDesktop = !useMediaQuery(theme.breakpoints.down("xs"));
 
   const [openSidebar, setOpenSidebar] = useState(false);
   const history = useHistory();
+
+  if (sessionId === "codevscovid") {
+    history.push(routes.EVENT_SESSION("CodeVsCOVID19"));
+  }
 
   const handleSidebarClose = () => {
     setOpenSidebar(false);
