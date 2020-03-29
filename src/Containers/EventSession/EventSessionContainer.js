@@ -24,6 +24,7 @@ import { useTheme } from "@material-ui/core/styles";
 import { useHistory } from "react-router-dom";
 import routes from "../../Config/routes";
 import { initFirebasePresenceSync } from "../../Modules/userOperations";
+import Announcements from "../../Components/EventSession/Announcements";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -389,7 +390,9 @@ export default withRouter(props => {
                 // liveGroups={liveGroups}
                 user={user}
               />
+
               <div className={classes.mainPane}>
+                <Announcements eventSession={composedEventSession} />
                 <ConferenceRoomContainer
                   user={user}
                   eventSession={composedEventSession}
