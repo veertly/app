@@ -7,6 +7,7 @@ import Container from "@material-ui/core/Container";
 
 import { withRouter } from "react-router-dom";
 import routes from "../Config/routes";
+import Page from "./Core/Page";
 
 const useStyles = makeStyles(theme => ({
   icon: {
@@ -57,10 +58,11 @@ export default withRouter(props => {
   return (
     <React.Fragment>
       {/* Hero unit */}
+      <Page title="Veertly | Virtual events, virtual networking!"></Page>
       <div className={classes.heroContent}>
         <Container maxWidth="md">
           <div className={classes.heroButtons}>
-            <Typography variant="h4" style={{ textAlign: "center", fontWeight: "normal", marginBottom: 48 }}>
+            <Typography variant="h4" style={{ textAlign: "center", fontWeight: "lighter", marginBottom: 48 }}>
               Virtual events, virtual networking!
             </Typography>
             <Grid container spacing={2} justify="center">
