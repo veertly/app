@@ -1,31 +1,32 @@
-import React from "react";
-import { makeStyles } from "@material-ui/styles";
+import React from 'react';
+import { makeStyles } from '@material-ui/styles';
 
-import Button from "@material-ui/core/Button";
-import { useHistory, useLocation } from "react-router-dom";
+import Button from '@material-ui/core/Button';
+import { useHistory, useLocation } from 'react-router-dom';
 
-import MenuItem from "@material-ui/core/MenuItem";
-import Menu from "@material-ui/core/Menu";
-import Avatar from "@material-ui/core/Avatar";
-import routes from "../../Config/routes";
-import { useAuthState } from "react-firebase-hooks/auth";
-import firebase from "../../Modules/firebaseApp";
-import { logout } from "../../Modules/userOperations";
+import MenuItem from '@material-ui/core/MenuItem';
+import Menu from '@material-ui/core/Menu';
+import Avatar from '@material-ui/core/Avatar';
+import routes from '../../Config/routes';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import firebase from '../../Modules/firebaseApp';
+import { logout } from '../../Modules/userOperations';
+import FormDialog from './EditProfile';
 
 const useStyles = makeStyles(theme => ({
   root: {
-    boxShadow: "none"
+    boxShadow: 'none',
   },
   flexGrow: {
-    flexGrow: 1
+    flexGrow: 1,
   },
   signOutButton: {
-    marginLeft: theme.spacing(1)
+    marginLeft: theme.spacing(1),
   },
   logo: {
     width: 180,
-    marginTop: theme.spacing(1)
-  }
+    marginTop: theme.spacing(1),
+  },
 }));
 
 export default props => {
@@ -43,7 +44,7 @@ export default props => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
 
-  const onLogin = location.pathname === "/login";
+  const onLogin = location.pathname === '/login';
 
   function handleClose() {
     setAnchorEl(null);
@@ -55,18 +56,22 @@ export default props => {
     <React.Fragment>
       {!user && !onLogin && (
         <Button
-          variant="contained"
-          color="secondary"
-          size="small"
-          onClick={() => history.push(routes.GO_TO_LOGIN(location.pathname))}
-        >
+          variant='contained'
+          color='secondary'
+          size='small'
+          onClick={() => history.push(routes.GO_TO_LOGIN(location.pathname))}>
           Log in
         </Button>
       )}
       {user && (
         <div>
           {user && user.photoURL && (
-            <Avatar alt="" src={user.photoURL} className={classes.avatar} onClick={handleMenu} />
+            <Avatar
+              alt=''
+              src={user.photoURL}
+              className={classes.avatar}
+              onClick={handleMenu}
+            />
           )}
           {user && !user.photoURL && (
             <Avatar className={classes.avatar} onClick={handleMenu}>
@@ -75,22 +80,22 @@ export default props => {
             </Avatar>
           )}
           <Menu
-            id="menu-appbar"
+            id='menu-appbar'
             anchorEl={anchorEl}
             anchorOrigin={{
-              vertical: "top",
-              horizontal: "center"
+              vertical: 'top',
+              horizontal: 'center',
             }}
             transformOrigin={{
-              vertical: "bottom",
-              horizontal: "center"
+              vertical: 'bottom',
+              horizontal: 'center',
             }}
             keepMounted
             open={open}
-            onClose={handleClose}
-          >
+            onClose={handleClose}>
             {/* <MenuItem onClick={() => history.push(routes.EDIT_PROFILE())}>Profile</MenuItem> */}
-            <MenuItem onClick={handleLogout}>Log out</MenuItem>
+            <MenuItem onClick={handleLogout}>LOG OUT</MenuItem>
+            <FormDialog></FormDialog>
           </Menu>
         </div>
       )}
