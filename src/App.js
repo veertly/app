@@ -15,6 +15,8 @@ import MeetupsContainer from "./Containers/MeetupsContainer";
 import MeetupContainer from "./Containers/MeetupContainer";
 import ProfileContainer from "./Containers/ProfileContainer";
 import EventSessionContainer from "./Containers/EventSession/EventSessionContainer";
+import CreateSessionContainer from "./Containers/Organizer/CreateSessionContainer";
+
 import LoginContainer from "./Containers/LoginContainer";
 // import HomeContainer from "./Containers/HomeContainer";
 import HomePage from "./Containers/HomePage";
@@ -77,11 +79,13 @@ const App = () => {
               <Route exact={true} path={routes.HOME()} component={HomePage} />
               <Route exact={true} path={routes.LIST_MEETUPS()} component={MeetupsContainer} />
               <Route exact={true} path={routes.MEETUP_PAGE()} component={MeetupContainer} />
+              <PrivateRoute exact={true} path={routes.EVENT_SESSION_OLD()} component={EventSessionContainer} />
               <PrivateRoute exact={true} path={routes.EVENT_SESSION()} component={EventSessionContainer} />
               <Route exact={true} path={routes.EVENT_PAGE()} component={EventShowContainer} />
               <Route exact={true} path={routes.LOGIN_PATH()} component={LoginContainer} />
               <PrivateRoute path={routes.EDIT_PROFILE_RAW()} component={EditProfileContainer} />
               <PrivateRoute path={routes.PROFILE()} component={ProfileContainer} />
+              <PrivateRoute path={routes.CREATE_EVENT_SESSION()} component={CreateSessionContainer} />
 
               {/* <Route exact={true} path="/events" component={AllEventsContainer} /> */}
               {/* <Route path="/event/:id" component={ViewEvent} />

@@ -4,13 +4,7 @@ import NetworkingRoomContainer from "./NetworkingRoomContainer";
 import { useCollectionData, useDocumentData } from "react-firebase-hooks/firestore";
 import firebase from "../../Modules/firebaseApp";
 import { withRouter } from "react-router-dom";
-import {
-  setAsAvailable,
-  setAsOffline,
-  leaveCall,
-  updateInNetworkingRoom,
-  createConference
-} from "../../Modules/eventSessionOperations";
+import { setAsAvailable, setAsOffline, leaveCall, updateInNetworkingRoom } from "../../Modules/eventSessionOperations";
 import { useAuthState } from "react-firebase-hooks/auth";
 import Typography from "@material-ui/core/Typography";
 import { useBeforeunload } from "react-beforeunload";
@@ -24,6 +18,11 @@ import ConferenceRoomContainer from "./ConferenceRoomContainer";
 import ConferenceSidebar from "./ConferenceSidebar";
 import moment from "moment";
 import Button from "@material-ui/core/Button";
+import Page from "../../Components/Core/Page";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+import { useTheme } from "@material-ui/core/styles";
+import { useHistory } from "react-router-dom";
+import routes from "../../Config/routes";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -61,26 +60,23 @@ export default withRouter(props => {
   const [jitsiApi, setJitsiApi] = useState(null);
   // const [liveAt, setLiveAt] = useState(null);
   const [lastEventSessionJson, setLastEventSessionJson] = useState("");
+  const [lastEventSessionDetailsJson, setLastEventSessionDetailsJson] = useState("");
   const [lastParticipantJoinedJson, setLastParticipantJoinedJson] = useState("");
   const [lastLiveGroupsJson, setLastLiveGroupsJson] = useState("");
   const [composedEventSession, setComposedEventSession] = useState(null);
-  const [creatingEvent, setCreatingEvent] = useState(false);
   const userId = user ? user.uid : null;
 
   let [isInConferenceRoom, setIsInConferenceRoom] = useState(false);
 
-  let { sessionId } = props.match.params;
-  if (!sessionId) {
-    sessionId = "session123";
-  }
+  let originalSessionId = props.match.params.sessionId;
+
+  let sessionId = originalSessionId ? originalSessionId.toLowerCase() : null;
   const classes = useStyles();
-  // const theme = useTheme();
-  const isDesktop = true;
-  // useMediaQuery(theme.breakpoints.up("xs"), {
-  //   defaultMatches: true
-  // });
+  const theme = useTheme();
+  const isDesktop = !useMediaQuery(theme.breakpoints.down("xs"));
 
   const [openSidebar, setOpenSidebar] = useState(false);
+  const history = useHistory();
 
   const handleSidebarClose = () => {
     setOpenSidebar(false);
@@ -95,6 +91,12 @@ export default withRouter(props => {
     firebase
       .firestore()
       .collection("eventSessions")
+      .doc(sessionId)
+  );
+  const [eventSessionDetails, loadingSessionDetails, errorSessionDetails] = useDocumentData(
+    firebase
+      .firestore()
+      .collection("eventSessionsDetails")
       .doc(sessionId)
   );
   const [participantsJoined, loadingParticipantsJoined, errorParticipantsJoined] = useCollectionData(
@@ -116,11 +118,13 @@ export default withRouter(props => {
 
   useEffect(() => {
     const currentEventSessionJson = JSON.stringify(eventSession);
+    const currentEventSessionDetailsJson = JSON.stringify(eventSessionDetails);
     const currentParticipantsJoinedJson = JSON.stringify(participantsJoined);
     const currentLiveGroupsJson = JSON.stringify(liveGroups);
 
     if (
       currentEventSessionJson !== lastEventSessionJson ||
+      currentEventSessionDetailsJson !== lastEventSessionDetailsJson ||
       currentParticipantsJoinedJson !== lastParticipantJoinedJson ||
       currentLiveGroupsJson !== lastLiveGroupsJson
     ) {
@@ -156,6 +160,7 @@ export default withRouter(props => {
       if (eventSession) {
         let tempComposedEventSession = {
           ...eventSession,
+          ...eventSessionDetails,
           participantsJoined: participantsJoinedMap,
           liveGroups: liveGroupsMap
         };
@@ -168,7 +173,7 @@ export default withRouter(props => {
         }
       }
 
-      if (eventSession && participantsJoined && liveGroups) {
+      if (eventSession && eventSessionDetails && participantsJoined && liveGroups) {
         // console.lo("....WILL UPDATE EVENT SESSION.....");
         let userEventSession = participantsJoinedMap[userId];
         //console.log({ userEventSession });
@@ -200,18 +205,15 @@ export default withRouter(props => {
       }
 
       setLastEventSessionJson(currentEventSessionJson);
+      setLastEventSessionDetailsJson(currentEventSessionDetailsJson);
       setLastLiveGroupsJson(currentLiveGroupsJson);
       setLastParticipantJoinedJson(currentParticipantsJoinedJson);
       //console.lo("-----> UPDATING JSON variables....");
     }
-  }, [eventSession, participantsJoined, liveGroups]);
+  }, [eventSession, eventSessionDetails, participantsJoined, liveGroups]);
 
   const handleCreateConference = async () => {
-    if (!user.isAnonymous) {
-      setCreatingEvent(true);
-      await createConference(sessionId, userId);
-      setCreatingEvent(false);
-    }
+    history.push(routes.CREATE_EVENT_SESSION());
   };
 
   let users = {};
@@ -221,12 +223,13 @@ export default withRouter(props => {
       return result;
     }, {});
   }
-  if (loadingUsers || loadingSession || loadingParticipantsJoined || loadingLiveGroups) {
+  if (loadingUsers || loadingSession || loadingSessionDetails || loadingParticipantsJoined || loadingLiveGroups) {
     return <p>Loading...</p>;
   }
-  if (errorUsers || errorSession || errorParticipantsJoined || errorLiveGroups) {
+  if (errorUsers || errorSession || errorSessionDetails || errorParticipantsJoined || errorLiveGroups) {
     console.error(errorUsers);
     console.error(errorSession);
+    console.error(errorSessionDetails);
     console.error(errorParticipantsJoined);
     console.error(errorLiveGroups);
     return <p>Error :(</p>;
@@ -259,60 +262,47 @@ export default withRouter(props => {
 
   if (!composedEventSession) {
     return (
-      <div
-        className={clsx({
-          [classes.root]: true,
-          [classes.shiftContent]: false
-        })}
-      >
-        <EventSessionTopbar
-          isInConferenceRoom={isInConferenceRoom}
-          setIsInConferenceRoom={handleSetIsInConferenceRoom}
-          isInNetworkingCall={currentGroupId !== null}
-          isNetworkingAvailable={false}
-          eventSession={eventSession}
-        />
-        <div>
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <Typography align="center" variant="overline" style={{ display: "block" }}>
-            Conference room not found!
-          </Typography>
-          {user && !user.isAnonymous && (
+      <Page title={`Veertly | Event not found`}>
+        <div
+          className={clsx({
+            [classes.root]: true,
+            [classes.shiftContent]: false
+          })}
+        >
+          <EventSessionTopbar
+            isInConferenceRoom={isInConferenceRoom}
+            setIsInConferenceRoom={handleSetIsInConferenceRoom}
+            isInNetworkingCall={currentGroupId !== null}
+            isNetworkingAvailable={false}
+            eventSession={eventSession}
+          />
+          <div>
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <Typography align="center" variant="overline" style={{ display: "block" }}>
+              Event not found!
+            </Typography>
+            {/* {user && !user.isAnonymous && ( */}
             <div style={{ width: "100%", textAlign: "center", marginTop: 16 }}>
-              <Button variant="contained" color="secondary" className={classes.button} onClick={handleCreateConference}>
-                Create Conference {sessionId}
+              <Button variant="contained" color="primary" className={classes.button} onClick={handleCreateConference}>
+                Create Event
               </Button>
             </div>
-          )}
-
-          {user && user.isAnonymous && (
-            <div style={{ width: "100%", textAlign: "center", marginTop: 16 }}>
-              <Typography variant="caption" align="center">
-                You are connected as a guest, if you want to create an event, please login using your email
-              </Typography>
-            </div>
-          )}
-
-          {creatingEvent && (
-            <Typography variant="caption" align="center">
-              Creating conference...
-            </Typography>
-          )}
+          </div>
         </div>
-      </div>
+      </Page>
     );
   }
 
   // console.log({ now: new Date().getTime(), liveAt: eventSession.liveAt });
   let isLive = composedEventSession.liveAt ? new Date().getTime() / 1000 > composedEventSession.liveAt : true;
-  // console.lo({ composedEventSession });
+  // console.log({ composedEventSession });
 
-  console.log({ currentGroup });
+  // console.log({ currentGroup });
   return (
     <div
       className={clsx({
@@ -320,12 +310,14 @@ export default withRouter(props => {
         [classes.shiftContent]: isDesktop
       })}
     >
+      <Page title={`Veertly | ${composedEventSession.title}`}> </Page>
+
       <EventSessionTopbar
         isInConferenceRoom={isInConferenceRoom}
         setIsInConferenceRoom={handleSetIsInConferenceRoom}
         isInNetworkingCall={currentGroupId !== null}
         isNetworkingAvailable={composedEventSession.isNetworkingAvailable}
-        eventSession={eventSession}
+        eventSession={composedEventSession}
       />
       {!isLive && (
         <div style={{ marginLeft: -300 }}>

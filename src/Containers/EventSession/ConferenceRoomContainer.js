@@ -110,9 +110,9 @@ export default props => {
         <iframe
           className={classes.videoContainer}
           src={`https://www.youtube.com/embed/${videoId}?autoplay=1&fs=0&modestbranding=0`}
-          frameborder="0"
+          frameBorder="0"
           allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen
+          allowFullScreen
           title="livestream"
         ></iframe>
       );

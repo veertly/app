@@ -35,3 +35,8 @@ export const getUserDb = async uid => {
     .get();
   return await userDoc.data();
 };
+
+export const logout = async () => {
+  window.analytics.track("Logged out");
+  await firebase.auth().signOut();
+};

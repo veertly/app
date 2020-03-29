@@ -1,8 +1,8 @@
 import React from "react";
 import { makeStyles } from "@material-ui/styles";
 
-import { isProd, isDev } from "modules/environment";
 import { Typography } from "@material-ui/core";
+import { isProd, isStage } from "../../Modules/environments";
 
 const useStyles = makeStyles(theme => ({
   cornerRibbon: {
@@ -36,11 +36,11 @@ const EnvironmentRibbon = props => {
 
   if (isProd()) return null;
 
-  if (isDev()) {
+  if (isStage()) {
     return (
       <div className={`${classes.cornerRibbon} ${classes.ribbonOrange}`}>
         <Typography color="inherit" className={classes.text}>
-          Dev
+          Demo
         </Typography>
       </div>
     );

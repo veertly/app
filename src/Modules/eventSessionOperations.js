@@ -20,7 +20,7 @@ const getVideoConferenceAddress = groupId => `https://meet.jit.si/veertly-${grou
 //     let lastParticipantId = groupParticipantsIds[0];
 //     console.log({ lastParticipantId });
 //     updateObj[`liveGroups.${groupId}.endTimestamp`] = currentTimestamp;
-//     updateObj[`liveGroups.${groupId}.participants.${lastParticipantId}.leftTimestamp`] = currentTimestamp;
+//     updateObj[`liveGroups.${$groupId}.participants.${lastParticipantId}.leftTimestamp`] = currentTimestamp;
 //     updateObj[`participantsJoined.${lastParticipantId}.groupId`] = null;
 //   }
 //   return updateObj;
@@ -507,35 +507,46 @@ export const updateInNetworkingRoom = async (eventSession, myUserId, inNetworkin
     });
 };
 
-export const createConference = async (sessionId, userId) => {
-  const currentTimestamp = new Date().getTime() / 1000;
+export const createConference = async (
+  sessionId,
+  userId,
+  title,
+  conferenceVideoType,
+  conferenceRoomYoutubeVideoId,
+  website,
+  expectedAmountParticipants,
+  liveAt
+) => {
+  // const currentTimestamp = Math.floor(new Date().getTime() / 1000);
 
   let db = firebase.firestore();
+  let normedSessionId = sessionId.toLowerCase();
+  let eventsSessionDetailsRef = db.collection("eventSessionsDetails").doc(normedSessionId);
+  let eventSessionRef = db.collection("eventSessions").doc(normedSessionId);
 
-  let eventsRef = db.collection("events").doc(sessionId);
-  let eventSessionRef = db.collection("eventSessions").doc(sessionId);
-
-  const event = {
-    description: "...",
-    imageUrl:
-      "https://images.unsplash.com/photo-1560264401-b76ed96f3134?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1950&q=80",
-    title: "Veertly",
-    startTimestamp: currentTimestamp,
-    owner: userId
+  const eventDetails = {
+    id: normedSessionId,
+    originalSessionId: sessionId,
+    title,
+    conferenceVideoType,
+    conferenceRoomYoutubeVideoId: conferenceRoomYoutubeVideoId !== undefined ? conferenceRoomYoutubeVideoId : "",
+    website,
+    expectedAmountParticipants,
+    liveAt,
+    owner: userId,
+    isNetworkingAvailable: true
   };
 
   const eventSession = {
-    eventId: sessionId,
     id: sessionId,
-    liveAt: currentTimestamp,
-    isNetworkingAvailable: true,
+    originalSessionId: sessionId,
     owner: userId
   };
 
   return db
     .runTransaction(async function(transaction) {
-      let eventsSnapshot = await transaction.get(eventsRef);
-      if (eventsSnapshot.exists) {
+      let eventsSessionDetailsSnapshot = await transaction.get(eventsSessionDetailsRef);
+      if (eventsSessionDetailsSnapshot.exists) {
         throw new Error("Event already exists");
       }
 
@@ -544,15 +555,14 @@ export const createConference = async (sessionId, userId) => {
         throw new Error("Event session already exists");
       }
 
-      transaction.set(eventsRef, event);
+      transaction.set(eventsSessionDetailsRef, eventDetails);
       transaction.set(eventSessionRef, eventSession);
     })
     .then(function() {
       console.log("Transaction successfully committed!");
     })
     .catch(function(error) {
-      console.error("Transaction failed: ", error);
       // snackbar.showMessage(error.message);
-      // throw error;
+      throw error;
     });
 };
