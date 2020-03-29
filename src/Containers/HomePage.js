@@ -1,29 +1,11 @@
 import React, { useEffect } from "react";
-// import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
-// import Grid from "@material-ui/core/Grid";
-
-import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
-// import Container from "@material-ui/core/Container";
-import Link from "@material-ui/core/Link";
 import CenteredTopbar from "./Layouts/CenteredTopbar";
 import HomeComponent from "../Components/HomeComponent";
-// import TextField from "@material-ui/core/TextField";
-// import { subscribeNewsletter } from "../Modules/meetupOperations";
 
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {"Copyright © "}
-      <Link color="inherit" href="https://veertly.com/">
-        Veertly.com
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
+import TwitterIcon from "../Assets/Icons/Twitter";
+import TelegramIcon from "../Assets/Icons/Telegram";
 
 const useStyles = makeStyles(theme => ({
   icon: {
@@ -52,8 +34,9 @@ const useStyles = makeStyles(theme => ({
     flexGrow: 1
   },
   footer: {
-    backgroundColor: theme.palette.background.paper,
-    padding: theme.spacing(2, 6, 6, 6)
+    // backgroundColor: theme.palette.background.paper,
+    padding: theme.spacing(2, 6, 6, 6),
+    textAlign: "center"
   },
   buttonJoin: {
     margin: "auto"
@@ -67,6 +50,15 @@ const useStyles = makeStyles(theme => ({
   },
   subscriptionContainer: {
     marginBottom: theme.spacing(3)
+  },
+  socialNetworkIcon: {
+    marginTop: 3,
+    marginLeft: theme.spacing(2),
+    color: theme.palette.primary.main,
+    "&:hover": {
+      color: theme.palette.secondary.main,
+      cursor: "pointer"
+    }
   }
 }));
 
@@ -125,10 +117,17 @@ export default () => {
             )}
           </Grid>
         </Container> */}
-        <Typography variant="subtitle1" align="center" color="textSecondary" component="p">
+        <a href="https://twitter.com/veertly" target="_blank" rel="noopener noreferrer">
+          <TwitterIcon className={classes.socialNetworkIcon} />
+        </a>
+        <a href="https://t.me/Veertly" target="_blank" rel="noopener noreferrer">
+          <TelegramIcon className={classes.socialNetworkIcon} />
+        </a>
+        {/* <a href="https://t.me/Veertly" target="_blank"></a> */}
+        {/* <Typography variant="subtitle1" align="center" color="textSecondary" component="p">
           info@veertly.com{" "}
         </Typography>
-        <Copyright />
+        <Copyright /> */}
       </footer>
       {/* End footer */}
     </React.Fragment>

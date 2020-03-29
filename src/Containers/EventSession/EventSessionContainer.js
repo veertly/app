@@ -157,7 +157,7 @@ export default withRouter(props => {
       // console.lo({ eventSession });
       // console.lo("ON effect to set composedEventSession");
 
-      if (eventSession) {
+      if (eventSession && eventSessionDetails) {
         let tempComposedEventSession = {
           ...eventSession,
           ...eventSessionDetails,
