@@ -74,7 +74,7 @@ export default function(props) {
     if (
       // (onConferenceRoom && sessionParticipant.inNetworkingRoom) ||
       (!onConferenceRoom && !sessionParticipant.inNetworkingRoom) ||
-      sessionParticipant.groupId
+      (!onConferenceRoom && sessionParticipant.groupId)
     ) {
       return false;
     }
