@@ -59,6 +59,28 @@ const useStyles = makeStyles(theme => ({
       color: theme.palette.secondary.main,
       cursor: "pointer"
     }
+  },
+  root: {
+    // margin: 0,
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: "100%",
+    width: "100%",
+    // background: "#1c4762",
+    background: "#1D4762",
+
+    backgroundImage: 'url("/Illustrations/homepage-illustration.svg")',
+    backgroundRepeat: "no-repeat",
+    [theme.breakpoints.down("xs")]: {
+      backgroundSize: "55%"
+    },
+    backgroundSize: "25%",
+    backgroundPosition: "95% 95%",
+    backgroundColor: "rgb(50,100,131)",
+    backgroundColor: "linear-gradient(180deg, rgba(50,100,131,1) 0%, rgba(29,71,98,1) 100%)"
   }
 }));
 
@@ -79,14 +101,15 @@ export default () => {
   // };
   return (
     <React.Fragment>
-      <CssBaseline />
-      <CenteredTopbar />
-      <main>
-        <HomeComponent />
-      </main>
-      {/* Footer */}
-      <footer className={classes.footer}>
-        {/* <Container maxWidth="xs" className={classes.subscriptionContainer}>
+      <div className={classes.root}>
+        <CssBaseline />
+        {/* <CenteredTopbar /> */}
+        <main>
+          <HomeComponent />
+        </main>
+        {/* Footer */}
+        <footer className={classes.footer}>
+          {/* <Container maxWidth="xs" className={classes.subscriptionContainer}>
           <Grid container direction="row" justify="center" alignItems="center">
             {!submitted && (
               <React.Fragment>
@@ -117,19 +140,20 @@ export default () => {
             )}
           </Grid>
         </Container> */}
-        <a href="https://twitter.com/veertly" target="_blank" rel="noopener noreferrer">
-          <TwitterIcon className={classes.socialNetworkIcon} />
-        </a>
-        <a href="https://t.me/Veertly" target="_blank" rel="noopener noreferrer">
-          <TelegramIcon className={classes.socialNetworkIcon} />
-        </a>
-        {/* <a href="https://t.me/Veertly" target="_blank"></a> */}
-        {/* <Typography variant="subtitle1" align="center" color="textSecondary" component="p">
+          <a href="https://twitter.com/veertly" target="_blank" rel="noopener noreferrer">
+            <TwitterIcon className={classes.socialNetworkIcon} />
+          </a>
+          <a href="https://t.me/Veertly" target="_blank" rel="noopener noreferrer">
+            <TelegramIcon className={classes.socialNetworkIcon} />
+          </a>
+          {/* <a href="https://t.me/Veertly" target="_blank"></a> */}
+          {/* <Typography variant="subtitle1" align="center" color="textSecondary" component="p">
           info@veertly.com{" "}
         </Typography>
         <Copyright /> */}
-      </footer>
-      {/* End footer */}
+        </footer>
+        {/* End footer */}
+      </div>
     </React.Fragment>
   );
 };

@@ -8,6 +8,8 @@ import Container from "@material-ui/core/Container";
 import { withRouter } from "react-router-dom";
 import routes from "../Config/routes";
 import Page from "./Core/Page";
+import VeertlyLogo from "../Assets/Veertly_white.svg";
+import { useTheme } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(theme => ({
   icon: {
@@ -18,7 +20,7 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(12, 0, 6)
   },
   heroButtons: {
-    marginTop: theme.spacing(4)
+    marginTop: theme.spacing(8)
   },
   cardGrid: {
     paddingTop: theme.spacing(8),
@@ -49,11 +51,38 @@ const useStyles = makeStyles(theme => ({
   button: {
     margin: 16,
     width: 250
+  },
+  logoContainer: {
+    [theme.breakpoints.down("xs")]: {
+      textAlign: "center"
+    }
+  },
+  logo: {
+    maxWidth: "80%"
+  },
+  green: {
+    color: theme.palette.secondary.main
+  },
+  headlineContainer: {
+    marginTop: theme.spacing(6)
+  },
+  headline: {
+    textAlign: "left",
+    // fontWeight: "lighter",
+    // marginBottom: 48,
+    color: "white",
+    // letterSpacing: theme.spacing(1),
+    // fontSize: "2.8rem",
+    [theme.breakpoints.down("xs")]: {
+      // fontSize: "2rem",
+      // letterSpacing: theme.spacing(0.5)
+    }
   }
 }));
 
 export default withRouter(props => {
   const classes = useStyles();
+  const theme = useTheme();
 
   return (
     <React.Fragment>
@@ -61,10 +90,19 @@ export default withRouter(props => {
       <Page title="Veertly | Virtual events, virtual networking!"></Page>
       <div className={classes.heroContent}>
         <Container maxWidth="md">
-          <div className={classes.heroButtons}>
-            <Typography variant="h4" style={{ textAlign: "center", fontWeight: "lighter", marginBottom: 48 }}>
-              Virtual events, virtual networking!
+          <div className={classes.logoContainer}>
+            <img alt="Logo" src={VeertlyLogo} className={classes.logo} />
+          </div>
+          <div className={classes.headlineContainer}>
+            <Typography variant="h1" className={classes.headline}>
+              <span className={classes.green}>V</span>irtual events,{" "}
             </Typography>
+
+            <Typography variant="h1" className={classes.headline}>
+              <span className={classes.green}>V</span>irtual networking!
+            </Typography>
+          </div>
+          <div className={classes.heroButtons}>
             <Grid container spacing={2} justify="center">
               <Grid item>
                 <Button
@@ -78,7 +116,7 @@ export default withRouter(props => {
               <Grid item>
                 <Button
                   variant="outlined"
-                  color="primary"
+                  color="secondary"
                   onClick={() => props.history.push(routes.EVENT_SESSION("demo"))}
                 >
                   Try demo event
