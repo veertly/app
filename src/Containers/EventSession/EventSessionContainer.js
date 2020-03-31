@@ -91,7 +91,7 @@ export default withRouter(props => {
 
   const shouldOpenSidebar = isDesktop ? true : openSidebar;
   useBeforeunload(e => {
-    setAsOffline(composedEventSession, userId);
+    // setAsOffline(composedEventSession, userId);
   });
 
   const [eventSession, loadingSession, errorSession] = useDocumentData(
