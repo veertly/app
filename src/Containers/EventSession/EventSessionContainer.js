@@ -4,7 +4,7 @@ import NetworkingRoomContainer from "./NetworkingRoomContainer";
 import { useCollectionData, useDocumentData } from "react-firebase-hooks/firestore";
 import firebase from "../../Modules/firebaseApp";
 import { withRouter } from "react-router-dom";
-import { setAsAvailable, setAsOffline, leaveCall, updateInNetworkingRoom } from "../../Modules/eventSessionOperations";
+import { setAsAvailable, leaveCall, updateInNetworkingRoom } from "../../Modules/eventSessionOperations";
 import { useAuthState } from "react-firebase-hooks/auth";
 import Typography from "@material-ui/core/Typography";
 import { useBeforeunload } from "react-beforeunload";
