@@ -4,7 +4,7 @@ import NetworkingRoomContainer from "./NetworkingRoomContainer";
 import { useCollectionData, useDocumentData } from "react-firebase-hooks/firestore";
 import firebase from "../../Modules/firebaseApp";
 import { withRouter } from "react-router-dom";
-import { setAsAvailable, setAsOffline, leaveCall, updateInNetworkingRoom } from "../../Modules/eventSessionOperations";
+import { setAsAvailable, leaveCall, updateInNetworkingRoom } from "../../Modules/eventSessionOperations";
 import { useAuthState } from "react-firebase-hooks/auth";
 import Typography from "@material-ui/core/Typography";
 import { useBeforeunload } from "react-beforeunload";
@@ -24,6 +24,7 @@ import { useTheme } from "@material-ui/core/styles";
 import { useHistory } from "react-router-dom";
 import routes from "../../Config/routes";
 import { initFirebasePresenceSync } from "../../Modules/userOperations";
+import Announcements from "../../Components/EventSession/Announcements";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -72,6 +73,7 @@ export default withRouter(props => {
   let originalSessionId = props.match.params.sessionId;
 
   let sessionId = originalSessionId ? originalSessionId.toLowerCase() : null;
+
   const classes = useStyles();
   const theme = useTheme();
   const isDesktop = !useMediaQuery(theme.breakpoints.down("xs"));
@@ -79,13 +81,17 @@ export default withRouter(props => {
   const [openSidebar, setOpenSidebar] = useState(false);
   const history = useHistory();
 
+  if (sessionId === "codevscovid") {
+    history.push(routes.EVENT_SESSION("CodeVsCOVID19"));
+  }
+
   const handleSidebarClose = () => {
     setOpenSidebar(false);
   };
 
   const shouldOpenSidebar = isDesktop ? true : openSidebar;
   useBeforeunload(e => {
-    setAsOffline(composedEventSession, userId);
+    // setAsOffline(composedEventSession, userId);
   });
 
   const [eventSession, loadingSession, errorSession] = useDocumentData(
@@ -389,7 +395,9 @@ export default withRouter(props => {
                 // liveGroups={liveGroups}
                 user={user}
               />
+
               <div className={classes.mainPane}>
+                <Announcements eventSession={composedEventSession} />
                 <ConferenceRoomContainer
                   user={user}
                   eventSession={composedEventSession}

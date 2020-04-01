@@ -5,8 +5,8 @@ name: CI - STAGE
 on:
   push:
     branches: [stage]
-  pull_request:
-    branches: [stage]
+  # pull_request:
+  #   branches: [stage]
 
 jobs:
   deploy:

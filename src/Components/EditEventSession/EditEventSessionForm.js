@@ -207,7 +207,7 @@ function EditEventSessionForm(props) {
             value={watch("sessionId")}
             helperText={
               !sessionIdError
-                ? "This will be the url to your live event, it should not contain any space, it is case sensitive and once created it cannot be changed"
+                ? "This will be the url to your live event, it should not contain any space and once created it cannot be changed"
                 : "This URL is already in use, please select a new one"
             }
             required

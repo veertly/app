@@ -50,8 +50,7 @@ export default function(props) {
   useEffect(() => {
     var timerID = setInterval(() => {
       const currentTimestamp = new Date().getTime();
-      const joinedTimestamp = currentGroup.participants[userId].joinedTimestamp;
-
+      const joinedTimestamp = currentGroup.participants[userId].joinedTimestamp.toDate().getTime();
       setElapsedTime(currentTimestamp - joinedTimestamp);
     }, 1000);
 

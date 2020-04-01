@@ -213,7 +213,7 @@ export const createNewConversation = (eventSession, myUserId, otherUserId, snack
       // update my user group id
       transaction.update(myUserRef, { groupId });
 
-      // update my user group id
+      // update other user group id
       transaction.update(otherUserRef, { groupId });
     })
     .then(function() {
