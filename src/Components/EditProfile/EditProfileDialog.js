@@ -64,8 +64,8 @@ export default function(props) {
       <Dialog
         open={open}
         onClose={handleClose}
-        PaperComponent={PaperComponent}
-        aria-labelledby="draggable-dialog-title"
+        // PaperComponent={PaperComponent}
+        // aria-labelledby="draggable-dialog-title"
       >
         <div className={classes.content}>
           <EditProfileForm user={user} />

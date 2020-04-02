@@ -4,6 +4,7 @@ import Avatar from "@material-ui/core/Avatar";
 import Typography from "@material-ui/core/Typography";
 import LinkedinIcon from "../../Assets/Icons/Linkedin";
 import TwitterIcon from "../../Assets/Icons/Twitter";
+import ProfileChips from "../EditProfile/ProfileChips";
 
 const useStyles = makeStyles(theme => ({
   headlineContainer: {
@@ -11,6 +12,9 @@ const useStyles = makeStyles(theme => ({
     marginLeft: theme.spacing(4),
     marginRight: theme.spacing(4),
     padding: theme.spacing(1),
+    display: "flex"
+  },
+  headlineContainerNoMargins: {
     display: "flex"
   },
   participantDetails: {
@@ -48,14 +52,14 @@ const useStyles = makeStyles(theme => ({
 export default function(props) {
   const classes = useStyles();
 
-  const { participant } = props;
+  const { participant, noMargins } = props;
 
   if (!participant) {
     return null;
   }
 
   return (
-    <div className={classes.headlineContainer}>
+    <div className={noMargins === false ? classes.headlineContainer : classes.headlineContainerNoMargins}>
       {participant.avatarUrl && (
         <Avatar alt={participant.firstName} src={participant.avatarUrl} className={classes.avatar} />
       )}
@@ -79,9 +83,7 @@ export default function(props) {
             </a>
           )}
         </div>
-        <Typography /* variant="caption"  */ color="textSecondary" className={classes.topicsInterested}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-        </Typography>
+        <ProfileChips chips={participant.interestsChips} showDelete={false} smallChips={true} />
       </div>
     </div>
   );

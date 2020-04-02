@@ -1,12 +1,17 @@
-import React, { useEffect } from "react";
-import TitledPaper from "../Core/TitledPaper";
+import React from "react";
 import { withStyles } from "@material-ui/core/styles";
-import { Button, TextField, Typography } from "@material-ui/core";
-import { useForm } from "react-hook-form/dist/react-hook-form.ie11"; // needed because of a minimifying issue: https://github.com/react-hook-form/react-hook-form/issues/773
-import { registerNewUser, getUserDb } from "../../Modules/userOperations";
-import { useHistory, useLocation } from "react-router-dom";
+import { Button, TextField } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import InputAdornment from "@material-ui/core/InputAdornment";
+import FormGroup from "@material-ui/core/FormGroup";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Switch from "@material-ui/core/Switch";
+import Tooltip from "@material-ui/core/Tooltip";
+import ParticipantCard from "../EventSession/ParticipantCard";
+import ProfileChips from "./ProfileChips";
+import IconButton from "@material-ui/core/IconButton";
+import AddIcon from "@material-ui/icons/Add";
+import uuidv1 from "uuid/v1";
 
 const styles = theme => ({
   row: {
@@ -16,7 +21,8 @@ const styles = theme => ({
     marginTop: theme.spacing(2)
   },
   bottom: {
-    textAlign: "right"
+    textAlign: "center",
+    marginTop: 16
   },
   textField: {
     marginTop: 16
@@ -32,108 +38,69 @@ const getUserDefaultValues = user => {
   let splitted = displayName.split(" ");
   let firstName = splitted[0];
   let lastName = splitted[splitted.length - 1];
-  return { firstName, lastName, linkedin: "", twitter: "" };
+  return {
+    firstName,
+    lastName,
+    email: user.email ? user.email : "",
+    linkedin: "",
+    twitter: "",
+    emailPublic: false,
+    avatarUrl: user.photoURL,
+    interest: "",
+    twitterUrl: null,
+    linkedinUrl: null,
+    interestsChips: []
+  };
 };
 
 const linkedinUrlStatic = "https://linkedin.com/in/";
-const twitterUrlStatic = "https://twitter.com";
+const twitterUrlStatic = "https://twitter.com/";
 
 function EditProfileForm(props) {
   const { classes, user } = props;
-  const history = useHistory();
-  const location = useLocation();
-  // const [userProfile, loadingUserProfile, errorUserProfile] = useDocumentData(
-  //   firebase
-  //     .firestore()
-  //     .collection("users")
-  //     .doc(user.uid)
-  // );
-
-  const { register, handleSubmit, setValue, watch } = useForm({ defaultValues: getUserDefaultValues(user) });
 
   let [values, setValues] = React.useState(getUserDefaultValues(user));
-  let [fetched, setFetched] = React.useState(false);
-
-  let mounted = true;
-  let fetching = false;
-  let callbackUrl = location.search.replace("?callback=", ""); // queryValues.callback ? queryValues.callback : "/";
-
-  console.log("user", user);
-
-  // const onSubmit = async data => {
-  //   console.log({ data });
-  //   let newUser = { ...user, displayName: `${data.firstName} ${data.lastName}` };
-  //   registerNewUser(newUser);
-  //   history.push(callbackUrl);
-  // };
+  const [interestsChips, setInterestsChips] = React.useState([]);
 
   const handleUpdateField = name => e => {
-    let res = { ...values };
-    res[name] = e.target.value;
-    setValues(res);
+    setValues({
+      ...values,
+      [name]: e.target.value,
+      linkedinUrl: values.linkedin.trim() !== "" ? linkedinUrlStatic + values.linkedin : null,
+      twitterUrl: values.twitter.trim() !== "" ? twitterUrlStatic + values.twitter : null
+    });
   };
 
-  // useEffect(() => {
-  //   const fetchUser = async () => {
-  //     fetching = true;
+  const handleAddInterest = _ => {
+    if (values.interest.trim() !== "") {
+      let label = values.interest;
+      let key = uuidv1();
+      let newInterests = [...interestsChips];
+      newInterests.push({ key, label });
 
-  //     let uid = user.uid;
-  //     let userDb = await getUserDb(uid);
-  //     console.log({ userDb });
-  //     debugger;
-  //     if (mounted && userDb) {
-  //       setValues({
-  //         ...values,
-  //         firstName: userDb.firstName,
-  //         lastName: userDb.lastName,
-  //         linkedin: userDb.linkedinUrl ? userDb.linkedinUrl.replace(linkedinUrlStatic, "") : "",
-  //         twitter: userDb.twitterUrl ? userDb.twitterUrl.replace(twitterUrlStatic, "") : ""
-  //       });
-  //       setFetched(true);
-  //     }
-  //   };
-  //   if (!fetching && !fetched) {
-  //     fetchUser();
-  //   }
-  //   return () => {
-  //     mounted = false;
-  //   };
-  // }, []);
+      setInterestsChips(newInterests);
+      setValues({ ...values, interest: "", interestsChips: newInterests });
+    }
+  };
 
+  const handleEmailPrivacy = event => {
+    setValues({ ...values, emailPublic: event.target.checked });
+  };
   return (
     <React.Fragment>
-      {/* <TitledPaper title="Set your profile"> */}
-      {/* <form onSubmit={handleSubmit§(onSubmit)}> */}
-      <Typography align="left" variant="h5" style={{ textTransform: "uppercase" }}>
-        Edit Profile
-      </Typography>
-      {/* <TextField fullWidth value={user.displayName} label="Name" /> */}
-      <TextField
-        fullWidth
-        label="First Name"
-        name="firstName"
-        variant="outlined"
-        // inputRef={register({ required: true })}
-        className={classes.textField}
-        value={values.firstName}
-        // required
-        // style={{ width: "48%" }}
-        onChange={handleUpdateField("firstName")}
-        // className={clsx(classes.flexGrow, classes.textField)}
-      />
+      <div style={{ marginBottom: 32 }}>
+        <ParticipantCard participant={values} />
+      </div>
       <Grid container justify="space-between" className={classes.textField}>
         <TextField
           fullWidth
           label="First Name"
           name="firstName"
           variant="outlined"
-          // inputRef={register({ required: true })}
-          className={classes.textField}
           value={values.firstName}
           required
           style={{ width: "48%" }}
           onChange={handleUpdateField("firstName")}
-          // className={clsx(classes.flexGrow, classes.textField)}
         />
         <TextField
           fullWidth
@@ -141,53 +108,100 @@ function EditProfileForm(props) {
           name="lastName"
           variant="outlined"
           // inputRef={register()}
-          className={classes.textField}
           value={values.lastName}
           style={{ width: "48%" }}
           // className={clsx(classes.flexGrow, classes.textField)}
+          onChange={handleUpdateField("lastName")}
         />
+      </Grid>
+      <Grid container justify="space-between" className={classes.textField}>
+        <TextField
+          fullWidth
+          label="Email"
+          name="email"
+          variant="outlined"
+          value={values.email}
+          style={{ width: 380 }}
+          onChange={handleUpdateField("email")}
+        />
+        <FormGroup row>
+          <Tooltip
+            title={
+              values.emailPublic
+                ? "Your email will be shared with the participants of this event"
+                : "Your email will not be shared with the participants of this event"
+            }
+          >
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={values.emailPublic}
+                  onChange={handleEmailPrivacy}
+                  name="emailPrivacy"
+                  color="primary"
+                />
+              }
+              label={values.emailPublic ? "Public" : "Private"}
+            />
+          </Tooltip>
+        </FormGroup>
       </Grid>
       <TextField
         fullWidth
         label="LinkedIn Profile"
         name="linkedin"
         variant="outlined"
-        // inputRef={register()}
         className={classes.textField}
-        // value={values.linkedin}
         InputProps={{
           startAdornment: <InputAdornment position="start">{linkedinUrlStatic}</InputAdornment>
         }}
-        // className={clsx(classes.flexGrow, classes.textField)}
+        value={values.linkedin}
+        onChange={handleUpdateField("linkedin")}
       />
       <TextField
         fullWidth
         label="Twitter Profile"
         name="twitter"
         variant="outlined"
-        // inputRef={register()}
         className={classes.textField}
         value={values.twitter}
         InputProps={{
           startAdornment: <InputAdornment position="start">{twitterUrlStatic}</InputAdornment>
         }}
-        // className={clsx(classes.flexGrow, classes.textField)}
+        value={values.twitter}
+        onChange={handleUpdateField("twitter")}
       />
-      {/* <TextField
-            fullWidth
-            label="First Name"
-            name="firstName"
-            variant="outlined"
-            inputRef={register()}
-            className={clsx(classes.flexGrow, classes.textField)}
-          /> */}
+      <Grid container justify="space-between" className={classes.textField}>
+        <TextField
+          fullWidth
+          label="Interests"
+          name="interest"
+          variant="outlined"
+          value={values.interest}
+          style={{ width: 435 }}
+          onChange={handleUpdateField("interest")}
+          onKeyPress={ev => {
+            if (ev.key === "Enter") {
+              // Do code here
+              handleAddInterest();
+              ev.preventDefault();
+            }
+          }}
+        />
+        <Tooltip title="Add interest">
+          <IconButton color="primary" aria-label="add interest" onClick={handleAddInterest}>
+            <AddIcon fontSize="large" />
+          </IconButton>
+        </Tooltip>
+      </Grid>
+      <div style={{ marginTop: 8 }}>
+        <ProfileChips chips={interestsChips} setChips={setInterestsChips} showEmptyMsg="interests" showDelete={true} />
+      </div>
       <div className={classes.bottom}>
-        <Button variant="contained" color="secondary" type="submit" className={classes.button}>
+        <Button variant="contained" color="primary" type="submit" className={classes.button}>
           Update Profile
         </Button>
       </div>
-      {/* </form> */}
-      {/* </TitledPaper> */}
     </React.Fragment>
   );
 }
