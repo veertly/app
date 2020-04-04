@@ -61,6 +61,8 @@ export default function(props) {
   if (!participant) {
     return null;
   }
+  const hasSubtitle = participant.company.trim() !== "" || participant.companyTitle.trim() !== "";
+  const hasChips = participant.interestsChips.length > 0;
 
   return (
     <div className={noMargins === false ? classes.headlineContainer : classes.headlineContainerNoMargins}>
@@ -74,7 +76,12 @@ export default function(props) {
         </Avatar>
       )}
       {!participant.avatarUrl && participant.firstName.trim() === "" && <Avatar className={classes.avatar}>G</Avatar>}
-      <div className={classes.participantDetails}>
+      <div
+        className={classes.participantDetails}
+        style={{
+          paddingTop: !hasSubtitle && !hasChips ? 26 : !hasChips || !hasSubtitle ? 16 : 0
+        }}
+      >
         <div className={classes.participantName}>
           <Typography variant="h6">
             {participant.firstName.trim() === "" ? "Guest User" : `${participant.firstName} ${participant.lastName}`}

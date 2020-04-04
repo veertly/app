@@ -15,11 +15,13 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function ProfileChips(props) {
-  const { chips, setChips, showDelete, showEmptyMsg, smallChips } = props;
+  const { chips, onDelete, showEmptyMsg, smallChips } = props;
   const classes = useStyles();
 
   const handleDelete = chipToDelete => () => {
-    setChips(allChips => allChips.filter(chip => chip.key !== chipToDelete.key));
+    let newChips = chips.filter(chip => chip.key !== chipToDelete.key);
+    console.log({ newChips });
+    onDelete(newChips);
   };
 
   if (!chips) {
@@ -33,7 +35,7 @@ export default function ProfileChips(props) {
             size={smallChips ? "small" : "medium"}
             key={data.key}
             label={data.label}
-            onDelete={showDelete ? handleDelete(data) : undefined}
+            onDelete={onDelete ? handleDelete(data) : undefined}
             className={classes.chip}
           />
         );

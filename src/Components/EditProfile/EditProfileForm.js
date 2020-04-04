@@ -145,6 +145,11 @@ function EditProfileForm(props) {
     }
   };
 
+  const handleNewInterestsChips = chips => {
+    setInterestsChips(chips);
+    setValues({ ...values, interest: "", interestsChips: chips });
+  };
+
   const handleEmailPrivacy = event => {
     setValues({ ...values, emailPublic: event.target.checked });
   };
@@ -312,7 +317,7 @@ function EditProfileForm(props) {
       </Grid>
 
       <div style={{ marginTop: 8 }}>
-        <ProfileChips chips={interestsChips} setChips={setInterestsChips} showDelete={true} />
+        <ProfileChips chips={interestsChips} onDelete={handleNewInterestsChips} />
       </div>
       <div className={classes.bottom}>
         <Button

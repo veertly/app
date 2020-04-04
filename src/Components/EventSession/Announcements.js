@@ -35,7 +35,6 @@ export default props => {
       <div id="conference-container" className={classes.root}>
         <Typography align="center" variant="caption" display="block">
           {eventSession.announcements.conference}
-          {/* After the speech, click on ‘Networking Room’ and network with fellow #CodeVsCovid19 hackathon attendees */}
         </Typography>
       </div>
     );

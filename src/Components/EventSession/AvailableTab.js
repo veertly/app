@@ -28,7 +28,7 @@ const useStyles = makeStyles(theme => ({
     whiteSpace: "nowrap",
     overflow: "hidden",
     display: "block",
-    width: 210
+    width: 190
   },
   avatar: {
     marginTop: 1
@@ -125,7 +125,7 @@ export default function(props) {
       )}
       {participantsAvailable.map((userId, index) => {
         let participant = users[userId];
-        const hasSubtitle = participant.company.trim() !== "" && participant.companyTitle.trim() !== "";
+        const hasSubtitle = participant.company.trim() !== "" || participant.companyTitle.trim() !== "";
 
         return (
           <div
@@ -150,7 +150,9 @@ export default function(props) {
 
               {hasSubtitle && (
                 <Typography color="textSecondary" variant="caption" className={classes.topicsInterested}>
-                  {`${participant.companyTitle}${hasSubtitle ? " @ " : ""}${participant.company}`}
+                  {`${participant.companyTitle}${participant.companyTitle.trim() !== "" ? " @ " : ""}${
+                    participant.company
+                  }`}
                 </Typography>
               )}
 
