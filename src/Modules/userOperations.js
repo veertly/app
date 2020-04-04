@@ -1,8 +1,8 @@
 import firebase from "./firebaseApp";
 
-export const registerNewUser = async user => {
+export const registerNewUser = async userAuth => {
   console.log("on: registerNewUser");
-  let { displayName, email, phoneNumber, uid, photoURL, isAnonymous } = user;
+  let { displayName, email, phoneNumber, uid, photoURL, isAnonymous } = userAuth;
   let names = displayName.split(" ");
   let firstName = names[0];
   let lastName = names.length > 1 ? names[names.length - 1] : "";
@@ -21,10 +21,94 @@ export const registerNewUser = async user => {
       isAnonymous: isAnonymous
     });
 
-  var userAuth = firebase.auth().currentUser;
-  await userAuth.updateProfile({
+  var userAuth2 = firebase.auth().currentUser;
+  await userAuth2.updateProfile({
     displayName
   });
+};
+
+export const updateUser = async (userId, sessionId, userDb) => {
+  let db = firebase.firestore();
+
+  let userRef = db.collection(`users`).doc(userId);
+  let userSessionRef = null;
+  let userAttendedEventsRef = null;
+
+  let newUserAttendedEvents = {};
+  let updateUserAttendedEvents = {};
+
+  if (sessionId) {
+    userSessionRef = db
+      .collection(`eventSessions`)
+      .doc(sessionId.toLowerCase())
+      .collection("participantsDetails")
+      .doc(userId);
+
+    userAttendedEventsRef = db
+      .collection(`userAttendedEvents`)
+      .doc(userId)
+      .collection("events")
+      .doc(sessionId.toLowerCase());
+
+    let eventSessionSnapshot = await firebase
+      .firestore()
+      .collection("eventSessionsDetails")
+      .doc(sessionId.toLowerCase())
+      .get();
+    let eventSession = eventSessionSnapshot.data();
+
+    const { title, originalSessionId, liveAt } = eventSession;
+    newUserAttendedEvents = {
+      joinedTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      title,
+      originalSessionId,
+      liveAt
+    };
+    updateUserAttendedEvents = { originalSessionId };
+  }
+
+  let userSession = { ...userDb };
+  if (!userDb.emailPublic) {
+    userSession.email = null;
+  }
+
+  await db.runTransaction(async function(transaction) {
+    let userSnapshot = await transaction.get(userRef);
+    let userSessionSnapshot = userSessionRef ? await transaction.get(userSessionRef) : null;
+    let userAttendedEventsSnapshot = userAttendedEventsRef ? await transaction.get(userAttendedEventsRef) : null;
+
+    // console.log({ eventSession, minEventSession });
+    if (!userSnapshot.exists) {
+      transaction.set(userRef, userDb);
+    } else {
+      transaction.update(userRef, userDb);
+    }
+    if (sessionId) {
+      if (!userSessionSnapshot.exists) {
+        transaction.set(userSessionRef, userSession);
+      } else {
+        transaction.update(userSessionRef, userSession);
+      }
+
+      if (!userAttendedEventsSnapshot.exists) {
+        transaction.set(userAttendedEventsRef, newUserAttendedEvents);
+      } else {
+        transaction.update(userAttendedEventsRef, updateUserAttendedEvents);
+      }
+    }
+  });
+
+  var userAuth = firebase.auth().currentUser;
+  await userAuth.updateProfile({
+    displayName: userDb.firstName + " " + userDb.lastName
+  });
+  // .then(function() {
+  //   // console.log("Transaction successfully committed!");
+  // })
+  // .catch(function(error) {
+  //   console.log("Transaction failed: ", error);
+  //   // throw error;
+  // });
 };
 
 export const getUserDb = async uid => {
@@ -34,6 +118,29 @@ export const getUserDb = async uid => {
     .doc(uid)
     .get();
   return await userDoc.data();
+};
+
+export const getUserSessionDb = async (sessionId, uid) => {
+  let userDoc = await firebase
+    .firestore()
+    .collection("eventSessions")
+    .doc(sessionId)
+    .collection("participantsJoined")
+    .doc(uid)
+    .get();
+  return await userDoc.data();
+};
+
+export const hasUserSession = async (sessionId, userId) => {
+  let docRef = firebase
+    .firestore()
+    .collection("eventSessions")
+    .doc(sessionId.toLowerCase())
+    .collection("participantsDetails")
+    .doc(userId);
+
+  let docSnapshot = await docRef.get();
+  return docSnapshot.exists;
 };
 
 export const logout = async sessionId => {

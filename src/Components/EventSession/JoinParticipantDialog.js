@@ -1,8 +1,7 @@
 import React from "react";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
-import Paper from "@material-ui/core/Paper";
-import Draggable from "react-draggable";
+
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import ParticipantCard from "./ParticipantCard";
@@ -11,7 +10,9 @@ import { useSnackbar } from "material-ui-snackbar-provider";
 
 const useStyles = makeStyles(theme => ({
   content: {
-    position: "relative"
+    position: "relative",
+    width: theme.breakpoints.values.sm,
+    padding: theme.spacing(6)
   },
   closeContainer: {
     position: "absolute"
@@ -19,7 +20,7 @@ const useStyles = makeStyles(theme => ({
   buttonContainer: {
     width: "100%",
     textAlign: "center",
-    marginTop: theme.spacing(2)
+    marginTop: theme.spacing(4)
   },
   hintText: {
     marginBottom: theme.spacing(4),
@@ -34,14 +35,6 @@ const useStyles = makeStyles(theme => ({
     marginBottom: theme.spacing(4)
   }
 }));
-
-function PaperComponent(props) {
-  return (
-    <Draggable cancel={'[class*="MuiDialogContent-root"]'}>
-      <Paper {...props} />
-    </Draggable>
-  );
-}
 
 export default function(props) {
   const classes = useStyles();
@@ -61,7 +54,7 @@ export default function(props) {
     try {
       createNewConversation(eventSession, user.uid, participant.id, snackbar);
     } catch (error) {
-      debugger;
+      console.error(error);
     }
     setOpen(false);
   };
@@ -71,15 +64,16 @@ export default function(props) {
       <Dialog
         open={open}
         onClose={handleClose}
-        PaperComponent={PaperComponent}
-        aria-labelledby="draggable-dialog-title"
+        // PaperComponent={PaperComponent}
+        // aria-labelledby="draggable-dialog-title"
+        maxWidth={"sm"}
       >
         <div className={classes.content}>
           <ParticipantCard participant={participant} />
           {!onConferenceRoom && participant.id !== user.uid && (
             <React.Fragment>
               <div className={classes.buttonContainer}>
-                <Button variant="contained" color="secondary" className={classes.button} onClick={startConversation}>
+                <Button variant="contained" color="primary" className={classes.button} onClick={startConversation}>
                   Start Conversation
                 </Button>
               </div>
@@ -88,7 +82,21 @@ export default function(props) {
               </Typography>
             </React.Fragment>
           )}
-          {(onConferenceRoom || participant.id === user.uid) && <div className={classes.emptySpaceBottom}></div>}
+          {/* {participant.id === user.uid && (
+            <React.Fragment>
+              <div className={classes.buttonContainer}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  className={classes.button}
+                  onClick={() => history.push(routes.EDIT_PROFILE(routes.EVENT_SESSION(eventSession.id)))}
+                >
+                  Edit profile
+                </Button>
+              </div>
+            </React.Fragment>
+          )} */}
+          {/* {(onConferenceRoom || participant.id === user.uid) && <div className={classes.emptySpaceBottom}></div>} */}
         </div>
       </Dialog>
     </div>

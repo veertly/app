@@ -16,13 +16,12 @@ export default props => {
   return (
     <div>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>{"Go to networking room"}</DialogTitle>
+        <DialogTitle>{"Go to networking area"}</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to leave the conference room and join the networking room?
+            Are you sure you want to leave the main stage and join the networking area?
             <br />
-            If you want to come back to the conference room simply click the “conference room” button on the top at any
-            time.
+            If you want to come back to the main stage, simply click the “Main stage” button on the top bar at any time.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -30,7 +29,7 @@ export default props => {
             Cancel
           </Button>
           <Button onClick={handleLeaveCall} color="primary" autoFocus>
-            Go to networking room
+            Go to networking area
           </Button>
         </DialogActions>
       </Dialog>

@@ -12,7 +12,7 @@ const useStyles = makeStyles(theme => ({
     height: 30,
     // opacity: 0.6,
     backgroundColor: theme.palette.background.default,
-    zIndex: 10000,
+    zIndex: 1,
     paddingTop: 6,
     // box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
     // transition: all 0.3s cubic-bezier(.25,.8,.25,1);
@@ -35,7 +35,6 @@ export default props => {
       <div id="conference-container" className={classes.root}>
         <Typography align="center" variant="caption" display="block">
           {eventSession.announcements.conference}
-          {/* After the speech, click on ‘Networking Room’ and network with fellow #CodeVsCovid19 hackathon attendees */}
         </Typography>
       </div>
     );

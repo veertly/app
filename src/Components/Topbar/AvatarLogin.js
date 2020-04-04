@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/styles";
 
 import Button from "@material-ui/core/Button";
@@ -11,6 +11,7 @@ import routes from "../../Config/routes";
 import { useAuthState } from "react-firebase-hooks/auth";
 import firebase from "../../Modules/firebaseApp";
 import { logout } from "../../Modules/userOperations";
+import EditProfileDialog from "../EditProfile/EditProfileDialog";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -33,13 +34,15 @@ export default props => {
   const history = useHistory();
   const location = useLocation();
 
+  // if (!eventSession) {
+  //   return null;
+  // }
+
+  const [openEditProfile, setOpenEditProfile] = useState(false);
+
   const classes = useStyles();
-  console.log({ location });
   const [user /* , initialising, error */] = useAuthState(firebase.auth());
-  const handleLogout = () => {
-    let sessionId = eventSession ? eventSession.id : null;
-    logout(sessionId);
-  };
+
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
 
@@ -48,11 +51,27 @@ export default props => {
   function handleClose() {
     setAnchorEl(null);
   }
+
   function handleMenu(event) {
     setAnchorEl(event.currentTarget);
   }
+
+  const handleLogout = () => {
+    let sessionId = eventSession ? eventSession.id : null;
+    logout(sessionId);
+  };
+
+  const getAvatarLetters = () => {
+    let names = user.displayName.split(" ");
+    let firstName = names[0];
+    let lastName = names.length > 1 ? names[names.length - 1] : "";
+    return firstName.charAt(0).toUpperCase() + lastName.charAt(0).toUpperCase();
+  };
+
   return (
     <React.Fragment>
+      <EditProfileDialog open={openEditProfile} setOpen={setOpenEditProfile} user={user} eventSession={eventSession} />
+
       {!user && !onLogin && (
         <Button
           variant="contained"
@@ -70,7 +89,7 @@ export default props => {
           )}
           {user && !user.photoURL && (
             <Avatar className={classes.avatar} onClick={handleMenu}>
-              {user.displayName && <span>{user.displayName.charAt(0)}</span>}
+              {user.displayName && <span>{getAvatarLetters()}</span>}
               {!user.displayName && <span>G</span>}
             </Avatar>
           )}
@@ -89,7 +108,16 @@ export default props => {
             open={open}
             onClose={handleClose}
           >
-            {/* <MenuItem onClick={() => history.push(routes.EDIT_PROFILE())}>Profile</MenuItem> */}
+            {eventSession && (
+              <MenuItem
+                onClick={() => {
+                  setOpenEditProfile(true);
+                  handleClose();
+                }}
+              >
+                Profile
+              </MenuItem>
+            )}
             <MenuItem onClick={handleLogout}>Log out</MenuItem>
           </Menu>
         </div>

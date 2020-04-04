@@ -48,7 +48,7 @@ const EnvironmentRibbon = props => {
   return (
     <div className={`${classes.cornerRibbon} ${classes.ribbonStage}`}>
       <Typography color="inherit" className={classes.text}>
-        Demo
+        Dev
       </Typography>
     </div>
   );
