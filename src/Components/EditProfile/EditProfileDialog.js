@@ -1,11 +1,6 @@
 import React from "react";
-import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
-import Paper from "@material-ui/core/Paper";
-import Draggable from "react-draggable";
 import { makeStyles } from "@material-ui/core/styles";
-import Typography from "@material-ui/core/Typography";
-import { useSnackbar } from "material-ui-snackbar-provider";
 import EditProfileForm from "./EditProfileForm";
 
 const useStyles = makeStyles(theme => ({
@@ -45,7 +40,6 @@ const useStyles = makeStyles(theme => ({
 
 export default function(props) {
   const classes = useStyles();
-  const snackbar = useSnackbar();
 
   const { open, setOpen, eventSession, user } = props;
 

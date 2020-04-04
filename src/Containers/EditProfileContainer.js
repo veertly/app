@@ -12,6 +12,7 @@ export default () => {
 
   let callbackUrl = location.search.replace("?callback=", ""); // queryValues.callback ? queryValues.callback : "/";
   let sessionId = callbackUrl.replace("/v/", "");
+  let isInSessionPage = callbackUrl.includes("/v/");
 
   const redirectUser = () => {
     history.push(callbackUrl);
@@ -20,7 +21,6 @@ export default () => {
   if (initialising) {
     return <p>Loading...</p>;
   }
-  // <EditProfileForm user={user} sessionId={eventSession.id} profileUpdatedCallback={handleClose} />
 
   if (error) {
     console.error(error);
@@ -29,8 +29,13 @@ export default () => {
   return (
     <Layout maxWidth="sm">
       <div style={{ padding: "48px 24px" }}>
-        {/* <Typography>Feel free to share the information</Typography> */}
-        {user && <EditProfileForm user={user} sessionId={sessionId} profileUpdatedCallback={redirectUser} />}
+        {user && (
+          <EditProfileForm
+            user={user}
+            sessionId={isInSessionPage ? sessionId : null}
+            profileUpdatedCallback={redirectUser}
+          />
+        )}
       </div>
     </Layout>
   );

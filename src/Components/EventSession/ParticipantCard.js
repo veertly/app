@@ -80,12 +80,6 @@ export default function(props) {
             {participant.firstName.trim() === "" ? "Guest User" : `${participant.firstName} ${participant.lastName}`}
           </Typography>
 
-          {/* {(participant.company || participant.companyTitle) && (
-            <Typography color="textSecondary" className={classes.companyTitle}>{`${participant.companyTitle}${
-              participant.company.trim() !== "" && participant.companyTitle.trim() !== "" ? " @ " : ""
-            }${participant.company}`}</Typography>
-          )} */}
-
           {participant.linkedinUrl && (
             <a href={participant.linkedinUrl} target="_blank">
               <LinkedinIcon className={classes.socialNetworkIcon} />
@@ -96,7 +90,7 @@ export default function(props) {
               <TwitterIcon className={classes.socialNetworkIcon} />
             </a>
           )}
-          {participant.emailPublic && (
+          {participant.emailPublic && participant.email.trim() !== "" && (
             <a href={`mailto:${participant.email}`} target="_blank">
               <MailOutlineIcon className={classes.socialNetworkIcon} />
             </a>

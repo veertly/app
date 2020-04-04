@@ -13,8 +13,6 @@ import IconButton from "@material-ui/core/IconButton";
 import AddIcon from "@material-ui/icons/Add";
 import uuidv1 from "uuid/v1";
 import { getUserDb, updateUser } from "../../Modules/userOperations";
-import { useRouteMatch } from "react-router-dom";
-import routes from "../../Config/routes";
 import { useSnackbar } from "material-ui-snackbar-provider";
 
 const styles = theme => ({
@@ -36,12 +34,13 @@ const styles = theme => ({
 
 const getUserDefaultValues = user => {
   let { displayName, isAnonymous } = user;
-  if (!displayName) {
-    return { firstName: "", lastName: "" };
+  let firstName = "";
+  let lastName = "";
+  if (displayName) {
+    let splitted = displayName.split(" ");
+    firstName = splitted[0];
+    lastName = splitted[splitted.length - 1];
   }
-  let splitted = displayName.split(" ");
-  let firstName = splitted[0];
-  let lastName = splitted[splitted.length - 1];
   return {
     id: user.uid,
     firstName,
@@ -91,7 +90,6 @@ function EditProfileForm(props) {
 
   const fetchUser = async () => {
     let userDb = await getUserDb(user.uid);
-    console.log(userDb);
 
     if (userDb) {
       let {
@@ -156,7 +154,6 @@ function EditProfileForm(props) {
       setErrors({ firstName: "First name can't be empty" });
       return;
     }
-
     setUpdating(true);
     await updateUser(user.uid, sessionId, values);
     await fetchUser();
@@ -279,7 +276,6 @@ function EditProfileForm(props) {
         InputProps={{
           startAdornment: <InputAdornment position="start">{twitterUrlStatic}</InputAdornment>
         }}
-        value={values.twitter}
         onChange={handleUpdateField("twitter")}
       />
       <Grid container justify="space-between" className={classes.textField}>

@@ -45,10 +45,11 @@ export default function(props) {
               </Avatar>
             )}
             <div className={classes.participantDetails}>
-              <Typography variant="caption">{`${participant.firstName} ${participant.lastName.charAt(0)}.`}</Typography>
-
-              {/* <img src={LinkedinIcon} alt="LinkedIn profile" className={classes.linkedIn} /> */}
-              {/* {participant.linkedinUrl && <LinkedinIcon className={classes.linkedin} />} */}
+              <Typography variant="caption">
+                {`${participant.firstName} ${
+                  participant.lastName.trim() !== "" ? participant.lastName.charAt(0) + "." : ""
+                }`}
+              </Typography>
             </div>
           </div>
         );

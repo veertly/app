@@ -30,9 +30,13 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default props => {
-  const { eventSession, userProfile } = props;
+  const { eventSession } = props;
   const history = useHistory();
   const location = useLocation();
+
+  // if (!eventSession) {
+  //   return null;
+  // }
 
   const [openEditProfile, setOpenEditProfile] = useState(false);
 
@@ -56,6 +60,14 @@ export default props => {
     let sessionId = eventSession ? eventSession.id : null;
     logout(sessionId);
   };
+
+  const getAvatarLetters = () => {
+    let names = user.displayName.split(" ");
+    let firstName = names[0];
+    let lastName = names.length > 1 ? names[names.length - 1] : "";
+    return firstName.charAt(0).toUpperCase() + lastName.charAt(0).toUpperCase();
+  };
+
   return (
     <React.Fragment>
       <EditProfileDialog open={openEditProfile} setOpen={setOpenEditProfile} user={user} eventSession={eventSession} />
@@ -77,7 +89,7 @@ export default props => {
           )}
           {user && !user.photoURL && (
             <Avatar className={classes.avatar} onClick={handleMenu}>
-              {user.displayName && <span>{user.displayName.charAt(0)}</span>}
+              {user.displayName && <span>{getAvatarLetters()}</span>}
               {!user.displayName && <span>G</span>}
             </Avatar>
           )}
@@ -96,14 +108,16 @@ export default props => {
             open={open}
             onClose={handleClose}
           >
-            <MenuItem
-              onClick={() => {
-                setOpenEditProfile(true);
-                handleClose();
-              }}
-            >
-              Profile
-            </MenuItem>
+            {eventSession && (
+              <MenuItem
+                onClick={() => {
+                  setOpenEditProfile(true);
+                  handleClose();
+                }}
+              >
+                Profile
+              </MenuItem>
+            )}
             <MenuItem onClick={handleLogout}>Log out</MenuItem>
           </Menu>
         </div>
