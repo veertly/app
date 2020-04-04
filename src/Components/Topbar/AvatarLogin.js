@@ -37,12 +37,8 @@ export default props => {
   const [openEditProfile, setOpenEditProfile] = useState(false);
 
   const classes = useStyles();
-  console.log({ location });
   const [user /* , initialising, error */] = useAuthState(firebase.auth());
-  const handleLogout = () => {
-    let sessionId = eventSession ? eventSession.id : null;
-    logout(sessionId);
-  };
+
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
 
@@ -51,9 +47,15 @@ export default props => {
   function handleClose() {
     setAnchorEl(null);
   }
+
   function handleMenu(event) {
     setAnchorEl(event.currentTarget);
   }
+
+  const handleLogout = () => {
+    let sessionId = eventSession ? eventSession.id : null;
+    logout(sessionId);
+  };
   return (
     <React.Fragment>
       <EditProfileDialog open={openEditProfile} setOpen={setOpenEditProfile} user={user} eventSession={eventSession} />
@@ -94,7 +96,14 @@ export default props => {
             open={open}
             onClose={handleClose}
           >
-            <MenuItem onClick={() => setOpenEditProfile(true)}>Profile</MenuItem>
+            <MenuItem
+              onClick={() => {
+                setOpenEditProfile(true);
+                handleClose();
+              }}
+            >
+              Profile
+            </MenuItem>
             <MenuItem onClick={handleLogout}>Log out</MenuItem>
           </Menu>
         </div>

@@ -1,8 +1,8 @@
 import firebase from "./firebaseApp";
 
-export const registerNewUser = async user => {
+export const registerNewUser = async userAuth => {
   console.log("on: registerNewUser");
-  let { displayName, email, phoneNumber, uid, photoURL, isAnonymous } = user;
+  let { displayName, email, phoneNumber, uid, photoURL, isAnonymous } = userAuth;
   let names = displayName.split(" ");
   let firstName = names[0];
   let lastName = names.length > 1 ? names[names.length - 1] : "";
@@ -27,10 +27,66 @@ export const registerNewUser = async user => {
   });
 };
 
+export const updateUser = async (userId, sessionId, userDb) => {
+  let db = firebase.firestore();
+  debugger;
+  let userSessionRef = db
+    .collection(`eventSessions`)
+    .doc(sessionId)
+    .collection("participantsDetails")
+    .doc(userId);
+
+  let userRef = db.collection(`users`).doc(userId);
+
+  let userSession = { ...userDb };
+  if (!userDb.emailPublic) {
+    userSession.email = null;
+  }
+  debugger;
+  await db.runTransaction(async function(transaction) {
+    let userSnapshot = await transaction.get(userRef);
+    let userSessionSnapshot = await transaction.get(userSessionRef);
+
+    if (!userSnapshot.exists) {
+      transaction.set(userRef, userDb);
+      // debugger;
+    } else {
+      transaction.update(userRef, userDb);
+      // debugger;
+    }
+
+    if (!userSessionSnapshot.exists) {
+      transaction.set(userSessionRef, userSession);
+      // debugger;
+    } else {
+      transaction.update(userSessionRef, userSession);
+      // debugger;
+    }
+  });
+  // .then(function() {
+  //   // console.log("Transaction successfully committed!");
+  // })
+  // .catch(function(error) {
+  //   console.log("Transaction failed: ", error);
+  //   // throw error;
+  // });
+};
+
 export const getUserDb = async uid => {
   let userDoc = await firebase
     .firestore()
     .collection("users")
+    .doc(uid)
+    .get();
+  return await userDoc.data();
+};
+
+export const getUserSessionDb = async (sessionId, uid) => {
+  let userDoc = await firebase
+    .firestore()
+    .collection("eventSessions")
+    .doc(sessionId)
+    .collection("participantsJoined")
     .doc(uid)
     .get();
   return await userDoc.data();

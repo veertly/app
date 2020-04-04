@@ -5,6 +5,7 @@ import Typography from "@material-ui/core/Typography";
 import LinkedinIcon from "../../Assets/Icons/Linkedin";
 import TwitterIcon from "../../Assets/Icons/Twitter";
 import ProfileChips from "../EditProfile/ProfileChips";
+import MailOutlineIcon from "@material-ui/icons/MailOutline";
 
 const useStyles = makeStyles(theme => ({
   headlineContainer: {
@@ -46,6 +47,9 @@ const useStyles = makeStyles(theme => ({
       color: theme.palette.secondary.main,
       cursor: "pointer"
     }
+  },
+  companyTitle: {
+    margin: theme.spacing(0.5, 2)
   }
 }));
 
@@ -63,15 +67,25 @@ export default function(props) {
       {participant.avatarUrl && (
         <Avatar alt={participant.firstName} src={participant.avatarUrl} className={classes.avatar} />
       )}
-      {!participant.avatarUrl && (
+      {!participant.avatarUrl && participant.firstName.trim() !== "" && (
         <Avatar className={classes.avatar}>
           {participant.firstName.charAt(0)}
           {participant.lastName.charAt(0)}
         </Avatar>
       )}
+      {!participant.avatarUrl && participant.firstName.trim() === "" && <Avatar className={classes.avatar}>G</Avatar>}
       <div className={classes.participantDetails}>
         <div className={classes.participantName}>
-          <Typography variant="h6">{`${participant.firstName} ${participant.lastName}`}</Typography>
+          <Typography variant="h6">
+            {participant.firstName.trim() === "" ? "Guest User" : `${participant.firstName} ${participant.lastName}`}
+          </Typography>
+
+          {/* {(participant.company || participant.companyTitle) && (
+            <Typography color="textSecondary" className={classes.companyTitle}>{`${participant.companyTitle}${
+              participant.company.trim() !== "" && participant.companyTitle.trim() !== "" ? " @ " : ""
+            }${participant.company}`}</Typography>
+          )} */}
+
           {participant.linkedinUrl && (
             <a href={participant.linkedinUrl} target="_blank">
               <LinkedinIcon className={classes.socialNetworkIcon} />
@@ -82,7 +96,21 @@ export default function(props) {
               <TwitterIcon className={classes.socialNetworkIcon} />
             </a>
           )}
+          {participant.emailPublic && (
+            <a href={`mailto:${participant.email}`} target="_blank">
+              <MailOutlineIcon className={classes.socialNetworkIcon} />
+            </a>
+          )}
         </div>
+
+        {(participant.company || participant.companyTitle) && (
+          <Typography color="textSecondary" /* className={classes.companyTitle} */ className={classes.topicsInterested}>
+            {`${participant.companyTitle}${
+              participant.company.trim() !== "" && participant.companyTitle.trim() !== "" ? " @ " : ""
+            }${participant.company}`}
+          </Typography>
+        )}
+
         <ProfileChips chips={participant.interestsChips} showDelete={false} smallChips={true} />
       </div>
     </div>

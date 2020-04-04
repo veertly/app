@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import { Button, TextField } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
@@ -12,6 +12,10 @@ import ProfileChips from "./ProfileChips";
 import IconButton from "@material-ui/core/IconButton";
 import AddIcon from "@material-ui/icons/Add";
 import uuidv1 from "uuid/v1";
+import { getUserDb, updateUser } from "../../Modules/userOperations";
+import { useRouteMatch } from "react-router-dom";
+import routes from "../../Config/routes";
+import { useSnackbar } from "material-ui-snackbar-provider";
 
 const styles = theme => ({
   row: {
@@ -31,7 +35,7 @@ const styles = theme => ({
 });
 
 const getUserDefaultValues = user => {
-  let { displayName } = user;
+  let { displayName, isAnonymous } = user;
   if (!displayName) {
     return { firstName: "", lastName: "" };
   }
@@ -39,6 +43,7 @@ const getUserDefaultValues = user => {
   let firstName = splitted[0];
   let lastName = splitted[splitted.length - 1];
   return {
+    id: user.uid,
     firstName,
     lastName,
     email: user.email ? user.email : "",
@@ -49,7 +54,10 @@ const getUserDefaultValues = user => {
     interest: "",
     twitterUrl: null,
     linkedinUrl: null,
-    interestsChips: []
+    interestsChips: [],
+    company: "",
+    companyTitle: "",
+    isAnonymous
   };
 };
 
@@ -57,19 +65,75 @@ const linkedinUrlStatic = "https://linkedin.com/in/";
 const twitterUrlStatic = "https://twitter.com/";
 
 function EditProfileForm(props) {
-  const { classes, user } = props;
-
+  const { classes, user, sessionId, profileUpdatedCallback } = props;
+  if (!user && !sessionId) {
+    return <p>No session available...</p>;
+  }
   let [values, setValues] = React.useState(getUserDefaultValues(user));
+  let [errors, setErrors] = React.useState({});
   const [interestsChips, setInterestsChips] = React.useState([]);
+  const [updating, setUpdating] = React.useState(false);
+  const snackbar = useSnackbar();
 
   const handleUpdateField = name => e => {
-    setValues({
-      ...values,
-      [name]: e.target.value,
-      linkedinUrl: values.linkedin.trim() !== "" ? linkedinUrlStatic + values.linkedin : null,
-      twitterUrl: values.twitter.trim() !== "" ? twitterUrlStatic + values.twitter : null
-    });
+    let value = e.target.value;
+    let newValues = { ...values };
+    newValues[name] = value;
+    if (name === "linkedin") {
+      newValues.linkedinUrl = value.trim() !== "" ? linkedinUrlStatic + value : null;
+    }
+
+    if (name === "twitter") {
+      newValues.twitterUrl = value.trim() !== "" ? twitterUrlStatic + value : null;
+    }
+    setValues(newValues);
   };
+
+  const fetchUser = async () => {
+    let userDb = await getUserDb(user.uid);
+    console.log(userDb);
+
+    if (userDb) {
+      let {
+        firstName,
+        lastName,
+        email,
+        linkedin,
+        twitter,
+        emailPublic,
+        avatarUrl,
+        twitterUrl,
+        linkedinUrl,
+        interestsChips,
+        company,
+        companyTitle
+      } = userDb;
+
+      const x = str => (str ? str : "");
+
+      setValues({
+        ...values,
+        firstName: x(firstName),
+        lastName: x(lastName),
+        email: x(email),
+        linkedin: x(linkedin),
+        twitter: x(twitter),
+        emailPublic: emailPublic === true,
+        avatarUrl: x(avatarUrl),
+        twitterUrl: x(twitterUrl),
+        linkedinUrl: x(linkedinUrl),
+        interestsChips: interestsChips ? interestsChips : [],
+        company: x(company),
+        companyTitle: x(companyTitle)
+      });
+
+      setInterestsChips(interestsChips ? interestsChips : []);
+    }
+  };
+
+  useEffect(() => {
+    fetchUser();
+  }, [user]);
 
   const handleAddInterest = _ => {
     if (values.interest.trim() !== "") {
@@ -86,6 +150,22 @@ function EditProfileForm(props) {
   const handleEmailPrivacy = event => {
     setValues({ ...values, emailPublic: event.target.checked });
   };
+
+  const handleUpdateProfile = async () => {
+    if (values.firstName.trim() === "") {
+      setErrors({ firstName: "First name can't be empty" });
+      return;
+    }
+
+    setUpdating(true);
+    await updateUser(user.uid, sessionId, values);
+    await fetchUser();
+    snackbar.showMessage("Your profile has been updated successfuly");
+    if (profileUpdatedCallback) {
+      profileUpdatedCallback();
+    }
+    setUpdating(false);
+  };
   return (
     <React.Fragment>
       <div style={{ marginBottom: 32 }}>
@@ -101,16 +181,16 @@ function EditProfileForm(props) {
           required
           style={{ width: "48%" }}
           onChange={handleUpdateField("firstName")}
+          helperText={errors.firstName ? errors.firstName : null}
+          error={errors.firstName !== undefined}
         />
         <TextField
           fullWidth
           label="Last Name"
           name="lastName"
           variant="outlined"
-          // inputRef={register()}
           value={values.lastName}
           style={{ width: "48%" }}
-          // className={clsx(classes.flexGrow, classes.textField)}
           onChange={handleUpdateField("lastName")}
         />
       </Grid>
@@ -129,7 +209,7 @@ function EditProfileForm(props) {
             title={
               values.emailPublic
                 ? "Your email will be shared with the participants of this event"
-                : "Your email will not be shared with the participants of this event"
+                : "Your email will only be shared with the organizers"
             }
           >
             <FormControlLabel
@@ -146,6 +226,37 @@ function EditProfileForm(props) {
           </Tooltip>
         </FormGroup>
       </Grid>
+      <Grid container justify="space-between" className={classes.textField}>
+        <TextField
+          fullWidth
+          label="Job Title"
+          name="companyTitle"
+          variant="outlined"
+          // inputRef={register()}
+          value={values.companyTitle}
+          style={{ width: "48%" }}
+          // className={clsx(classes.flexGrow, classes.textField)}
+          onChange={handleUpdateField("companyTitle")}
+        />
+        <TextField
+          fullWidth
+          label="Company"
+          name="company"
+          variant="outlined"
+          value={values.company}
+          style={{ width: "48%" }}
+          onChange={handleUpdateField("company")}
+        />
+      </Grid>
+      {/* <TextField
+        fullWidth
+        label="Short Bio"
+        name="shortBio"
+        variant="outlined"
+        className={classes.textField}
+        value={values.shortBio}
+        onChange={handleUpdateField("shortBio")}
+      /> */}
       <TextField
         fullWidth
         label="LinkedIn Profile"
@@ -174,7 +285,7 @@ function EditProfileForm(props) {
       <Grid container justify="space-between" className={classes.textField}>
         <TextField
           fullWidth
-          label="Interests"
+          label="Interests/Hobbies"
           name="interest"
           variant="outlined"
           value={values.interest}
@@ -187,18 +298,35 @@ function EditProfileForm(props) {
               ev.preventDefault();
             }
           }}
+          helperText={`${interestsChips.length}/5 interests added`}
+          disabled={interestsChips.length >= 5}
         />
-        <Tooltip title="Add interest">
-          <IconButton color="primary" aria-label="add interest" onClick={handleAddInterest}>
-            <AddIcon fontSize="large" />
-          </IconButton>
-        </Tooltip>
+        <div>
+          <Tooltip title="Add interest">
+            <IconButton
+              color="primary"
+              aria-label="add interest"
+              onClick={handleAddInterest}
+              disabled={interestsChips.length >= 5}
+            >
+              <AddIcon fontSize="large" />
+            </IconButton>
+          </Tooltip>
+        </div>
       </Grid>
+
       <div style={{ marginTop: 8 }}>
-        <ProfileChips chips={interestsChips} setChips={setInterestsChips} showEmptyMsg="interests" showDelete={true} />
+        <ProfileChips chips={interestsChips} setChips={setInterestsChips} showDelete={true} />
       </div>
       <div className={classes.bottom}>
-        <Button variant="contained" color="primary" type="submit" className={classes.button}>
+        <Button
+          variant="contained"
+          color="primary"
+          type="submit"
+          className={classes.button}
+          onClick={handleUpdateProfile}
+          disabled={updating}
+        >
           Update Profile
         </Button>
       </div>

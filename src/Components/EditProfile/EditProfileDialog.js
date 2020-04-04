@@ -35,13 +35,13 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function PaperComponent(props) {
-  return (
-    <Draggable cancel={'[class*="MuiDialogContent-root"]'}>
-      <Paper {...props} />
-    </Draggable>
-  );
-}
+// function PaperComponent(props) {
+//   return (
+//     <Draggable cancel={'[class*="MuiDialogContent-root"]'}>
+//       <Paper {...props} />
+//     </Draggable>
+//   );
+// }
 
 export default function(props) {
   const classes = useStyles();
@@ -52,13 +52,6 @@ export default function(props) {
   const handleClose = () => {
     setOpen(false);
   };
-
-  // const handleJoinConversation = e => {
-  //   e.preventDefault();
-  //   joinConversation(eventSession, user.uid, groupId, snackbar);
-  //   setOpen(false);
-  // };
-  // let isMyGroup = group.find(participant => participant.id === user.uid);
   return (
     <div>
       <Dialog
@@ -68,28 +61,9 @@ export default function(props) {
         // aria-labelledby="draggable-dialog-title"
       >
         <div className={classes.content}>
-          <EditProfileForm user={user} />
-          {/* {group.map(participant => {
-            return <ParticipantCard key={participant.id} participant={participant} />;
-          })}
-          {!isMyGroup && (
-            <React.Fragment>
-              <div className={classes.buttonContainer}>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  className={classes.button}
-                  onClick={handleJoinConversation}
-                >
-                  Join Conversation
-                </Button>
-              </div>
-              <Typography className={classes.hintText} variant="caption">
-                You will join the video conferencing call of the selected group.
-              </Typography>
-            </React.Fragment>
+          {eventSession && (
+            <EditProfileForm user={user} sessionId={eventSession.id} profileUpdatedCallback={handleClose} />
           )}
-          {isMyGroup && <div className={classes.emptySpaceBottom}></div>} */}
         </div>
       </Dialog>
     </div>
