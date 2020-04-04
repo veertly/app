@@ -53,7 +53,6 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default withRouter(props => {
-  const [usersFirebase, loadingUsers, errorUsers] = useCollectionData(firebase.firestore().collection("users"));
   const [user /* , initialising, error */] = useAuthState(firebase.auth());
 
   const [initCompleted, setInitCompleted] = useState(false);
@@ -64,6 +63,7 @@ export default withRouter(props => {
   const [lastEventSessionJson, setLastEventSessionJson] = useState("");
   const [lastEventSessionDetailsJson, setLastEventSessionDetailsJson] = useState("");
   const [lastParticipantJoinedJson, setLastParticipantJoinedJson] = useState("");
+  const [lastParticipantDetailsJson, setLastParticipantDetailsJson] = useState("");
   const [lastLiveGroupsJson, setLastLiveGroupsJson] = useState("");
   const [composedEventSession, setComposedEventSession] = useState(null);
   const userId = user ? user.uid : null;
@@ -123,16 +123,26 @@ export default withRouter(props => {
     { idField: "idField" }
   );
 
+  const [usersFirebase, loadingUsers, errorUsers] = useCollectionData(
+    firebase
+      .firestore()
+      .collection("eventSessions")
+      .doc(sessionId)
+      .collection("participantsDetails")
+  );
+
   useEffect(() => {
     const currentEventSessionJson = JSON.stringify(eventSession);
     const currentEventSessionDetailsJson = JSON.stringify(eventSessionDetails);
     const currentParticipantsJoinedJson = JSON.stringify(participantsJoined);
     const currentLiveGroupsJson = JSON.stringify(liveGroups);
+    const currentParticipantsDetailsJson = JSON.stringify(usersFirebase);
 
     if (
       currentEventSessionJson !== lastEventSessionJson ||
       currentEventSessionDetailsJson !== lastEventSessionDetailsJson ||
       currentParticipantsJoinedJson !== lastParticipantJoinedJson ||
+      currentParticipantsDetailsJson !== lastParticipantDetailsJson ||
       currentLiveGroupsJson !== lastLiveGroupsJson
     ) {
       // console.lo({ participantsJoined });
@@ -160,11 +170,7 @@ export default withRouter(props => {
           }, {})
         : {};
 
-      // console.lo({ composedEventSession });
-      // console.lo({ eventSession });
-      // console.lo("ON effect to set composedEventSession");
-
-      if (eventSession && eventSessionDetails) {
+      if (eventSession && eventSessionDetails && usersFirebase) {
         let tempComposedEventSession = {
           ...eventSession,
           ...eventSessionDetails,
@@ -173,6 +179,9 @@ export default withRouter(props => {
         };
         setComposedEventSession(tempComposedEventSession);
         if (!initCompleted && liveGroups && participantsJoined) {
+          if (!usersFirebase.find(item => item.id === userId)) {
+            history.push(routes.EDIT_PROFILE(routes.EVENT_SESSION(sessionId)));
+          }
           // console.lo({ eventSession });
           // console.lo("ON effect to set as available...");
           setAsAvailable(tempComposedEventSession, userId);
@@ -216,7 +225,7 @@ export default withRouter(props => {
       setLastEventSessionDetailsJson(currentEventSessionDetailsJson);
       setLastLiveGroupsJson(currentLiveGroupsJson);
       setLastParticipantJoinedJson(currentParticipantsJoinedJson);
-      //console.lo("-----> UPDATING JSON variables....");
+      setLastParticipantDetailsJson(currentParticipantsDetailsJson);
     }
   }, [eventSession, eventSessionDetails, participantsJoined, liveGroups]);
 

@@ -6,7 +6,7 @@ import firebase from "../Modules/firebaseApp";
 // import queryString from "query-string";
 import CenteredLayout from "./Layouts/CenteredLayout";
 import { makeStyles } from "@material-ui/styles";
-import { registerNewUser } from "../Modules/userOperations";
+import { registerNewUser, hasUserSession } from "../Modules/userOperations";
 import { useAuthState } from "react-firebase-hooks/auth";
 // import { GlobalContext } from "../Redux/GlobalContext";
 import Typography from "@material-ui/core/Typography";
@@ -33,6 +33,21 @@ export default withRouter(props => {
     window.analytics.page("LoginPage");
   }, []);
 
+  const checkAndRedirect = async uid => {
+    let sessionId = callbackUrl.replace("/v/", "");
+    let isInSessionPage = callbackUrl.includes("/v/");
+
+    if (isInSessionPage) {
+      let hasSession = await hasUserSession(sessionId, uid);
+      if (hasSession) {
+        props.history.push(callbackUrl);
+      } else {
+        props.history.push(routes.EDIT_PROFILE(callbackUrl));
+      }
+    } else {
+      props.history.push(callbackUrl);
+    }
+  };
   const uiConfig = {
     signInFlow: "popup",
     // signInSuccessUrl: callbackUrl,
@@ -52,10 +67,13 @@ export default withRouter(props => {
           email: user.email
         });
         window.analytics.track("Logged In");
+
         if (isNewUser) {
           registerNewUser(user);
         }
-        props.history.push(callbackUrl);
+
+        checkAndRedirect(user.uid);
+
         return false;
       }
     },
@@ -72,12 +90,14 @@ export default withRouter(props => {
   if (initialising) {
     return null;
   }
+
   if (user) {
-    if (user.isAnonymous) {
-      props.history.push(routes.EDIT_PROFILE(callbackUrl));
-    } else {
-      props.history.push(callbackUrl);
-    }
+    // if (user.isAnonymous) {
+    //   props.history.push(routes.EDIT_PROFILE(callbackUrl));
+    // } else {
+    //   props.history.push(callbackUrl);
+    // }
+    checkAndRedirect(user.uid);
   }
 
   const loginAnonymously = async () => {

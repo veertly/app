@@ -31,7 +31,9 @@ const useStyles = makeStyles(theme => ({
   },
   button: {
     margin: theme.spacing(0, 2, 0, 1),
-    float: "left"
+    float: "left",
+    width: 135,
+    textAlign: "center"
   },
   roomButtonsContainer: {
     margin: theme.spacing(0, 4, 0, 4)
@@ -45,7 +47,9 @@ const useStyles = makeStyles(theme => ({
     margin: theme.spacing(0, 2, 0, 1),
     padding: theme.spacing(0, 1),
     border: "1px solid " + theme.palette.secondary.main,
-    boxShadow: "0px 1px 5px 0px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 3px 1px -2px rgba(0,0,0,0.12)"
+    boxShadow: "0px 1px 5px 0px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 3px 1px -2px rgba(0,0,0,0.12)",
+    width: 135,
+    textAlign: "center"
   }
 }));
 
@@ -109,14 +113,14 @@ export default withRouter(props => {
           {!isMobile && eventSession && (
             <div className={classes.roomButtonsContainer}>
               <RoomButton isCurrentRoom={isInConferenceRoom} onClick={handleConferenceRoomClick}>
-                Conference Room
+                Main Stage
               </RoomButton>
               <RoomButton
                 isCurrentRoom={!isInConferenceRoom}
                 onClick={handleNetworkingRoomClick}
                 disabled={!isNetworkingAvailable}
               >
-                Networking Room
+                Networking Area
               </RoomButton>
             </div>
           )}

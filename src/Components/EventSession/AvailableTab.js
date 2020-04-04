@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Avatar from "@material-ui/core/Avatar";
 import Typography from "@material-ui/core/Typography";
 import LinkedinIcon from "../../Assets/Icons/Linkedin";
+import TwitterIcon from "../../Assets/Icons/Twitter";
 import Button from "@material-ui/core/Button";
 import JoinParticipantDialog from "./JoinParticipantDialog";
 const useStyles = makeStyles(theme => ({
@@ -27,16 +28,16 @@ const useStyles = makeStyles(theme => ({
     whiteSpace: "nowrap",
     overflow: "hidden",
     display: "block",
-    width: 185
+    width: 210
   },
   avatar: {
     marginTop: 1
   },
-  linkedin: {
+  socialContainer: {
     position: "absolute",
     right: 0,
     top: 0,
-    width: 16,
+    // wi dth: 16,
     color: theme.palette.text.secondary
   },
   buttonContainer: {
@@ -99,6 +100,7 @@ export default function(props) {
   if (!eventSession) {
     return null;
   }
+
   return (
     <div className={classes.root}>
       <JoinParticipantDialog
@@ -123,6 +125,8 @@ export default function(props) {
       )}
       {participantsAvailable.map((userId, index) => {
         let participant = users[userId];
+        const hasSubtitle = participant.company.trim() !== "" && participant.companyTitle.trim() !== "";
+
         return (
           <div
             className={classes.participantContainer}
@@ -137,17 +141,23 @@ export default function(props) {
             )}
             {!participant.avatarUrl && (
               <Avatar className={classes.avatar}>
-                {participant.firstName.charAt(0)}
-                {participant.lastName.charAt(0)}
+                {participant.firstName.charAt(0).toUpperCase()}
+                {participant.lastName.charAt(0).toUpperCase()}
               </Avatar>
             )}
-            <div className={classes.participantDetails}>
+            <div className={classes.participantDetails} style={{ paddingTop: hasSubtitle ? 0 : 8 }}>
               <Typography variant="subtitle1">{`${participant.firstName} ${participant.lastName}`}</Typography>
-              <Typography variant="caption" className={classes.topicsInterested}>
-                {`Lorem ipsum dolor sit amet, consectetur adipiscing elit.`}
-              </Typography>
-              {/* <img src={LinkedinIcon} alt="LinkedIn profile" className={classes.linkedIn} /> */}
-              {participant.linkedinUrl && <LinkedinIcon className={classes.linkedin} />}
+
+              {hasSubtitle && (
+                <Typography color="textSecondary" variant="caption" className={classes.topicsInterested}>
+                  {`${participant.companyTitle}${hasSubtitle ? " @ " : ""}${participant.company}`}
+                </Typography>
+              )}
+
+              <div className={classes.socialContainer} style={{ top: hasSubtitle ? 0 : 8 }}>
+                {participant.twitterUrl && <TwitterIcon className={classes.socialIcon} />}
+                {participant.linkedinUrl && <LinkedinIcon className={classes.socialIcon} />}
+              </div>
             </div>
           </div>
         );

@@ -4,6 +4,8 @@ import Avatar from "@material-ui/core/Avatar";
 import Typography from "@material-ui/core/Typography";
 import LinkedinIcon from "../../Assets/Icons/Linkedin";
 import TwitterIcon from "../../Assets/Icons/Twitter";
+import ProfileChips from "../EditProfile/ProfileChips";
+import MailOutlineIcon from "@material-ui/icons/MailOutline";
 
 const useStyles = makeStyles(theme => ({
   headlineContainer: {
@@ -11,6 +13,9 @@ const useStyles = makeStyles(theme => ({
     marginLeft: theme.spacing(4),
     marginRight: theme.spacing(4),
     padding: theme.spacing(1),
+    display: "flex"
+  },
+  headlineContainerNoMargins: {
     display: "flex"
   },
   participantDetails: {
@@ -42,32 +47,39 @@ const useStyles = makeStyles(theme => ({
       color: theme.palette.secondary.main,
       cursor: "pointer"
     }
+  },
+  companyTitle: {
+    margin: theme.spacing(0.5, 2)
   }
 }));
 
 export default function(props) {
   const classes = useStyles();
 
-  const { participant } = props;
+  const { participant, noMargins } = props;
 
   if (!participant) {
     return null;
   }
 
   return (
-    <div className={classes.headlineContainer}>
+    <div className={noMargins === false ? classes.headlineContainer : classes.headlineContainerNoMargins}>
       {participant.avatarUrl && (
         <Avatar alt={participant.firstName} src={participant.avatarUrl} className={classes.avatar} />
       )}
-      {!participant.avatarUrl && (
+      {!participant.avatarUrl && participant.firstName.trim() !== "" && (
         <Avatar className={classes.avatar}>
           {participant.firstName.charAt(0)}
           {participant.lastName.charAt(0)}
         </Avatar>
       )}
+      {!participant.avatarUrl && participant.firstName.trim() === "" && <Avatar className={classes.avatar}>G</Avatar>}
       <div className={classes.participantDetails}>
         <div className={classes.participantName}>
-          <Typography variant="h6">{`${participant.firstName} ${participant.lastName}`}</Typography>
+          <Typography variant="h6">
+            {participant.firstName.trim() === "" ? "Guest User" : `${participant.firstName} ${participant.lastName}`}
+          </Typography>
+
           {participant.linkedinUrl && (
             <a href={participant.linkedinUrl} target="_blank">
               <LinkedinIcon className={classes.socialNetworkIcon} />
@@ -78,10 +90,22 @@ export default function(props) {
               <TwitterIcon className={classes.socialNetworkIcon} />
             </a>
           )}
+          {participant.emailPublic && participant.email.trim() !== "" && (
+            <a href={`mailto:${participant.email}`} target="_blank">
+              <MailOutlineIcon className={classes.socialNetworkIcon} />
+            </a>
+          )}
         </div>
-        <Typography /* variant="caption"  */ color="textSecondary" className={classes.topicsInterested}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-        </Typography>
+
+        {(participant.company || participant.companyTitle) && (
+          <Typography color="textSecondary" /* className={classes.companyTitle} */ className={classes.topicsInterested}>
+            {`${participant.companyTitle}${
+              participant.company.trim() !== "" && participant.companyTitle.trim() !== "" ? " @ " : ""
+            }${participant.company}`}
+          </Typography>
+        )}
+
+        <ProfileChips chips={participant.interestsChips} showDelete={false} smallChips={true} />
       </div>
     </div>
   );
