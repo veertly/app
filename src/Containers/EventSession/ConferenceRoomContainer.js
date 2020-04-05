@@ -48,7 +48,7 @@ export default props => {
     let prefix = process.env.REACT_APP_JITSI_ROOM_PREFIX;
     let prefixStr = prefix !== undefined ? `-${prefix}-` : "";
 
-    const roomName = "veertly" + prefixStr + "session-" + eventSession.id;
+    const roomName = "veertly" + prefixStr + "-" + eventSession.id;
 
     if (eventSession.conferenceVideoType === "JITSI" && loaded && lastRoomLoaded !== roomName) {
       // dispose existing jitsi
