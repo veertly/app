@@ -1,8 +1,6 @@
 import React from "react";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
-import Paper from "@material-ui/core/Paper";
-import Draggable from "react-draggable";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import ParticipantCard from "./ParticipantCard";
@@ -11,7 +9,9 @@ import { useSnackbar } from "material-ui-snackbar-provider";
 
 const useStyles = makeStyles(theme => ({
   content: {
-    position: "relative"
+    position: "relative",
+    width: theme.breakpoints.values.sm,
+    padding: theme.spacing(6)
   },
   closeContainer: {
     position: "absolute"
@@ -19,7 +19,7 @@ const useStyles = makeStyles(theme => ({
   buttonContainer: {
     width: "100%",
     textAlign: "center",
-    marginTop: theme.spacing(2)
+    paddingTop: theme.spacing(2)
   },
   hintText: {
     marginBottom: theme.spacing(4),
@@ -32,16 +32,11 @@ const useStyles = makeStyles(theme => ({
   },
   emptySpaceBottom: {
     marginBottom: theme.spacing(4)
+  },
+  participantContainer: {
+    marginBottom: theme.spacing(3)
   }
 }));
-
-function PaperComponent(props) {
-  return (
-    <Draggable cancel={'[class*="MuiDialogContent-root"]'}>
-      <Paper {...props} />
-    </Draggable>
-  );
-}
 
 export default function(props) {
   const classes = useStyles();
@@ -61,37 +56,33 @@ export default function(props) {
     joinConversation(eventSession, user.uid, groupId, snackbar);
     setOpen(false);
   };
-  let isMyGroup = group.find(participant => participant.id === user.uid);
+  let isMyGroup = !group.find(participant => participant.id === user.uid);
   return (
     <div>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        PaperComponent={PaperComponent}
-        aria-labelledby="draggable-dialog-title"
-      >
+      <Dialog open={open} onClose={handleClose} aria-labelledby="draggable-dialog-title">
         <div className={classes.content}>
-          {group.map(participant => {
-            return <ParticipantCard key={participant.id} participant={participant} />;
-          })}
+          <div style={{ marginBottom: isMyGroup ? -16 : 8 }}>
+            {group.map(participant => {
+              return (
+                <div className={classes.participantContainer}>
+                  <ParticipantCard key={participant.id} participant={participant} />
+                </div>
+              );
+            })}
+          </div>
           {!isMyGroup && (
-            <React.Fragment>
+            <div>
               <div className={classes.buttonContainer}>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  className={classes.button}
-                  onClick={handleJoinConversation}
-                >
+                <Button variant="contained" color="primary" className={classes.button} onClick={handleJoinConversation}>
                   Join Conversation
                 </Button>
               </div>
               <Typography className={classes.hintText} variant="caption">
                 You will join the video conferencing call of the selected group.
               </Typography>
-            </React.Fragment>
+            </div>
           )}
-          {isMyGroup && <div className={classes.emptySpaceBottom}></div>}
+          {/* {isMyGroup && <div className={classes.emptySpaceBottom}></div>} */}
         </div>
       </Dialog>
     </div>

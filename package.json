@@ -25,6 +25,7 @@
     "material-ui-snackbar-provider": "^1.4.0",
     "moment": "^2.24.0",
     "moment-duration-format": "^2.3.2",
+    "mui-rte": "^1.15.1",
     "react": "^16.8.0",
     "react-apollo": "2.0.4",
     "react-beforeunload": "^2.1.0",
