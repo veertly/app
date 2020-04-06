@@ -2,7 +2,7 @@ import firebase from "./firebaseApp";
 import uuidv1 from "uuid/v1";
 import { MAX_PARTICIPANTS_GROUP } from "../Config/constants";
 
-const getVideoConferenceAddress = groupId => `https://meet.jit.si/veertly-${groupId}`;
+const getVideoConferenceAddress = (groupId) => `https://meet.jit.si/veertly-${groupId}`;
 
 export const setAsAvailable = async (eventSession, userId) => {
   console.log(eventSession.participantsJoined[userId]);
@@ -23,7 +23,7 @@ export const setAsAvailable = async (eventSession, userId) => {
         groupId: currentGroupId,
         isOnline: true,
         joinedTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
-        leftTimestamp: null
+        leftTimestamp: null,
       });
   } else {
     //user is already on the DB, so update it
@@ -37,7 +37,7 @@ export const setAsAvailable = async (eventSession, userId) => {
         groupId: currentGroupId,
         isOnline: true,
         joinedTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
-        leftTimestamp: null
+        leftTimestamp: null,
       });
   }
   console.log("SET AS AVAILABLE!!!!!!");
@@ -61,7 +61,7 @@ export const setAsOffline = async (eventSession, userId) => {
     .doc(userId)
     .update({
       leftTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
-      isOnline: false
+      isOnline: false,
     });
 };
 
@@ -77,11 +77,7 @@ export const createNewConversation = (eventSession, myUserId, otherUserId, snack
 
   let eventSessionRef = db.collection("eventSessions").doc(eventSession.id);
 
-  let myUserRef = db
-    .collection(`eventSessions`)
-    .doc(eventSession.id)
-    .collection("participantsJoined")
-    .doc(myUserId);
+  let myUserRef = db.collection(`eventSessions`).doc(eventSession.id).collection("participantsJoined").doc(myUserId);
 
   let otherUserRef = db
     .collection(`eventSessions`)
@@ -95,18 +91,18 @@ export const createNewConversation = (eventSession, myUserId, otherUserId, snack
   let groupParticipantsObj = {};
   groupParticipantsObj[myUserId] = {
     joinedTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
-    leftTimestamp: null
+    leftTimestamp: null,
   };
   groupParticipantsObj[otherUserId] = {
     joinedTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
-    leftTimestamp: null
+    leftTimestamp: null,
   };
 
   let groupObj = {
     id: groupId,
     startTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
     videoConferenceAddress: getVideoConferenceAddress(groupId),
-    participants: groupParticipantsObj
+    participants: groupParticipantsObj,
   };
 
   let participantsRefCurrentGroup = {};
@@ -132,7 +128,7 @@ export const createNewConversation = (eventSession, myUserId, otherUserId, snack
   6. update other user group id
   */
   return db
-    .runTransaction(async function(transaction) {
+    .runTransaction(async function (transaction) {
       let otherUserSnapshot = await transaction.get(otherUserRef);
       if (!otherUserSnapshot.exists) {
         throw new Error("Invited user doesn't exist");
@@ -182,7 +178,7 @@ export const createNewConversation = (eventSession, myUserId, otherUserId, snack
           if (value.leftTimestamp === null) {
             activeParticipantsCurrentGroup.push({
               userId,
-              ...value
+              ...value,
             });
           }
         }
@@ -216,10 +212,10 @@ export const createNewConversation = (eventSession, myUserId, otherUserId, snack
       // update other user group id
       transaction.update(otherUserRef, { groupId });
     })
-    .then(function() {
+    .then(function () {
       console.log("Transaction successfully committed!");
     })
-    .catch(function(error) {
+    .catch(function (error) {
       console.log("Transaction failed: ", error);
       snackbar.showMessage(error.message);
       // throw error;
@@ -239,11 +235,7 @@ export const joinConversation = (eventSession, myUserId, newGroupId, snackbar) =
   var currentGroupRef = currentGroupId !== null ? eventSessionRef.collection("liveGroups").doc(currentGroupId) : null;
   var newGroupRef = eventSessionRef.collection("liveGroups").doc(newGroupId);
 
-  let myUserRef = db
-    .collection(`eventSessions`)
-    .doc(eventSession.id)
-    .collection("participantsJoined")
-    .doc(myUserId);
+  let myUserRef = db.collection(`eventSessions`).doc(eventSession.id).collection("participantsJoined").doc(myUserId);
 
   let participantsRefCurrentGroup = {};
 
@@ -277,7 +269,7 @@ export const joinConversation = (eventSession, myUserId, newGroupId, snackbar) =
   */
 
   return db
-    .runTransaction(async function(transaction) {
+    .runTransaction(async function (transaction) {
       let newGroupSnapshot = await transaction.get(newGroupRef);
       if (!newGroupSnapshot.exists) {
         throw new Error("New group doesn't exist");
@@ -329,7 +321,7 @@ export const joinConversation = (eventSession, myUserId, newGroupId, snackbar) =
           if (value.leftTimestamp === null) {
             activeParticipantsCurrentGroup.push({
               userId,
-              ...value
+              ...value,
             });
           }
         }
@@ -363,10 +355,10 @@ export const joinConversation = (eventSession, myUserId, newGroupId, snackbar) =
       updateObj[`participants.${myUserId}.leftTimestamp`] = null;
       transaction.update(newGroupRef, updateObj);
     })
-    .then(function() {
+    .then(function () {
       console.log("Transaction successfully committed!");
     })
-    .catch(function(error) {
+    .catch(function (error) {
       console.log("Transaction failed: ", error);
       snackbar.showMessage(error.message);
       // throw error;
@@ -382,11 +374,7 @@ export const leaveCall = (eventSession, myUserId) => {
   let db = firebase.firestore();
 
   let eventSessionRef = db.collection("eventSessions").doc(eventSession.id);
-  let myUserRef = db
-    .collection(`eventSessions`)
-    .doc(eventSession.id)
-    .collection("participantsJoined")
-    .doc(myUserId);
+  let myUserRef = db.collection(`eventSessions`).doc(eventSession.id).collection("participantsJoined").doc(myUserId);
 
   var myGroupRef = eventSessionRef.collection("liveGroups").doc(myGroupId);
 
@@ -403,7 +391,7 @@ export const leaveCall = (eventSession, myUserId) => {
   }
 
   return db
-    .runTransaction(async function(transaction) {
+    .runTransaction(async function (transaction) {
       /*
       1. check if live group still exists
       2. check if myUser is in the group
@@ -437,7 +425,7 @@ export const leaveCall = (eventSession, myUserId) => {
         if (value.leftTimestamp === null) {
           activeParticipants.push({
             userId,
-            ...value
+            ...value,
           });
         }
       }
@@ -462,10 +450,10 @@ export const leaveCall = (eventSession, myUserId) => {
         transaction.update(myGroupRef, updateObj);
       }
     })
-    .then(function() {
+    .then(function () {
       console.log("Transaction successfully committed!");
     })
-    .catch(function(error) {
+    .catch(function (error) {
       console.log("Transaction failed: ", error);
       // snackbar.showMessage(error);
     });
@@ -479,7 +467,7 @@ export const updateInNetworkingRoom = async (eventSession, myUserId, inNetworkin
     .collection("participantsJoined")
     .doc(myUserId)
     .update({
-      inNetworkingRoom
+      inNetworkingRoom,
     });
 };
 
@@ -491,12 +479,14 @@ export const createConference = async (
   conferenceRoomYoutubeVideoId,
   website,
   expectedAmountParticipants,
-  liveAt
+  liveAt,
+  bannerPath,
+  description
 ) => {
-  let db = firebase.firestore();
+  // let db = firebase.firestore();
   let normedSessionId = sessionId.toLowerCase();
-  let eventsSessionDetailsRef = db.collection("eventSessionsDetails").doc(normedSessionId);
-  let eventSessionRef = db.collection("eventSessions").doc(normedSessionId);
+  // let eventsSessionDetailsRef = db.collection("eventSessionsDetails").doc(normedSessionId);
+  // let eventSessionRef = db.collection("eventSessions").doc(normedSessionId);
 
   const eventDetails = {
     id: normedSessionId,
@@ -508,35 +498,39 @@ export const createConference = async (
     expectedAmountParticipants,
     liveAt,
     owner: userId,
-    isNetworkingAvailable: true
+    isNetworkingAvailable: true,
+    bannerPath,
+    description,
   };
+  console.log({ eventDetails });
+  return;
 
-  const eventSession = {
-    id: sessionId,
-    originalSessionId: sessionId,
-    owner: userId
-  };
+  // const eventSession = {
+  //   id: sessionId,
+  //   originalSessionId: sessionId,
+  //   owner: userId,
+  // };
 
-  return db
-    .runTransaction(async function(transaction) {
-      let eventsSessionDetailsSnapshot = await transaction.get(eventsSessionDetailsRef);
-      if (eventsSessionDetailsSnapshot.exists) {
-        throw new Error("Event already exists");
-      }
+  // return db
+  //   .runTransaction(async function (transaction) {
+  //     let eventsSessionDetailsSnapshot = await transaction.get(eventsSessionDetailsRef);
+  //     if (eventsSessionDetailsSnapshot.exists) {
+  //       throw new Error("Event already exists");
+  //     }
 
-      let eventSessionSnapshot = await transaction.get(eventSessionRef);
-      if (eventSessionSnapshot.exists) {
-        throw new Error("Event session already exists");
-      }
+  //     let eventSessionSnapshot = await transaction.get(eventSessionRef);
+  //     if (eventSessionSnapshot.exists) {
+  //       throw new Error("Event session already exists");
+  //     }
 
-      transaction.set(eventsSessionDetailsRef, eventDetails);
-      transaction.set(eventSessionRef, eventSession);
-    })
-    .then(function() {
-      console.log("Transaction successfully committed!");
-    })
-    .catch(function(error) {
-      // snackbar.showMessage(error.message);
-      throw error;
-    });
+  //     transaction.set(eventsSessionDetailsRef, eventDetails);
+  //     transaction.set(eventSessionRef, eventSession);
+  //   })
+  //   .then(function () {
+  //     console.log("Transaction successfully committed!");
+  //   })
+  //   .catch(function (error) {
+  //     // snackbar.showMessage(error.message);
+  //     throw error;
+  //   });
 };

@@ -19,7 +19,7 @@ export default withRouter(props => {
     return <p>Error :(</p>;
   }
   return (
-    <Layout maxWidth="sm">
+    <Layout maxWidth="md">
       <Page title="Veertly | Create new event">
         {user && <EditEventSessionForm user={user} isNewEvent={true} sessionId={sessionId} />}
       </Page>
