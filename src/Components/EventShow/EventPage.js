@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import Typography from "@material-ui/core/Typography";
 import MUIRichTextEditor from "mui-rte";
+import { CardMedia } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -13,26 +14,30 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function EventPage(props) {
-  let { bannerUrl, liveAt, title, description, website } = props.event;
-  console.log({ bannerUrl, liveAt, title, description, website });
+  let { bannerUrl, beginDate, endDate, title, description, website } = props.event;
+
   const classes = useStyles();
+  const isSameDay = beginDate.isSame(endDate, "day");
 
   return (
     <Card className={classes.root}>
-      {/* <CardMedia component="img" alt={title} height="232" image={bannerUrl} title={title} /> */}
-      {bannerUrl && bannerUrl.trim() !== "" && <img style={{ width: "100%" }} src={bannerUrl} alt={title} />}
+      {bannerUrl && bannerUrl.trim() !== "" && (
+        <CardMedia component="img" alt={title} image={bannerUrl} title={title} />
+      )}
       {(!bannerUrl || bannerUrl.trim() === "") && (
-        <img style={{ width: "100%" }} src="/DefaultEventBanner.svg" alt={title} />
+        <CardMedia component="img" alt={title} image="/DefaultEventBanner.svg" title={title} />
       )}
       <div style={{ padding: 32 }}>
-        <Typography variant="h5" color="primary" align="left" gutterBottom>
+        <Typography variant="h4" color="primary" align="left" gutterBottom>
           {title}
         </Typography>
         <Typography color="textSecondary">
           <span role="img" aria-label="calendar">
             📅
           </span>
-          {liveAt.format("llll")}
+          {isSameDay
+            ? beginDate.format("lll") + " to " + endDate.format("LT")
+            : beginDate.format("lll") + " to " + endDate.format("lll")}
         </Typography>
         {website && website.trim() !== "" && (
           <Typography color="textSecondary">

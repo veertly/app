@@ -31,6 +31,12 @@ import EventPage from "../EventShow/EventPage";
 import { convertToRaw } from "draft-js";
 import Dialog from "@material-ui/core/Dialog";
 import { uploadEventBanner } from "../../Modules/storage";
+import FormGroup from "@material-ui/core/FormGroup";
+import Switch from "@material-ui/core/Switch";
+import Tooltip from "@material-ui/core/Tooltip";
+import { parseURL } from "../../Utils/parser";
+import SuccessIcon from "@material-ui/icons/CheckCircleOutline";
+import FailIcon from "@material-ui/icons/Cancel";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -71,6 +77,15 @@ const useStyles = makeStyles((theme) => ({
     margin: "auto",
     display: "block",
   },
+  videoContainer: {
+    width: "100%",
+    height: "100%",
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    right: 0,
+    left: 0,
+  },
 }));
 
 const sessionUrl = getUrl() + "/v/";
@@ -84,56 +99,138 @@ function EditEventSessionForm(props) {
   const [values, setValues] = React.useState({
     sessionId: sessionId !== undefined ? sessionId : "",
     title: "",
+    conferenceRoomYoutubeLink: "",
     conferenceRoomYoutubeVideoId: "",
     website: "",
     expectedAmountParticipants: "",
+    eventOpens: "30",
+    eventCloses: "60",
+    visibility: "LISTED",
   });
   const selectedSessionId = values.sessionId;
   const [selectedVideoType, setSelectedVideoType] = React.useState("YOUTUBE");
-  const [selectedDate, setSelectedDate] = React.useState(moment());
-  const [sessionIdError, setSessionIdError] = React.useState(false);
+  const [selectedDate, setSelectedDate] = React.useState({ begin: moment(), end: moment().add(2, "hours") });
   const [creatingEvent, setCreatingEvent] = React.useState(false);
   const [eventCreated, setEventCreated] = React.useState(false);
-
+  const [sessionIdError, setSessionIdError] = React.useState(undefined);
   const [activeStep, setActiveStep] = React.useState(0);
   const [bannerImagePreviewUrl, setBannerImagePreviewUrl] = React.useState(null);
   const [bannerImageBlob, setBannerImageBlob] = React.useState(null);
   const [eventDescription, setEventDescription] = React.useState(null);
   const [showPreview, setShowPreview] = React.useState(false);
-  let [errors, setErrors] = React.useState({});
+  const [showYoutubePreview, setShowYoutubePreview] = React.useState(false);
+  const [showEventCreatedDialog, setShowEventCreatedDialog] = React.useState(false);
+  const [errors, setErrors] = React.useState({});
 
   let mounted = true;
-  // let fetching = false;
-  // let callbackUrl = location.search.replace("?callback=", ""); // queryValues.callback ? queryValues.callback : "/";
+
+  const getVideoId = (link) => {
+    //...
+    let parsedUrl = parseURL(link);
+    return parsedUrl.searchObject.v;
+  };
+
   const handleUpdateField = (name) => (e) => {
     let value = e.target.value;
     let newValues = { ...values };
     newValues[name] = value;
+
+    if (name === "conferenceRoomYoutubeLink" && value.trim() !== "") {
+      newValues.conferenceRoomYoutubeVideoId = getVideoId(value);
+    }
+
     setValues(newValues);
 
+    let newErrors = { ...errors };
     if (name === "title" && value.trim() !== "") {
-      setErrors({ ...errors, title: undefined });
+      newErrors.title = undefined;
     }
+
+    if (name === "sessionId" && value.trim() !== "") {
+      newErrors.sessionId = undefined;
+    }
+
+    if (name === "conferenceRoomYoutubeLink" && value.trim() !== "" && newValues.conferenceRoomYoutubeVideoId) {
+      newErrors.conferenceRoomYoutubeLink = undefined;
+    }
+
+    setErrors(newErrors);
   };
   const handleVideoTypeChange = (event) => {
     setSelectedVideoType(event.target.value);
   };
-  const handleDateChange = (date) => {
-    console.log(date);
-    setSelectedDate(date);
+  const handleDateChange = (name) => (date) => {
+    let newDates = { ...selectedDate };
+    newDates[name] = date;
+    let begin = name === "begin" ? date : selectedDate.begin;
+    let end = name === "end" ? date : selectedDate.end;
+    if (!begin.isBefore(moment().subtract(60, "minutes"))) {
+      setErrors({ ...errors, beginDate: undefined });
+    }
+
+    if (!end.isBefore(begin)) {
+      setErrors({ ...errors, endDate: undefined });
+    }
+
+    setSelectedDate(newDates);
   };
 
   const handleDescriptionUpdate = (editorState) => {
     setEventDescription(JSON.stringify(convertToRaw(editorState.getCurrentContent())));
   };
+
+  const moveToConfigurationPage = () => {
+    let foundErrors = false;
+
+    if (values.title.trim() === "") {
+      setErrors({ ...errors, title: "Title can't be empty" });
+      foundErrors = true;
+    }
+
+    if (selectedDate.begin.isBefore(moment().subtract(60, "minutes"))) {
+      setErrors({ ...errors, beginDate: "Begin date of the event can't be in the past" });
+      foundErrors = true;
+    }
+
+    if (selectedDate.end.isBefore(selectedDate.begin)) {
+      setErrors({ ...errors, endDate: "End date of the event can't be before the begin" });
+      foundErrors = true;
+    }
+
+    if (!foundErrors) {
+      setActiveStep(1);
+    }
+  };
+
+  const handleEventVisibility = (event) => {
+    setValues({ ...values, visibility: event.target.checked ? "LISTED" : "UNLISTED" });
+  };
+
   const handleCreateConference = async () => {
-    console.log({ values });
-    // let values = { ...data, conferenceVideoType: selectedVideoType, liveAt: selectedDate.unix() };
-    // console.log({ values });
+    let foundErrors = false;
+    let newErrors = { ...errors };
+    if (values.sessionId.trim() === "") {
+      newErrors.sessionId = "Event URL can't be empty";
+      foundErrors = true;
+    }
+
+    if (selectedVideoType === "YOUTUBE" && !values.conferenceRoomYoutubeVideoId) {
+      newErrors.conferenceRoomYoutubeLink = "Couldn't retrieve the correct video id from your youtube link";
+      foundErrors = true;
+    }
+    if (selectedVideoType === "YOUTUBE" && values.conferenceRoomYoutubeLink.trim() === "") {
+      newErrors.conferenceRoomYoutubeLink = "Youtube URL can't be empty";
+      foundErrors = true;
+    }
+    if (foundErrors) {
+      setErrors(newErrors);
+      return;
+    }
     setCreatingEvent(true);
 
     // upload image
-    let path = await uploadEventBanner(values.sessionId, bannerImageBlob);
+    console.log({ bannerImageBlob });
+    let path = bannerImageBlob ? await uploadEventBanner(values.sessionId, bannerImageBlob, user.uid) : null;
     console.log(path);
     try {
       await createConference(
@@ -144,28 +241,31 @@ function EditEventSessionForm(props) {
         values.conferenceRoomYoutubeVideoId,
         values.website,
         values.expectedAmountParticipants,
-        selectedDate.unix(),
+        selectedDate.begin.toDate(),
+        selectedDate.end.toDate(),
         path,
-        eventDescription
+        eventDescription,
+        values.visibility,
+        values.eventOpens,
+        values.eventCloses
       );
       setEventCreated(true);
     } catch (e) {
       console.error(e);
       setEventCreated("ERROR");
     }
+    setShowEventCreatedDialog(true);
     setCreatingEvent(false);
   };
 
   useEffect(() => {
     const verifySessionId = async (id) => {
-      console.log("Verifying " + id);
       let exists = await conferenceExists(id);
-      console.log("Result (" + id + ")=" + exists);
       if (mounted) {
         if (exists && id === selectedSessionId) {
-          setSessionIdError(true);
+          setSessionIdError("This URL is already in use, please select a new one");
         } else if (!exists && id === selectedSessionId) {
-          setSessionIdError(false);
+          setSessionIdError(undefined);
         }
       }
     };
@@ -181,7 +281,7 @@ function EditEventSessionForm(props) {
   }, []);
 
   const isAnonymous = user.isAnonymous;
-
+  console.log({ "errors.sessionId": errors.sessionId, sessionIdError });
   return (
     <React.Fragment>
       <Paper className={classes.root}>
@@ -189,11 +289,15 @@ function EditEventSessionForm(props) {
           {isNewEvent && <span>Create new event</span>}
           {!isNewEvent && <span>Edit event</span>}
         </Typography>
-
+        <Typography variant="body1" display="block" style={{ marginTop: 16, marginBottom: 8 }}>
+          Please complete this form to create your own virtual event. <br />
+          As soon as your event has been created, you can share the dial-in link with your audience.
+        </Typography>
         {isAnonymous && (
           <React.Fragment>
             <Typography variant="subtitle2" align="center" style={{ color: "#E74B54", marginTop: 16 }}>
-              You are connected as a guest, if you want to create an event, please login using your email.
+              You are connected as a guest, if you want to create an event, please login using your email or Google
+              account.
             </Typography>
             <div style={{ width: "100%", textAlign: "center", marginTop: 16 }}>
               <Button
@@ -202,7 +306,6 @@ function EditEventSessionForm(props) {
                 // className={classes.button}
                 onClick={async () => {
                   await logout();
-                  console.log(routes.CREATE_EVENT_SESSION());
                   history.push(routes.GO_TO_LOGIN(routes.CREATE_EVENT_SESSION()));
                 }}
               >
@@ -211,313 +314,472 @@ function EditEventSessionForm(props) {
             </div>
           </React.Fragment>
         )}
-        <Typography variant="body1" display="block" style={{ marginTop: 16, marginBottom: 8 }}>
-          Please complete this form to create your own virtual event. <br />
-          As soon as your event has been created, you can share the dial-in link with your audience.
-        </Typography>
-        <div className={classes.stepperContainer}>
-          <Stepper activeStep={activeStep} alternativeLabel>
-            <Step>
-              <StepLabel>Event Details</StepLabel>
-            </Step>
-            <Step>
-              <StepLabel>Event Configuration</StepLabel>
-            </Step>
-          </Stepper>
-        </div>
-
-        <form>
-          {/* {activeStep === 0 && ( */}
-          <div style={{ display: activeStep === 0 ? "block" : "none" }}>
-            <TextField
-              fullWidth
-              label="Event Title"
-              name="title"
-              variant="outlined"
-              // inputRef={register({ required: true })}
-              className={classes.textField}
-              value={values.title}
-              onChange={handleUpdateField("title")}
-              required
-              helperText={errors.title ? errors.title : "Title of your event"}
-              error={errors.title !== undefined}
-              disabled={isAnonymous}
-            />
-            <TextField
-              fullWidth
-              label="Official event website"
-              name="website"
-              variant="outlined"
-              onChange={handleUpdateField("website")}
-              className={classes.textField}
-              value={values.website}
-              helperText="Add the link to the official event website (if available) or the website of your organisation"
-              disabled={isAnonymous}
-            />
-
-            <MuiPickersUtilsProvider utils={MomentUtils}>
-              <Grid container justify="space-between" className={classes.textField}>
-                <KeyboardDatePicker
-                  margin="normal"
-                  id="date-picker-dialog"
-                  label="Event date"
-                  format="YYYY-MM-DD"
-                  value={selectedDate}
-                  onChange={handleDateChange}
-                  KeyboardButtonProps={{
-                    "aria-label": "change date",
-                  }}
-                  autoOk
-                  disablePast
-                  inputVariant="outlined"
-                  style={{ width: "48%" }}
-                  disabled={isAnonymous}
-                />
-                <KeyboardTimePicker
-                  margin="normal"
-                  id="time-picker"
-                  label="Time"
-                  value={selectedDate}
-                  onChange={handleDateChange}
-                  KeyboardButtonProps={{
-                    "aria-label": "change time",
-                  }}
-                  inputVariant="outlined"
-                  style={{ width: "48%" }}
-                  disabled={isAnonymous}
-                />
-              </Grid>
-            </MuiPickersUtilsProvider>
-
-            <div className={classes.bannerContainer}>
-              <Divider style={{ margin: "24px 0" }} />
-              <Typography color="textSecondary">Banner:</Typography>
-
-              <ImageUploaderCrop
-                aspectRatio={600 / 337}
-                onPreviewUrlChange={setBannerImagePreviewUrl}
-                onBlobChange={setBannerImageBlob}
-              />
-              {/* 600 / 232 */}
-
-              <Typography color="textSecondary">Event description:</Typography>
-
-              <MUIRichTextEditor
-                label="Start typing..."
-                controls={[
-                  "title",
-                  "bold",
-                  "italic",
-                  "underline",
-                  "strikethrough",
-                  "link",
-                  "media",
-                  "numberList",
-                  "bulletList",
-                  "quote",
-                  "code",
-                  "clear",
-                  // "undo",
-                  // "redo",
-                ]}
-                onChange={handleDescriptionUpdate}
-                inlineToolbar={true}
-                maxLength={5000}
-                value={eventDescription}
-                inlineToolbarControls={[
-                  "title",
-                  "bold",
-                  "italic",
-                  "underline",
-                  "strikethrough",
-                  "link",
-                  "media",
-                  "numberList",
-                  "bulletList",
-                  "quote",
-                  "code",
-                  "clear",
-                ]}
-              />
+        {!isAnonymous && (
+          <React.Fragment>
+            <div className={classes.stepperContainer}>
+              <Stepper activeStep={activeStep} alternativeLabel>
+                <Step>
+                  <StepLabel>Event Details</StepLabel>
+                </Step>
+                <Step>
+                  <StepLabel>Event Configuration</StepLabel>
+                </Step>
+              </Stepper>
             </div>
-          </div>
-          <div style={{ display: activeStep === 1 ? "block" : "none" }}>
-            <TextField
-              fullWidth
-              label="Expected amount of participants"
-              name="expectedAmountParticipants"
-              variant="outlined"
-              type="number"
-              className={classes.textField}
-              onChange={handleUpdateField("expectedAmountParticipants")}
-              value={values.expectedAmountParticipants}
-              helperText="This value will not have a direct impact in the functionalities, but helps us to monitor and follow closely each event"
-              disabled={isAnonymous}
-            />
-            <TextField
-              fullWidth
-              label="Event URL"
-              name="sessionId"
-              variant="outlined"
-              className={classes.textField}
-              onChange={handleUpdateField("sessionId")}
-              value={values.sessionId}
-              helperText={
-                !sessionIdError
-                  ? "This will be the url to your live event, it should not contain any space and once created it cannot be changed"
-                  : "This URL is already in use, please select a new one"
-              }
-              required
-              error={sessionIdError}
-              InputProps={{
-                startAdornment: <InputAdornment position="start">{sessionUrl}</InputAdornment>,
-              }}
-              disabled={isAnonymous}
-            />
-            <FormControl component="fieldset" className={classes.textField} disabled={isAnonymous}>
-              <FormLabel component="legend">Conference Room Type</FormLabel>
-              <RadioGroup
-                aria-label="gender"
-                name="videoType"
-                value={selectedVideoType}
-                onChange={handleVideoTypeChange}
-              >
-                <FormControlLabel
-                  value="YOUTUBE"
-                  control={<Radio color="primary" />}
-                  label="Youtube live stream (recommended)"
-                />
-                <FormControlLabel value="JITSI" control={<Radio color="primary" />} label="Jitsi video conference" />
-              </RadioGroup>
-              {selectedVideoType === "JITSI" && (
-                <FormHelperText>We do not recommend Jitsi video conference for a big audience</FormHelperText>
-              )}
-            </FormControl>
-            {selectedVideoType === "YOUTUBE" && (
-              <TextField
-                fullWidth
-                label="Youtube livestream video id"
-                name="conferenceRoomYoutubeVideoId"
-                variant="outlined"
-                onChange={handleUpdateField("conferenceRoomYoutubeVideoId")}
-                required={selectedVideoType === "YOUTUBE"}
-                className={classes.textField}
-                value={values.conferenceRoomYoutubeVideoId}
-                helperText="The video id can be found on the youtube link of your livestream: https://www.youtube.com/watch?v=<VIDEO_ID>"
-                disabled={isAnonymous}
-              />
-            )}
-          </div>
-          <div className={classes.bottom}>
-            {activeStep === 0 && (
-              <div style={{ textAlign: "right" }}>
-                <Button
+
+            <form>
+              {/* {activeStep === 0 && ( */}
+              <div style={{ display: activeStep === 0 ? "block" : "none" }}>
+                <TextField
+                  fullWidth
+                  label="Event Title"
+                  name="title"
                   variant="outlined"
-                  color="primary"
-                  className={classes.button}
-                  onClick={() => setShowPreview(!showPreview)}
-                  style={{ marginRight: 16 }}
-                >
-                  {!showPreview ? "Show Preview" : "Hide Preview"}
-                </Button>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  className={classes.button}
-                  onClick={() => {
-                    if (values.title.trim() === "") {
-                      setErrors({ title: "Title can't be empty" });
-                    } else {
-                      setActiveStep(1);
-                    }
-                  }}
-                >
-                  Next
-                </Button>
+                  // inputRef={register({ required: true })}
+                  className={classes.textField}
+                  value={values.title}
+                  onChange={handleUpdateField("title")}
+                  required
+                  helperText={errors.title ? errors.title : "Title of your event"}
+                  error={errors.title !== undefined}
+                  disabled={isAnonymous}
+                />
+                <TextField
+                  fullWidth
+                  label="Official event website"
+                  name="website"
+                  variant="outlined"
+                  onChange={handleUpdateField("website")}
+                  className={classes.textField}
+                  value={values.website}
+                  helperText="Add the link to the official event website (if available) or the website of your organisation"
+                  disabled={isAnonymous}
+                />
+
+                <MuiPickersUtilsProvider utils={MomentUtils}>
+                  <Grid container justify="space-between" className={classes.textField}>
+                    <KeyboardDatePicker
+                      margin="normal"
+                      id="date-picker-dialog"
+                      label="Event begin date"
+                      format="YYYY-MM-DD"
+                      value={selectedDate.begin}
+                      onChange={handleDateChange("begin")}
+                      KeyboardButtonProps={{
+                        "aria-label": "change date",
+                      }}
+                      autoOk
+                      disablePast
+                      inputVariant="outlined"
+                      style={{ width: "48%" }}
+                      disabled={isAnonymous}
+                      error={errors.beginDate !== undefined}
+                      helperText={errors.beginDate !== undefined ? errors.beginDate : null}
+                    />
+                    <KeyboardTimePicker
+                      margin="normal"
+                      id="time-picker"
+                      label="Time"
+                      value={selectedDate.begin}
+                      onChange={handleDateChange("begin")}
+                      KeyboardButtonProps={{
+                        "aria-label": "change time",
+                      }}
+                      inputVariant="outlined"
+                      style={{ width: "48%" }}
+                      disabled={isAnonymous}
+                      error={errors.beginDate !== undefined}
+                      helperText={errors.beginDate !== undefined ? errors.beginDate : null}
+                    />
+                  </Grid>
+
+                  <Grid container justify="space-between" className={classes.textField}>
+                    <KeyboardDatePicker
+                      margin="normal"
+                      id="date-picker-dialog"
+                      label="Event end date"
+                      format="YYYY-MM-DD"
+                      value={selectedDate.end}
+                      onChange={handleDateChange("end")}
+                      KeyboardButtonProps={{
+                        "aria-label": "change date",
+                      }}
+                      autoOk
+                      disablePast
+                      inputVariant="outlined"
+                      style={{ width: "48%" }}
+                      disabled={isAnonymous}
+                      error={errors.endDate !== undefined}
+                      helperText={errors.endDate !== undefined ? errors.endDate : null}
+                    />
+                    <KeyboardTimePicker
+                      margin="normal"
+                      id="time-picker"
+                      label="Time"
+                      value={selectedDate.end}
+                      onChange={handleDateChange("end")}
+                      KeyboardButtonProps={{
+                        "aria-label": "change time",
+                      }}
+                      inputVariant="outlined"
+                      style={{ width: "48%" }}
+                      disabled={isAnonymous}
+                      error={errors.endDate !== undefined}
+                      helperText={errors.endDate !== undefined ? errors.endDate : null}
+                    />
+                  </Grid>
+                </MuiPickersUtilsProvider>
+
+                <div className={classes.bannerContainer}>
+                  <Divider style={{ margin: "24px 0" }} />
+                  <FormLabel component="legend" className={classes.textField}>
+                    Banner
+                  </FormLabel>
+                  <FormHelperText>Recommended size 600 x 337 pixels</FormHelperText>
+
+                  <ImageUploaderCrop
+                    aspectRatio={600 / 337}
+                    onPreviewUrlChange={setBannerImagePreviewUrl}
+                    onBlobChange={setBannerImageBlob}
+                  />
+                  {/* 600 / 232 */}
+
+                  <FormLabel component="legend" className={classes.textField}>
+                    Event description:
+                  </FormLabel>
+                  <MUIRichTextEditor
+                    label="Start typing..."
+                    controls={[
+                      "title",
+                      "bold",
+                      "italic",
+                      "underline",
+                      "strikethrough",
+                      "link",
+                      "media",
+                      "numberList",
+                      "bulletList",
+                      "quote",
+                      "code",
+                      "clear",
+                      // "undo",
+                      // "redo",
+                    ]}
+                    onChange={handleDescriptionUpdate}
+                    inlineToolbar={true}
+                    maxLength={5000}
+                    value={eventDescription}
+                    inlineToolbarControls={[
+                      "title",
+                      "bold",
+                      "italic",
+                      "underline",
+                      "strikethrough",
+                      "link",
+                      "media",
+                      "numberList",
+                      "bulletList",
+                      "quote",
+                      "code",
+                      "clear",
+                    ]}
+                  />
+                </div>
               </div>
-            )}
-            {activeStep === 1 && (
-              <div>
-                <div style={{ display: "flex", justifyContent: "space-between" }}>
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    className={classes.button}
-                    onClick={() => setActiveStep(0)}
+              <div style={{ display: activeStep === 1 ? "block" : "none" }}>
+                <Grid container justify="space-between" className={classes.textField}>
+                  <div style={{ flexGrow: 1, marginRight: 16 }}>
+                    <TextField
+                      fullWidth
+                      label="Event URL"
+                      name="sessionId"
+                      variant="outlined"
+                      className={classes.textField}
+                      onChange={handleUpdateField("sessionId")}
+                      value={values.sessionId}
+                      helperText={
+                        errors.sessionId
+                          ? errors.sessionId
+                          : sessionIdError
+                          ? sessionIdError
+                          : "This will be the url to your live event, it should not contain any space and once created it cannot be changed"
+                      }
+                      error={errors.sessionId !== undefined || sessionIdError !== undefined}
+                      required
+                      InputProps={{
+                        startAdornment: <InputAdornment position="start">{sessionUrl}</InputAdornment>,
+                      }}
+                      disabled={isAnonymous}
+                    />
+                  </div>
+                  <div>
+                    <FormLabel component="legend" className={classes.textField}>
+                      Event visibility
+                    </FormLabel>
+                    <FormGroup row>
+                      <Tooltip
+                        title={
+                          values.visibility === "LISTED"
+                            ? "Your event will be listed on our platform"
+                            : "Your event will not be listed on our platform"
+                        }
+                      >
+                        <FormControlLabel
+                          control={
+                            <Switch
+                              checked={values.visibility === "LISTED"}
+                              onChange={handleEventVisibility}
+                              name="visibility"
+                              color="primary"
+                            />
+                          }
+                          label={values.visibility === "LISTED" ? "Listed" : "Unlisted"}
+                        />
+                      </Tooltip>
+                    </FormGroup>
+                  </div>
+                </Grid>
+                <FormControl
+                  component="fieldset"
+                  className={classes.textField}
+                  disabled={isAnonymous}
+                  style={{ marginLeft: 8 }}
+                >
+                  <FormLabel component="legend">Conference Room Type</FormLabel>
+                  <RadioGroup
+                    aria-label="gender"
+                    name="videoType"
+                    value={selectedVideoType}
+                    onChange={handleVideoTypeChange}
                   >
-                    Previous
-                  </Button>
-                  {!creatingEvent && eventCreated !== true && (
+                    <FormControlLabel
+                      value="YOUTUBE"
+                      control={<Radio color="primary" />}
+                      label="Youtube live stream (recommended)"
+                    />
+                    <FormControlLabel
+                      value="JITSI"
+                      control={<Radio color="primary" />}
+                      label="Jitsi video conference"
+                    />
+                  </RadioGroup>
+                  {selectedVideoType === "JITSI" && (
+                    <FormHelperText>We do not recommend Jitsi video conference for a big audience</FormHelperText>
+                  )}
+                </FormControl>
+
+                {selectedVideoType === "YOUTUBE" && (
+                  <Grid container justify="space-between" className={classes.textField}>
+                    <div style={{ flexGrow: 1, marginRight: 16 }}>
+                      <TextField
+                        fullWidth
+                        label="Youtube livestream video URL"
+                        name="conferenceRoomYoutubeLink"
+                        variant="outlined"
+                        onChange={handleUpdateField("conferenceRoomYoutubeLink")}
+                        required={selectedVideoType === "YOUTUBE"}
+                        value={values.conferenceRoomYoutubeLink}
+                        // helperText="This is the link to the youtube livestream video"
+                        disabled={isAnonymous}
+                        error={errors.conferenceRoomYoutubeLink !== undefined}
+                        helperText={
+                          errors.conferenceRoomYoutubeLink !== undefined ? errors.conferenceRoomYoutubeLink : null
+                        }
+                      />
+                    </div>
+                    <div style={{ marginTop: 8 }}>
+                      <Button
+                        variant="outlined"
+                        color="primary"
+                        onClick={() => setShowYoutubePreview(true)}
+                        // width={150}
+                      >
+                        Preview
+                      </Button>
+                    </div>
+                  </Grid>
+                )}
+                <TextField
+                  fullWidth
+                  label="Expected amount of participants"
+                  name="expectedAmountParticipants"
+                  variant="outlined"
+                  type="number"
+                  className={classes.textField}
+                  onChange={handleUpdateField("expectedAmountParticipants")}
+                  value={values.expectedAmountParticipants}
+                  helperText="This value will not have a direct impact in the functionalities, but helps us to monitor and follow closely each event"
+                  disabled={isAnonymous}
+                />
+
+                <Grid container justify="space-between" className={classes.textField}>
+                  <TextField
+                    fullWidth
+                    label="Event opens"
+                    name="eventOpens"
+                    variant="outlined"
+                    onChange={handleUpdateField("eventOpens")}
+                    value={values.eventOpens}
+                    type="number"
+                    helperText="Your attendees can start entering the event the indicated minutes before the official begin date of the event"
+                    disabled={isAnonymous}
+                    style={{ width: "48%" }}
+                    InputProps={{
+                      endAdornment: <InputAdornment position="start">minutes before</InputAdornment>,
+                    }}
+                  />
+                  <TextField
+                    fullWidth
+                    label="Event closes"
+                    name="eventCloses"
+                    variant="outlined"
+                    onChange={handleUpdateField("eventCloses")}
+                    value={values.eventCloses}
+                    type="number"
+                    helperText="Your attendees will only be able to keep connected up to the indicated amount of minutes after the official end date of the event"
+                    disabled={isAnonymous}
+                    style={{ width: "48%" }}
+                    InputProps={{
+                      endAdornment: <InputAdornment position="start">minutes after</InputAdornment>,
+                    }}
+                  />
+                </Grid>
+              </div>
+              <div className={classes.bottom}>
+                {activeStep === 0 && (
+                  <div style={{ textAlign: "right" }}>
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      className={classes.button}
+                      onClick={() => setShowPreview(!showPreview)}
+                      style={{ marginRight: 16 }}
+                    >
+                      {!showPreview ? "Show Preview" : "Hide Preview"}
+                    </Button>
                     <Button
                       variant="contained"
                       color="primary"
-                      onClick={handleCreateConference}
                       className={classes.button}
-                      disabled={isAnonymous}
+                      onClick={moveToConfigurationPage}
                     >
-                      Create Event
+                      Next
                     </Button>
-                  )}
-                </div>
-                {creatingEvent && (
-                  <Typography variant="caption" align="center" display="block">
-                    Creating event...
-                  </Typography>
+                  </div>
                 )}
-                {eventCreated === true && (
-                  <React.Fragment>
-                    <Typography
-                      variant="subtitle1"
-                      align="center"
-                      display="block"
-                      style={{ color: "#53a653", marginTop: 16 }}
-                    >
-                      Event created successfully!
-                    </Typography>
-                    <Typography variant="caption" align="center" display="block">
-                      You can share your event url that will be available at the time of the event:{" "}
-                      <a href={sessionUrl + values.sessionId}>{sessionUrl + values.sessionId}</a>
-                    </Typography>
-                  </React.Fragment>
-                )}
-                {eventCreated === "ERROR" && (
-                  <React.Fragment>
-                    <Typography
-                      variant="subtitle1"
-                      align="center"
-                      display="block"
-                      style={{ color: "#E74B54", marginTop: 16 }}
-                    >
-                      An error occured while creating the event...
-                    </Typography>
-                    <Typography variant="caption" align="center" display="block">
-                      Please contact veertly team if the error persists
-                      <br />
-                      <a href="mailto:info@veertly.com">info@veertly.com</a>
-                    </Typography>
-                  </React.Fragment>
+                {activeStep === 1 && (
+                  <div>
+                    <div style={{ display: "flex", justifyContent: "space-between" }}>
+                      <Button
+                        variant="outlined"
+                        color="primary"
+                        className={classes.button}
+                        onClick={() => setActiveStep(0)}
+                        disabled={creatingEvent || eventCreated}
+                      >
+                        Previous
+                      </Button>
+                      {!creatingEvent && eventCreated !== true && (
+                        <Button
+                          variant="contained"
+                          color="secondary"
+                          onClick={handleCreateConference}
+                          className={classes.button}
+                          disabled={isAnonymous}
+                        >
+                          Create Event
+                        </Button>
+                      )}
+                    </div>
+                    {creatingEvent && (
+                      <Typography variant="caption" align="center" display="block">
+                        Creating event...
+                      </Typography>
+                    )}
+                  </div>
                 )}
               </div>
-            )}
-          </div>
-        </form>
+            </form>
+          </React.Fragment>
+        )}
       </Paper>
 
-      {/* {showPreview && ( */}
-      {/* // <div style={{ width: "100%", marginBottom: 48 }}>
-        //   <Typography variant="overline" gutterBottom className={classes.previewText}>
-        //     Preview event page
-        //   </Typography> */}
       <Dialog onClose={() => setShowPreview(false)} open={showPreview} scroll={"body"}>
         <EventPage
           event={{
             bannerUrl: bannerImagePreviewUrl,
             title: values.title,
             description: eventDescription,
-            liveAt: selectedDate,
+            beginDate: selectedDate.begin,
+            endDate: selectedDate.end,
             website: values.website,
           }}
         />
+      </Dialog>
+      <Dialog onClose={() => setShowYoutubePreview(false)} open={showYoutubePreview} maxWidth="sm">
+        <iframe
+          // className={classes.videoContainer}
+          style={{ width: 500, height: 300 }}
+          src={`https://www.youtube.com/embed/${values.conferenceRoomYoutubeVideoId}?autoplay=1&fs=0&modestbranding=0`}
+          frameBorder="0"
+          allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          title="livestream"
+        />
+      </Dialog>
+      <Dialog
+        onClose={() => setShowEventCreatedDialog(false)}
+        open={showEventCreatedDialog}
+        maxWidth="sm"
+        disableBackdropClick={eventCreated === true}
+        disableEscapeKeyDown={eventCreated === true}
+      >
+        <Paper style={{ padding: "64px 96px" }}>
+          {eventCreated === true && (
+            <React.Fragment>
+              <div style={{ textAlign: "center", width: "100%" }}>
+                <SuccessIcon style={{ fontSize: 64, color: "#53a653" }} />
+              </div>
+              <Typography
+                variant="h6"
+                align="center"
+                display="block"
+                style={{ color: "#53a653", marginTop: 16, marginBottom: 16 }}
+              >
+                Event created successfully!
+              </Typography>
+              <Typography align="center" gutterBottom>
+                Your event is now accessible at:
+              </Typography>
+
+              <Typography align="center" gutterBottom>
+                <a href={sessionUrl + values.sessionId}>{sessionUrl + values.sessionId}</a>
+              </Typography>
+            </React.Fragment>
+          )}
+          {eventCreated === "ERROR" && (
+            <React.Fragment>
+              <div style={{ textAlign: "center", width: "100%" }}>
+                <FailIcon style={{ fontSize: 64, color: "#E74B54" }} />
+              </div>
+              <Typography
+                variant="h6"
+                align="center"
+                display="block"
+                style={{ color: "#E74B54", marginTop: 16, marginBottom: 16 }}
+              >
+                An error occured while creating the event...{" "}
+              </Typography>
+              <Typography align="center" gutterBottom>
+                Please contact Veertly team if the error persists
+              </Typography>
+
+              <Typography align="center" gutterBottom>
+                <a href="mailto:info@veertly.com">info@veertly.com</a>
+              </Typography>
+            </React.Fragment>
+          )}
+        </Paper>
       </Dialog>
       {/* </div> */}
       {/* )} */}
