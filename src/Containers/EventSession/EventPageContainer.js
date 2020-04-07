@@ -25,6 +25,9 @@ const useStyles = makeStyles((theme) => ({
   pageContainer: {
     paddingTop: theme.spacing(6),
     paddingBottom: theme.spacing(6),
+    [theme.breakpoints.down("xs")]: {
+      padding: 0,
+    },
   },
 }));
 

@@ -7,7 +7,7 @@ export default {
   EVENT_SESSION_OLD: (sessionId = ":sessionId") => `/session/${sessionId}`,
   EVENT_SESSION: (sessionId = ":sessionId") => `/v/${sessionId}`,
   EVENT_SESSION_LIVE: (sessionId = ":sessionId") => `/v/${sessionId}/live`,
-
+  EDIT_EVENT_SESSION: (sessionId = ":sessionId") => `/v/${sessionId}/edit`,
   CREATE_EVENT_SESSION: () => `/new-event`,
   LOGIN_PATH: () => `/login`,
   GO_TO_LOGIN: (callback = "/") => `/login?callback=${callback}`,

@@ -13,26 +13,26 @@ import IconButton from "@material-ui/core/IconButton";
 import AddIcon from "@material-ui/icons/Add";
 import uuidv1 from "uuid/v1";
 import { getUserDb, updateUser } from "../../Modules/userOperations";
-import { useSnackbar } from "material-ui-snackbar-provider";
+// import { useSnackbar } from "material-ui-snackbar-provider";
 
-const styles = theme => ({
+const styles = (theme) => ({
   row: {
-    flexDirection: "row"
+    flexDirection: "row",
   },
   button: {
-    marginTop: theme.spacing(2)
+    marginTop: theme.spacing(2),
   },
   bottom: {
     textAlign: "center",
-    marginTop: 16
+    marginTop: 16,
   },
   textField: {
-    marginTop: 16
+    marginTop: 16,
     // marginBottom: 16
-  }
+  },
 });
 
-const getUserDefaultValues = user => {
+const getUserDefaultValues = (user) => {
   let { displayName, isAnonymous } = user;
   let firstName = "";
   let lastName = "";
@@ -56,7 +56,7 @@ const getUserDefaultValues = user => {
     interestsChips: [],
     company: "",
     companyTitle: "",
-    isAnonymous
+    isAnonymous,
   };
 };
 
@@ -72,9 +72,9 @@ function EditProfileForm(props) {
   let [errors, setErrors] = React.useState({});
   const [interestsChips, setInterestsChips] = React.useState([]);
   const [updating, setUpdating] = React.useState(false);
-  const snackbar = useSnackbar();
+  // const snackbar = useSnackbar();
 
-  const handleUpdateField = name => e => {
+  const handleUpdateField = (name) => (e) => {
     let value = e.target.value;
     let newValues = { ...values };
     newValues[name] = value;
@@ -104,10 +104,10 @@ function EditProfileForm(props) {
         linkedinUrl,
         interestsChips,
         company,
-        companyTitle
+        companyTitle,
       } = userDb;
 
-      const x = str => (str ? str : "");
+      const x = (str) => (str ? str : "");
 
       setValues({
         ...values,
@@ -122,7 +122,7 @@ function EditProfileForm(props) {
         linkedinUrl: x(linkedinUrl),
         interestsChips: interestsChips ? interestsChips : [],
         company: x(company),
-        companyTitle: x(companyTitle)
+        companyTitle: x(companyTitle),
       });
 
       setInterestsChips(interestsChips ? interestsChips : []);
@@ -133,7 +133,7 @@ function EditProfileForm(props) {
     fetchUser();
   }, [user]);
 
-  const handleAddInterest = _ => {
+  const handleAddInterest = (_) => {
     if (values.interest.trim() !== "") {
       let label = values.interest;
       let key = uuidv1();
@@ -145,12 +145,12 @@ function EditProfileForm(props) {
     }
   };
 
-  const handleNewInterestsChips = chips => {
+  const handleNewInterestsChips = (chips) => {
     setInterestsChips(chips);
     setValues({ ...values, interest: "", interestsChips: chips });
   };
 
-  const handleEmailPrivacy = event => {
+  const handleEmailPrivacy = (event) => {
     setValues({ ...values, emailPublic: event.target.checked });
   };
 
@@ -162,7 +162,7 @@ function EditProfileForm(props) {
     setUpdating(true);
     await updateUser(user.uid, sessionId, values);
     await fetchUser();
-    snackbar.showMessage("Your profile has been updated successfuly");
+    // snackbar.showMessage("Your profile has been updated successfuly");
     if (profileUpdatedCallback) {
       profileUpdatedCallback();
     }
@@ -266,7 +266,7 @@ function EditProfileForm(props) {
         variant="outlined"
         className={classes.textField}
         InputProps={{
-          startAdornment: <InputAdornment position="start">{linkedinUrlStatic}</InputAdornment>
+          startAdornment: <InputAdornment position="start">{linkedinUrlStatic}</InputAdornment>,
         }}
         value={values.linkedin}
         onChange={handleUpdateField("linkedin")}
@@ -279,7 +279,7 @@ function EditProfileForm(props) {
         className={classes.textField}
         value={values.twitter}
         InputProps={{
-          startAdornment: <InputAdornment position="start">{twitterUrlStatic}</InputAdornment>
+          startAdornment: <InputAdornment position="start">{twitterUrlStatic}</InputAdornment>,
         }}
         onChange={handleUpdateField("twitter")}
       />
@@ -292,7 +292,7 @@ function EditProfileForm(props) {
           value={values.interest}
           style={{ width: 435 }}
           onChange={handleUpdateField("interest")}
-          onKeyPress={ev => {
+          onKeyPress={(ev) => {
             if (ev.key === "Enter") {
               // Do code here
               handleAddInterest();

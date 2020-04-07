@@ -1,29 +1,25 @@
 import firebase from "./firebaseApp";
 
-export const registerNewUser = async userAuth => {
+export const registerNewUser = async (userAuth) => {
   console.log("on: registerNewUser");
   let { displayName, email, phoneNumber, uid, photoURL, isAnonymous } = userAuth;
   let names = displayName.split(" ");
   let firstName = names[0];
   let lastName = names.length > 1 ? names[names.length - 1] : "";
-  firebase
-    .firestore()
-    .collection("users")
-    .doc(uid)
-    .set({
-      id: uid,
-      displayName,
-      avatarUrl: photoURL,
-      email,
-      phoneNumber,
-      firstName,
-      lastName,
-      isAnonymous: isAnonymous
-    });
+  firebase.firestore().collection("users").doc(uid).set({
+    id: uid,
+    displayName,
+    avatarUrl: photoURL,
+    email,
+    phoneNumber,
+    firstName,
+    lastName,
+    isAnonymous: isAnonymous,
+  });
 
   var userAuth2 = firebase.auth().currentUser;
   await userAuth2.updateProfile({
-    displayName
+    displayName,
   });
 };
 
@@ -57,12 +53,12 @@ export const updateUser = async (userId, sessionId, userDb) => {
       .get();
     let eventSession = eventSessionSnapshot.data();
 
-    const { title, originalSessionId, liveAt } = eventSession;
+    const { title, originalSessionId, eventBeginDate } = eventSession;
     newUserAttendedEvents = {
       joinedTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
       title,
       originalSessionId,
-      liveAt
+      eventBeginDate,
     };
     updateUserAttendedEvents = { originalSessionId };
   }
@@ -72,7 +68,7 @@ export const updateUser = async (userId, sessionId, userDb) => {
     userSession.email = null;
   }
 
-  await db.runTransaction(async function(transaction) {
+  await db.runTransaction(async function (transaction) {
     let userSnapshot = await transaction.get(userRef);
     let userSessionSnapshot = userSessionRef ? await transaction.get(userSessionRef) : null;
     let userAttendedEventsSnapshot = userAttendedEventsRef ? await transaction.get(userAttendedEventsRef) : null;
@@ -100,7 +96,7 @@ export const updateUser = async (userId, sessionId, userDb) => {
 
   var userAuth = firebase.auth().currentUser;
   await userAuth.updateProfile({
-    displayName: userDb.firstName + " " + userDb.lastName
+    displayName: userDb.firstName + " " + userDb.lastName,
   });
   // .then(function() {
   //   // console.log("Transaction successfully committed!");
@@ -111,12 +107,8 @@ export const updateUser = async (userId, sessionId, userDb) => {
   // });
 };
 
-export const getUserDb = async uid => {
-  let userDoc = await firebase
-    .firestore()
-    .collection("users")
-    .doc(uid)
-    .get();
+export const getUserDb = async (uid) => {
+  let userDoc = await firebase.firestore().collection("users").doc(uid).get();
   return await userDoc.data();
 };
 
@@ -143,7 +135,7 @@ export const hasUserSession = async (sessionId, userId) => {
   return docSnapshot.exists;
 };
 
-export const logout = async sessionId => {
+export const logout = async (sessionId) => {
   window.analytics.track("Logged out");
   if (sessionId) {
     var userId = firebase.auth().currentUser.uid;
@@ -159,12 +151,12 @@ export const logout = async sessionId => {
     var isOfflineForDatabase = {
       isOnline: false,
       leftTimestamp: firebase.database.ServerValue.TIMESTAMP,
-      lastChanged: firebase.database.ServerValue.TIMESTAMP
+      lastChanged: firebase.database.ServerValue.TIMESTAMP,
     };
 
     var isOfflineForFirestore = {
       isOnline: false,
-      leftTimestamp: firebase.firestore.FieldValue.serverTimestamp()
+      leftTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
     };
 
     await userStatusDatabaseRef.update(isOfflineForDatabase);
@@ -187,31 +179,31 @@ export const initFirebasePresenceSync = async (sessionId, userId) => {
   var isOfflineForDatabase = {
     isOnline: false,
     leftTimestamp: firebase.database.ServerValue.TIMESTAMP,
-    lastChanged: firebase.database.ServerValue.TIMESTAMP
+    lastChanged: firebase.database.ServerValue.TIMESTAMP,
   };
 
   var isOnlineForDatabase = {
     isOnline: true,
     joinedTimestamp: firebase.database.ServerValue.TIMESTAMP,
     leftTimestamp: null,
-    lastChanged: firebase.database.ServerValue.TIMESTAMP
+    lastChanged: firebase.database.ServerValue.TIMESTAMP,
   };
 
   var isOfflineForFirestore = {
     isOnline: false,
-    leftTimestamp: firebase.firestore.FieldValue.serverTimestamp()
+    leftTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
   };
 
   var isOnlineForFirestore = {
     isOnline: true,
     joinedTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
-    leftTimestamp: null
+    leftTimestamp: null,
   };
 
   firebase
     .database()
     .ref(".info/connected")
-    .on("value", function(snapshot) {
+    .on("value", function (snapshot) {
       if (snapshot.val() === false) {
         userStatusFirestoreRef.update(isOfflineForFirestore);
         return;
@@ -220,7 +212,7 @@ export const initFirebasePresenceSync = async (sessionId, userId) => {
       userStatusDatabaseRef
         .onDisconnect()
         .update(isOfflineForDatabase)
-        .then(function() {
+        .then(function () {
           userStatusDatabaseRef.set(isOnlineForDatabase);
           userStatusFirestoreRef.update(isOnlineForFirestore);
         });

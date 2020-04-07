@@ -9,10 +9,20 @@ export default () => {
   const [user, initialising, error] = useAuthState(firebase.auth());
   const history = useHistory();
   const location = useLocation();
-
   let callbackUrl = location.search.replace("?callback=", ""); // queryValues.callback ? queryValues.callback : "/";
-  let sessionId = callbackUrl.replace("/v/", "");
-  let isInSessionPage = callbackUrl.includes("/v/");
+
+  let { sessionId, isInSessionPage } = React.useMemo(() => {
+    let sessionId = undefined;
+    let splits = callbackUrl.split("/");
+    if (splits[1] === "v") {
+      sessionId = splits[2];
+    }
+    sessionId = sessionId.replace("/live", "");
+    return {
+      sessionId: sessionId ? sessionId.toLowerCase() : null,
+      isInSessionPage: sessionId !== undefined,
+    };
+  }, [location.search, callbackUrl]);
 
   const redirectUser = () => {
     history.push(callbackUrl);
@@ -32,7 +42,7 @@ export default () => {
         {user && (
           <EditProfileForm
             user={user}
-            sessionId={isInSessionPage ? sessionId : null}
+            sessionId={isInSessionPage ? sessionId.toLowerCase() : null}
             profileUpdatedCallback={redirectUser}
           />
         )}

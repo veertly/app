@@ -472,6 +472,7 @@ export const updateInNetworkingRoom = async (eventSession, myUserId, inNetworkin
 };
 
 export const createConference = async (
+  isCreate,
   sessionId,
   userId,
   title,
@@ -494,7 +495,7 @@ export const createConference = async (
   let eventsSessionDetailsRef = db.collection("eventSessionsDetails").doc(normedSessionId);
   let eventSessionRef = db.collection("eventSessions").doc(normedSessionId);
 
-  const eventDetails = {
+  let eventDetails = {
     id: normedSessionId,
     originalSessionId: sessionId,
     title,
@@ -506,13 +507,22 @@ export const createConference = async (
     eventEndDate: firebase.firestore.Timestamp.fromDate(eventEndDate),
     owner: userId,
     isNetworkingAvailable: true,
-    bannerPath,
-    bannerUrl,
     description,
     visibility,
     eventOpens,
     eventCloses,
   };
+
+  if (isCreate || bannerUrl !== null) {
+    eventDetails.bannerPath = bannerPath;
+    eventDetails.bannerUrl = bannerUrl;
+  }
+
+  if (isCreate) {
+    eventDetails.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+  } else {
+    eventDetails.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
+  }
 
   const eventSession = {
     id: sessionId,
@@ -523,17 +533,27 @@ export const createConference = async (
   return db
     .runTransaction(async function (transaction) {
       let eventsSessionDetailsSnapshot = await transaction.get(eventsSessionDetailsRef);
-      if (eventsSessionDetailsSnapshot.exists) {
+      let sessionDetailsExists = eventsSessionDetailsSnapshot.exists;
+      if (isCreate && sessionDetailsExists) {
         throw new Error("Event already exists");
       }
 
       let eventSessionSnapshot = await transaction.get(eventSessionRef);
-      if (eventSessionSnapshot.exists) {
+      let eventSessionExists = eventSessionSnapshot.exists;
+      if (isCreate && eventSessionExists) {
         throw new Error("Event session already exists");
       }
+      if (!sessionDetailsExists) {
+        transaction.set(eventsSessionDetailsRef, eventDetails);
+      } else {
+        transaction.update(eventsSessionDetailsRef, eventDetails);
+      }
 
-      transaction.set(eventsSessionDetailsRef, eventDetails);
-      transaction.set(eventSessionRef, eventSession);
+      if (!eventSessionExists) {
+        transaction.set(eventSessionRef, eventSession);
+      } else {
+        transaction.update(eventSessionRef, eventSession);
+      }
     })
     .then(function () {
       console.log("Transaction successfully committed!");

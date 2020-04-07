@@ -11,6 +11,8 @@ import AvatarLogin from "../../Components/Topbar/AvatarLogin";
 import Container from "@material-ui/core/Container";
 import routes from "../../Config/routes";
 import { useAuthState } from "react-firebase-hooks/auth";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+import { useTheme } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -39,6 +41,9 @@ const FullTopbar = (props) => {
   const [user] = useAuthState(firebase.auth());
 
   const classes = useStyles();
+  const theme = useTheme();
+
+  const isMobile = useMediaQuery(theme.breakpoints.down("xs"));
 
   return (
     <AppBar className={clsx(classes.root, className)}>
@@ -49,7 +54,7 @@ const FullTopbar = (props) => {
           </a>
           <div className={classes.flexGrow} />
           <div style={{ display: "flex" }}>
-            {showCreate && (
+            {showCreate && !isMobile && (
               <div>
                 <Button
                   variant="outlined"
