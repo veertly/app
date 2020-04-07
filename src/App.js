@@ -18,7 +18,6 @@ import EventSessionContainer from "./Containers/EventSession/EventSessionContain
 import CreateSessionContainer from "./Containers/Organizer/CreateSessionContainer";
 
 import LoginContainer from "./Containers/LoginContainer";
-// import HomeContainer from "./Containers/HomeContainer";
 import HomePage from "./Containers/HomePage";
 
 import PrivateRoute from "./Components/PrivateRoute";
@@ -26,7 +25,6 @@ import { createMuiTheme } from "@material-ui/core/styles";
 import { ThemeProvider } from "@material-ui/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 
-// import * as firebase from "firebase";
 import EventShowContainer from "./Containers/EventShowContainer";
 
 import { userOperationsReducer } from "./Redux/userOperationsReducer";
