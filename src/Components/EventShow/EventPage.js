@@ -9,17 +9,34 @@ import Grid from "@material-ui/core/Grid";
 import routes from "../../Config/routes";
 import { useHistory } from "react-router-dom";
 import { DEFAULT_EVENT_OPEN_MINUTES } from "../../Config/constants";
+import { useAuthState } from "react-firebase-hooks/auth";
+import firebase from "../../Modules/firebaseApp";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     maxWidth: theme.breakpoints.values.sm,
     width: "100%",
     margin: "auto",
+    position: "relative",
+  },
+  ctaContainer: {
+    [theme.breakpoints.down("xs")]: {
+      width: "100%",
+      textAlign: "center",
+      marginTop: 16,
+    },
+  },
+  editButton: {
+    position: "absolute",
+    right: theme.spacing(2),
+    top: theme.spacing(2),
   },
 }));
 
 export default function EventPage(props) {
-  let { bannerUrl, eventBeginDate, eventEndDate, title, description, website, id, eventOpens } = props.event;
+  let { bannerUrl, eventBeginDate, eventEndDate, title, description, website, id, eventOpens, owner } = props.event;
+  let { isPreview } = props;
+
   const history = useHistory();
 
   let beginDate = eventBeginDate ? moment(eventBeginDate.toDate()) : null;
@@ -28,6 +45,8 @@ export default function EventPage(props) {
   const classes = useStyles();
   const isSameDay = beginDate ? beginDate.isSame(endDate, "day") : false;
 
+  const [user] = useAuthState(firebase.auth());
+
   const isLive = React.useMemo(() => {
     if (!eventBeginDate) {
       return true;
@@ -35,11 +54,22 @@ export default function EventPage(props) {
     let openMinutes = eventOpens ? Number(eventOpens) : DEFAULT_EVENT_OPEN_MINUTES;
     let beginDate = moment(eventBeginDate.toDate());
 
-    return beginDate.subtract(openMinutes, "minutes");
+    return beginDate.subtract(openMinutes, "minutes").isBefore(moment());
   }, [eventBeginDate, eventOpens]);
 
   return (
     <Card className={classes.root}>
+      {!isPreview && user && user.uid === owner && (
+        <Button
+          variant="outlined"
+          color="secondary"
+          disableElevation
+          onClick={() => history.push(routes.EDIT_EVENT_SESSION(id))}
+          className={classes.editButton}
+        >
+          Edit Event
+        </Button>
+      )}
       {bannerUrl && bannerUrl.trim() !== "" && (
         <CardMedia component="img" alt={title} image={bannerUrl} title={title} />
       )}
@@ -74,7 +104,7 @@ export default function EventPage(props) {
               </Typography>
             )}
           </div>
-          <div>
+          <div className={classes.ctaContainer}>
             {!isLive && (
               <Button variant="contained" color="primary" disableElevation disabled>
                 Add to calendar

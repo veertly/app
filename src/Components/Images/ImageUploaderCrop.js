@@ -4,11 +4,12 @@ import "react-image-crop/dist/ReactCrop.css";
 import { Button } from "@material-ui/core";
 
 export default function ImageUploaderCrop(props) {
-  const { onBlobChange, onPreviewUrlChange, aspectRatio } = props;
+  const { onBlobChange, onPreviewUrlChange, aspectRatio, initialImageBlob } = props;
   const [upImg, setUpImg] = useState();
   const [imgRef, setImgRef] = useState(null);
   const [crop, setCrop] = useState({ unit: "%", width: 100, aspect: aspectRatio ? aspectRatio : 16 / 9 });
   const [previewUrl, setPreviewUrl] = useState();
+  const [initialBlobUrl, setInitialBlobUrl] = useState();
 
   const onSelectFile = (e) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -28,6 +29,18 @@ export default function ImageUploaderCrop(props) {
       createCropPreview(imgRef, crop, "newFile.jpeg");
     }
   };
+
+  React.useEffect(() => {
+    if (initialImageBlob && !initialBlobUrl) {
+      let url = window.URL.createObjectURL(initialImageBlob);
+      setInitialBlobUrl(url);
+    }
+    return () => {
+      if (initialBlobUrl) {
+        window.URL.revokeObjectURL(initialBlobUrl);
+      }
+    };
+  }, [initialImageBlob, initialBlobUrl]);
 
   React.useEffect(() => {
     if (!previewUrl && imgRef && crop.width && crop.height) {
@@ -72,9 +85,9 @@ export default function ImageUploaderCrop(props) {
     });
   };
   return (
-    <div style={{ marginTop: imgRef ? 16 : 0, marginBottom: 16 }}>
+    <div style={{ marginTop: imgRef ? 16 : 0, marginBottom: 16, textAlign: "center" }}>
       <ReactCrop
-        src={upImg}
+        src={upImg ? upImg : initialBlobUrl}
         onImageLoaded={onLoad}
         crop={crop}
         onChange={(c) => setCrop(c)}

@@ -8,6 +8,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import firebase from "../../Modules/firebaseApp";
 import { logout } from "../../Modules/userOperations";
 import EditProfileDialog from "../EditProfile/EditProfileDialog";
+import routes from "../../Config/routes";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -35,6 +36,7 @@ export default (props) => {
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
+  const isOwner = eventSession && user && eventSession.owner === user.uid;
 
   function handleClose() {
     setAnchorEl(null);
@@ -59,17 +61,6 @@ export default (props) => {
   return (
     <React.Fragment>
       <EditProfileDialog open={openEditProfile} setOpen={setOpenEditProfile} user={user} eventSession={eventSession} />
-
-      {/* {!user && !onLogin && (
-        <Button
-          variant="contained"
-          color="secondary"
-          size="small"
-          onClick={() => history.push(routes.GO_TO_LOGIN(location.pathname))}
-        >
-          Log in
-        </Button>
-      )} */}
       {user && (
         <div>
           {user && user.photoURL && (
@@ -104,6 +95,16 @@ export default (props) => {
                 }}
               >
                 Profile
+              </MenuItem>
+            )}
+            {isOwner && (
+              <MenuItem
+                onClick={() => {
+                  window.open(routes.EDIT_EVENT_SESSION(eventSession.id), "_blank");
+                  handleClose();
+                }}
+              >
+                Edit Event
               </MenuItem>
             )}
             <MenuItem onClick={handleLogout}>Log out</MenuItem>

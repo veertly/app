@@ -15,28 +15,29 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme } from "@material-ui/core/styles";
 
 // import routes from "../../Config/routes";
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
-    boxShadow: "none"
+    boxShadow: "none",
   },
   flexGrow: {
-    flexGrow: 1
+    flexGrow: 1,
   },
   signOutButton: {
-    marginLeft: theme.spacing(1)
+    marginLeft: theme.spacing(1),
   },
   logo: {
-    width: 180
+    width: 180,
     // marginTop: theme.spacing(1)
   },
   button: {
     margin: theme.spacing(0, 2, 0, 1),
     float: "left",
     width: 135,
-    textAlign: "center"
+    textAlign: "center",
   },
   roomButtonsContainer: {
-    margin: theme.spacing(0, 4, 0, 4)
+    margin: theme.spacing(0, 4, 0, 4),
+    minWidth: 318,
   },
   currentRoomContainer: {
     backgroundColor: theme.palette.secondary.main,
@@ -49,8 +50,18 @@ const useStyles = makeStyles(theme => ({
     border: "1px solid " + theme.palette.secondary.main,
     boxShadow: "0px 1px 5px 0px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 3px 1px -2px rgba(0,0,0,0.12)",
     width: 135,
-    textAlign: "center"
-  }
+    textAlign: "center",
+  },
+  title: {
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    display: "block",
+  },
+  avatarContainer: {
+    position: "absolute",
+    right: theme.spacing(2),
+  },
 }));
 
 const RoomButton = ({ onClick, disabled, isCurrentRoom, children }) => {
@@ -83,7 +94,7 @@ const RoomButton = ({ onClick, disabled, isCurrentRoom, children }) => {
     </Button>
   );
 };
-export default withRouter(props => {
+export default withRouter((props) => {
   const { isInConferenceRoom, setIsInConferenceRoom, isInNetworkingCall, isNetworkingAvailable, eventSession } = props;
   let [goToNetworkingDialog, setGoToNetworkingDialog] = useState(false);
   let [goToConferenceDialog, setGoToConferenceDialog] = useState(false);
@@ -127,12 +138,15 @@ export default withRouter(props => {
           {/* </RouterLink> */}
           <div className={classes.flexGrow}>
             {!isMobile && eventSession && (
-              <Typography variant="h5" align="left" style={{ fontWeight: "lighter" }}>
+              // <div className={classes.title}>
+              <Typography variant="h5" align="left" style={{ fontWeight: "lighter" }} className={classes.title}>
                 {eventSession.title}
               </Typography>
             )}
           </div>
-          <AvatarLogin eventSession={eventSession} />
+          <div className={classes.avatarContainer}>
+            <AvatarLogin eventSession={eventSession} />
+          </div>
         </Toolbar>
       </AppBar>
       <GoToNetworkingRoomDialog
