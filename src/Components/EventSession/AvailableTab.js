@@ -6,55 +6,55 @@ import LinkedinIcon from "../../Assets/Icons/Linkedin";
 import TwitterIcon from "../../Assets/Icons/Twitter";
 import Button from "@material-ui/core/Button";
 import JoinParticipantDialog from "./JoinParticipantDialog";
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {},
   participantContainer: {
     "&:hover": {
       backgroundColor: "rgba(28, 71, 98, 0.08)", //"#e0f3ff", //"#e4ffe4",
       cursor: "pointer",
-      borderRadius: 0
+      borderRadius: 0,
     },
     margin: theme.spacing(1),
     padding: theme.spacing(1),
-    display: "flex"
+    display: "flex",
   },
   participantDetails: {
     flexGrow: 1,
     marginLeft: theme.spacing(2),
-    position: "relative"
+    position: "relative",
   },
   topicsInterested: {
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
     overflow: "hidden",
     display: "block",
-    width: 190
+    width: 190,
   },
   avatar: {
-    marginTop: 1
+    marginTop: 1,
   },
   socialContainer: {
     position: "absolute",
     right: 0,
     top: 0,
     // wi dth: 16,
-    color: theme.palette.text.secondary
+    color: theme.palette.text.secondary,
   },
   buttonContainer: {
     width: "100%",
-    textAlign: "center"
+    textAlign: "center",
   },
   button: {
-    margin: theme.spacing(1)
+    margin: theme.spacing(1),
   },
   title: {
     marginTop: theme.spacing(1),
-    display: "block"
-  }
+    display: "block",
+  },
 }));
 // rgba(28, 71, 98, 0.08)
 
-export default function(props) {
+export default function (props) {
   const classes = useStyles();
   const [joinDialog, setJoinDialog] = React.useState(false);
   const [selectedParticipant, setSelectedParticipant] = React.useState(null);
@@ -63,7 +63,7 @@ export default function(props) {
   // const [participantsList , setParticipantsList
   // console.log({ listParticipantsAvailableTab: eventSession.participantsJoined });
 
-  const participantsAvailable = Object.keys(eventSession.participantsJoined).filter(userId => {
+  const participantsAvailable = Object.keys(eventSession.participantsJoined).filter((userId) => {
     let participant = users[userId];
     let sessionParticipant = eventSession.participantsJoined[userId];
     // console.log({ sessionParticipant });

@@ -7,6 +7,9 @@ import { withRouter } from "react-router-dom";
 import Page from "../../Components/Core/Page";
 import { Paper } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import { useDocumentData } from "react-firebase-hooks/firestore";
+import { useHistory } from "react-router-dom";
+import routes from "../../Config/routes";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -63,18 +66,33 @@ export default withRouter((props) => {
 
   const [user, initialising, error] = useAuthState(firebase.auth());
 
-  if (initialising) {
+  let originalSessionId = props.match.params.sessionId;
+
+  let sessionId = originalSessionId ? originalSessionId.toLowerCase() : null;
+  const history = useHistory();
+
+  const [eventSessionDetails, loadingSessionDetails, errorSessionDetails] = useDocumentData(
+    firebase.firestore().collection("eventSessionsDetails").doc(sessionId)
+  );
+
+  if (initialising || loadingSessionDetails) {
     return <p>Loading...</p>;
   }
 
-  if (error) {
+  if (error || errorSessionDetails) {
     console.error(error);
     return <p>Error :(</p>;
+  }
+
+  if (!user || (user && eventSessionDetails && user.uid !== eventSessionDetails.owner)) {
+    history.push(routes.EVENT_SESSION(sessionId));
   }
   return (
     <Layout maxWidth="md">
       <Page title="Veertly | Create new event">
-        <Paper className={classes.root}>{user && <EditEventSessionForm user={user} />}</Paper>
+        <Paper className={classes.root}>
+          {user && <EditEventSessionForm user={user} eventSession={eventSessionDetails} />}
+        </Paper>
       </Page>
     </Layout>
   );

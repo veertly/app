@@ -12,31 +12,43 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import Typography from "@material-ui/core/Typography";
 import { Button } from "@material-ui/core";
 import routes from "../Config/routes";
+import { useRouteMatch } from "react-router-dom";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
-    margin: theme.spacing(10, 1, 3)
-  }
+    margin: theme.spacing(10, 1, 3),
+  },
 }));
 
-export default withRouter(props => {
+export default withRouter((props) => {
   const [user, initialising /* error */] = useAuthState(firebase.auth());
+  let match = useRouteMatch("/v/:sessionId/:action");
+  console.log(match);
+  const { location } = props;
 
   const classes = useStyles();
   // const queryValues = queryString.parse(props.location.search);
   // const callbackUrl = queryValues.callback ? queryValues.callback : "/";
   let callbackUrl = props.location.search.replace("?callback=", ""); // queryValues.callback ? queryValues.callback : "/";
-  callbackUrl = callbackUrl.split("&")[0];
-  // const { state, dispatch } = useContext(GlobalContext);
+
+  let { sessionId, isInSessionPage } = React.useMemo(() => {
+    let sessionId = undefined;
+    let splits = callbackUrl.split("/");
+    if (splits[1] === "v") {
+      sessionId = splits[2];
+    }
+    sessionId = sessionId.replace("/live", "");
+    return {
+      sessionId: sessionId ? sessionId.toLowerCase() : null,
+      isInSessionPage: sessionId !== undefined,
+    };
+  }, [location.search, callbackUrl]);
 
   useEffect(() => {
     window.analytics.page("LoginPage");
   }, []);
 
-  const checkAndRedirect = async uid => {
-    let sessionId = callbackUrl.replace("/v/", "");
-    let isInSessionPage = callbackUrl.includes("/v/");
-
+  const checkAndRedirect = async (uid) => {
     if (isInSessionPage) {
       let hasSession = await hasUserSession(sessionId, uid);
       if (hasSession) {
@@ -52,7 +64,7 @@ export default withRouter(props => {
     signInFlow: "popup",
     // signInSuccessUrl: callbackUrl,
     callbacks: {
-      signInSuccessWithAuthResult: async function(authResult, redirectUrl) {
+      signInSuccessWithAuthResult: async function (authResult, redirectUrl) {
         var user = authResult.user;
         // var credential = authResult.credential;
         var isNewUser = authResult.additionalUserInfo.isNewUser;
@@ -72,7 +84,7 @@ export default withRouter(props => {
         checkAndRedirect(user.uid);
 
         return false;
-      }
+      },
     },
     signInOptions: [
       firebase.auth.GoogleAuthProvider.PROVIDER_ID,
@@ -80,9 +92,9 @@ export default withRouter(props => {
       {
         provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
         // Whether the display name should be displayed in the Sign Up page.
-        requireDisplayName: true
-      }
-    ]
+        requireDisplayName: true,
+      },
+    ],
   };
   if (initialising) {
     return null;
@@ -94,6 +106,7 @@ export default withRouter(props => {
     // } else {
     //   props.history.push(callbackUrl);
     // }
+    debugger;
     checkAndRedirect(user.uid);
   }
 
@@ -101,7 +114,7 @@ export default withRouter(props => {
     firebase
       .auth()
       .signInAnonymously()
-      .catch(function(error) {
+      .catch(function (error) {
         // Handle Errors here.
         var errorCode = error.code;
         var errorMessage = error.message;
@@ -110,7 +123,7 @@ export default withRouter(props => {
       });
   };
 
-  firebase.auth().onAuthStateChanged(function(user) {
+  firebase.auth().onAuthStateChanged(function (user) {
     if (user) {
       // User is signed in.
       // var isAnonymous = user.isAnonymous;
@@ -123,6 +136,7 @@ export default withRouter(props => {
     }
     // ...
   });
+
   return (
     <CenteredLayout>
       {/* <Typography variant="subtitle1" align="center">

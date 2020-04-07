@@ -18,7 +18,6 @@ import EventSessionContainer from "./Containers/EventSession/EventSessionContain
 import CreateSessionContainer from "./Containers/Organizer/CreateSessionContainer";
 
 import LoginContainer from "./Containers/LoginContainer";
-// import HomeContainer from "./Containers/HomeContainer";
 import HomePage from "./Containers/HomePage";
 
 import PrivateRoute from "./Components/PrivateRoute";
@@ -26,7 +25,6 @@ import { createMuiTheme } from "@material-ui/core/styles";
 import { ThemeProvider } from "@material-ui/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 
-// import * as firebase from "firebase";
 import EventShowContainer from "./Containers/EventShowContainer";
 
 import { userOperationsReducer } from "./Redux/userOperationsReducer";
@@ -36,6 +34,8 @@ import useCombinedReducers from "use-combined-reducers";
 import EditProfileContainer from "./Containers/EditProfileContainer";
 
 import { SnackbarProvider } from "material-ui-snackbar-provider";
+import EventPageContainer from "./Containers/EventSession/EventPageContainer";
+import EditSessionContainer from "./Containers/Organizer/EditSessionContainer";
 
 const theme = createMuiTheme({
   palette: {
@@ -43,8 +43,8 @@ const theme = createMuiTheme({
     secondary: { main: "#5cdb94" },
     background: {
       default: "#F4F6F8",
-      paper: "#FFF"
-    }
+      paper: "#FFF",
+    },
   },
   overrides: {
     // Name of the component ⚛️ / style shee
@@ -52,21 +52,21 @@ const theme = createMuiTheme({
       // Name of the rule
       root: {
         // Some CSS
-        borderRadius: 0
-      }
+        borderRadius: 0,
+      },
     },
 
     MuiPaper: {
       rounded: {
-        borderRadius: 0
-      }
-    }
-  }
+        borderRadius: 0,
+      },
+    },
+  },
 });
 
 const App = () => {
   const [state, dispatch] = useCombinedReducers({
-    userOperations: useReducer(userOperationsReducer, {})
+    userOperations: useReducer(userOperationsReducer, {}),
   });
 
   return (
@@ -79,8 +79,9 @@ const App = () => {
               <Route exact={true} path={routes.HOME()} component={HomePage} />
               <Route exact={true} path={routes.LIST_MEETUPS()} component={MeetupsContainer} />
               <Route exact={true} path={routes.MEETUP_PAGE()} component={MeetupContainer} />
-              <PrivateRoute exact={true} path={routes.EVENT_SESSION_OLD()} component={EventSessionContainer} />
-              <PrivateRoute exact={true} path={routes.EVENT_SESSION()} component={EventSessionContainer} />
+              <PrivateRoute exact={true} path={routes.EVENT_SESSION_LIVE()} component={EventSessionContainer} />
+              <PrivateRoute exact={true} path={routes.EDIT_EVENT_SESSION()} component={EditSessionContainer} />
+              <Route exact={true} path={routes.EVENT_SESSION()} component={EventPageContainer} />
               <Route exact={true} path={routes.EVENT_PAGE()} component={EventShowContainer} />
               <Route exact={true} path={routes.LOGIN_PATH()} component={LoginContainer} />
               <PrivateRoute path={routes.EDIT_PROFILE_RAW()} component={EditProfileContainer} />

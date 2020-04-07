@@ -1,52 +1,42 @@
 import React, { useState } from "react";
 import { makeStyles } from "@material-ui/styles";
 
-import Button from "@material-ui/core/Button";
-import { useHistory, useLocation } from "react-router-dom";
-
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
 import Avatar from "@material-ui/core/Avatar";
-import routes from "../../Config/routes";
 import { useAuthState } from "react-firebase-hooks/auth";
 import firebase from "../../Modules/firebaseApp";
 import { logout } from "../../Modules/userOperations";
 import EditProfileDialog from "../EditProfile/EditProfileDialog";
+import routes from "../../Config/routes";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
-    boxShadow: "none"
+    boxShadow: "none",
   },
   flexGrow: {
-    flexGrow: 1
+    flexGrow: 1,
   },
   signOutButton: {
-    marginLeft: theme.spacing(1)
+    marginLeft: theme.spacing(1),
   },
   logo: {
     width: 180,
-    marginTop: theme.spacing(1)
-  }
+    marginTop: theme.spacing(1),
+  },
 }));
 
-export default props => {
+export default (props) => {
   const { eventSession } = props;
-  const history = useHistory();
-  const location = useLocation();
-
-  // if (!eventSession) {
-  //   return null;
-  // }
 
   const [openEditProfile, setOpenEditProfile] = useState(false);
 
   const classes = useStyles();
-  const [user /* , initialising, error */] = useAuthState(firebase.auth());
+  const [user] = useAuthState(firebase.auth());
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
-
-  const onLogin = location.pathname === "/login";
+  const isOwner = eventSession && user && eventSession.owner === user.uid;
 
   function handleClose() {
     setAnchorEl(null);
@@ -71,17 +61,6 @@ export default props => {
   return (
     <React.Fragment>
       <EditProfileDialog open={openEditProfile} setOpen={setOpenEditProfile} user={user} eventSession={eventSession} />
-
-      {!user && !onLogin && (
-        <Button
-          variant="contained"
-          color="secondary"
-          size="small"
-          onClick={() => history.push(routes.GO_TO_LOGIN(location.pathname))}
-        >
-          Log in
-        </Button>
-      )}
       {user && (
         <div>
           {user && user.photoURL && (
@@ -98,11 +77,11 @@ export default props => {
             anchorEl={anchorEl}
             anchorOrigin={{
               vertical: "top",
-              horizontal: "center"
+              horizontal: "center",
             }}
             transformOrigin={{
               vertical: "bottom",
-              horizontal: "center"
+              horizontal: "center",
             }}
             keepMounted
             open={open}
@@ -116,6 +95,16 @@ export default props => {
                 }}
               >
                 Profile
+              </MenuItem>
+            )}
+            {isOwner && (
+              <MenuItem
+                onClick={() => {
+                  window.open(routes.EDIT_EVENT_SESSION(eventSession.id), "_blank");
+                  handleClose();
+                }}
+              >
+                Edit Event
               </MenuItem>
             )}
             <MenuItem onClick={handleLogout}>Log out</MenuItem>

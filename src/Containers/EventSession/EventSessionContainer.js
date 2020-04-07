@@ -25,34 +25,35 @@ import { useHistory } from "react-router-dom";
 import routes from "../../Config/routes";
 import { initFirebasePresenceSync } from "../../Modules/userOperations";
 import Announcements from "../../Components/EventSession/Announcements";
+import { DEFAULT_EVENT_OPEN_MINUTES } from "../../Config/constants";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     paddingTop: 56,
     height: "100%",
     [theme.breakpoints.up("sm")]: {
-      paddingTop: 64
+      paddingTop: 64,
     },
-    position: "relative"
+    position: "relative",
   },
   shiftContent: {
-    paddingLeft: 300
+    paddingLeft: 300,
   },
 
   mainPane: {
     position: "relative",
     height: "100%",
-    backgroundColor: theme.palette.background.default
+    backgroundColor: theme.palette.background.default,
   },
   noCall: {
     width: "100%",
     textAlign: "center",
     position: "absolute",
-    top: "30%"
-  }
+    top: "30%",
+  },
 }));
 
-export default withRouter(props => {
+export default withRouter((props) => {
   const [user /* , initialising, error */] = useAuthState(firebase.auth());
 
   const [initCompleted, setInitCompleted] = useState(false);
@@ -81,54 +82,36 @@ export default withRouter(props => {
   const [openSidebar, setOpenSidebar] = useState(false);
   const history = useHistory();
 
-  if (sessionId === "codevscovid") {
-    history.push(routes.EVENT_SESSION("CodeVsCOVID19"));
-  }
-
   const handleSidebarClose = () => {
     setOpenSidebar(false);
   };
 
   const shouldOpenSidebar = isDesktop ? true : openSidebar;
-  useBeforeunload(e => {
+  useBeforeunload((e) => {
     // setAsOffline(composedEventSession, userId);
   });
 
   const [eventSession, loadingSession, errorSession] = useDocumentData(
-    firebase
-      .firestore()
-      .collection("eventSessions")
-      .doc(sessionId)
+    firebase.firestore().collection("eventSessions").doc(sessionId)
   );
   const [eventSessionDetails, loadingSessionDetails, errorSessionDetails] = useDocumentData(
-    firebase
-      .firestore()
-      .collection("eventSessionsDetails")
-      .doc(sessionId)
+    firebase.firestore().collection("eventSessionsDetails").doc(sessionId)
   );
-  const [participantsJoined, loadingParticipantsJoined, errorParticipantsJoined] = useCollectionData(
-    firebase
-      .firestore()
-      .collection("eventSessions")
-      .doc(sessionId)
-      .collection("participantsJoined"),
+  const [
+    participantsJoined,
+    loadingParticipantsJoined,
+    errorParticipantsJoined,
+  ] = useCollectionData(
+    firebase.firestore().collection("eventSessions").doc(sessionId).collection("participantsJoined"),
     { idField: "id" }
   );
   const [liveGroups, loadingLiveGroups, errorLiveGroups] = useCollectionData(
-    firebase
-      .firestore()
-      .collection("eventSessions")
-      .doc(sessionId)
-      .collection("liveGroups"),
+    firebase.firestore().collection("eventSessions").doc(sessionId).collection("liveGroups"),
     { idField: "idField" }
   );
 
   const [usersFirebase, loadingUsers, errorUsers] = useCollectionData(
-    firebase
-      .firestore()
-      .collection("eventSessions")
-      .doc(sessionId)
-      .collection("participantsDetails")
+    firebase.firestore().collection("eventSessions").doc(sessionId).collection("participantsDetails")
   );
 
   useEffect(() => {
@@ -175,12 +158,12 @@ export default withRouter(props => {
           ...eventSession,
           ...eventSessionDetails,
           participantsJoined: participantsJoinedMap,
-          liveGroups: liveGroupsMap
+          liveGroups: liveGroupsMap,
         };
         setComposedEventSession(tempComposedEventSession);
         if (!initCompleted && liveGroups && participantsJoined) {
-          if (!usersFirebase.find(item => item.id === userId)) {
-            history.push(routes.EDIT_PROFILE(routes.EVENT_SESSION(sessionId)));
+          if (!usersFirebase.find((item) => item.id === userId)) {
+            history.push(routes.EDIT_PROFILE(routes.EVENT_SESSION_LIVE(sessionId)));
           }
           // console.lo({ eventSession });
           // console.lo("ON effect to set as available...");
@@ -233,13 +216,33 @@ export default withRouter(props => {
     history.push(routes.CREATE_EVENT_SESSION());
   };
 
-  let users = {};
-  if (usersFirebase) {
-    users = usersFirebase.reduce((result, user) => {
+  const isLive = React.useMemo(() => {
+    if (!composedEventSession || !composedEventSession.eventBeginDate || !composedEventSession.eventOpens) {
+      return true;
+    }
+    const { eventBeginDate, eventOpens } = composedEventSession;
+    let openMinutes = eventOpens ? Number(eventOpens) : DEFAULT_EVENT_OPEN_MINUTES;
+    let beginDate = moment(eventBeginDate.toDate());
+
+    return beginDate.subtract(openMinutes, "minutes").isBefore(moment());
+  }, [composedEventSession]);
+
+  useEffect(() => {
+    if (!isLive) {
+      history.push(routes.EVENT_SESSION(sessionId));
+    }
+  }, [isLive]);
+
+  const users = React.useMemo(() => {
+    if (!usersFirebase) {
+      return {};
+    }
+    return usersFirebase.reduce((result, user) => {
       result[user.id] = user;
       return result;
     }, {});
-  }
+  }, [usersFirebase]);
+
   if (loadingUsers || loadingSession || loadingSessionDetails || loadingParticipantsJoined || loadingLiveGroups) {
     return <p>Loading...</p>;
   }
@@ -256,7 +259,7 @@ export default withRouter(props => {
   // console.log(participantsJoined);
   // console.log(liveGroups);
 
-  const handleSetIsInConferenceRoom = openConference => {
+  const handleSetIsInConferenceRoom = (openConference) => {
     if (openConference) {
       if (currentGroupId) {
         leaveCall(composedEventSession, userId);
@@ -283,7 +286,7 @@ export default withRouter(props => {
         <div
           className={clsx({
             [classes.root]: true,
-            [classes.shiftContent]: false
+            [classes.shiftContent]: false,
           })}
         >
           <EventSessionTopbar
@@ -316,7 +319,8 @@ export default withRouter(props => {
   }
 
   // console.log({ now: new Date().getTime(), liveAt: eventSession.liveAt });
-  let isLive = composedEventSession.liveAt ? new Date().getTime() / 1000 > composedEventSession.liveAt : true;
+  // let isLive = composedEventSession.liveAt ? new Date().getTime() / 1000 > composedEventSession.liveAt : true;
+
   // console.log({ composedEventSession });
 
   // console.log({ currentGroup });
@@ -324,7 +328,7 @@ export default withRouter(props => {
     <div
       className={clsx({
         [classes.root]: true,
-        [classes.shiftContent]: isDesktop
+        [classes.shiftContent]: isDesktop,
       })}
     >
       <Page title={`Veertly | ${composedEventSession.title}`}> </Page>
