@@ -149,7 +149,6 @@ function EditEventSessionForm(props) {
   const [errors, setErrors] = React.useState({});
 
   let mounted = true;
-  console.log({ eventDescription });
   useEffect(() => {
     let fetchBlob = async () => {
       if (bannerImageBlob === null && eventSession && eventSession.bannerUrl) {
@@ -511,7 +510,7 @@ function EditEventSessionForm(props) {
                   onChange={handleDescriptionUpdate}
                   inlineToolbar={true}
                   maxLength={5000}
-                  value={eventDescription}
+                  value={!isNewEvent && eventSession ? eventSession.description : null}
                   inlineToolbarControls={[
                     "title",
                     "bold",
