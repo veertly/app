@@ -479,14 +479,20 @@ export const createConference = async (
   conferenceRoomYoutubeVideoId,
   website,
   expectedAmountParticipants,
-  liveAt,
+  eventBeginDate,
+  eventEndDate,
   bannerPath,
-  description
+  bannerUrl,
+  description,
+  visibility,
+  eventOpens,
+  eventCloses
 ) => {
-  // let db = firebase.firestore();
   let normedSessionId = sessionId.toLowerCase();
-  // let eventsSessionDetailsRef = db.collection("eventSessionsDetails").doc(normedSessionId);
-  // let eventSessionRef = db.collection("eventSessions").doc(normedSessionId);
+
+  let db = firebase.firestore();
+  let eventsSessionDetailsRef = db.collection("eventSessionsDetails").doc(normedSessionId);
+  let eventSessionRef = db.collection("eventSessions").doc(normedSessionId);
 
   const eventDetails = {
     id: normedSessionId,
@@ -496,41 +502,44 @@ export const createConference = async (
     conferenceRoomYoutubeVideoId: conferenceRoomYoutubeVideoId !== undefined ? conferenceRoomYoutubeVideoId : "",
     website,
     expectedAmountParticipants,
-    liveAt,
+    eventBeginDate: firebase.firestore.Timestamp.fromDate(eventBeginDate),
+    eventEndDate: firebase.firestore.Timestamp.fromDate(eventEndDate),
     owner: userId,
     isNetworkingAvailable: true,
     bannerPath,
+    bannerUrl,
     description,
+    visibility,
+    eventOpens,
+    eventCloses,
   };
-  console.log({ eventDetails });
-  return;
 
-  // const eventSession = {
-  //   id: sessionId,
-  //   originalSessionId: sessionId,
-  //   owner: userId,
-  // };
+  const eventSession = {
+    id: sessionId,
+    originalSessionId: sessionId,
+    owner: userId,
+  };
 
-  // return db
-  //   .runTransaction(async function (transaction) {
-  //     let eventsSessionDetailsSnapshot = await transaction.get(eventsSessionDetailsRef);
-  //     if (eventsSessionDetailsSnapshot.exists) {
-  //       throw new Error("Event already exists");
-  //     }
+  return db
+    .runTransaction(async function (transaction) {
+      let eventsSessionDetailsSnapshot = await transaction.get(eventsSessionDetailsRef);
+      if (eventsSessionDetailsSnapshot.exists) {
+        throw new Error("Event already exists");
+      }
 
-  //     let eventSessionSnapshot = await transaction.get(eventSessionRef);
-  //     if (eventSessionSnapshot.exists) {
-  //       throw new Error("Event session already exists");
-  //     }
+      let eventSessionSnapshot = await transaction.get(eventSessionRef);
+      if (eventSessionSnapshot.exists) {
+        throw new Error("Event session already exists");
+      }
 
-  //     transaction.set(eventsSessionDetailsRef, eventDetails);
-  //     transaction.set(eventSessionRef, eventSession);
-  //   })
-  //   .then(function () {
-  //     console.log("Transaction successfully committed!");
-  //   })
-  //   .catch(function (error) {
-  //     // snackbar.showMessage(error.message);
-  //     throw error;
-  //   });
+      transaction.set(eventsSessionDetailsRef, eventDetails);
+      transaction.set(eventSessionRef, eventSession);
+    })
+    .then(function () {
+      console.log("Transaction successfully committed!");
+    })
+    .catch(function (error) {
+      // snackbar.showMessage(error.message);
+      throw error;
+    });
 };
