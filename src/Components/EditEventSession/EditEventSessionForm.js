@@ -37,6 +37,8 @@ import Tooltip from "@material-ui/core/Tooltip";
 import { parseURL } from "../../Utils/parser";
 import SuccessIcon from "@material-ui/icons/CheckCircleOutline";
 import FailIcon from "@material-ui/icons/Cancel";
+import { DEFAULT_EVENT_OPEN_MINUTES, DEFAULT_EVENT_CLOSES_MINUTES } from "../../Config/constants";
+import { getTimestampFromDate } from "../../Modules/firebaseApp";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -103,8 +105,8 @@ function EditEventSessionForm(props) {
     conferenceRoomYoutubeVideoId: "",
     website: "",
     expectedAmountParticipants: "",
-    eventOpens: "30",
-    eventCloses: "60",
+    eventOpens: DEFAULT_EVENT_OPEN_MINUTES,
+    eventCloses: DEFAULT_EVENT_CLOSES_MINUTES,
     visibility: "LISTED",
   });
   const selectedSessionId = values.sessionId;
@@ -229,9 +231,7 @@ function EditEventSessionForm(props) {
     setCreatingEvent(true);
 
     // upload image
-    console.log({ bannerImageBlob });
-    let path = bannerImageBlob ? await uploadEventBanner(values.sessionId, bannerImageBlob, user.uid) : null;
-    console.log(path);
+    let uploadedBanner = bannerImageBlob ? await uploadEventBanner(values.sessionId, bannerImageBlob, user.uid) : null;
     try {
       await createConference(
         values.sessionId,
@@ -243,7 +243,8 @@ function EditEventSessionForm(props) {
         values.expectedAmountParticipants,
         selectedDate.begin.toDate(),
         selectedDate.end.toDate(),
-        path,
+        uploadedBanner ? uploadedBanner.path : null,
+        uploadedBanner ? uploadedBanner.url : null,
         eventDescription,
         values.visibility,
         values.eventOpens,
@@ -675,7 +676,7 @@ function EditEventSessionForm(props) {
                         color="primary"
                         className={classes.button}
                         onClick={() => setActiveStep(0)}
-                        disabled={creatingEvent || eventCreated}
+                        disabled={creatingEvent === true}
                       >
                         Previous
                       </Button>
@@ -710,8 +711,8 @@ function EditEventSessionForm(props) {
             bannerUrl: bannerImagePreviewUrl,
             title: values.title,
             description: eventDescription,
-            beginDate: selectedDate.begin,
-            endDate: selectedDate.end,
+            eventBeginDate: getTimestampFromDate(selectedDate.begin.toDate()),
+            eventEndDate: getTimestampFromDate(selectedDate.end.toDate()),
             website: values.website,
           }}
         />

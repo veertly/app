@@ -5,15 +5,6 @@ import "firebase/database";
 import "firebase/storage";
 
 var firebaseApp = firebase;
-// var firebaseConfig = {
-//   apiKey: "AIzaSyBe7un63vYHMjKzx9uPVF4dBnhyICjgVoA",
-//   authDomain: "veertly.firebaseapp.com",
-//   databaseURL: "https://veertly.firebaseio.com",
-//   projectId: "veertly",
-//   storageBucket: "",
-//   messagingSenderId: "1054983135299",
-//   appId: "1:1054983135299:web:4833a893c55e975c6d74f6"
-// };
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -27,3 +18,7 @@ const firebaseConfig = {
 // Initialize Firebase
 firebaseApp.initializeApp(firebaseConfig);
 export default firebaseApp;
+
+export const getTimestampFromDate = (date) => {
+  return firebaseApp.firestore.Timestamp.fromDate(date);
+};
