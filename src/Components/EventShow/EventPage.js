@@ -11,6 +11,9 @@ import { useHistory } from "react-router-dom";
 import { DEFAULT_EVENT_OPEN_MINUTES } from "../../Config/constants";
 import { useAuthState } from "react-firebase-hooks/auth";
 import firebase from "../../Modules/firebaseApp";
+import MUIAddToCalendar from "../MUIAddToCalendar";
+import { convertFromRaw } from "draft-js";
+import { getUrl } from "../../Modules/environments";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -56,6 +59,23 @@ export default function EventPage(props) {
 
     return beginDate.subtract(openMinutes, "minutes").isBefore(moment());
   }, [eventBeginDate, eventOpens]);
+
+  const calendarEvent = React.useMemo(() => {
+    const sessionUrl = getUrl() + routes.EVENT_SESSION(id);
+    let descriptionText = "";
+    if (description) {
+      let descriptionContent = convertFromRaw(JSON.parse(description));
+      descriptionText = descriptionContent.getPlainText("\u0001");
+    }
+    return {
+      id,
+      title,
+      description: descriptionText,
+      location: sessionUrl,
+      startTime: beginDate,
+      endTime: endDate,
+    };
+  }, [id, description, title, beginDate, endDate]);
 
   return (
     <Card className={classes.root}>
@@ -105,11 +125,7 @@ export default function EventPage(props) {
             )}
           </div>
           <div className={classes.ctaContainer}>
-            {!isLive && (
-              <Button variant="contained" color="primary" disableElevation disabled>
-                Add to calendar
-              </Button>
-            )}
+            {!isLive && <MUIAddToCalendar event={calendarEvent} />}
             {isLive && (
               <Button
                 variant="contained"

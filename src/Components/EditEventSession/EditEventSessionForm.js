@@ -109,23 +109,18 @@ function EditEventSessionForm(props) {
   const isNewEvent = eventSession === undefined;
   // const { register, handleSubmit, watch } = useForm(
   const [values, setValues] = React.useState({
-    sessionId: !isNewEvent ? eventSession.id : "",
-    title: !isNewEvent ? eventSession.title : "",
+    sessionId: !isNewEvent && eventSession.id ? eventSession.id : "",
+    title: !isNewEvent && eventSession.title ? eventSession.title : "",
     conferenceRoomYoutubeLink: !isNewEvent ? getYoutubeUrl(eventSession) : "",
-    conferenceRoomYoutubeVideoId: !isNewEvent ? eventSession.conferenceRoomYoutubeVideoId : "",
-    website: !isNewEvent ? eventSession.website : "",
-    expectedAmountParticipants: !isNewEvent ? eventSession.expectedAmountParticipants : "",
-    eventOpens: !isNewEvent
-      ? eventSession.eventOpens && eventSession.eventOpens.trim() !== ""
-        ? eventSession.eventOpens
-        : DEFAULT_EVENT_OPEN_MINUTES
-      : DEFAULT_EVENT_OPEN_MINUTES,
-    eventCloses: !isNewEvent
-      ? eventSession.eventCloses && eventSession.eventCloses.trim() !== ""
-        ? eventSession.eventCloses
-        : DEFAULT_EVENT_CLOSES_MINUTES
-      : DEFAULT_EVENT_CLOSES_MINUTES,
-    visibility: !isNewEvent ? eventSession.visibility : "LISTED",
+    conferenceRoomYoutubeVideoId:
+      !isNewEvent && eventSession.conferenceRoomYoutubeVideoId ? eventSession.conferenceRoomYoutubeVideoId : "",
+    website: !isNewEvent && eventSession.website ? eventSession.website : "",
+    expectedAmountParticipants:
+      !isNewEvent && eventSession.expectedAmountParticipants ? eventSession.expectedAmountParticipants : "",
+    eventOpens: !isNewEvent && eventSession.eventOpens ? eventSession.eventOpens : DEFAULT_EVENT_OPEN_MINUTES,
+    eventCloses:
+      !isNewEvent && eventSession.eventCloses !== "" ? eventSession.eventCloses : DEFAULT_EVENT_CLOSES_MINUTES,
+    visibility: !isNewEvent && eventSession.visibility ? eventSession.visibility : "LISTED",
   });
   const selectedSessionId = values.sessionId;
   const [selectedVideoType, setSelectedVideoType] = React.useState(
@@ -140,9 +135,13 @@ function EditEventSessionForm(props) {
   const [eventCreated, setEventCreated] = React.useState(false);
   const [sessionIdError, setSessionIdError] = React.useState(undefined);
   const [activeStep, setActiveStep] = React.useState(0);
-  const [bannerImagePreviewUrl, setBannerImagePreviewUrl] = React.useState(!isNewEvent ? eventSession.bannerUrl : null);
+  const [bannerImagePreviewUrl, setBannerImagePreviewUrl] = React.useState(
+    !isNewEvent ? (eventSession.bannerUrl ? eventSession.bannerUrl : null) : null
+  );
   const [bannerImageBlob, setBannerImageBlob] = React.useState(null);
-  const [eventDescription, setEventDescription] = React.useState(!isNewEvent ? eventSession.description : null);
+  const [eventDescription, setEventDescription] = React.useState(
+    !isNewEvent ? (eventSession.description ? eventSession.description : null) : null
+  );
   const [showPreview, setShowPreview] = React.useState(false);
   const [showYoutubePreview, setShowYoutubePreview] = React.useState(false);
   const [showEventCreatedDialog, setShowEventCreatedDialog] = React.useState(false);
@@ -150,7 +149,7 @@ function EditEventSessionForm(props) {
   const [errors, setErrors] = React.useState({});
 
   let mounted = true;
-
+  console.log({ eventDescription });
   useEffect(() => {
     let fetchBlob = async () => {
       if (bannerImageBlob === null && eventSession && eventSession.bannerUrl) {
