@@ -4,6 +4,7 @@ import Avatar from "@material-ui/core/Avatar";
 import Typography from "@material-ui/core/Typography";
 import LinkedinIcon from "../../Assets/Icons/Linkedin";
 import TwitterIcon from "../../Assets/Icons/Twitter";
+import KeybaseIcon from "../../Assets/Icons/Keybase";
 import Button from "@material-ui/core/Button";
 import JoinParticipantDialog from "./JoinParticipantDialog";
 const useStyles = makeStyles((theme) => ({
@@ -54,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 // rgba(28, 71, 98, 0.08)
 
-export default function (props) {
+export default function(props) {
   const classes = useStyles();
   const [joinDialog, setJoinDialog] = React.useState(false);
   const [selectedParticipant, setSelectedParticipant] = React.useState(null);
@@ -157,6 +158,7 @@ export default function (props) {
               )}
 
               <div className={classes.socialContainer} style={{ top: hasSubtitle ? 0 : 8 }}>
+                {participant.keybaseUrl && <KeybaseIcon className={classes.socialIcon} />}
                 {participant.twitterUrl && <TwitterIcon className={classes.socialIcon} />}
                 {participant.linkedinUrl && <LinkedinIcon className={classes.socialIcon} />}
               </div>

@@ -4,40 +4,41 @@ import Avatar from "@material-ui/core/Avatar";
 import Typography from "@material-ui/core/Typography";
 import LinkedinIcon from "../../Assets/Icons/Linkedin";
 import TwitterIcon from "../../Assets/Icons/Twitter";
+import KeybaseIcon from "../../Assets/Icons/Keybase";
 import ProfileChips from "../EditProfile/ProfileChips";
 import MailOutlineIcon from "@material-ui/icons/MailOutline";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   headlineContainer: {
     marginTop: theme.spacing(4),
     marginLeft: theme.spacing(4),
     marginRight: theme.spacing(4),
     padding: theme.spacing(1),
-    display: "flex"
+    display: "flex",
   },
   headlineContainerNoMargins: {
-    display: "flex"
+    display: "flex",
   },
   participantDetails: {
     flexGrow: 1,
-    marginLeft: theme.spacing(2)
+    marginLeft: theme.spacing(2),
   },
   topicsInterested: {
     // textOverflow: "ellipsis",
     // whiteSpace: "nowrap",
     // overflow: "hidden",
     display: "block",
-    maxWidth: 400
+    maxWidth: 400,
     // width: 185
   },
   avatar: {
     marginTop: 1,
     width: 80,
     height: 80,
-    fontSize: "2.5rem"
+    fontSize: "2.5rem",
   },
   participantName: {
-    display: "flex"
+    display: "flex",
   },
   socialNetworkIcon: {
     marginTop: 3,
@@ -45,12 +46,12 @@ const useStyles = makeStyles(theme => ({
     color: theme.palette.primary.main,
     "&:hover": {
       color: theme.palette.secondary.main,
-      cursor: "pointer"
-    }
+      cursor: "pointer",
+    },
   },
   companyTitle: {
-    margin: theme.spacing(0.5, 2)
-  }
+    margin: theme.spacing(0.5, 2),
+  },
 }));
 
 export default function(props) {
@@ -79,7 +80,7 @@ export default function(props) {
       <div
         className={classes.participantDetails}
         style={{
-          paddingTop: !hasSubtitle && !hasChips ? 26 : !hasChips || !hasSubtitle ? 16 : 0
+          paddingTop: !hasSubtitle && !hasChips ? 26 : !hasChips || !hasSubtitle ? 16 : 0,
         }}
       >
         <div className={classes.participantName}>
@@ -95,6 +96,12 @@ export default function(props) {
           {participant.twitterUrl && (
             <a href={participant.twitterUrl} target="_blank">
               <TwitterIcon className={classes.socialNetworkIcon} />
+            </a>
+          )}
+
+          {participant.keybaseUrl && (
+            <a href={participant.keybaseUrl} target="_blank">
+              <KeybaseIcon className={classes.socialNetworkIcon} />
             </a>
           )}
           {participant.emailPublic && participant.email.trim() !== "" && (
