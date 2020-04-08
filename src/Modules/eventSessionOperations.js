@@ -77,7 +77,11 @@ export const createNewConversation = (eventSession, myUserId, otherUserId, snack
 
   let eventSessionRef = db.collection("eventSessions").doc(eventSession.id);
 
-  let myUserRef = db.collection(`eventSessions`).doc(eventSession.id).collection("participantsJoined").doc(myUserId);
+  let myUserRef = db
+    .collection(`eventSessions`)
+    .doc(eventSession.id)
+    .collection("participantsJoined")
+    .doc(myUserId);
 
   let otherUserRef = db
     .collection(`eventSessions`)
@@ -128,7 +132,7 @@ export const createNewConversation = (eventSession, myUserId, otherUserId, snack
   6. update other user group id
   */
   return db
-    .runTransaction(async function (transaction) {
+    .runTransaction(async function(transaction) {
       let otherUserSnapshot = await transaction.get(otherUserRef);
       if (!otherUserSnapshot.exists) {
         throw new Error("Invited user doesn't exist");
@@ -212,10 +216,10 @@ export const createNewConversation = (eventSession, myUserId, otherUserId, snack
       // update other user group id
       transaction.update(otherUserRef, { groupId });
     })
-    .then(function () {
+    .then(function() {
       console.log("Transaction successfully committed!");
     })
-    .catch(function (error) {
+    .catch(function(error) {
       console.log("Transaction failed: ", error);
       snackbar.showMessage(error.message);
       // throw error;
@@ -235,7 +239,11 @@ export const joinConversation = (eventSession, myUserId, newGroupId, snackbar) =
   var currentGroupRef = currentGroupId !== null ? eventSessionRef.collection("liveGroups").doc(currentGroupId) : null;
   var newGroupRef = eventSessionRef.collection("liveGroups").doc(newGroupId);
 
-  let myUserRef = db.collection(`eventSessions`).doc(eventSession.id).collection("participantsJoined").doc(myUserId);
+  let myUserRef = db
+    .collection(`eventSessions`)
+    .doc(eventSession.id)
+    .collection("participantsJoined")
+    .doc(myUserId);
 
   let participantsRefCurrentGroup = {};
 
@@ -269,7 +277,7 @@ export const joinConversation = (eventSession, myUserId, newGroupId, snackbar) =
   */
 
   return db
-    .runTransaction(async function (transaction) {
+    .runTransaction(async function(transaction) {
       let newGroupSnapshot = await transaction.get(newGroupRef);
       if (!newGroupSnapshot.exists) {
         throw new Error("New group doesn't exist");
@@ -355,10 +363,10 @@ export const joinConversation = (eventSession, myUserId, newGroupId, snackbar) =
       updateObj[`participants.${myUserId}.leftTimestamp`] = null;
       transaction.update(newGroupRef, updateObj);
     })
-    .then(function () {
+    .then(function() {
       console.log("Transaction successfully committed!");
     })
-    .catch(function (error) {
+    .catch(function(error) {
       console.log("Transaction failed: ", error);
       snackbar.showMessage(error.message);
       // throw error;
@@ -374,7 +382,11 @@ export const leaveCall = (eventSession, myUserId) => {
   let db = firebase.firestore();
 
   let eventSessionRef = db.collection("eventSessions").doc(eventSession.id);
-  let myUserRef = db.collection(`eventSessions`).doc(eventSession.id).collection("participantsJoined").doc(myUserId);
+  let myUserRef = db
+    .collection(`eventSessions`)
+    .doc(eventSession.id)
+    .collection("participantsJoined")
+    .doc(myUserId);
 
   var myGroupRef = eventSessionRef.collection("liveGroups").doc(myGroupId);
 
@@ -391,7 +403,7 @@ export const leaveCall = (eventSession, myUserId) => {
   }
 
   return db
-    .runTransaction(async function (transaction) {
+    .runTransaction(async function(transaction) {
       /*
       1. check if live group still exists
       2. check if myUser is in the group
@@ -450,10 +462,10 @@ export const leaveCall = (eventSession, myUserId) => {
         transaction.update(myGroupRef, updateObj);
       }
     })
-    .then(function () {
+    .then(function() {
       console.log("Transaction successfully committed!");
     })
-    .catch(function (error) {
+    .catch(function(error) {
       console.log("Transaction failed: ", error);
       // snackbar.showMessage(error);
     });
@@ -495,22 +507,24 @@ export const createConference = async (
   let eventsSessionDetailsRef = db.collection("eventSessionsDetails").doc(normedSessionId);
   let eventSessionRef = db.collection("eventSessions").doc(normedSessionId);
 
+  let x = (str) => (str ? str : "");
+
   let eventDetails = {
     id: normedSessionId,
     originalSessionId: sessionId,
-    title,
-    conferenceVideoType,
-    conferenceRoomYoutubeVideoId: conferenceRoomYoutubeVideoId !== undefined ? conferenceRoomYoutubeVideoId : "",
-    website,
-    expectedAmountParticipants,
+    title: x(title),
+    conferenceVideoType: x(conferenceVideoType),
+    conferenceRoomYoutubeVideoId: x(conferenceRoomYoutubeVideoId),
+    website: x(website),
+    expectedAmountParticipants: x(expectedAmountParticipants),
     eventBeginDate: firebase.firestore.Timestamp.fromDate(eventBeginDate),
     eventEndDate: firebase.firestore.Timestamp.fromDate(eventEndDate),
     owner: userId,
     isNetworkingAvailable: true,
-    description,
-    visibility,
-    eventOpens,
-    eventCloses,
+    description: x(description),
+    visibility: x(visibility),
+    eventOpens: x(eventOpens),
+    eventCloses: x(eventCloses),
   };
 
   if (isCreate || bannerUrl !== null) {
@@ -531,7 +545,7 @@ export const createConference = async (
   };
 
   return db
-    .runTransaction(async function (transaction) {
+    .runTransaction(async function(transaction) {
       let eventsSessionDetailsSnapshot = await transaction.get(eventsSessionDetailsRef);
       let sessionDetailsExists = eventsSessionDetailsSnapshot.exists;
       if (isCreate && sessionDetailsExists) {
@@ -555,10 +569,10 @@ export const createConference = async (
         transaction.update(eventSessionRef, eventSession);
       }
     })
-    .then(function () {
+    .then(function() {
       console.log("Transaction successfully committed!");
     })
-    .catch(function (error) {
+    .catch(function(error) {
       // snackbar.showMessage(error.message);
       throw error;
     });
