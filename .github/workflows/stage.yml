@@ -12,12 +12,10 @@ jobs:
   front-end:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [10.x]
-
     steps:
-      - uses: actions/checkout@master
+      - name: Checkout code
+        uses: actions/checkout@master
+
       - name: Setup node
         uses: actions/setup-node@master
         with:
@@ -51,10 +49,6 @@ jobs:
   functions:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [10.x]
-
     steps:
       - name: Checkout code
         uses: actions/checkout@master
@@ -74,8 +68,9 @@ jobs:
       - name: Select firebase project
         run: firebase use --token ${{ secrets.STAGE_FIREBASE_DEPLOY_KEY }} veertly-stage
 
-      #- name: Set firebase config
-      #  run: firebase functions:config:set sendgrid.key="${{ secrets.SENDGRID_KEY }}" global.base_url="https://stage.veertly.com"
+      - name: Set firebase config
+        run: firebase functions:config:set  global.base_url="https://stage.veertly.com"
 
+      #sendgrid.key="${{ secrets.SENDGRID_KEY }}"
       - name: Deploy functions
         run: firebase deploy --token ${{ secrets.STAGE_FIREBASE_DEPLOY_KEY }} --only functions
