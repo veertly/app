@@ -59,7 +59,6 @@ function SimpleDialog(props) {
 
     // allow mobile browsers to open the gmail data URI within native calendar app
     // type = (type == "google" && this.isMobile()) ? "outlook" : type;
-    console.log({ event });
     switch (type) {
       case "google":
         calendarUrl = "https://calendar.google.com/calendar/render";
@@ -135,6 +134,7 @@ function SimpleDialog(props) {
     } else {
       window.open(url, "_blank");
     }
+    handleClose();
   };
 
   return (

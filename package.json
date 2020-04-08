@@ -19,6 +19,7 @@
     "aws-appsync": "^1.2.1",
     "aws-appsync-react": "^1.0.21",
     "date-fns": "^2.11.1",
+    "draft-js-export-html": "^1.4.1",
     "firebase": "^6.6.0",
     "firebase-admin": "^8.10.0",
     "firebase-functions": "^3.5.0",
