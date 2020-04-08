@@ -12,7 +12,6 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import Typography from "@material-ui/core/Typography";
 import { Button } from "@material-ui/core";
 import routes from "../Config/routes";
-import { useRouteMatch } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -22,8 +21,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default withRouter((props) => {
   const [user, initialising /* error */] = useAuthState(firebase.auth());
-  let match = useRouteMatch("/v/:sessionId/:action");
-  console.log(match);
+
   const { location } = props;
 
   const classes = useStyles();
@@ -106,7 +104,6 @@ export default withRouter((props) => {
     // } else {
     //   props.history.push(callbackUrl);
     // }
-    debugger;
     checkAndRedirect(user.uid);
   }
 
