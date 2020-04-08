@@ -118,8 +118,7 @@ function EditEventSessionForm(props) {
     expectedAmountParticipants:
       !isNewEvent && eventSession.expectedAmountParticipants ? eventSession.expectedAmountParticipants : "",
     eventOpens: !isNewEvent && eventSession.eventOpens ? eventSession.eventOpens : DEFAULT_EVENT_OPEN_MINUTES,
-    eventCloses:
-      !isNewEvent && eventSession.eventCloses !== "" ? eventSession.eventCloses : DEFAULT_EVENT_CLOSES_MINUTES,
+    eventCloses: !isNewEvent && eventSession.eventCloses ? eventSession.eventCloses : DEFAULT_EVENT_CLOSES_MINUTES,
     visibility: !isNewEvent && eventSession.visibility ? eventSession.visibility : "LISTED",
   });
   const selectedSessionId = values.sessionId;
