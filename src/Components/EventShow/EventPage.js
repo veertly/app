@@ -14,6 +14,7 @@ import firebase from "../../Modules/firebaseApp";
 import MUIAddToCalendar from "../MUIAddToCalendar";
 import { convertFromRaw } from "draft-js";
 import { getUrl } from "../../Modules/environments";
+import { stateToHTML } from "draft-js-export-html";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -65,7 +66,8 @@ export default function EventPage(props) {
     let descriptionText = "";
     if (description) {
       let descriptionContent = convertFromRaw(JSON.parse(description));
-      descriptionText = descriptionContent.getPlainText("\u0001");
+      // descriptionText = descriptionContent.getPlainText("\n\n");
+      descriptionText = stateToHTML(descriptionContent);
     }
     return {
       id,
