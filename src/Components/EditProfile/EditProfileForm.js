@@ -62,6 +62,7 @@ const getUserDefaultValues = (user) => {
 
 const linkedinUrlStatic = "https://linkedin.com/in/";
 const twitterUrlStatic = "https://twitter.com/";
+const keybaseUrlStatic = "https://keybase.io/";
 
 function EditProfileForm(props) {
   const { classes, user, sessionId, profileUpdatedCallback } = props;
@@ -85,6 +86,10 @@ function EditProfileForm(props) {
     if (name === "twitter") {
       newValues.twitterUrl = value.trim() !== "" ? twitterUrlStatic + value : null;
     }
+
+    if (name === "keybase") {
+      newValues.keybaseUrl = value.trim() !== "" ? keybaseUrlStatic + value : null;
+    }
     setValues(newValues);
   };
 
@@ -98,10 +103,12 @@ function EditProfileForm(props) {
         email,
         linkedin,
         twitter,
+        keybase,
         emailPublic,
         avatarUrl,
         twitterUrl,
         linkedinUrl,
+        keybaseUrl,
         interestsChips,
         company,
         companyTitle,
@@ -116,10 +123,12 @@ function EditProfileForm(props) {
         email: x(email),
         linkedin: x(linkedin),
         twitter: x(twitter),
+        keybase: x(keybase),
         emailPublic: emailPublic === true,
         avatarUrl: x(avatarUrl),
         twitterUrl: x(twitterUrl),
         linkedinUrl: x(linkedinUrl),
+        keybaseUrl: x(keybaseUrl),
         interestsChips: interestsChips ? interestsChips : [],
         company: x(company),
         companyTitle: x(companyTitle),
@@ -282,6 +291,18 @@ function EditProfileForm(props) {
           startAdornment: <InputAdornment position="start">{twitterUrlStatic}</InputAdornment>,
         }}
         onChange={handleUpdateField("twitter")}
+      />
+      <TextField
+        fullWidth
+        label="Keybase Profile"
+        name="keybase"
+        variant="outlined"
+        className={classes.textField}
+        value={values.keybase}
+        InputProps={{
+          startAdornment: <InputAdornment position="start">{keybaseUrlStatic}</InputAdornment>,
+        }}
+        onChange={handleUpdateField("keybase")}
       />
       <Grid container justify="space-between" className={classes.textField}>
         <TextField
