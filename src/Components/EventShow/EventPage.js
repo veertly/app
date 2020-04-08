@@ -104,7 +104,7 @@ export default function EventPage(props) {
         </Typography>
 
         <Grid container justify="space-between" className={classes.textField}>
-          <div style={{ marginRigth: 16 }}>
+          <div style={{ marginRight: 16 }}>
             {beginDate && (
               <Typography color="textSecondary">
                 <span role="img" aria-label="calendar">

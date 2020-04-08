@@ -4,6 +4,8 @@ admin.initializeApp();
 
 const firestore = admin.firestore();
 
+const sendgrid = require("./modules/sendgrid");
+
 const leaveCall = async (sessionId, myUserId) => {
   var eventSessionRef = firestore.collection("eventSessions").doc(sessionId);
   var eventSessionSnapshot = await eventSessionRef.get();
@@ -95,7 +97,7 @@ const leaveCall = async (sessionId, myUserId) => {
         if (value.leftTimestamp === null) {
           activeParticipants.push({
             userId,
-            ...value
+            ...value,
           });
         }
       }
@@ -171,4 +173,20 @@ exports.onUserStatusChanged = functions.database
 
     // ... and write it to Firestore.
     return userStatusFirestoreRef.update(eventStatus);
+  });
+
+exports.onEventCreated = functions.firestore
+  .document("eventSessionsDetails/{sessionId}")
+  .onCreate(async (snap, context) => {
+    const { owner, title } = snap.data();
+    let { sessionId } = context.params;
+
+    let baseUrl = functions.config().global.base_url;
+
+    var ownerRef = await firestore.collection("users").doc(owner);
+
+    let ownerSnapshot = await ownerRef.get();
+    let ownerData = ownerSnapshot.data();
+    let eventLink = baseUrl + "/v/" + sessionId;
+    await sendgrid.sendEventCreatedMail(ownerData.email, ownerData.firstName, eventLink, title);
   });
