@@ -58,7 +58,7 @@ export const updateUser = async (userId, sessionId, userDb) => {
       joinedTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
       title,
       originalSessionId,
-      eventBeginDate,
+      eventBeginDate: eventBeginDate ? eventBeginDate : null,
     };
     updateUserAttendedEvents = { originalSessionId };
   }
