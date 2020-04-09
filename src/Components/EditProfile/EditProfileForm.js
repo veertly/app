@@ -66,15 +66,19 @@ const keybaseUrlStatic = "https://keybase.io/";
 
 function EditProfileForm(props) {
   const { classes, user, sessionId, profileUpdatedCallback } = props;
-  if (!user && !sessionId) {
-    return <p>No session available...</p>;
-  }
+
   let [values, setValues] = React.useState(getUserDefaultValues(user));
   let [errors, setErrors] = React.useState({});
   const [interestsChips, setInterestsChips] = React.useState([]);
   const [updating, setUpdating] = React.useState(false);
   // const snackbar = useSnackbar();
+  useEffect(() => {
+    fetchUser();
+  }, [user]);
 
+  if (!user && !sessionId) {
+    return <p>No session available...</p>;
+  }
   const handleUpdateField = (name) => (e) => {
     let value = e.target.value;
     let newValues = { ...values };
@@ -94,6 +98,9 @@ function EditProfileForm(props) {
   };
 
   const fetchUser = async () => {
+    if (!user) {
+      return;
+    }
     let userDb = await getUserDb(user.uid);
 
     if (userDb) {
@@ -137,10 +144,6 @@ function EditProfileForm(props) {
       setInterestsChips(interestsChips ? interestsChips : []);
     }
   };
-
-  useEffect(() => {
-    fetchUser();
-  }, [user]);
 
   const handleAddInterest = (_) => {
     if (values.interest.trim() !== "") {

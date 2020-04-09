@@ -3,14 +3,14 @@ import useScript from "../../Hooks/useScript";
 import { makeStyles } from "@material-ui/core/styles";
 import { leaveCall } from "../../Modules/eventSessionOperations";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
-    height: "100%"
-  }
+    height: "100%",
+  },
 }));
 
-export default props => {
+export default (props) => {
   const classes = useStyles();
   const { currentGroup, user, eventSession, jitsiApi, setJitsiApi } = props;
   const [loaded, error] = useScript("https://meet.jit.si/external_api.js");
@@ -19,7 +19,7 @@ export default props => {
   useEffect(() => {
     window.analytics.page("NetworkingRoom/" + eventSession.id);
     window.analytics.track("Entered Networking Room", {
-      eventSessionId: eventSession.id
+      eventSessionId: eventSession.id,
     });
   }, []);
 
@@ -46,10 +46,10 @@ export default props => {
         parentNode: document.querySelector("#conference-container"),
         interfaceConfigOverwrite: {
           // filmStripOnly: true,
-          DEFAULT_REMOTE_DISPLAY_NAME: "Veertlier"
+          DEFAULT_REMOTE_DISPLAY_NAME: "Veertlier",
           // SHOW_JITSI_WATERMARK: false,
           // SUPPORT_URL: 'https://github.com/jitsi/jitsi-meet/issues/new',
-        }
+        },
       };
       /*eslint-disable no-undef*/
       const api = new JitsiMeetExternalAPI(domain, options);
@@ -58,25 +58,25 @@ export default props => {
       if (user.photoURL) {
         api.executeCommand("avatarUrl", user.photoURL);
       }
-      api.addEventListener("videoConferenceLeft", event => {
+      api.addEventListener("videoConferenceLeft", (event) => {
         console.log("videoConferenceLeft: ", event);
         window.analytics.track("[Jitsi] Left Call (videoConferenceLeft)", {
           eventSessionId: eventSession.id,
-          roomName
+          roomName,
         });
         handleCallEnded();
       });
-      api.addEventListener("readyToClose", event => {
+      api.addEventListener("readyToClose", (event) => {
         console.log("readyToClose: ", event);
         window.analytics.track("[Jitsi] Left Call (readyToClose)", {
           eventSessionId: eventSession.id,
-          roomName
+          roomName,
         });
         handleCallEnded();
       });
       window.analytics.track("[Jitsi] Joined Call", {
         eventSessionId: eventSession.id,
-        roomName
+        roomName,
       });
       setLastRoomLoaded(roomName);
       setJitsiApi(api);

@@ -26,6 +26,9 @@ import routes from "../../Config/routes";
 import { initFirebasePresenceSync } from "../../Modules/userOperations";
 import Announcements from "../../Components/EventSession/Announcements";
 import { DEFAULT_EVENT_OPEN_MINUTES } from "../../Config/constants";
+import SideMenuIcons from "../../Components/SideMenu/SideMenuIcons";
+
+import NetworkingEmptyIllustration from "../../Assets/illustrations/EmptyNetworkingPane.svg";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -50,6 +53,15 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     position: "absolute",
     top: "30%",
+  },
+  sideMenu: {
+    width: 53,
+    top: 64,
+    backgroundColor: "white",
+    position: "absolute",
+    right: 0,
+    bottom: 0,
+    borderLeft: "1px solid rgba(0, 0, 0, 0.12)",
   },
 }));
 
@@ -367,8 +379,6 @@ export default withRouter((props) => {
                 variant={isDesktop ? "persistent" : "temporary"}
                 users={users}
                 eventSession={composedEventSession}
-                // participantsJoined={participantsJoined}
-                // liveGroups={liveGroups}
                 currentGroup={currentGroup}
                 user={user}
               />
@@ -380,6 +390,7 @@ export default withRouter((props) => {
                       <br />
                       don't be shy and select someone to talk to!
                     </Typography>
+                    <img src={NetworkingEmptyIllustration} alt="No conversation" />
                   </div>
                 )}
                 {currentGroup && (
@@ -387,8 +398,6 @@ export default withRouter((props) => {
                     currentGroup={currentGroup}
                     user={user}
                     eventSession={composedEventSession}
-                    // participantsJoined={participantsJoined}
-                    // liveGroups={liveGroups}
                     jitsiApi={jitsiApi}
                     setJitsiApi={setJitsiApi}
                   />
@@ -396,6 +405,7 @@ export default withRouter((props) => {
               </div>
             </React.Fragment>
           )}
+          {/* CONFERENCE PANE */}
           {isInConferenceRoom && (
             <React.Fragment>
               <ConferenceSidebar
@@ -422,6 +432,9 @@ export default withRouter((props) => {
               </div>
             </React.Fragment>
           )}
+          <div className={classes.sideMenu}>
+            <SideMenuIcons />
+          </div>
         </React.Fragment>
       )}
     </div>
