@@ -47,12 +47,32 @@ const useStyles = makeStyles((theme) => ({
     position: "relative",
     height: "100%",
     backgroundColor: theme.palette.background.default,
+    // background-color: red; */
+    backgroundImage: "url('/Illustrations/EmptyNetworkingPane.svg')",
+    backgroundRepeat: "no-repeat",
+    backgroundSize: "50%",
+    // backgroundPosition: "bottom 8px",
+    backgroundPosition: "bottom right",
+    // background-positionX: "right"
   },
   noCall: {
     width: "100%",
     textAlign: "center",
     position: "absolute",
-    top: "30%",
+    // paddingLeft: "20%",
+    top: "45%",
+  },
+  blueText: {
+    color: "#274760",
+  },
+  greenText: {
+    color: "#37C470",
+  },
+  emptyMessage: {
+    // fontWeight: 500,
+    width: 340,
+    margin: "auto",
+    textAlign: "left",
   },
   sideMenu: {
     width: 53,
@@ -104,26 +124,40 @@ export default withRouter((props) => {
   });
 
   const [eventSession, loadingSession, errorSession] = useDocumentData(
-    firebase.firestore().collection("eventSessions").doc(sessionId)
+    firebase
+      .firestore()
+      .collection("eventSessions")
+      .doc(sessionId)
   );
   const [eventSessionDetails, loadingSessionDetails, errorSessionDetails] = useDocumentData(
-    firebase.firestore().collection("eventSessionsDetails").doc(sessionId)
+    firebase
+      .firestore()
+      .collection("eventSessionsDetails")
+      .doc(sessionId)
   );
-  const [
-    participantsJoined,
-    loadingParticipantsJoined,
-    errorParticipantsJoined,
-  ] = useCollectionData(
-    firebase.firestore().collection("eventSessions").doc(sessionId).collection("participantsJoined"),
+  const [participantsJoined, loadingParticipantsJoined, errorParticipantsJoined] = useCollectionData(
+    firebase
+      .firestore()
+      .collection("eventSessions")
+      .doc(sessionId)
+      .collection("participantsJoined"),
     { idField: "id" }
   );
   const [liveGroups, loadingLiveGroups, errorLiveGroups] = useCollectionData(
-    firebase.firestore().collection("eventSessions").doc(sessionId).collection("liveGroups"),
+    firebase
+      .firestore()
+      .collection("eventSessions")
+      .doc(sessionId)
+      .collection("liveGroups"),
     { idField: "idField" }
   );
 
   const [usersFirebase, loadingUsers, errorUsers] = useCollectionData(
-    firebase.firestore().collection("eventSessions").doc(sessionId).collection("participantsDetails")
+    firebase
+      .firestore()
+      .collection("eventSessions")
+      .doc(sessionId)
+      .collection("participantsDetails")
   );
 
   useEffect(() => {
@@ -385,10 +419,11 @@ export default withRouter((props) => {
               <div className={classes.mainPane}>
                 {!currentGroup && (
                   <div className={classes.noCall}>
-                    <Typography variant="body2">
-                      You are not yet in any conversation,
+                    <Typography variant="h6" className={clsx(classes.blueText, classes.emptyMessage)}>
+                      You are not yet in any <span className={classes.greenText}>conversation</span>,
                       <br />
-                      don't be shy and select someone to talk to!
+                      don't be shy and <span className={classes.greenText}>select someone</span> to{" "}
+                      <span className={classes.greenText}>talk</span> to!
                     </Typography>
                     <img src={NetworkingEmptyIllustration} alt="No conversation" />
                   </div>
