@@ -5,7 +5,7 @@ import Typography from "@material-ui/core/Typography";
 import MUIRichTextEditor from "mui-rte";
 import { CardMedia, Button } from "@material-ui/core";
 import moment from "moment";
-// import Grid from "@material-ui/core/Grid";
+import Grid from "@material-ui/core/Grid";
 import routes from "../../Config/routes";
 import { useHistory } from "react-router-dom";
 import { DEFAULT_EVENT_OPEN_MINUTES } from "../../Config/constants";
@@ -15,8 +15,7 @@ import MUIAddToCalendar from "../MUIAddToCalendar";
 import { convertFromRaw } from "draft-js";
 import { getUrl } from "../../Modules/environments";
 import { stateToHTML } from "draft-js-export-html";
-import JoinEventIcon from "@material-ui/icons/MeetingRoom";
-// import JoinEventIcon from "@material-ui/icons/PlayCircleOutline";
+
 const useStyles = makeStyles((theme) => ({
   root: {
     maxWidth: theme.breakpoints.values.sm,
@@ -24,20 +23,12 @@ const useStyles = makeStyles((theme) => ({
     margin: "auto",
     position: "relative",
   },
-  contentContainer: {
-    padding: 32,
-    [theme.breakpoints.down("xs")]: {
-      padding: 20,
-    },
-  },
   ctaContainer: {
-    // [theme.breakpoints.down("xs")]: {},
-    width: "100%",
-    textAlign: "center",
-    marginTop: 16,
-  },
-  joinButton: {
-    height: 48,
+    [theme.breakpoints.down("xs")]: {
+      width: "100%",
+      textAlign: "center",
+      marginTop: 16,
+    },
   },
   editButton: {
     position: "absolute",
@@ -107,51 +98,48 @@ export default function EventPage(props) {
       {(!bannerUrl || bannerUrl.trim() === "") && (
         <CardMedia component="img" alt={title} image="/DefaultEventBanner.svg" title={title} />
       )}
-      <div className={classes.contentContainer}>
+      <div style={{ padding: 32 }}>
         <Typography variant="h4" color="primary" align="left" style={{ marginBottom: 24 }}>
           {title}
         </Typography>
 
-        {/* <Grid container justify="space-between" className={classes.textField}> */}
-        <div style={{ marginRight: 16 }}>
-          {beginDate && (
-            <Typography color="textSecondary">
-              <span role="img" aria-label="calendar">
-                📅
-              </span>
-              {isSameDay
-                ? beginDate.format("lll") + " to " + endDate.format("LT")
-                : beginDate.format("lll") + " to " + endDate.format("lll")}
-            </Typography>
-          )}
-          {website && website.trim() !== "" && (
-            <Typography color="textSecondary">
-              <a href={website} target="_blank">
-                <span role="img" aria-label="website">
-                  🔗
+        <Grid container justify="space-between" className={classes.textField}>
+          <div style={{ marginRight: 16 }}>
+            {beginDate && (
+              <Typography color="textSecondary">
+                <span role="img" aria-label="calendar">
+                  📅
                 </span>
-                {website}
-              </a>
-            </Typography>
-          )}
-        </div>
-        <div className={classes.ctaContainer}>
-          {!isLive && <MUIAddToCalendar event={calendarEvent} />}
-          {isLive && (
-            <Button
-              variant="contained"
-              color="primary"
-              // disableElevation
-              onClick={() => history.push(routes.EVENT_SESSION_LIVE(id))}
-              size="large"
-              startIcon={<JoinEventIcon />}
-              className={classes.joinButton}
-            >
-              Join event now
-            </Button>
-          )}
-        </div>
-        {/* </Grid> */}
+                {isSameDay
+                  ? beginDate.format("lll") + " to " + endDate.format("LT")
+                  : beginDate.format("lll") + " to " + endDate.format("lll")}
+              </Typography>
+            )}
+            {website && website.trim() !== "" && (
+              <Typography color="textSecondary">
+                <a href={website} target="_blank">
+                  <span role="img" aria-label="website">
+                    🔗
+                  </span>
+                  {website}
+                </a>
+              </Typography>
+            )}
+          </div>
+          <div className={classes.ctaContainer}>
+            {!isLive && <MUIAddToCalendar event={calendarEvent} />}
+            {isLive && (
+              <Button
+                variant="contained"
+                color="primary"
+                disableElevation
+                onClick={() => history.push(routes.EVENT_SESSION_LIVE(id))}
+              >
+                Go to the event
+              </Button>
+            )}
+          </div>
+        </Grid>
         {description && description.trim() !== "" && (
           <div style={{ marginTop: 24 }}>
             <MUIRichTextEditor
