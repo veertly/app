@@ -1,8 +1,16 @@
-import { OPEN_EDIT_PROFILE, CLOSE_EDIT_PROFILE, OPEN_EVENT_DETAILS, CLOSE_EVENT_DETAILS } from "../actionTypes";
+import {
+  OPEN_EDIT_PROFILE,
+  CLOSE_EDIT_PROFILE,
+  OPEN_EVENT_DETAILS,
+  CLOSE_EVENT_DETAILS,
+  OPEN_CHAT,
+  CLOSE_CHAT,
+} from "../actionTypes";
 
 const initialState = {
   editProfileOpen: false,
   eventDetailsOpen: false,
+  chatOpen: false,
 };
 
 export default function (state = initialState, action) {
@@ -30,6 +38,19 @@ export default function (state = initialState, action) {
       return {
         ...state,
         eventDetailsOpen: false,
+      };
+    }
+
+    case OPEN_CHAT: {
+      return {
+        ...state,
+        chatOpen: true,
+      };
+    }
+    case CLOSE_CHAT: {
+      return {
+        ...state,
+        chatOpen: false,
       };
     }
     default:

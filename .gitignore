@@ -39,3 +39,6 @@ awsconfiguration.json
 .DS_Store
 .firebase/hosting*
 yarn.lock
+node_modules
+functions/node_modules
+node_modules

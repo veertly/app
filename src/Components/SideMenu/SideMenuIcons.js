@@ -29,9 +29,10 @@ import AboutIcon from "@material-ui/icons/Info";
 import EventDescriptionIcon from "@material-ui/icons/Notes";
 import FeedbackIcon from "@material-ui/icons/Feedback";
 
-import { useDispatch } from "react-redux";
-import { openEditProfile, openEventDetails } from "../../Redux/actions";
+import { useDispatch, useSelector } from "react-redux";
+import { openEditProfile, openEventDetails, openChat, closeChat } from "../../Redux/actions";
 import routes from "../../Config/routes";
+import { isChatOpen } from "../../Redux/selectors";
 
 const drawerWidth = 240;
 
@@ -102,11 +103,16 @@ export default function SideMenuIcons(props) {
   const classes = useStyles();
   const theme = useTheme();
   const dispatch = useDispatch();
+  const chatOpen = useSelector(isChatOpen);
 
   const isOwner = React.useMemo(() => eventSession && user && eventSession.owner === user.uid, [eventSession, user]);
 
   const openProfile = React.useCallback(() => dispatch(openEditProfile()), [dispatch]);
   const openDetails = React.useCallback(() => dispatch(openEventDetails()), [dispatch]);
+  const toggleChatPane = React.useCallback(() => {
+    if (chatOpen) dispatch(closeChat());
+    else dispatch(openChat());
+  }, [dispatch]);
 
   return (
     <div className={classes.root}>
@@ -147,7 +153,7 @@ export default function SideMenuIcons(props) {
       )}
       <Divider />
       <List>
-        <Tooltip title="Chat">
+        <Tooltip title="Chat" onClick={toggleChatPane}>
           <ListItem button>
             <ListItemIcon>
               <ChatIcon />
