@@ -109,10 +109,14 @@ export default function SideMenuIcons(props) {
 
   const openProfile = React.useCallback(() => dispatch(openEditProfile()), [dispatch]);
   const openDetails = React.useCallback(() => dispatch(openEventDetails()), [dispatch]);
+
   const toggleChatPane = React.useCallback(() => {
-    if (chatOpen) dispatch(closeChat());
-    else dispatch(openChat());
-  }, [dispatch]);
+    if (chatOpen) {
+      dispatch(closeChat());
+    } else {
+      dispatch(openChat());
+    }
+  }, [dispatch, chatOpen]);
 
   return (
     <div className={classes.root}>
@@ -124,13 +128,13 @@ export default function SideMenuIcons(props) {
             </ListItemIcon>
           </ListItem>
         </Tooltip>
-        <Tooltip title="My stats">
+        {/* <Tooltip title="My stats">
           <ListItem button disabled>
             <ListItemIcon>
               <StatsIcon />
             </ListItemIcon>
           </ListItem>
-        </Tooltip>
+        </Tooltip> */}
       </List>
       {isOwner && (
         <>
@@ -160,15 +164,15 @@ export default function SideMenuIcons(props) {
             </ListItemIcon>
           </ListItem>
         </Tooltip>
-        <Tooltip title="Questions and Answers">
+        {/* <Tooltip title="Questions and Answers">
           <ListItem button disabled>
             <ListItemIcon>
               <QnAIcon />
             </ListItemIcon>
           </ListItem>
-        </Tooltip>
+        </Tooltip> */}
         <Tooltip title="Event details">
-          <ListItem button onClick={openProfile}>
+          <ListItem button onClick={openDetails}>
             <ListItemIcon>
               <EventDescriptionIcon />
             </ListItemIcon>
@@ -178,7 +182,7 @@ export default function SideMenuIcons(props) {
       <Divider />
       <List>
         <Tooltip title="FAQ">
-          <ListItem button disabled>
+          <ListItem button>
             <ListItemIcon>
               <FAQIcon />
             </ListItemIcon>
@@ -196,13 +200,13 @@ export default function SideMenuIcons(props) {
             </ListItemIcon>
           </ListItem>
         </Tooltip>
-        <Tooltip title="Provide Feedback">
+        {/* <Tooltip title="Provide Feedback">
           <ListItem button disabled>
             <ListItemIcon>
               <FeedbackIcon />
             </ListItemIcon>
           </ListItem>
-        </Tooltip>
+        </Tooltip> */}
       </List>
       <Divider />
     </div>

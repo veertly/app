@@ -29,8 +29,9 @@ import { DEFAULT_EVENT_OPEN_MINUTES } from "../../Config/constants";
 import SideMenuIcons from "../../Components/SideMenu/SideMenuIcons";
 import ChatPane from "../../Components/SideMenu/ChatPane";
 import EditProfileDialog from "../../Components/EditProfile/EditProfileDialog";
-import { useDispatch, useSelector } from "react-redux";
-import { isChatOpen } from "../../Redux/selectors";
+import { useSelector } from "react-redux";
+import { isChatOpen, isEventDetailsOpen } from "../../Redux/selectors";
+import EventPageDialog from "../../Components/EventShow/EventPageDialog";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -89,21 +90,6 @@ const useStyles = makeStyles((theme) => ({
       display: "none",
     },
   },
-  chatPane: {
-    position: "absolute",
-    top: 64,
-    right: 53,
-    bottom: 0,
-    backgroundColor: "rgba(27, 71, 98, 0.4)",
-    width: 250,
-    transition: theme.transitions.create(["width", "margin"], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-  },
-  hide: {
-    display: "none",
-  },
 }));
 
 export default withRouter((props) => {
@@ -134,7 +120,7 @@ export default withRouter((props) => {
 
   const [openSidebar, setOpenSidebar] = useState(false);
   const history = useHistory();
-  const chatOpen = useSelector(isChatOpen);
+  const detailsOpen = useSelector(isEventDetailsOpen);
 
   const handleSidebarClose = () => {
     setOpenSidebar(false);
@@ -404,6 +390,7 @@ export default withRouter((props) => {
     >
       <Page title={`Veertly | ${composedEventSession.title}`}> </Page>
       <EditProfileDialog user={user} eventSession={composedEventSession} />
+      <EventPageDialog eventSession={composedEventSession} />
 
       <EventSessionTopbar
         isInConferenceRoom={isInConferenceRoom}
@@ -495,14 +482,14 @@ export default withRouter((props) => {
           <div className={classes.sideMenu}>
             <SideMenuIcons eventSession={eventSession} user={user} />
           </div>
-          <div
+          {/* <div
             className={clsx(classes.chatPane, {
               [classes.hide]: !chatOpen,
             })}
           >
-            {`chat open: ${chatOpen ? "true" : "false"}`}
-            <ChatPane eventSession={eventSession} user={user} />
-          </div>
+            {`chat open: ${chatOpen ? "true" : "false"}`} */}
+          <ChatPane eventSession={eventSession} user={user} />
+          {/* </div> */}
         </React.Fragment>
       )}
     </div>

@@ -48,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function EventPage(props) {
   let { bannerUrl, eventBeginDate, eventEndDate, title, description, website, id, eventOpens, owner } = props.event;
-  let { isPreview } = props;
+  let { isPreview, hideButtons } = props;
 
   const history = useHistory();
 
@@ -135,23 +135,26 @@ export default function EventPage(props) {
             </Typography>
           )}
         </div>
-        <div className={classes.ctaContainer}>
-          {!isLive && <MUIAddToCalendar event={calendarEvent} />}
-          {isLive && (
-            <Button
-              variant="contained"
-              color="primary"
-              // disableElevation
-              onClick={() => history.push(routes.EVENT_SESSION_LIVE(id))}
-              size="large"
-              startIcon={<JoinEventIcon />}
-              className={classes.joinButton}
-            >
-              Join event now
-            </Button>
-          )}
-        </div>
-        {/* </Grid> */}
+
+        {!hideButtons && (
+          <div className={classes.ctaContainer}>
+            {!isLive && <MUIAddToCalendar event={calendarEvent} />}
+            {isLive && (
+              <Button
+                variant="contained"
+                color="primary"
+                // disableElevation
+                onClick={() => history.push(routes.EVENT_SESSION_LIVE(id))}
+                size="large"
+                startIcon={<JoinEventIcon />}
+                className={classes.joinButton}
+              >
+                Join event now
+              </Button>
+            )}
+          </div>
+        )}
+
         {description && description.trim() !== "" && (
           <div style={{ marginTop: 24 }}>
             <MUIRichTextEditor
