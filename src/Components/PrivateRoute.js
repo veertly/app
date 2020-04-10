@@ -15,9 +15,9 @@ const PrivateRoute = ({ component: Component, path, location, history, ...rest }
       history.push(routes.GO_TO_LOGIN(location.pathname));
     };
     fn();
-  }, [history, initialising, user, path]);
+  }, [history, initialising, user, path, location.pathname]);
 
-  const render = props => (user ? <Component {...props} /> : null);
+  const render = (props) => (user ? <Component {...props} /> : null);
 
   return <Route exact={true} path={path} render={render} {...rest} />;
 };

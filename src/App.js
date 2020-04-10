@@ -37,6 +37,9 @@ import { SnackbarProvider } from "material-ui-snackbar-provider";
 import EventPageContainer from "./Containers/EventSession/EventPageContainer";
 import EditSessionContainer from "./Containers/Organizer/EditSessionContainer";
 
+import { Provider } from "react-redux";
+import store from "./Redux/store";
+
 const theme = createMuiTheme({
   palette: {
     primary: { main: "#1c4762" },
@@ -70,33 +73,35 @@ const App = () => {
   });
 
   return (
-    <GlobalContext.Provider value={{ state, dispatch }}>
-      <ThemeProvider theme={theme}>
-        <SnackbarProvider SnackbarProps={{ autoHideDuration: 10000 }}>
-          <CssBaseline />
-          <BrowserRouter>
-            <Switch>
-              <Route exact={true} path={routes.HOME()} component={HomePage} />
-              <Route exact={true} path={routes.LIST_MEETUPS()} component={MeetupsContainer} />
-              <Route exact={true} path={routes.MEETUP_PAGE()} component={MeetupContainer} />
-              <PrivateRoute exact={true} path={routes.EVENT_SESSION_LIVE()} component={EventSessionContainer} />
-              <PrivateRoute exact={true} path={routes.EDIT_EVENT_SESSION()} component={EditSessionContainer} />
-              <Route exact={true} path={routes.EVENT_SESSION()} component={EventPageContainer} />
-              <Route exact={true} path={routes.EVENT_PAGE()} component={EventShowContainer} />
-              <Route exact={true} path={routes.LOGIN_PATH()} component={LoginContainer} />
-              <PrivateRoute path={routes.EDIT_PROFILE_RAW()} component={EditProfileContainer} />
-              <PrivateRoute path={routes.PROFILE()} component={ProfileContainer} />
-              <PrivateRoute path={routes.CREATE_EVENT_SESSION()} component={CreateSessionContainer} />
+    <Provider store={store}>
+      <GlobalContext.Provider value={{ state, dispatch }}>
+        <ThemeProvider theme={theme}>
+          <SnackbarProvider SnackbarProps={{ autoHideDuration: 10000 }}>
+            <CssBaseline />
+            <BrowserRouter>
+              <Switch>
+                <Route exact={true} path={routes.HOME()} component={HomePage} />
+                <Route exact={true} path={routes.LIST_MEETUPS()} component={MeetupsContainer} />
+                <Route exact={true} path={routes.MEETUP_PAGE()} component={MeetupContainer} />
+                <PrivateRoute exact={true} path={routes.EVENT_SESSION_LIVE()} component={EventSessionContainer} />
+                <PrivateRoute exact={true} path={routes.EDIT_EVENT_SESSION()} component={EditSessionContainer} />
+                <Route exact={true} path={routes.EVENT_SESSION()} component={EventPageContainer} />
+                <Route exact={true} path={routes.EVENT_PAGE()} component={EventShowContainer} />
+                <Route exact={true} path={routes.LOGIN_PATH()} component={LoginContainer} />
+                <PrivateRoute path={routes.EDIT_PROFILE_RAW()} component={EditProfileContainer} />
+                <PrivateRoute path={routes.PROFILE()} component={ProfileContainer} />
+                <PrivateRoute path={routes.CREATE_EVENT_SESSION()} component={CreateSessionContainer} />
 
-              {/* <Route exact={true} path="/events" component={AllEventsContainer} /> */}
-              {/* <Route path="/event/:id" component={ViewEvent} />
+                {/* <Route exact={true} path="/events" component={AllEventsContainer} /> */}
+                {/* <Route path="/event/:id" component={ViewEvent} />
       <Route path="/newEvent" component={NewEvent} /> */}
-              <Route component={HomePage} />
-            </Switch>
-          </BrowserRouter>
-        </SnackbarProvider>
-      </ThemeProvider>
-    </GlobalContext.Provider>
+                <Route component={HomePage} />
+              </Switch>
+            </BrowserRouter>
+          </SnackbarProvider>
+        </ThemeProvider>
+      </GlobalContext.Provider>
+    </Provider>
   );
 };
 

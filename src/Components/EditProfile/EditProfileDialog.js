@@ -2,6 +2,9 @@ import React from "react";
 import Dialog from "@material-ui/core/Dialog";
 import { makeStyles } from "@material-ui/core/styles";
 import EditProfileForm from "./EditProfileForm";
+import { useDispatch, useSelector } from "react-redux";
+import { closeEditProfile } from "../../Redux/actions";
+import { isEditProfileOpen } from "../../Redux/selectors";
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -33,10 +36,13 @@ const useStyles = makeStyles((theme) => ({
 export default function (props) {
   const classes = useStyles();
 
-  const { open, setOpen, eventSession, user } = props;
+  const { eventSession, user } = props;
+  const open = useSelector(isEditProfileOpen);
+
+  const dispatch = useDispatch();
 
   const handleClose = () => {
-    setOpen(false);
+    dispatch(closeEditProfile());
   };
   return (
     <div>

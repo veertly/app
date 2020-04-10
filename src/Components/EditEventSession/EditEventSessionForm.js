@@ -39,6 +39,21 @@ import SuccessIcon from "@material-ui/icons/CheckCircleOutline";
 import FailIcon from "@material-ui/icons/Cancel";
 import { DEFAULT_EVENT_OPEN_MINUTES, DEFAULT_EVENT_CLOSES_MINUTES } from "../../Config/constants";
 import { getTimestampFromDate } from "../../Modules/firebaseApp";
+import { CopyToClipboard } from "react-copy-to-clipboard";
+import CopyIcon from "@material-ui/icons/FileCopy";
+import IconButton from "@material-ui/core/IconButton";
+import { useSnackbar } from "material-ui-snackbar-provider";
+import useIsMounted from "react-is-mounted-hook";
+
+import {
+  FacebookShareButton,
+  LinkedinShareButton,
+  RedditShareButton,
+  TelegramShareButton,
+  TwitterShareButton,
+  WhatsappShareButton,
+} from "react-share";
+import { FacebookIcon, LinkedinIcon, RedditIcon, TelegramIcon, TwitterIcon, WhatsappIcon } from "react-share";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -87,6 +102,9 @@ const useStyles = makeStyles((theme) => ({
     bottom: 0,
     right: 0,
     left: 0,
+  },
+  shareButton: {
+    margin: theme.spacing(1),
   },
 }));
 
@@ -146,8 +164,9 @@ function EditEventSessionForm(props) {
   const [showEventCreatedDialog, setShowEventCreatedDialog] = React.useState(false);
   const [bannerChanged, setBannerChanged] = React.useState(false);
   const [errors, setErrors] = React.useState({});
+  const snackbar = useSnackbar();
+  const mounted = useIsMounted();
 
-  let mounted = true;
   useEffect(() => {
     let fetchBlob = async () => {
       if (bannerImageBlob === null && eventSession && eventSession.bannerUrl) {
@@ -157,6 +176,11 @@ function EditEventSessionForm(props) {
     };
     fetchBlob();
   }, [bannerImageBlob, eventSession]);
+
+  const shareText = React.useMemo(
+    () => `Join me in the virtual event ${values.title} at ${selectedDate.begin.format("lll")} on @veertly `,
+    [values.title, selectedDate.begin]
+  );
 
   const getVideoId = (link) => {
     let parsedUrl = parseURL(link);
@@ -308,13 +332,7 @@ function EditEventSessionForm(props) {
     if (selectedSessionId && selectedSessionId.trim() !== "") {
       verifySessionId(selectedSessionId.trim());
     }
-  }, [selectedSessionId]);
-
-  useEffect(() => {
-    return () => {
-      mounted = false;
-    };
-  }, []);
+  }, [selectedSessionId, eventSession, mounted]);
 
   const isAnonymous = user.isAnonymous;
   return (
@@ -782,17 +800,85 @@ function EditEventSessionForm(props) {
                 variant="h6"
                 align="center"
                 display="block"
-                style={{ color: "#53a653", marginTop: 16, marginBottom: 16 }}
+                style={{ color: "#53a653", marginTop: 16, marginBottom: 32 }}
               >
                 Event {isNewEvent ? "created" : "updated"} successfully!
               </Typography>
               <Typography align="center" gutterBottom>
                 Your event is accessible at:
               </Typography>
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <Typography align="center">
+                  <a href={sessionUrl + values.sessionId}>{sessionUrl + values.sessionId}</a>
+                </Typography>
+                <Tooltip title="Copy event link">
+                  <CopyToClipboard
+                    text={sessionUrl + values.sessionId}
+                    onCopy={() => snackbar.showMessage("Event link copied")}
+                  >
+                    <IconButton aria-label="copy" style={{ marginLeft: 8 }} size="small" color="primary">
+                      <CopyIcon fontSize="inherit" />
+                    </IconButton>
+                  </CopyToClipboard>
+                </Tooltip>
+              </div>
+              <div style={{ textAlign: "center", marginTop: 32 }}>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={() => history.push(routes.EVENT_SESSION(values.sessionId))}
+                >
+                  Open Event page
+                </Button>
+              </div>
+              <div style={{ display: "flex", textAlign: "center", marginTop: 16 }}>
+                <TwitterShareButton
+                  title={shareText}
+                  url={sessionUrl + values.sessionId}
+                  className={classes.shareButton}
+                >
+                  <TwitterIcon size={32} round />
+                </TwitterShareButton>
+                <FacebookShareButton
+                  quote={shareText}
+                  url={sessionUrl + values.sessionId}
+                  className={classes.shareButton}
+                >
+                  <FacebookIcon size={32} round />
+                </FacebookShareButton>
 
-              <Typography align="center" gutterBottom>
-                <a href={sessionUrl + values.sessionId}>{sessionUrl + values.sessionId}</a>
-              </Typography>
+                <LinkedinShareButton
+                  title={shareText}
+                  url={sessionUrl + values.sessionId}
+                  className={classes.shareButton}
+                >
+                  <LinkedinIcon size={32} round />
+                </LinkedinShareButton>
+
+                <RedditShareButton
+                  title={shareText}
+                  url={sessionUrl + values.sessionId}
+                  className={classes.shareButton}
+                >
+                  <RedditIcon size={32} round />
+                </RedditShareButton>
+
+                <TelegramShareButton
+                  title={shareText}
+                  url={sessionUrl + values.sessionId}
+                  className={classes.shareButton}
+                >
+                  <TelegramIcon size={32} round />
+                </TelegramShareButton>
+
+                <WhatsappShareButton
+                  title={shareText}
+                  url={sessionUrl + values.sessionId}
+                  className={classes.shareButton}
+                >
+                  <WhatsappIcon size={32} round />
+                </WhatsappShareButton>
+              </div>
             </React.Fragment>
           )}
           {eventCreated === "ERROR" && (

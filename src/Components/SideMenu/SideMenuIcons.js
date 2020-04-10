@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import clsx from "clsx";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
@@ -17,9 +17,21 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import InboxIcon from "@material-ui/icons/MoveToInbox";
 import MailIcon from "@material-ui/icons/Mail";
-import ChatIcon from "@material-ui/icons/Forum";
+
+import ChatIcon from "@material-ui/icons/Chat";
+import QnAIcon from "@material-ui/icons/Forum";
 import Tooltip from "@material-ui/core/Tooltip";
 import ProfileIcon from "@material-ui/icons/AccountBox";
+import FAQIcon from "@material-ui/icons/LiveHelp";
+import StatsIcon from "@material-ui/icons/Assessment";
+import SettingsIcon from "@material-ui/icons/Settings";
+import AboutIcon from "@material-ui/icons/Info";
+import EventDescriptionIcon from "@material-ui/icons/Notes";
+import FeedbackIcon from "@material-ui/icons/Feedback";
+
+import { useDispatch } from "react-redux";
+import { openEditProfile, openEventDetails } from "../../Redux/actions";
+import routes from "../../Config/routes";
 
 const drawerWidth = 240;
 
@@ -86,63 +98,54 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function SideMenuIcons(props) {
+  const { eventSession, user } = props;
   const classes = useStyles();
   const theme = useTheme();
-  const { open, setOpen } = props;
+  const dispatch = useDispatch();
 
-  const handleDrawerOpen = () => {
-    // setOpen(true);
-  };
+  const isOwner = React.useMemo(() => eventSession && user && eventSession.owner === user.uid, [eventSession, user]);
 
-  const handleDrawerClose = () => {
-    // setOpen(false);
-  };
+  const openProfile = React.useCallback(() => dispatch(openEditProfile()), [dispatch]);
+  const openDetails = React.useCallback(() => dispatch(openEventDetails()), [dispatch]);
 
   return (
     <div className={classes.root}>
-      {/* <CssBaseline />
-      <AppBar
-        position="fixed"
-        className={clsx(classes.appBar, {
-          [classes.appBarShift]: open,
-        })}
-      >
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            edge="start"
-            className={clsx(classes.menuButton, {
-              [classes.hide]: open,
-            })}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap>
-            Mini variant drawer
-          </Typography>
-        </Toolbar>
-      </AppBar> */}
-      {/* <Drawer
-        variant="permanent"
-        className={clsx(classes.drawer, {
-          [classes.drawerOpen]: open,
-          [classes.drawerClose]: !open,
-        })}
-        classes={{
-          paper: clsx({
-            [classes.drawerOpen]: open,
-            [classes.drawerClose]: !open,
-          }),
-        }}
-      > */}
-      {/* <div className={classes.toolbar}>
-          <IconButton onClick={handleDrawerClose}>
-            {theme.direction === "rtl" ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-          </IconButton>
-        </div> */}
-      {/* <Divider /> */}
+      <List>
+        <Tooltip title="Edit Profile">
+          <ListItem button onClick={openProfile}>
+            <ListItemIcon>
+              <ProfileIcon />
+            </ListItemIcon>
+          </ListItem>
+        </Tooltip>
+        <Tooltip title="My stats">
+          <ListItem button disabled>
+            <ListItemIcon>
+              <StatsIcon />
+            </ListItemIcon>
+          </ListItem>
+        </Tooltip>
+      </List>
+      {isOwner && (
+        <>
+          <Divider />
+          <List>
+            <Tooltip
+              title="Edit event"
+              onClick={() => {
+                window.open(window.open(routes.EDIT_EVENT_SESSION(eventSession.id), "_blank"));
+              }}
+            >
+              <ListItem button>
+                <ListItemIcon>
+                  <SettingsIcon />
+                </ListItemIcon>
+              </ListItem>
+            </Tooltip>
+          </List>
+        </>
+      )}
+      <Divider />
       <List>
         <Tooltip title="Chat">
           <ListItem button>
@@ -151,47 +154,51 @@ export default function SideMenuIcons(props) {
             </ListItemIcon>
           </ListItem>
         </Tooltip>
-        <Tooltip title="Chat">
-          <ListItem button>
+        <Tooltip title="Questions and Answers">
+          <ListItem button disabled>
             <ListItemIcon>
-              <ProfileIcon />
+              <QnAIcon />
+            </ListItemIcon>
+          </ListItem>
+        </Tooltip>
+        <Tooltip title="Event details">
+          <ListItem button onClick={openProfile}>
+            <ListItemIcon>
+              <EventDescriptionIcon />
             </ListItemIcon>
           </ListItem>
         </Tooltip>
       </List>
       <Divider />
       <List>
-        {["All mail", "Trash", "Spam"].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-            {/* <ListItemText primary={text} /> */}
+        <Tooltip title="FAQ">
+          <ListItem button disabled>
+            <ListItemIcon>
+              <FAQIcon />
+            </ListItemIcon>
           </ListItem>
-        ))}
+        </Tooltip>
+        <Tooltip title="About Veertly">
+          <ListItem
+            button
+            onClick={() => {
+              window.open("https://veertly.com", "_blank");
+            }}
+          >
+            <ListItemIcon>
+              <AboutIcon />
+            </ListItemIcon>
+          </ListItem>
+        </Tooltip>
+        <Tooltip title="Provide Feedback">
+          <ListItem button disabled>
+            <ListItemIcon>
+              <FeedbackIcon />
+            </ListItemIcon>
+          </ListItem>
+        </Tooltip>
       </List>
-      {/* </Drawer>
-      <main className={classes.content}>
-        <div className={classes.toolbar} />
-        <Typography paragraph>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-          magna aliqua. Rhoncus dolor purus non enim praesent elementum facilisis leo vel. Risus at ultrices mi tempus
-          imperdiet. Semper risus in hendrerit gravida rutrum quisque non tellus. Convallis convallis tellus id interdum
-          velit laoreet id donec ultrices. Odio morbi quis commodo odio aenean sed adipiscing. Amet nisl suscipit
-          adipiscing bibendum est ultricies integer quis. Cursus euismod quis viverra nibh cras. Metus vulputate eu
-          scelerisque felis imperdiet proin fermentum leo. Mauris commodo quis imperdiet massa tincidunt. Cras tincidunt
-          lobortis feugiat vivamus at augue. At augue eget arcu dictum varius duis at consectetur lorem. Velit sed
-          ullamcorper morbi tincidunt. Lorem donec massa sapien faucibus et molestie ac.
-        </Typography>
-        <Typography paragraph>
-          Consequat mauris nunc congue nisi vitae suscipit. Fringilla est ullamcorper eget nulla facilisi etiam
-          dignissim diam. Pulvinar elementum integer enim neque volutpat ac tincidunt. Ornare suspendisse sed nisi lacus
-          sed viverra tellus. Purus sit amet volutpat consequat mauris. Elementum eu facilisis sed odio morbi. Euismod
-          lacinia at quis risus sed vulputate odio. Morbi tincidunt ornare massa eget egestas purus viverra accumsan in.
-          In hendrerit gravida rutrum quisque non tellus orci ac. Pellentesque nec nam aliquam sem et tortor. Habitant
-          morbi tristique senectus et. Adipiscing elit duis tristique sollicitudin nibh sit. Ornare aenean euismod
-          elementum nisi quis eleifend. Commodo viverra maecenas accumsan lacus vel facilisis. Nulla posuere
-          sollicitudin aliquam ultrices sagittis orci a.
-        </Typography>
-      </main> */}
+      <Divider />
     </div>
   );
 }

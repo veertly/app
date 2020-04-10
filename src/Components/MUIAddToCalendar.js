@@ -10,7 +10,7 @@ import Dialog from "@material-ui/core/Dialog";
 import { blue } from "@material-ui/core/colors";
 import moment from "moment";
 import { isMobile } from "../Utils/device";
-
+import CalendarIcon from "@material-ui/icons/Event";
 const emails = ["username@gmail.com", "user02@gmail.com"];
 const useStyles = makeStyles({
   avatar: {
@@ -206,7 +206,7 @@ export default function MUIAddToCalendar(props) {
 
   return (
     <div>
-      <Button variant="outlined" color="primary" onClick={handleClickOpen}>
+      <Button variant="outlined" color="primary" onClick={handleClickOpen} startIcon={<CalendarIcon />}>
         Add to calendar
       </Button>
       <SimpleDialog selectedValue={selectedValue} open={open} onClose={handleClose} event={props.event} />

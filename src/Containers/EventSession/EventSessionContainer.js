@@ -27,8 +27,7 @@ import { initFirebasePresenceSync } from "../../Modules/userOperations";
 import Announcements from "../../Components/EventSession/Announcements";
 import { DEFAULT_EVENT_OPEN_MINUTES } from "../../Config/constants";
 import SideMenuIcons from "../../Components/SideMenu/SideMenuIcons";
-
-import NetworkingEmptyIllustration from "../../Assets/illustrations/EmptyNetworkingPane.svg";
+import EditProfileDialog from "../../Components/EditProfile/EditProfileDialog";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -47,12 +46,33 @@ const useStyles = makeStyles((theme) => ({
     position: "relative",
     height: "100%",
     backgroundColor: theme.palette.background.default,
+    backgroundImage: "url('/Illustrations/EmptyNetworkingPane.svg')",
+    backgroundRepeat: "no-repeat",
+    backgroundSize: "50%",
+    backgroundPosition: "bottom right",
+    right: 53,
+    [theme.breakpoints.down("xs")]: {
+      right: 0,
+    },
   },
   noCall: {
     width: "100%",
     textAlign: "center",
     position: "absolute",
-    top: "30%",
+    // paddingLeft: "20%",
+    top: "45%",
+  },
+  blueText: {
+    color: "#274760",
+  },
+  greenText: {
+    color: "#37C470",
+  },
+  emptyMessage: {
+    // fontWeight: 500,
+    width: 340,
+    margin: "auto",
+    textAlign: "left",
   },
   sideMenu: {
     width: 53,
@@ -62,6 +82,9 @@ const useStyles = makeStyles((theme) => ({
     right: 0,
     bottom: 0,
     borderLeft: "1px solid rgba(0, 0, 0, 0.12)",
+    [theme.breakpoints.down("xs")]: {
+      display: "none",
+    },
   },
 }));
 
@@ -222,7 +245,24 @@ export default withRouter((props) => {
       setLastParticipantJoinedJson(currentParticipantsJoinedJson);
       setLastParticipantDetailsJson(currentParticipantsDetailsJson);
     }
-  }, [eventSession, eventSessionDetails, participantsJoined, liveGroups]);
+  }, [
+    eventSession,
+    eventSessionDetails,
+    participantsJoined,
+    liveGroups,
+    currentGroup,
+    currentGroupId,
+    history,
+    initCompleted,
+    lastEventSessionDetailsJson,
+    lastEventSessionJson,
+    lastLiveGroupsJson,
+    lastParticipantDetailsJson,
+    lastParticipantJoinedJson,
+    sessionId,
+    userId,
+    usersFirebase,
+  ]);
 
   const handleCreateConference = async () => {
     history.push(routes.CREATE_EVENT_SESSION());
@@ -243,7 +283,7 @@ export default withRouter((props) => {
     if (!isLive) {
       history.push(routes.EVENT_SESSION(sessionId));
     }
-  }, [isLive]);
+  }, [isLive, history, sessionId]);
 
   const users = React.useMemo(() => {
     if (!usersFirebase) {
@@ -344,6 +384,7 @@ export default withRouter((props) => {
       })}
     >
       <Page title={`Veertly | ${composedEventSession.title}`}> </Page>
+      <EditProfileDialog user={user} eventSession={composedEventSession} />
 
       <EventSessionTopbar
         isInConferenceRoom={isInConferenceRoom}
@@ -385,12 +426,12 @@ export default withRouter((props) => {
               <div className={classes.mainPane}>
                 {!currentGroup && (
                   <div className={classes.noCall}>
-                    <Typography variant="body2">
-                      You are not yet in any conversation,
+                    <Typography variant="h6" className={clsx(classes.blueText, classes.emptyMessage)}>
+                      You are not yet in any <span className={classes.greenText}>conversation</span>,
                       <br />
-                      don't be shy and select someone to talk to!
+                      don't be shy and <span className={classes.greenText}>select someone</span> to{" "}
+                      <span className={classes.greenText}>talk</span> to!
                     </Typography>
-                    <img src={NetworkingEmptyIllustration} alt="No conversation" />
                   </div>
                 )}
                 {currentGroup && (
@@ -433,7 +474,7 @@ export default withRouter((props) => {
             </React.Fragment>
           )}
           <div className={classes.sideMenu}>
-            <SideMenuIcons />
+            <SideMenuIcons eventSession={eventSession} user={user} />
           </div>
         </React.Fragment>
       )}

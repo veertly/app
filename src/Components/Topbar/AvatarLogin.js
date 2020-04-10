@@ -7,8 +7,10 @@ import Avatar from "@material-ui/core/Avatar";
 import { useAuthState } from "react-firebase-hooks/auth";
 import firebase from "../../Modules/firebaseApp";
 import { logout } from "../../Modules/userOperations";
-import EditProfileDialog from "../EditProfile/EditProfileDialog";
 import routes from "../../Config/routes";
+import EditProfileDialog from "../EditProfile/EditProfileDialog";
+import { useDispatch } from "react-redux";
+import { openEditProfile } from "../../Redux/actions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -29,10 +31,11 @@ const useStyles = makeStyles((theme) => ({
 export default (props) => {
   const { eventSession } = props;
 
-  const [openEditProfile, setOpenEditProfile] = useState(false);
+  // const [openEditProfile, setOpenEditProfile] = useState(false);
 
   const classes = useStyles();
   const [user] = useAuthState(firebase.auth());
+  const dispatch = useDispatch();
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
@@ -58,9 +61,10 @@ export default (props) => {
     return firstName.charAt(0).toUpperCase() + lastName.charAt(0).toUpperCase();
   };
 
+  const openProfile = React.useCallback(() => dispatch(openEditProfile()), [dispatch]);
+
   return (
     <React.Fragment>
-      <EditProfileDialog open={openEditProfile} setOpen={setOpenEditProfile} user={user} eventSession={eventSession} />
       {user && (
         <div>
           {user && user.photoURL && (
@@ -90,7 +94,7 @@ export default (props) => {
             {eventSession && (
               <MenuItem
                 onClick={() => {
-                  setOpenEditProfile(true);
+                  openProfile();
                   handleClose();
                 }}
               >
