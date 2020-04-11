@@ -29,9 +29,7 @@ import { DEFAULT_EVENT_OPEN_MINUTES } from "../../Config/constants";
 import SideMenuIcons from "../../Components/SideMenu/SideMenuIcons";
 import ChatPane from "../../Components/SideMenu/ChatPane";
 import EditProfileDialog from "../../Components/EditProfile/EditProfileDialog";
-import { useSelector } from "react-redux";
-import { isChatOpen, isEventDetailsOpen } from "../../Redux/selectors";
-import EventPageDialog from "../../Components/EventShow/EventPageDialog";
+import EventPageDialog from "../../Components/Event/EventPageDialog";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -74,7 +72,7 @@ const useStyles = makeStyles((theme) => ({
   },
   emptyMessage: {
     // fontWeight: 500,
-    width: 340,
+    width: 370,
     margin: "auto",
     textAlign: "left",
   },
@@ -120,7 +118,6 @@ export default withRouter((props) => {
 
   const [openSidebar, setOpenSidebar] = useState(false);
   const history = useHistory();
-  const detailsOpen = useSelector(isEventDetailsOpen);
 
   const handleSidebarClose = () => {
     setOpenSidebar(false);
@@ -433,7 +430,7 @@ export default withRouter((props) => {
                 {!currentGroup && (
                   <div className={classes.noCall}>
                     <Typography variant="h6" className={clsx(classes.blueText, classes.emptyMessage)}>
-                      You are not yet in any <span className={classes.greenText}>conversation</span>,
+                      You are not in any <span className={classes.greenText}>conversation</span> yet,
                       <br />
                       don't be shy and <span className={classes.greenText}>select someone</span> to{" "}
                       <span className={classes.greenText}>talk</span> to!

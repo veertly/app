@@ -11,7 +11,6 @@ import { blue } from "@material-ui/core/colors";
 import moment from "moment";
 import { isMobile } from "../Utils/device";
 import CalendarIcon from "@material-ui/icons/Event";
-const emails = ["username@gmail.com", "user02@gmail.com"];
 const useStyles = makeStyles({
   avatar: {
     backgroundColor: blue[100],
@@ -188,12 +187,10 @@ function SimpleDialog(props) {
 SimpleDialog.propTypes = {
   onClose: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired,
-  selectedValue: PropTypes.string.isRequired,
 };
 
 export default function MUIAddToCalendar(props) {
   const [open, setOpen] = React.useState(false);
-  const [selectedValue, setSelectedValue] = React.useState(emails[1]);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -201,15 +198,19 @@ export default function MUIAddToCalendar(props) {
 
   const handleClose = (value) => {
     setOpen(false);
-    setSelectedValue(value);
   };
 
   return (
     <div>
-      <Button variant="outlined" color="primary" onClick={handleClickOpen} startIcon={<CalendarIcon />}>
+      <Button
+        variant={props.isPrimaryButton ? "outlined" : "text"}
+        color="primary"
+        onClick={handleClickOpen}
+        startIcon={<CalendarIcon />}
+      >
         Add to calendar
       </Button>
-      <SimpleDialog selectedValue={selectedValue} open={open} onClose={handleClose} event={props.event} />
+      <SimpleDialog open={open} onClose={handleClose} event={props.event} />
     </div>
   );
 }

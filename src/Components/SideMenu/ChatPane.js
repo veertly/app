@@ -168,7 +168,3 @@ export default function ChatPane(props) {
     </div>
   );
 }
-
-.green-button:{
-  background-color:"green"
-}

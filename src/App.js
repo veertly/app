@@ -1,7 +1,7 @@
 import React, { useReducer } from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import "semantic-ui-css/semantic.min.css";
-import "react-datepicker/dist/react-datepicker.css";
+// import "react-datepicker/dist/react-datepicker.css";
 
 // import appSyncConfig from "./aws-exports";
 // import { ApolloProvider } from "react-apollo";
@@ -24,8 +24,6 @@ import PrivateRoute from "./Components/PrivateRoute";
 import { createMuiTheme } from "@material-ui/core/styles";
 import { ThemeProvider } from "@material-ui/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
-
-import EventShowContainer from "./Containers/EventShowContainer";
 
 import { userOperationsReducer } from "./Redux/userOperationsReducer";
 import { GlobalContext } from "./Redux/GlobalContext";
@@ -86,7 +84,6 @@ const App = () => {
                 <PrivateRoute exact={true} path={routes.EVENT_SESSION_LIVE()} component={EventSessionContainer} />
                 <PrivateRoute exact={true} path={routes.EDIT_EVENT_SESSION()} component={EditSessionContainer} />
                 <Route exact={true} path={routes.EVENT_SESSION()} component={EventPageContainer} />
-                <Route exact={true} path={routes.EVENT_PAGE()} component={EventShowContainer} />
                 <Route exact={true} path={routes.LOGIN_PATH()} component={LoginContainer} />
                 <PrivateRoute path={routes.EDIT_PROFILE_RAW()} component={EditProfileContainer} />
                 <PrivateRoute path={routes.PROFILE()} component={ProfileContainer} />

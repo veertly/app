@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { makeStyles } from "@material-ui/styles";
 
 import MenuItem from "@material-ui/core/MenuItem";
@@ -8,7 +8,6 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import firebase from "../../Modules/firebaseApp";
 import { logout } from "../../Modules/userOperations";
 import routes from "../../Config/routes";
-import EditProfileDialog from "../EditProfile/EditProfileDialog";
 import { useDispatch } from "react-redux";
 import { openEditProfile } from "../../Redux/actions";
 
