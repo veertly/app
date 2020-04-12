@@ -22,8 +22,6 @@ const useStyles = makeStyles((theme) => ({
 export default withRouter((props) => {
   const [user, initialising /* error */] = useAuthState(firebase.auth());
 
-  const { location } = props;
-
   const classes = useStyles();
   // const queryValues = queryString.parse(props.location.search);
   // const callbackUrl = queryValues.callback ? queryValues.callback : "/";
@@ -35,12 +33,14 @@ export default withRouter((props) => {
     if (splits[1] === "v") {
       sessionId = splits[2];
     }
-    sessionId = sessionId.replace("/live", "");
+    if (sessionId) {
+      sessionId = sessionId.replace("/live", "");
+    }
     return {
       sessionId: sessionId ? sessionId.toLowerCase() : null,
       isInSessionPage: sessionId !== undefined,
     };
-  }, [location.search, callbackUrl]);
+  }, [callbackUrl]);
 
   useEffect(() => {
     window.analytics.page("LoginPage");

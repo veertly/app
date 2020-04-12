@@ -71,33 +71,8 @@ function EditProfileForm(props) {
   let [errors, setErrors] = React.useState({});
   const [interestsChips, setInterestsChips] = React.useState([]);
   const [updating, setUpdating] = React.useState(false);
-  // const snackbar = useSnackbar();
-  useEffect(() => {
-    fetchUser();
-  }, [user]);
 
-  if (!user && !sessionId) {
-    return <p>No session available...</p>;
-  }
-  const handleUpdateField = (name) => (e) => {
-    let value = e.target.value;
-    let newValues = { ...values };
-    newValues[name] = value;
-    if (name === "linkedin") {
-      newValues.linkedinUrl = value.trim() !== "" ? linkedinUrlStatic + value : null;
-    }
-
-    if (name === "twitter") {
-      newValues.twitterUrl = value.trim() !== "" ? twitterUrlStatic + value : null;
-    }
-
-    if (name === "keybase") {
-      newValues.keybaseUrl = value.trim() !== "" ? keybaseUrlStatic + value : null;
-    }
-    setValues(newValues);
-  };
-
-  const fetchUser = async () => {
+  const fetchUser = React.useCallback(async () => {
     if (!user) {
       return;
     }
@@ -143,6 +118,31 @@ function EditProfileForm(props) {
 
       setInterestsChips(interestsChips ? interestsChips : []);
     }
+  }, [user, values]);
+
+  useEffect(() => {
+    fetchUser();
+  }, [user, fetchUser]);
+
+  if (!user && !sessionId) {
+    return <p>No session available...</p>;
+  }
+  const handleUpdateField = (name) => (e) => {
+    let value = e.target.value;
+    let newValues = { ...values };
+    newValues[name] = value;
+    if (name === "linkedin") {
+      newValues.linkedinUrl = value.trim() !== "" ? linkedinUrlStatic + value : null;
+    }
+
+    if (name === "twitter") {
+      newValues.twitterUrl = value.trim() !== "" ? twitterUrlStatic + value : null;
+    }
+
+    if (name === "keybase") {
+      newValues.keybaseUrl = value.trim() !== "" ? keybaseUrlStatic + value : null;
+    }
+    setValues(newValues);
   };
 
   const handleAddInterest = (_) => {

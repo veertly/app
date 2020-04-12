@@ -44,16 +44,7 @@ import CopyIcon from "@material-ui/icons/FileCopy";
 import IconButton from "@material-ui/core/IconButton";
 import { useSnackbar } from "material-ui-snackbar-provider";
 import useIsMounted from "react-is-mounted-hook";
-
-import {
-  FacebookShareButton,
-  LinkedinShareButton,
-  RedditShareButton,
-  TelegramShareButton,
-  TwitterShareButton,
-  WhatsappShareButton,
-} from "react-share";
-import { FacebookIcon, LinkedinIcon, RedditIcon, TelegramIcon, TwitterIcon, WhatsappIcon } from "react-share";
+import EventShareIcons from "./EventShareIcons";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -221,6 +212,7 @@ function EditEventSessionForm(props) {
     newDates[name] = date;
     let begin = name === "begin" ? date : selectedDate.begin;
     let end = name === "end" ? date : selectedDate.end;
+
     if (!begin.isBefore(moment().subtract(60, "minutes"))) {
       setErrors({ ...errors, beginDate: undefined });
     }
@@ -228,7 +220,9 @@ function EditEventSessionForm(props) {
     if (!end.isBefore(begin)) {
       setErrors({ ...errors, endDate: undefined });
     }
-
+    if (end.isBefore(begin)) {
+      newDates.end = moment(begin).add(2, "hours");
+    }
     setSelectedDate(newDates);
   };
 
@@ -851,54 +845,7 @@ function EditEventSessionForm(props) {
                   Open Event page
                 </Button>
               </div>
-              <div style={{ display: "flex", textAlign: "center", marginTop: 16 }}>
-                <TwitterShareButton
-                  title={shareText}
-                  url={sessionUrl + values.sessionId}
-                  className={classes.shareButton}
-                >
-                  <TwitterIcon size={32} round />
-                </TwitterShareButton>
-                <FacebookShareButton
-                  quote={shareText}
-                  url={sessionUrl + values.sessionId}
-                  className={classes.shareButton}
-                >
-                  <FacebookIcon size={32} round />
-                </FacebookShareButton>
-
-                <LinkedinShareButton
-                  title={shareText}
-                  url={sessionUrl + values.sessionId}
-                  className={classes.shareButton}
-                >
-                  <LinkedinIcon size={32} round />
-                </LinkedinShareButton>
-
-                <RedditShareButton
-                  title={shareText}
-                  url={sessionUrl + values.sessionId}
-                  className={classes.shareButton}
-                >
-                  <RedditIcon size={32} round />
-                </RedditShareButton>
-
-                <TelegramShareButton
-                  title={shareText}
-                  url={sessionUrl + values.sessionId}
-                  className={classes.shareButton}
-                >
-                  <TelegramIcon size={32} round />
-                </TelegramShareButton>
-
-                <WhatsappShareButton
-                  title={shareText}
-                  url={sessionUrl + values.sessionId}
-                  className={classes.shareButton}
-                >
-                  <WhatsappIcon size={32} round />
-                </WhatsappShareButton>
-              </div>
+              <EventShareIcons url={sessionUrl + values.sessionId} shareText={shareText} />
             </React.Fragment>
           )}
           {eventCreated === "ERROR" && (

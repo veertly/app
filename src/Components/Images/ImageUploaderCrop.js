@@ -23,12 +23,53 @@ export default function ImageUploaderCrop(props) {
     setImgRef(img);
     // makeClientCrop(crop);
   }, []);
+  const createCropPreview = React.useCallback(
+    async (image, crop, fileName) => {
+      const canvas = document.createElement("canvas");
+      const scaleX = image.naturalWidth / image.width;
+      const scaleY = image.naturalHeight / image.height;
+      canvas.width = crop.width;
+      canvas.height = crop.height;
+      const ctx = canvas.getContext("2d");
 
-  const makeClientCrop = async (crop) => {
-    if (imgRef && crop.width && crop.height) {
-      createCropPreview(imgRef, crop, "newFile.jpeg");
-    }
-  };
+      ctx.drawImage(
+        image,
+        crop.x * scaleX,
+        crop.y * scaleY,
+        crop.width * scaleX,
+        crop.height * scaleY,
+        0,
+        0,
+        crop.width,
+        crop.height
+      );
+
+      return new Promise((resolve, reject) => {
+        canvas.toBlob((blob) => {
+          if (!blob) {
+            reject(new Error("Canvas is empty"));
+            return;
+          }
+          blob.name = fileName;
+          window.URL.revokeObjectURL(previewUrl);
+          let url = window.URL.createObjectURL(blob);
+          setPreviewUrl(url);
+
+          if (onPreviewUrlChange) onPreviewUrlChange(url);
+          if (onBlobChange) onBlobChange(blob);
+        }, "image/jpeg");
+      });
+    },
+    [onBlobChange, onPreviewUrlChange, previewUrl]
+  );
+  const makeClientCrop = React.useCallback(
+    async (crop) => {
+      if (imgRef && crop.width && crop.height) {
+        createCropPreview(imgRef, crop, "newFile.jpeg");
+      }
+    },
+    [imgRef, createCropPreview]
+  );
 
   React.useEffect(() => {
     if (initialImageBlob && !initialBlobUrl) {
@@ -46,44 +87,8 @@ export default function ImageUploaderCrop(props) {
     if (!previewUrl && imgRef && crop.width && crop.height) {
       makeClientCrop(crop);
     }
-  }, [imgRef, crop.width, crop.height]);
+  }, [imgRef, crop.width, crop.height, crop, makeClientCrop, previewUrl]);
 
-  const createCropPreview = async (image, crop, fileName) => {
-    const canvas = document.createElement("canvas");
-    const scaleX = image.naturalWidth / image.width;
-    const scaleY = image.naturalHeight / image.height;
-    canvas.width = crop.width;
-    canvas.height = crop.height;
-    const ctx = canvas.getContext("2d");
-
-    ctx.drawImage(
-      image,
-      crop.x * scaleX,
-      crop.y * scaleY,
-      crop.width * scaleX,
-      crop.height * scaleY,
-      0,
-      0,
-      crop.width,
-      crop.height
-    );
-
-    return new Promise((resolve, reject) => {
-      canvas.toBlob((blob) => {
-        if (!blob) {
-          reject(new Error("Canvas is empty"));
-          return;
-        }
-        blob.name = fileName;
-        window.URL.revokeObjectURL(previewUrl);
-        let url = window.URL.createObjectURL(blob);
-        setPreviewUrl(url);
-
-        if (onPreviewUrlChange) onPreviewUrlChange(url);
-        if (onBlobChange) onBlobChange(blob);
-      }, "image/jpeg");
-    });
-  };
   return (
     <div style={{ marginTop: imgRef ? 16 : 0, marginBottom: 16, textAlign: "center" }}>
       <ReactCrop
