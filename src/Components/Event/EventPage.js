@@ -6,7 +6,6 @@ import Typography from "@material-ui/core/Typography";
 import MUIRichTextEditor from "mui-rte";
 import { CardMedia, Button } from "@material-ui/core";
 import moment from "moment";
-// import Grid from "@material-ui/core/Grid";
 import routes from "../../Config/routes";
 import { useHistory } from "react-router-dom";
 import { DEFAULT_EVENT_OPEN_MINUTES } from "../../Config/constants";
@@ -19,8 +18,10 @@ import { stateToHTML } from "draft-js-export-html";
 import JoinEventIcon from "@material-ui/icons/MeetingRoom";
 import RegisterIcon from "@material-ui/icons/HowToReg";
 import { getFeatureDetails, FEATURES } from "../../Modules/features";
-import EventRegistrationForm from "../../Containers/EventSession/EventRegistrationForm";
-// import JoinEventIcon from "@material-ui/icons/PlayCircleOutline";
+import EventRegistrationForm from "./EventRegistrationForm";
+import { userRegisteredEvent } from "../../Modules/eventsOperations";
+import SuccessIcon from "@material-ui/icons/CheckCircleOutline";
+
 const useStyles = makeStyles((theme) => ({
   root: {
     maxWidth: theme.breakpoints.values.sm,
@@ -64,6 +65,7 @@ export default function EventPage(props) {
   const history = useHistory();
 
   const [registerOpen, setRegisterOpen] = React.useState(false);
+  const [isRegistered, setIsRegistered] = React.useState(userRegisteredEvent(id));
 
   let beginDate = eventBeginDate ? moment(eventBeginDate.toDate()) : null;
   let endDate = eventEndDate ? moment(eventEndDate.toDate()) : null;
@@ -114,6 +116,7 @@ export default function EventPage(props) {
           disableElevation
           onClick={() => history.push(routes.EDIT_EVENT_SESSION(id))}
           className={classes.editButton}
+          style={{ backgroundColor: "rgba(92, 219, 148, 0.2)" }}
         >
           Edit Event
         </Button>
@@ -157,7 +160,7 @@ export default function EventPage(props) {
           <div className={classes.ctaContainer}>
             {!isLive && (
               <div>
-                {hasRsvpEnabled && (
+                {hasRsvpEnabled && !isRegistered && (
                   <Button
                     variant="contained"
                     color="primary"
@@ -169,6 +172,22 @@ export default function EventPage(props) {
                   >
                     Register
                   </Button>
+                )}
+                {hasRsvpEnabled && isRegistered && (
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: " center",
+                      alignItems: "center",
+                      color: "green",
+                      marginBottom: 8,
+                    }}
+                  >
+                    <span style={{ paddingRight: 8, paddingTop: 4 }}>
+                      <SuccessIcon />
+                    </span>
+                    <Typography>You have already registered to this event </Typography>
+                  </div>
                 )}
                 <MUIAddToCalendar event={calendarEvent} isPrimaryButton={!hasRsvpEnabled} />
               </div>
@@ -200,9 +219,23 @@ export default function EventPage(props) {
           </div>
         )}
       </div>
-      <Dialog onClose={() => setRegisterOpen(false)} open={registerOpen} scroll={"body"}>
+      <Dialog
+        onClose={() => {
+          setRegisterOpen(false);
+          setIsRegistered(userRegisteredEvent(id));
+        }}
+        open={registerOpen}
+        scroll={"body"}
+      >
         <div className={classes.dialogContent}>
-          <EventRegistrationForm eventSession={props.event} rsvpProperties={rsvpProperties} />
+          <EventRegistrationForm
+            eventSession={props.event}
+            rsvpProperties={rsvpProperties}
+            onClose={() => {
+              setRegisterOpen(false);
+              setIsRegistered(userRegisteredEvent(id));
+            }}
+          />
         </div>
       </Dialog>
     </Card>

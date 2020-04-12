@@ -5,10 +5,10 @@ import { leaveCall } from "../../Modules/eventSessionOperations";
 import NoVideoImage from "../../Assets/illustrations/undraw_video_call_kxyp.svg";
 import { Typography } from "@material-ui/core";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
-    height: "100%"
+    height: "100%",
   },
   videoContainer: {
     width: "100%",
@@ -17,7 +17,7 @@ const useStyles = makeStyles(theme => ({
     top: 0,
     bottom: 0,
     right: 0,
-    left: 0
+    left: 0,
   },
   noVideoImage: {
     maxWidth: "100%",
@@ -26,11 +26,11 @@ const useStyles = makeStyles(theme => ({
     bottom: 0,
     margin: "auto",
     width: "100%",
-    height: "60%"
-  }
+    height: "60%",
+  },
 }));
 
-export default props => {
+export default (props) => {
   const classes = useStyles();
   const { user, eventSession, jitsiApi, setJitsiApi } = props;
   const [loaded, error] = useScript("https://meet.jit.si/external_api.js");
@@ -38,11 +38,11 @@ export default props => {
 
   useEffect(() => {
     window.analytics.page("ConferenceRoom/" + eventSession.id);
-  }, []);
+  }, [eventSession.id]);
 
-  const handleCallEnded = () => {
+  const handleCallEnded = React.useCallback(() => {
     leaveCall(eventSession, user.uid);
-  };
+  }, [eventSession, user.uid]);
 
   useEffect(() => {
     let prefix = process.env.REACT_APP_JITSI_ROOM_PREFIX;
@@ -63,10 +63,10 @@ export default props => {
         parentNode: document.querySelector("#conference-container"),
         interfaceConfigOverwrite: {
           // filmStripOnly: true,
-          DEFAULT_REMOTE_DISPLAY_NAME: "Veertlier"
+          DEFAULT_REMOTE_DISPLAY_NAME: "Veertlier",
           // SHOW_JITSI_WATERMARK: false,
           // SUPPORT_URL: 'https://github.com/jitsi/jitsi-meet/issues/new',
-        }
+        },
       };
       /*eslint-disable no-undef*/
 
@@ -78,11 +78,11 @@ export default props => {
       if (user.photoURL) {
         api.executeCommand("avatarUrl", user.photoURL);
       }
-      api.addEventListener("videoConferenceLeft", event => {
+      api.addEventListener("videoConferenceLeft", (event) => {
         console.log("videoConferenceLeft: ", event);
         handleCallEnded();
       });
-      api.addEventListener("readyToClose", event => {
+      api.addEventListener("readyToClose", (event) => {
         console.log("readyToClose: ", event);
         handleCallEnded();
       });
@@ -97,7 +97,17 @@ export default props => {
       //   jitsiApi.dispose();
       // }
     };
-  }, [loaded]);
+  }, [
+    loaded,
+    eventSession.conferenceVideoType,
+    eventSession.id,
+    handleCallEnded,
+    jitsiApi,
+    lastRoomLoaded,
+    setJitsiApi,
+    user.displayName,
+    user.photoURL,
+  ]);
 
   if (error) {
     console.log(error);
@@ -105,7 +115,7 @@ export default props => {
   }
   if (!loaded) return <div id="conference-container">Loading...</div>;
   if (loaded) {
-    const getYoutubeFrame = videoId => {
+    const getYoutubeFrame = (videoId) => {
       return (
         <iframe
           className={classes.videoContainer}

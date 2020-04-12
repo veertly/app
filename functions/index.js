@@ -19,7 +19,7 @@ const leaveCall = async (sessionId, myUserId) => {
 
   let participantsJoinedSnapshot = await participantsJoinedRef.get();
   let participantsJoined = {};
-  await participantsJoinedSnapshot.forEach(function(doc) {
+  await participantsJoinedSnapshot.forEach(function (doc) {
     participantsJoined[doc.id] = doc.data();
   });
 
@@ -30,22 +30,15 @@ const leaveCall = async (sessionId, myUserId) => {
     return;
   }
 
-  var liveGroupsRef = await firestore
-    .collection("eventSessions")
-    .doc(sessionId)
-    .collection("liveGroups");
+  var liveGroupsRef = await firestore.collection("eventSessions").doc(sessionId).collection("liveGroups");
 
   let liveGroupsSnapshot = await liveGroupsRef.get();
   let liveGroups = {};
-  await liveGroupsSnapshot.forEach(function(doc) {
+  await liveGroupsSnapshot.forEach(function (doc) {
     liveGroups[doc.id] = doc.data();
   });
 
-  let myUserRef = firestore
-    .collection(`eventSessions`)
-    .doc(sessionId)
-    .collection("participantsJoined")
-    .doc(myUserId);
+  let myUserRef = firestore.collection(`eventSessions`).doc(sessionId).collection("participantsJoined").doc(myUserId);
 
   var myGroupRef = eventSessionRef.collection("liveGroups").doc(myGroupId);
 
@@ -62,7 +55,7 @@ const leaveCall = async (sessionId, myUserId) => {
   }
 
   await firestore
-    .runTransaction(async function(transaction) {
+    .runTransaction(async function (transaction) {
       /*
       1. check if live group still exists
       2. check if myUser is in the group
@@ -124,10 +117,10 @@ const leaveCall = async (sessionId, myUserId) => {
 
       console.log("---> END OF TRANSACTION");
     })
-    .then(function() {
+    .then(function () {
       console.log("Transaction successfully committed!");
     })
-    .catch(function(error) {
+    .catch(function (error) {
       console.log("Transaction failed: ", error);
       throw error;
       // snackbar.showMessage(error);
@@ -189,4 +182,21 @@ exports.onEventCreated = functions.firestore
     let ownerData = ownerSnapshot.data();
     let eventLink = baseUrl + "/v/" + sessionId;
     await sendgrid.sendEventCreatedMail(ownerData.email, ownerData.firstName, eventLink, title);
+  });
+
+exports.onUserRegisteredEvent = functions.firestore
+  .document("eventSessionsRegistrations/{sessionId}/registrations/{ts}")
+  .onCreate(async (snap, context) => {
+    const { firstName, email, title } = snap.data();
+    let { sessionId } = context.params;
+
+    let baseUrl = functions.config().global.base_url;
+
+    let eventLink = baseUrl + "/v/" + sessionId;
+
+    if (email && email.trim() !== "") {
+      await sendgrid.sendUserRegistered(email, firstName, eventLink, title);
+    } else {
+      await sendgrid.sendUserRegistered("info@veertly.com", "GUEST-" + firstName, eventLink, title);
+    }
   });

@@ -23,9 +23,9 @@ export default (props) => {
     });
   }, [eventSession.id]);
 
-  const handleCallEnded = () => {
+  const handleCallEnded = React.useCallback(() => {
     leaveCall(eventSession, user.uid);
-  };
+  }, [eventSession, user.uid]);
 
   useEffect(() => {
     let prefix = process.env.REACT_APP_JITSI_ROOM_PREFIX;
@@ -89,7 +89,17 @@ export default (props) => {
       //   jitsiApi.dispose();
       // }
     };
-  }, [loaded, currentGroup]);
+  }, [
+    loaded,
+    currentGroup,
+    eventSession.id,
+    handleCallEnded,
+    jitsiApi,
+    lastRoomLoaded,
+    setJitsiApi,
+    user.displayName,
+    user.photoURL,
+  ]);
 
   if (error) {
     console.log(error);

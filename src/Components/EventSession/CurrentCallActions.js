@@ -11,30 +11,30 @@ import LeaveCallDialog from "./LeaveCallDialog";
 
 momentDurationFormatSetup(moment);
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   groupContainer: {
     margin: theme.spacing(0, 1),
     padding: theme.spacing(0, 1),
-    position: "relative"
+    position: "relative",
   },
   avatarsContainer: {
-    display: "flex"
+    display: "flex",
   },
   title: {
     margin: theme.spacing(0, 0, 1, 0),
-    display: "block"
+    display: "block",
   },
   leaveCallContainer: {
     position: "absolute",
     right: -9,
-    top: 24
+    top: 24,
   },
   leaveCallButton: {
     // color: red[500]
-  }
+  },
 }));
 
-export default function(props) {
+export default function (props) {
   const classes = useStyles();
 
   const { eventSession, currentGroup, users, user } = props;
@@ -77,7 +77,7 @@ export default function(props) {
 
     console.log({ participants });
     setParticipants(participants);
-  }, [currentGroup]);
+  }, [currentGroup, users]);
 
   const showElapsedTime = () => {
     let elapsedMoment = moment.duration(elapsedTime, "milliseconds");

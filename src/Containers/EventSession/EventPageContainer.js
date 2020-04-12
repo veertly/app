@@ -11,7 +11,6 @@ import { useHistory } from "react-router-dom";
 import routes from "../../Config/routes";
 import EventPage from "../../Components/Event/EventPage";
 import CenteredTopbar from "../Layouts/CenteredTopbar";
-import { getFeatureDetails, FEATURES } from "../../Modules/features";
 
 const useStyles = makeStyles((theme) => ({
   root: {
