@@ -87,18 +87,13 @@ function EventRegistrationForm(props) {
       let userDb = await getUserDb(user.uid);
 
       if (userDb) {
-        let { firstName, lastName, email } = userDb;
-
         const x = (str) => (str ? str : "");
-        const normedUser = {
-          firstName: x(firstName),
-          lastName: x(lastName),
-          email: x(email),
-        };
+
         // setUserDb(normedUser);
         let newFormValues = { ...formValues };
         _.forEach(formFields, (properties, fieldName) => {
-          newFormValues[properties.name] = normedUser[properties.name];
+          let dbValue = userDb[properties.name] ? x(userDb[properties.name]) : "";
+          newFormValues[properties.name] = dbValue;
         });
         setFormValues(newFormValues);
       }
