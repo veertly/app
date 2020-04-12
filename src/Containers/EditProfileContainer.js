@@ -22,7 +22,7 @@ export default () => {
       sessionId: sessionId ? sessionId.toLowerCase() : null,
       isInSessionPage: sessionId !== undefined,
     };
-  }, [location.search, callbackUrl]);
+  }, [callbackUrl]);
 
   const redirectUser = () => {
     history.push(callbackUrl);

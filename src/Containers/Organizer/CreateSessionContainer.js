@@ -2,7 +2,7 @@ import React from "react";
 import Layout from "../Layouts/CenteredLayout";
 import { useAuthState } from "react-firebase-hooks/auth";
 import firebase from "../../Modules/firebaseApp";
-import EditEventSessionForm from "../../Components/EditEventSession/EditEventSessionForm";
+import EditEventSessionForm from "../../Components/Event/EditEventSessionForm";
 import { withRouter } from "react-router-dom";
 import Page from "../../Components/Core/Page";
 import { Paper } from "@material-ui/core";

@@ -1,4 +1,5 @@
 import React from "react";
+import Dialog from "@material-ui/core/Dialog";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import Typography from "@material-ui/core/Typography";
@@ -16,6 +17,9 @@ import { convertFromRaw } from "draft-js";
 import { getUrl } from "../../Modules/environments";
 import { stateToHTML } from "draft-js-export-html";
 import JoinEventIcon from "@material-ui/icons/MeetingRoom";
+import RegisterIcon from "@material-ui/icons/HowToReg";
+import { getFeatureDetails, FEATURES } from "../../Modules/features";
+import EventRegistrationForm from "../../Containers/EventSession/EventRegistrationForm";
 // import JoinEventIcon from "@material-ui/icons/PlayCircleOutline";
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -44,18 +48,26 @@ const useStyles = makeStyles((theme) => ({
     right: theme.spacing(2),
     top: theme.spacing(2),
   },
+  registerButton: {
+    marginBottom: theme.spacing(1),
+  },
+  dialogContent: {
+    padding: theme.spacing(3),
+  },
 }));
 
 export default function EventPage(props) {
   let { bannerUrl, eventBeginDate, eventEndDate, title, description, website, id, eventOpens, owner } = props.event;
-  let { isPreview } = props;
+  let { isPreview, hideButtons, enabledFeatures } = props;
+  const classes = useStyles();
 
   const history = useHistory();
+
+  const [registerOpen, setRegisterOpen] = React.useState(false);
 
   let beginDate = eventBeginDate ? moment(eventBeginDate.toDate()) : null;
   let endDate = eventEndDate ? moment(eventEndDate.toDate()) : null;
 
-  const classes = useStyles();
   const isSameDay = beginDate ? beginDate.isSame(endDate, "day") : false;
 
   const [user] = useAuthState(firebase.auth());
@@ -87,6 +99,11 @@ export default function EventPage(props) {
       endTime: endDate,
     };
   }, [id, description, title, beginDate, endDate]);
+
+  const hasRsvpEnabled = React.useMemo(() => getFeatureDetails(enabledFeatures, FEATURES.RSVP) !== null, [
+    enabledFeatures,
+  ]);
+  const rsvpProperties = React.useMemo(() => getFeatureDetails(enabledFeatures, FEATURES.RSVP), [enabledFeatures]);
 
   return (
     <Card className={classes.root}>
@@ -126,7 +143,7 @@ export default function EventPage(props) {
           )}
           {website && website.trim() !== "" && (
             <Typography color="textSecondary">
-              <a href={website} target="_blank">
+              <a href={website} target="_blank" rel="noopener noreferrer">
                 <span role="img" aria-label="website">
                   🔗
                 </span>
@@ -135,23 +152,43 @@ export default function EventPage(props) {
             </Typography>
           )}
         </div>
-        <div className={classes.ctaContainer}>
-          {!isLive && <MUIAddToCalendar event={calendarEvent} />}
-          {isLive && (
-            <Button
-              variant="contained"
-              color="primary"
-              // disableElevation
-              onClick={() => history.push(routes.EVENT_SESSION_LIVE(id))}
-              size="large"
-              startIcon={<JoinEventIcon />}
-              className={classes.joinButton}
-            >
-              Join event now
-            </Button>
-          )}
-        </div>
-        {/* </Grid> */}
+
+        {!hideButtons && (
+          <div className={classes.ctaContainer}>
+            {!isLive && (
+              <div>
+                {hasRsvpEnabled && (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    // disableElevation
+                    onClick={() => setRegisterOpen(true)}
+                    size="large"
+                    startIcon={<RegisterIcon />}
+                    className={classes.registerButton}
+                  >
+                    Register
+                  </Button>
+                )}
+                <MUIAddToCalendar event={calendarEvent} isPrimaryButton={!hasRsvpEnabled} />
+              </div>
+            )}
+            {isLive && (
+              <Button
+                variant="contained"
+                color="primary"
+                // disableElevation
+                onClick={() => history.push(routes.EVENT_SESSION_LIVE(id))}
+                size="large"
+                startIcon={<JoinEventIcon />}
+                className={classes.joinButton}
+              >
+                Join event now
+              </Button>
+            )}
+          </div>
+        )}
+
         {description && description.trim() !== "" && (
           <div style={{ marginTop: 24 }}>
             <MUIRichTextEditor
@@ -163,6 +200,11 @@ export default function EventPage(props) {
           </div>
         )}
       </div>
+      <Dialog onClose={() => setRegisterOpen(false)} open={registerOpen} scroll={"body"}>
+        <div className={classes.dialogContent}>
+          <EventRegistrationForm eventSession={props.event} rsvpProperties={rsvpProperties} />
+        </div>
+      </Dialog>
     </Card>
   );
 }

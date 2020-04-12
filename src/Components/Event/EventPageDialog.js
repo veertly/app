@@ -1,15 +1,15 @@
 import React from "react";
 import Dialog from "@material-ui/core/Dialog";
 import { makeStyles } from "@material-ui/core/styles";
-import EditProfileForm from "./EditProfileForm";
 import { useDispatch, useSelector } from "react-redux";
-import { closeEditProfile } from "../../Redux/actions";
-import { isEditProfileOpen } from "../../Redux/selectors";
+import { closeEventDetails } from "../../Redux/actions";
+import { isEventDetailsOpen } from "../../Redux/selectors";
+import EventPage from "./EventPage";
 
 const useStyles = makeStyles((theme) => ({
   content: {
     position: "relative",
-    padding: 48,
+    // padding: 48,
   },
   closeContainer: {
     position: "absolute",
@@ -36,21 +36,19 @@ const useStyles = makeStyles((theme) => ({
 export default function (props) {
   const classes = useStyles();
 
-  const { eventSession, user } = props;
-  const open = useSelector(isEditProfileOpen);
+  const { eventSession } = props;
+  const open = useSelector(isEventDetailsOpen);
 
   const dispatch = useDispatch();
 
   const handleClose = () => {
-    dispatch(closeEditProfile());
+    dispatch(closeEventDetails());
   };
   return (
     <div>
-      <Dialog open={open} onClose={handleClose}>
+      <Dialog open={open} onClose={handleClose} scroll={"body"}>
         <div className={classes.content}>
-          {eventSession && (
-            <EditProfileForm user={user} sessionId={eventSession.id} profileUpdatedCallback={handleClose} />
-          )}
+          {eventSession && <EventPage event={eventSession} hideButtons={true} isPreview={true} />}
         </div>
       </Dialog>
     </div>
