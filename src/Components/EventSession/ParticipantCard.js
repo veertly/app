@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function(props) {
+export default function (props) {
   const classes = useStyles();
 
   const { participant, noMargins } = props;
@@ -89,23 +89,23 @@ export default function(props) {
           </Typography>
 
           {participant.linkedinUrl && (
-            <a href={participant.linkedinUrl} target="_blank">
+            <a href={participant.linkedinUrl} target="_blank" rel="noopener noreferrer">
               <LinkedinIcon className={classes.socialNetworkIcon} />
             </a>
           )}
           {participant.twitterUrl && (
-            <a href={participant.twitterUrl} target="_blank">
+            <a href={participant.twitterUrl} target="_blank" rel="noopener noreferrer">
               <TwitterIcon className={classes.socialNetworkIcon} />
             </a>
           )}
 
           {participant.keybaseUrl && (
-            <a href={participant.keybaseUrl} target="_blank">
+            <a href={participant.keybaseUrl} target="_blank" rel="noopener noreferrer">
               <KeybaseIcon className={classes.socialNetworkIcon} />
             </a>
           )}
           {participant.emailPublic && participant.email.trim() !== "" && (
-            <a href={`mailto:${participant.email}`} target="_blank">
+            <a href={`mailto:${participant.email}`} target="_blank" rel="noopener noreferrer">
               <MailOutlineIcon className={classes.socialNetworkIcon} />
             </a>
           )}

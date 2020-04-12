@@ -21,7 +21,7 @@ export default (props) => {
     window.analytics.track("Entered Networking Room", {
       eventSessionId: eventSession.id,
     });
-  }, []);
+  }, [eventSession.id]);
 
   const handleCallEnded = () => {
     leaveCall(eventSession, user.uid);

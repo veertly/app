@@ -27,8 +27,9 @@ import { initFirebasePresenceSync } from "../../Modules/userOperations";
 import Announcements from "../../Components/EventSession/Announcements";
 import { DEFAULT_EVENT_OPEN_MINUTES } from "../../Config/constants";
 import SideMenuIcons from "../../Components/SideMenu/SideMenuIcons";
-
-import NetworkingEmptyIllustration from "../../Assets/illustrations/EmptyNetworkingPane.svg";
+import ChatPane from "../../Components/SideMenu/ChatPane";
+import EditProfileDialog from "../../Components/EditProfile/EditProfileDialog";
+import EventPageDialog from "../../Components/Event/EventPageDialog";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -47,13 +48,14 @@ const useStyles = makeStyles((theme) => ({
     position: "relative",
     height: "100%",
     backgroundColor: theme.palette.background.default,
-    // background-color: red; */
     backgroundImage: "url('/Illustrations/EmptyNetworkingPane.svg')",
     backgroundRepeat: "no-repeat",
     backgroundSize: "50%",
-    // backgroundPosition: "bottom 8px",
     backgroundPosition: "bottom right",
-    // background-positionX: "right"
+    right: 53,
+    [theme.breakpoints.down("xs")]: {
+      right: 0,
+    },
   },
   noCall: {
     width: "100%",
@@ -70,7 +72,7 @@ const useStyles = makeStyles((theme) => ({
   },
   emptyMessage: {
     // fontWeight: 500,
-    width: 340,
+    width: 370,
     margin: "auto",
     textAlign: "left",
   },
@@ -82,6 +84,9 @@ const useStyles = makeStyles((theme) => ({
     right: 0,
     bottom: 0,
     borderLeft: "1px solid rgba(0, 0, 0, 0.12)",
+    [theme.breakpoints.down("xs")]: {
+      display: "none",
+    },
   },
 }));
 
@@ -124,40 +129,26 @@ export default withRouter((props) => {
   });
 
   const [eventSession, loadingSession, errorSession] = useDocumentData(
-    firebase
-      .firestore()
-      .collection("eventSessions")
-      .doc(sessionId)
+    firebase.firestore().collection("eventSessions").doc(sessionId)
   );
   const [eventSessionDetails, loadingSessionDetails, errorSessionDetails] = useDocumentData(
-    firebase
-      .firestore()
-      .collection("eventSessionsDetails")
-      .doc(sessionId)
+    firebase.firestore().collection("eventSessionsDetails").doc(sessionId)
   );
-  const [participantsJoined, loadingParticipantsJoined, errorParticipantsJoined] = useCollectionData(
-    firebase
-      .firestore()
-      .collection("eventSessions")
-      .doc(sessionId)
-      .collection("participantsJoined"),
+  const [
+    participantsJoined,
+    loadingParticipantsJoined,
+    errorParticipantsJoined,
+  ] = useCollectionData(
+    firebase.firestore().collection("eventSessions").doc(sessionId).collection("participantsJoined"),
     { idField: "id" }
   );
   const [liveGroups, loadingLiveGroups, errorLiveGroups] = useCollectionData(
-    firebase
-      .firestore()
-      .collection("eventSessions")
-      .doc(sessionId)
-      .collection("liveGroups"),
+    firebase.firestore().collection("eventSessions").doc(sessionId).collection("liveGroups"),
     { idField: "idField" }
   );
 
   const [usersFirebase, loadingUsers, errorUsers] = useCollectionData(
-    firebase
-      .firestore()
-      .collection("eventSessions")
-      .doc(sessionId)
-      .collection("participantsDetails")
+    firebase.firestore().collection("eventSessions").doc(sessionId).collection("participantsDetails")
   );
 
   useEffect(() => {
@@ -256,7 +247,24 @@ export default withRouter((props) => {
       setLastParticipantJoinedJson(currentParticipantsJoinedJson);
       setLastParticipantDetailsJson(currentParticipantsDetailsJson);
     }
-  }, [eventSession, eventSessionDetails, participantsJoined, liveGroups]);
+  }, [
+    eventSession,
+    eventSessionDetails,
+    participantsJoined,
+    liveGroups,
+    currentGroup,
+    currentGroupId,
+    history,
+    initCompleted,
+    lastEventSessionDetailsJson,
+    lastEventSessionJson,
+    lastLiveGroupsJson,
+    lastParticipantDetailsJson,
+    lastParticipantJoinedJson,
+    sessionId,
+    userId,
+    usersFirebase,
+  ]);
 
   const handleCreateConference = async () => {
     history.push(routes.CREATE_EVENT_SESSION());
@@ -277,7 +285,7 @@ export default withRouter((props) => {
     if (!isLive) {
       history.push(routes.EVENT_SESSION(sessionId));
     }
-  }, [isLive]);
+  }, [isLive, history, sessionId]);
 
   const users = React.useMemo(() => {
     if (!usersFirebase) {
@@ -378,6 +386,8 @@ export default withRouter((props) => {
       })}
     >
       <Page title={`Veertly | ${composedEventSession.title}`}> </Page>
+      <EditProfileDialog user={user} eventSession={composedEventSession} />
+      <EventPageDialog eventSession={composedEventSession} />
 
       <EventSessionTopbar
         isInConferenceRoom={isInConferenceRoom}
@@ -420,12 +430,11 @@ export default withRouter((props) => {
                 {!currentGroup && (
                   <div className={classes.noCall}>
                     <Typography variant="h6" className={clsx(classes.blueText, classes.emptyMessage)}>
-                      You are not yet in any <span className={classes.greenText}>conversation</span>,
+                      You are not in any <span className={classes.greenText}>conversation</span> yet,
                       <br />
                       don't be shy and <span className={classes.greenText}>select someone</span> to{" "}
                       <span className={classes.greenText}>talk</span> to!
                     </Typography>
-                    <img src={NetworkingEmptyIllustration} alt="No conversation" />
                   </div>
                 )}
                 {currentGroup && (
@@ -468,8 +477,16 @@ export default withRouter((props) => {
             </React.Fragment>
           )}
           <div className={classes.sideMenu}>
-            <SideMenuIcons />
+            <SideMenuIcons eventSession={eventSession} user={user} />
           </div>
+          {/* <div
+            className={clsx(classes.chatPane, {
+              [classes.hide]: !chatOpen,
+            })}
+          >
+            {`chat open: ${chatOpen ? "true" : "false"}`} */}
+          <ChatPane eventSession={eventSession} user={user} />
+          {/* </div> */}
         </React.Fragment>
       )}
     </div>

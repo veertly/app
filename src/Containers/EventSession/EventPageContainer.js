@@ -9,8 +9,9 @@ import Button from "@material-ui/core/Button";
 import Page from "../../Components/Core/Page";
 import { useHistory } from "react-router-dom";
 import routes from "../../Config/routes";
-import EventPage from "../../Components/EventShow/EventPage";
+import EventPage from "../../Components/Event/EventPage";
 import CenteredTopbar from "../Layouts/CenteredTopbar";
+import { getFeatureDetails, FEATURES } from "../../Modules/features";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -41,12 +42,17 @@ export default withRouter((props) => {
   const [eventSessionDetails, loadingSessionDetails, errorSessionDetails] = useDocumentData(
     firebase.firestore().collection("eventSessionsDetails").doc(sessionId)
   );
+  const [
+    eventSessionsEnabledFeatures,
+    loadingEventSessionsEnabledFeatures,
+    errorEventSessionsEnabledFeatures,
+  ] = useDocumentData(firebase.firestore().collection("eventSessionsEnabledFeatures").doc(sessionId));
   const history = useHistory();
 
-  if (loadingSessionDetails) {
+  if (loadingSessionDetails || loadingEventSessionsEnabledFeatures) {
     return <p>Loading...</p>;
   }
-  if (errorSessionDetails) {
+  if (errorSessionDetails || errorEventSessionsEnabledFeatures) {
     console.error(errorSessionDetails);
     return <p>Error :(</p>;
   }
@@ -88,7 +94,7 @@ export default withRouter((props) => {
 
       <CenteredTopbar showCreate={true} />
       <div className={classes.pageContainer}>
-        <EventPage event={eventSessionDetails} />
+        <EventPage event={eventSessionDetails} enabledFeatures={eventSessionsEnabledFeatures} />
       </div>
     </div>
   );

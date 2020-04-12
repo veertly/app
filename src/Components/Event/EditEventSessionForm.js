@@ -26,7 +26,7 @@ import Stepper from "@material-ui/core/Stepper";
 import Step from "@material-ui/core/Step";
 import StepLabel from "@material-ui/core/StepLabel";
 import ImageUploaderCrop from "../Images/ImageUploaderCrop";
-import EventPage from "../EventShow/EventPage";
+import EventPage from "./EventPage";
 
 import { convertToRaw } from "draft-js";
 import Dialog from "@material-ui/core/Dialog";
@@ -43,6 +43,7 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import CopyIcon from "@material-ui/icons/FileCopy";
 import IconButton from "@material-ui/core/IconButton";
 import { useSnackbar } from "material-ui-snackbar-provider";
+import useIsMounted from "react-is-mounted-hook";
 
 import {
   FacebookShareButton,
@@ -164,8 +165,8 @@ function EditEventSessionForm(props) {
   const [bannerChanged, setBannerChanged] = React.useState(false);
   const [errors, setErrors] = React.useState({});
   const snackbar = useSnackbar();
+  const mounted = useIsMounted();
 
-  let mounted = true;
   useEffect(() => {
     let fetchBlob = async () => {
       if (bannerImageBlob === null && eventSession && eventSession.bannerUrl) {
@@ -175,12 +176,6 @@ function EditEventSessionForm(props) {
     };
     fetchBlob();
   }, [bannerImageBlob, eventSession]);
-
-  useEffect(() => {
-    return () => {
-      mounted = false;
-    };
-  }, []);
 
   const shareText = React.useMemo(
     () => `Join me in the virtual event ${values.title} at ${selectedDate.begin.format("lll")} on @veertly `,
@@ -337,8 +332,10 @@ function EditEventSessionForm(props) {
     if (selectedSessionId && selectedSessionId.trim() !== "") {
       verifySessionId(selectedSessionId.trim());
     }
-  }, [selectedSessionId]);
+  }, [selectedSessionId, eventSession, mounted]);
 
+  // console.log(eventSession);
+  console.log(selectedDate);
   const isAnonymous = user.isAnonymous;
   return (
     <React.Fragment>
@@ -451,6 +448,24 @@ function EditEventSessionForm(props) {
                     error={errors.beginDate !== undefined}
                     helperText={errors.beginDate !== undefined ? errors.beginDate : null}
                   />
+                  {/* <TextField
+                    id="time"
+                    label="Alarm clock"
+                    type="time"
+                    defaultValue="07:30"
+                    className={classes.textField}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    inputProps={{
+                      step: 300, // 5 min
+                    }}
+                    onChange={(time) => {
+                      console.log(time);
+                      debugger;
+                    }}
+                    value={selectedDate.begin.format()}
+                  /> */}
                 </Grid>
 
                 <Grid container justify="space-between" className={classes.textField}>
