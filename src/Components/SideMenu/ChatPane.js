@@ -1,40 +1,11 @@
-import React, { useCallback } from "react";
+import React from "react";
 import clsx from "clsx";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
-import Drawer from "@material-ui/core/Drawer";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import List from "@material-ui/core/List";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Typography from "@material-ui/core/Typography";
-import Divider from "@material-ui/core/Divider";
-import IconButton from "@material-ui/core/IconButton";
-import MenuIcon from "@material-ui/icons/Menu";
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import ChevronRightIcon from "@material-ui/icons/ChevronRight";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import InboxIcon from "@material-ui/icons/MoveToInbox";
-import MailIcon from "@material-ui/icons/Mail";
+import { makeStyles /* , useTheme */ } from "@material-ui/core/styles";
+// import { closeChat } from "../../Redux/actions";
+import { isChatOpen } from "../../Redux/selectors";
+import { /* useDispatch,  */ useSelector } from "react-redux";
 
-import ChatIcon from "@material-ui/icons/Chat";
-import QnAIcon from "@material-ui/icons/Forum";
-import Tooltip from "@material-ui/core/Tooltip";
-import ProfileIcon from "@material-ui/icons/AccountBox";
-import FAQIcon from "@material-ui/icons/LiveHelp";
-import StatsIcon from "@material-ui/icons/Assessment";
-import SettingsIcon from "@material-ui/icons/Settings";
-import AboutIcon from "@material-ui/icons/Info";
-import EventDescriptionIcon from "@material-ui/icons/Notes";
-import FeedbackIcon from "@material-ui/icons/Feedback";
-
-import { openEditProfile, openEventDetails, closeChat } from "../../Redux/actions";
-import routes from "../../Config/routes";
-import { isChatOpen, isEventDetailsOpen } from "../../Redux/selectors";
-import { useDispatch, useSelector } from "react-redux";
-
-const drawerWidth = 240;
+// const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -138,15 +109,15 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ChatPane(props) {
-  const { eventSession, user } = props;
+  // const { eventSession, user } = props;
   const classes = useStyles();
-  const theme = useTheme();
-  const dispatch = useDispatch();
+  // const theme = useTheme();
+  // const dispatch = useDispatch();
 
   // const isOwner = React.useMemo(() => eventSession && user && eventSession.owner === user.uid, [eventSession, user]);
   const chatOpen = useSelector(isChatOpen);
 
-  const handleCloseChat = React.useCallback(() => dispatch(closeChat()), [dispatch]);
+  // const handleCloseChat = React.useCallback(() => dispatch(closeChat()), [dispatch]);
   // const openDetails = React.useCallback(() => dispatch(openEventDetails()), [dispatch]);
 
   return (

@@ -10,7 +10,7 @@ import {
 const initialState = {
   editProfileOpen: false,
   eventDetailsOpen: false,
-  chatOpen: true,
+  chatOpen: false,
 };
 
 export default function (state = initialState, action) {
