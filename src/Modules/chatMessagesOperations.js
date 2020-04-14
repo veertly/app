@@ -1,6 +1,20 @@
 import firebase from "./firebaseApp";
 // import uuidv1 from "uuid/v1";
 
+export const sendChatMessage = async (eventSession, userId, namespace, messageId, message) => {
+  let sessionId = eventSession.id.toLowerCase();
+
+  let db = firebase.firestore();
+  let messageDb = {
+    userId,
+    sentDate: firebase.firestore.FieldValue.serverTimestamp(),
+    messageId,
+    message,
+  };
+  console.log({ messageDb });
+  await db.collection("eventSessionsChatMessages").doc(sessionId).collection(namespace).doc(messageId).set(messageDb);
+};
+
 export const conferenceExists = async (sessionId) => {
   let docRef = firebase.firestore().collection("eventSessionsDetails").doc(sessionId.toLowerCase());
 
@@ -88,7 +102,7 @@ export const registerToEvent = async (eventSession, userId, userDetails) => {
     .collection("eventSessionsRegistrations")
     .doc(sessionId)
     .collection("registrations")
-    .doc("" + timestamp + "-" + userId)
+    .doc("" + timestamp)
     .set({
       ...userDetails,
       userId,
