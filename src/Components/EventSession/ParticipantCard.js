@@ -72,8 +72,8 @@ export default function (props) {
       )}
       {!participant.avatarUrl && participant.firstName.trim() !== "" && (
         <Avatar className={classes.avatar}>
-          {participant.firstName.charAt(0)}
-          {participant.lastName.charAt(0)}
+          {participant.firstName.charAt(0).toUpperCase()}
+          {participant.lastName.charAt(0).toUpperCase()}
         </Avatar>
       )}
       {!participant.avatarUrl && participant.firstName.trim() === "" && <Avatar className={classes.avatar}>G</Avatar>}

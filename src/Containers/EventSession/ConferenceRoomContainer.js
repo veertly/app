@@ -78,11 +78,11 @@ export default (props) => {
         api.executeCommand("avatarUrl", user.photoURL);
       }
       api.addEventListener("videoConferenceLeft", (event) => {
-        console.log("videoConferenceLeft: ", event);
+        // console.log("videoConferenceLeft: ", event);
         handleCallEnded();
       });
       api.addEventListener("readyToClose", (event) => {
-        console.log("readyToClose: ", event);
+        // console.log("readyToClose: ", event);
         handleCallEnded();
       });
 

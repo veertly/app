@@ -11,7 +11,7 @@ export const sendChatMessage = async (eventSession, userId, namespace, messageId
     messageId,
     message,
   };
-  console.log({ messageDb });
+  // console.log({ messageDb });
   await db.collection("eventSessionsChatMessages").doc(sessionId).collection(namespace).doc(messageId).set(messageDb);
 };
 

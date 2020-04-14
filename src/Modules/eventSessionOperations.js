@@ -39,11 +39,11 @@ export const setAsAvailable = async (eventSession, userId) => {
         leftTimestamp: null,
       });
   }
-  console.log("SET AS AVAILABLE!!!!!!");
+  // console.log("SET AS AVAILABLE!!!!!!");
 };
 
 export const setAsOffline = async (eventSession, userId) => {
-  console.log(eventSession.participantsJoined[userId]);
+  // console.log(eventSession.participantsJoined[userId]);
   let currentGroupId =
     eventSession.participantsJoined[userId] && eventSession.participantsJoined[userId].groupId
       ? eventSession.participantsJoined[userId].groupId
@@ -212,7 +212,7 @@ export const createNewConversation = (eventSession, myUserId, otherUserId, snack
       transaction.update(otherUserRef, { groupId });
     })
     .then(function () {
-      console.log("Transaction successfully committed!");
+      // console.log("Transaction successfully committed!");
     })
     .catch(function (error) {
       console.log("Transaction failed: ", error);
@@ -355,7 +355,7 @@ export const joinConversation = (eventSession, myUserId, newGroupId, snackbar) =
       transaction.update(newGroupRef, updateObj);
     })
     .then(function () {
-      console.log("Transaction successfully committed!");
+      // console.log("Transaction successfully committed!");
     })
     .catch(function (error) {
       console.log("Transaction failed: ", error);
@@ -450,7 +450,7 @@ export const leaveCall = (eventSession, myUserId) => {
       }
     })
     .then(function () {
-      console.log("Transaction successfully committed!");
+      // console.log("Transaction successfully committed!");
     })
     .catch(function (error) {
       console.log("Transaction failed: ", error);
@@ -557,7 +557,7 @@ export const createConference = async (
       }
     })
     .then(function () {
-      console.log("Transaction successfully committed!");
+      // console.log("Transaction successfully committed!");
     })
     .catch(function (error) {
       // snackbar.showMessage(error.message);

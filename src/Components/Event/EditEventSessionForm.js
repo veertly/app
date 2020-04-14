@@ -329,7 +329,7 @@ function EditEventSessionForm(props) {
   }, [selectedSessionId, eventSession, mounted]);
 
   // console.log(eventSession);
-  console.log(selectedDate);
+  // console.log(selectedDate);
   const isAnonymous = user.isAnonymous;
   return (
     <React.Fragment>

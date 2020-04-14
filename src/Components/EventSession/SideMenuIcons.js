@@ -17,10 +17,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { openEditProfile, openEventDetails, openChat, closeChat } from "../../Redux/actions";
 import routes from "../../Config/routes";
 import { isChatOpen } from "../../Redux/selectors";
-
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
+import { logout } from "../../Modules/userOperations";
+import { useHistory } from "react-router-dom";
+// import { Badge } from "@material-ui/core";
 const useStyles = makeStyles((theme) => ({
   root: {
-    // display: "flex",
+    display: "flex",
+    flexDirection: "column",
+    height: "100%",
   },
   menuButton: {
     marginRight: 36,
@@ -41,6 +46,7 @@ export default function SideMenuIcons(props) {
 
   const openProfile = React.useCallback(() => dispatch(openEditProfile()), [dispatch]);
   const openDetails = React.useCallback(() => dispatch(openEventDetails()), [dispatch]);
+  const history = useHistory();
 
   const toggleChatPane = React.useCallback(() => {
     if (chatOpen) {
@@ -56,7 +62,7 @@ export default function SideMenuIcons(props) {
         <Tooltip title="Edit Profile">
           <ListItem button onClick={openProfile}>
             <ListItemIcon>
-              <ProfileIcon />
+              <ProfileIcon color="primary" />
             </ListItemIcon>
           </ListItem>
         </Tooltip>
@@ -80,7 +86,7 @@ export default function SideMenuIcons(props) {
             >
               <ListItem button>
                 <ListItemIcon>
-                  <SettingsIcon />
+                  <SettingsIcon color="primary" />
                 </ListItemIcon>
               </ListItem>
             </Tooltip>
@@ -92,7 +98,9 @@ export default function SideMenuIcons(props) {
         <Tooltip title="Chat" onClick={toggleChatPane}>
           <ListItem button>
             <ListItemIcon>
-              <ChatIcon />
+              {/* <Badge color="secondary" variant="dot"> */}
+              <ChatIcon color="primary" />
+              {/* </Badge> */}
             </ListItemIcon>
           </ListItem>
         </Tooltip>
@@ -106,7 +114,7 @@ export default function SideMenuIcons(props) {
         <Tooltip title="Event details">
           <ListItem button onClick={openDetails}>
             <ListItemIcon>
-              <EventDescriptionIcon />
+              <EventDescriptionIcon color="primary" />
             </ListItemIcon>
           </ListItem>
         </Tooltip>
@@ -121,7 +129,7 @@ export default function SideMenuIcons(props) {
             }}
           >
             <ListItemIcon>
-              <FAQIcon />
+              <FAQIcon color="primary" />
             </ListItemIcon>
           </ListItem>
         </Tooltip>
@@ -133,7 +141,7 @@ export default function SideMenuIcons(props) {
             }}
           >
             <ListItemIcon>
-              <AboutIcon />
+              <AboutIcon color="primary" />
             </ListItemIcon>
           </ListItem>
         </Tooltip>
@@ -146,8 +154,22 @@ export default function SideMenuIcons(props) {
         </Tooltip> */}
       </List>
       <Divider />
-      {/* <div style={{ flexGrow: 1 }}></div>
-      <div>ola</div> */}
+      <div style={{ flexGrow: 1 }}></div>
+      <List>
+        <Tooltip title="Exit Event">
+          <ListItem
+            button
+            onClick={() => {
+              logout();
+              history.push(routes.EVENT_SESSION(eventSession.id));
+            }}
+          >
+            <ListItemIcon>
+              <ExitToAppIcon color="primary" />
+            </ListItemIcon>
+          </ListItem>
+        </Tooltip>
+      </List>
     </div>
   );
 }

@@ -13,7 +13,11 @@ import IconButton from "@material-ui/core/IconButton";
 import AddIcon from "@material-ui/icons/Add";
 import uuidv1 from "uuid/v1";
 import { getUserDb, updateUser } from "../../Modules/userOperations";
-// import { useSnackbar } from "material-ui-snackbar-provider";
+import Checkbox from "@material-ui/core/Checkbox";
+import LinkedinIcon from "../../Assets/Icons/Linkedin";
+import TwitterIcon from "../../Assets/Icons/Twitter";
+import KeybaseIcon from "../../Assets/Icons/Keybase";
+// import LocationAutoComplete from "../Misc/LocationAutoComplete";
 
 const styles = (theme) => ({
   row: {
@@ -57,6 +61,8 @@ const getUserDefaultValues = (user) => {
     company: "",
     companyTitle: "",
     isAnonymous,
+    checkedTerms: false,
+    checkedNewsletter: false,
   };
 };
 
@@ -95,6 +101,8 @@ function EditProfileForm(props) {
           interestsChips,
           company,
           companyTitle,
+          checkedTerms,
+          checkedNewsletter,
         } = userDb;
 
         const x = (str) => (str ? str : "");
@@ -115,6 +123,8 @@ function EditProfileForm(props) {
           interestsChips: interestsChips ? interestsChips : [],
           company: x(company),
           companyTitle: x(companyTitle),
+          checkedNewsletter: checkedNewsletter === true,
+          checkedTerms: checkedTerms === true,
         }));
 
         setInterestsChips(interestsChips ? interestsChips : []);
@@ -161,8 +171,8 @@ function EditProfileForm(props) {
     setValues({ ...values, interest: "", interestsChips: chips });
   };
 
-  const handleEmailPrivacy = (event) => {
-    setValues({ ...values, emailPublic: event.target.checked });
+  const handleCheckbox = (name) => (event) => {
+    setValues({ ...values, [name]: event.target.checked });
   };
 
   const handleUpdateProfile = async () => {
@@ -229,8 +239,8 @@ function EditProfileForm(props) {
               control={
                 <Switch
                   checked={values.emailPublic}
-                  onChange={handleEmailPrivacy}
-                  name="emailPrivacy"
+                  onChange={handleCheckbox("emailPublic")}
+                  name="emailPublic"
                   color="primary"
                 />
               }
@@ -270,42 +280,57 @@ function EditProfileForm(props) {
         value={values.shortBio}
         onChange={handleUpdateField("shortBio")}
       /> */}
-      <TextField
-        fullWidth
-        label="LinkedIn Profile"
-        name="linkedin"
-        variant="outlined"
-        className={classes.textField}
-        InputProps={{
-          startAdornment: <InputAdornment position="start">{linkedinUrlStatic}</InputAdornment>,
-        }}
-        value={values.linkedin}
-        onChange={handleUpdateField("linkedin")}
-      />
-      <TextField
-        fullWidth
-        label="Twitter Profile"
-        name="twitter"
-        variant="outlined"
-        className={classes.textField}
-        value={values.twitter}
-        InputProps={{
-          startAdornment: <InputAdornment position="start">{twitterUrlStatic}</InputAdornment>,
-        }}
-        onChange={handleUpdateField("twitter")}
-      />
-      <TextField
-        fullWidth
-        label="Keybase Profile"
-        name="keybase"
-        variant="outlined"
-        className={classes.textField}
-        value={values.keybase}
-        InputProps={{
-          startAdornment: <InputAdornment position="start">{keybaseUrlStatic}</InputAdornment>,
-        }}
-        onChange={handleUpdateField("keybase")}
-      />
+      {/* <LocationAutoComplete /> */}
+      <Grid container justify="space-between" className={classes.textField}>
+        <TextField
+          fullWidth
+          label="LinkedIn Handle"
+          name="linkedin"
+          variant="outlined"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <LinkedinIcon color="primary" />
+              </InputAdornment>
+            ),
+          }}
+          style={{ width: "32%" }}
+          value={values.linkedin}
+          onChange={handleUpdateField("linkedin")}
+        />
+        <TextField
+          fullWidth
+          label="Twitter Handle"
+          name="twitter"
+          variant="outlined"
+          style={{ width: "32%" }}
+          value={values.twitter}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <TwitterIcon color="primary" />
+              </InputAdornment>
+            ),
+          }}
+          onChange={handleUpdateField("twitter")}
+        />
+        <TextField
+          fullWidth
+          label="Keybase Handle"
+          name="keybase"
+          variant="outlined"
+          style={{ width: "32%" }}
+          value={values.keybase}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <KeybaseIcon color="primary" />
+              </InputAdornment>
+            ),
+          }}
+          onChange={handleUpdateField("keybase")}
+        />
+      </Grid>
       <Grid container justify="space-between" className={classes.textField}>
         <TextField
           fullWidth
@@ -342,6 +367,42 @@ function EditProfileForm(props) {
       <div style={{ marginTop: 8 }}>
         <ProfileChips chips={interestsChips} onDelete={handleNewInterestsChips} />
       </div>
+
+      <div style={{ textAlign: "left", marginTop: 16 }}>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={values.checkedNewsletter}
+              onChange={handleCheckbox("checkedNewsletter")}
+              name="checkedNewsletter"
+              color="primary"
+            />
+          }
+          label={<span>Join our monthly newsletter and stay updated on new features</span>}
+        />
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={values.checkedTerms}
+              onChange={handleCheckbox("checkedTerms")}
+              name="checkedTerms"
+              color="primary"
+            />
+          }
+          label={
+            <span>
+              I accept the{" "}
+              <a href="https://veertly.com" target="_blank" rel="noopener noreferrer">
+                Terms of Use
+              </a>{" "}
+              &amp;{" "}
+              <a href="https://veertly.com" target="_blank" rel="noopener noreferrer">
+                Privacy Policy
+              </a>
+            </span>
+          }
+        />
+      </div>
       <div className={classes.bottom}>
         <Button
           variant="contained"
@@ -349,7 +410,7 @@ function EditProfileForm(props) {
           type="submit"
           className={classes.button}
           onClick={handleUpdateProfile}
-          disabled={updating}
+          disabled={updating || values.checkedTerms !== true}
         >
           Update Profile
         </Button>

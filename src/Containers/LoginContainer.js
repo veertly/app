@@ -71,7 +71,7 @@ export default withRouter((props) => {
         // Do something with the returned AuthResult.
         // Return type determines whether we continue the redirect automatically
         // or whether we leave that to developer to handle.
-        console.log(user);
+
         window.analytics.identify(user.uid, {});
         window.analytics.track("Logged In");
 
@@ -113,10 +113,10 @@ export default withRouter((props) => {
       .signInAnonymously()
       .catch(function (error) {
         // Handle Errors here.
-        var errorCode = error.code;
-        var errorMessage = error.message;
+        // var errorCode = error.code;
+        // var errorMessage = error.message;
         // ...
-        console.log({ errorCode, errorMessage });
+        // console.log({ errorCode, errorMessage });
       });
   };
 
