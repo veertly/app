@@ -8,11 +8,12 @@ import { AppBar, Toolbar, Typography } from "@material-ui/core";
 
 import VeertlyLogo from "../../Assets/Veertly_white.svg";
 
-import AvatarLogin from "../Topbar/AvatarLogin";
+// import AvatarLogin from "../Topbar/AvatarLogin";
 import GoToNetworkingRoomDialog from "./GoToNetworkingRoomDialog";
 import GoToConferenceRoomDialog from "./GoToConferenceRoomDialog";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme } from "@material-ui/core/styles";
+import UserAvatar from "../Misc/UserAvatar";
 
 // import routes from "../../Config/routes";
 const useStyles = makeStyles((theme) => ({
@@ -95,7 +96,14 @@ const RoomButton = ({ onClick, disabled, isCurrentRoom, children }) => {
   );
 };
 export default withRouter((props) => {
-  const { isInConferenceRoom, setIsInConferenceRoom, isInNetworkingCall, isNetworkingAvailable, eventSession } = props;
+  const {
+    isInConferenceRoom,
+    setIsInConferenceRoom,
+    isInNetworkingCall,
+    isNetworkingAvailable,
+    eventSession,
+    myUser,
+  } = props;
   let [goToNetworkingDialog, setGoToNetworkingDialog] = useState(false);
   let [goToConferenceDialog, setGoToConferenceDialog] = useState(false);
   const theme = useTheme();
@@ -145,7 +153,8 @@ export default withRouter((props) => {
             )}
           </div>
           <div className={classes.avatarContainer}>
-            <AvatarLogin eventSession={eventSession} />
+            {/* <AvatarLogin eventSession={eventSession} /> */}
+            <UserAvatar user={myUser} />
           </div>
         </Toolbar>
       </AppBar>

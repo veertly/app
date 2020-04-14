@@ -244,12 +244,12 @@ export default withRouter((props) => {
             // has the group changed?
             if (JSON.stringify(currentGroup) !== JSON.stringify(group)) {
               let group = liveGroupsMap[groupId];
-              if (!group) {
-                console.log("Was not able to find the group with the id " + groupId);
-              }
+              // if (!group) {
+              //   console.log("Was not able to find the group with the id " + groupId);
+              // }
 
-              console.log("Group is different, will update it...");
-              console.log({ currentGroup, group });
+              // console.log("Group is different, will update it...");
+              // console.log({ currentGroup, group });
               setCurrentGroup(group);
               setCurrentGroupId(groupId);
               // setLiveAt(eventSession.liveAt);
@@ -314,6 +314,10 @@ export default withRouter((props) => {
     }, {});
   }, [usersFirebase]);
 
+  const myUser = React.useMemo(() => {
+    return users[userId];
+  }, [users, userId]);
+
   if (loadingUsers || loadingSession || loadingSessionDetails || loadingParticipantsJoined || loadingLiveGroups) {
     return <p>Loading...</p>;
   }
@@ -366,6 +370,7 @@ export default withRouter((props) => {
             isInNetworkingCall={currentGroupId !== null}
             isNetworkingAvailable={false}
             eventSession={eventSession}
+            myUser={myUser}
           />
           <div>
             <br />
@@ -389,12 +394,6 @@ export default withRouter((props) => {
     );
   }
 
-  // console.log({ now: new Date().getTime(), liveAt: eventSession.liveAt });
-  // let isLive = composedEventSession.liveAt ? new Date().getTime() / 1000 > composedEventSession.liveAt : true;
-
-  // console.log({ composedEventSession });
-
-  // console.log({ currentGroup });
   return (
     <div
       className={clsx({
@@ -412,6 +411,7 @@ export default withRouter((props) => {
         isInNetworkingCall={currentGroupId !== null}
         isNetworkingAvailable={composedEventSession.isNetworkingAvailable}
         eventSession={composedEventSession}
+        myUser={myUser}
       />
       {isLive && (
         <React.Fragment>

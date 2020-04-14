@@ -39,7 +39,7 @@ export const setAsAvailable = async (eventSession, userId) => {
         leftTimestamp: null,
       });
   }
-  console.log("SET AS AVAILABLE!!!!!!");
+  // console.log("SET AS AVAILABLE!!!!!!");
 };
 
 export const setAsOffline = async (eventSession, userId) => {
