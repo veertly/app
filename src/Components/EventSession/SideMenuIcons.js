@@ -20,6 +20,7 @@ import { isChatOpen } from "../../Redux/selectors";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import { logout } from "../../Modules/userOperations";
 import { useHistory } from "react-router-dom";
+// import { Badge } from "@material-ui/core";
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
@@ -61,7 +62,7 @@ export default function SideMenuIcons(props) {
         <Tooltip title="Edit Profile">
           <ListItem button onClick={openProfile}>
             <ListItemIcon>
-              <ProfileIcon />
+              <ProfileIcon color="primary" />
             </ListItemIcon>
           </ListItem>
         </Tooltip>
@@ -85,7 +86,7 @@ export default function SideMenuIcons(props) {
             >
               <ListItem button>
                 <ListItemIcon>
-                  <SettingsIcon />
+                  <SettingsIcon color="primary" />
                 </ListItemIcon>
               </ListItem>
             </Tooltip>
@@ -97,7 +98,9 @@ export default function SideMenuIcons(props) {
         <Tooltip title="Chat" onClick={toggleChatPane}>
           <ListItem button>
             <ListItemIcon>
-              <ChatIcon />
+              {/* <Badge color="secondary" variant="dot"> */}
+              <ChatIcon color="primary" />
+              {/* </Badge> */}
             </ListItemIcon>
           </ListItem>
         </Tooltip>
@@ -111,7 +114,7 @@ export default function SideMenuIcons(props) {
         <Tooltip title="Event details">
           <ListItem button onClick={openDetails}>
             <ListItemIcon>
-              <EventDescriptionIcon />
+              <EventDescriptionIcon color="primary" />
             </ListItemIcon>
           </ListItem>
         </Tooltip>
@@ -126,7 +129,7 @@ export default function SideMenuIcons(props) {
             }}
           >
             <ListItemIcon>
-              <FAQIcon />
+              <FAQIcon color="primary" />
             </ListItemIcon>
           </ListItem>
         </Tooltip>
@@ -138,7 +141,7 @@ export default function SideMenuIcons(props) {
             }}
           >
             <ListItemIcon>
-              <AboutIcon />
+              <AboutIcon color="primary" />
             </ListItemIcon>
           </ListItem>
         </Tooltip>
@@ -162,7 +165,7 @@ export default function SideMenuIcons(props) {
             }}
           >
             <ListItemIcon>
-              <ExitToAppIcon />
+              <ExitToAppIcon color="primary" />
             </ListItemIcon>
           </ListItem>
         </Tooltip>

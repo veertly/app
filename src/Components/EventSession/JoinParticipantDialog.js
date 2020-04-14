@@ -8,19 +8,19 @@ import ParticipantCard from "./ParticipantCard";
 import { createNewConversation } from "../../Modules/eventSessionOperations";
 import { useSnackbar } from "material-ui-snackbar-provider";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   content: {
     position: "relative",
     width: theme.breakpoints.values.sm,
-    padding: theme.spacing(6)
+    padding: theme.spacing(6),
   },
   closeContainer: {
-    position: "absolute"
+    position: "absolute",
   },
   buttonContainer: {
     width: "100%",
     textAlign: "center",
-    marginTop: theme.spacing(4)
+    marginTop: theme.spacing(4),
   },
   hintText: {
     marginBottom: theme.spacing(4),
@@ -29,18 +29,18 @@ const useStyles = makeStyles(theme => ({
     textAlign: "center",
     marginLeft: "auto",
     marginRight: "auto",
-    marginTop: theme.spacing(2)
+    marginTop: theme.spacing(2),
   },
   emptySpaceBottom: {
-    marginBottom: theme.spacing(4)
-  }
+    marginBottom: theme.spacing(4),
+  },
 }));
 
-export default function(props) {
+export default function (props) {
   const classes = useStyles();
   const snackbar = useSnackbar();
 
-  const { open, setOpen, participant, eventSession, user, onConferenceRoom } = props;
+  const { open, setOpen, participant, eventSession, user, showJoinButton } = props;
 
   const handleClose = () => {
     setOpen(false);
@@ -49,7 +49,7 @@ export default function(props) {
     return null;
   }
 
-  const startConversation = e => {
+  const startConversation = (e) => {
     e.preventDefault();
     try {
       createNewConversation(eventSession, user.uid, participant.id, snackbar);
@@ -70,7 +70,7 @@ export default function(props) {
       >
         <div className={classes.content}>
           <ParticipantCard participant={participant} />
-          {!onConferenceRoom && participant.id !== user.uid && (
+          {showJoinButton && (
             <React.Fragment>
               <div className={classes.buttonContainer}>
                 <Button variant="contained" color="primary" className={classes.button} onClick={startConversation}>
