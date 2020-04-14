@@ -65,17 +65,17 @@ export default function (props) {
       let participant = users[participantId];
       let participantSession = currentGroup.participants[participantId];
 
-      console.log({ participantSession, participant });
+      // console.log({ participantSession, participant });
 
       if (participantSession.leftTimestamp === null) {
         result.push(participant);
       }
 
-      console.log({ result });
+      // console.log({ result });
       return result;
     }, []);
 
-    console.log({ participants });
+    // console.log({ participants });
     setParticipants(participants);
   }, [currentGroup, users]);
 

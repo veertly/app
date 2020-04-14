@@ -14,6 +14,8 @@ import GoToConferenceRoomDialog from "./GoToConferenceRoomDialog";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme } from "@material-ui/core/styles";
 import UserAvatar from "../Misc/UserAvatar";
+// import DesktopMacIcon from "@material-ui/icons/DesktopMac";
+// import ConversationsIcon from "../../Assets/Icons/Conversations";
 
 // import routes from "../../Config/routes";
 const useStyles = makeStyles((theme) => ({
@@ -65,7 +67,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const RoomButton = ({ onClick, disabled, isCurrentRoom, children }) => {
+const RoomButton = ({ onClick, disabled, isCurrentRoom, children, icon }) => {
   const classes = useStyles();
 
   if (disabled) {
@@ -85,12 +87,20 @@ const RoomButton = ({ onClick, disabled, isCurrentRoom, children }) => {
   if (isCurrentRoom) {
     return (
       <div className={classes.currentRoomContainer}>
+        {icon}
         <Typography variant="overline">{children}</Typography>
       </div>
     );
   }
   return (
-    <Button className={classes.button} variant="outlined" color="secondary" size="small" onClick={() => onClick()}>
+    <Button
+      className={classes.button}
+      variant="outlined"
+      color="secondary"
+      size="small"
+      onClick={() => onClick()}
+      startIcon={icon}
+    >
       {children}
     </Button>
   );
@@ -131,13 +141,18 @@ export default withRouter((props) => {
           <img alt="Logo" src={VeertlyLogo} className={classes.logo} />
           {!isMobile && eventSession && (
             <div className={classes.roomButtonsContainer}>
-              <RoomButton isCurrentRoom={isInConferenceRoom} onClick={handleConferenceRoomClick}>
+              <RoomButton
+                isCurrentRoom={isInConferenceRoom}
+                onClick={handleConferenceRoomClick}
+                // icon={<DesktopMacIcon />}
+              >
                 Main Stage
               </RoomButton>
               <RoomButton
                 isCurrentRoom={!isInConferenceRoom}
                 onClick={handleNetworkingRoomClick}
                 disabled={!isNetworkingAvailable}
+                // icon={<ConversationsIcon />}
               >
                 Networking Area
               </RoomButton>

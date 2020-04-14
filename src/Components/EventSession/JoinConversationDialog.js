@@ -56,9 +56,9 @@ export default function (props) {
     joinConversation(eventSession, user.uid, groupId, snackbar);
     setOpen(false);
   };
-  let myUser = group.find((participant) => participant.id === user.uid);
+  // let myUser = group.find((participant) => participant.id === user.uid);
   let isMyGroup = group.find((participant) => participant.id === user.uid) !== undefined;
-  console.log({ group, isMyGroup, myId: user.uid, myUser });
+  // console.log({ group, isMyGroup, myId: user.uid, myUser });
   return (
     <div>
       <Dialog open={open} onClose={handleClose} aria-labelledby="draggable-dialog-title">

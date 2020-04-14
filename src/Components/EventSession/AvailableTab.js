@@ -55,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 // rgba(28, 71, 98, 0.08)
 
-export default function(props) {
+export default function (props) {
   const classes = useStyles();
   const [joinDialog, setJoinDialog] = React.useState(false);
   const [selectedParticipant, setSelectedParticipant] = React.useState(null);
@@ -73,16 +73,14 @@ export default function(props) {
       // console.error("Couldn't find participant for user: '" + userId + "'");
       return false;
     }
-    if (
-      // (onConferenceRoom && sessionParticipant.inNetworkingRoom) ||
-      (!onConferenceRoom && !sessionParticipant.inNetworkingRoom) ||
-      (!onConferenceRoom && sessionParticipant.groupId)
-    ) {
-      return false;
-    }
-    // if (!sessionParticipant.isOnline || sessionParticipant.groupId) {
+    // if (
+    //   // (onConferenceRoom && sessionParticipant.inNetworkingRoom) ||
+    //   (!onConferenceRoom && !sessionParticipant.inNetworkingRoom) ||
+    //   (!onConferenceRoom && sessionParticipant.groupId)
+    // ) {
     //   return false;
     // }
+
     if (!sessionParticipant.isOnline) {
       return false;
     }
@@ -112,13 +110,13 @@ export default function(props) {
         user={user}
         onConferenceRoom={onConferenceRoom}
       />
-      {!onConferenceRoom && (
+      {/* {!onConferenceRoom && (
         <div className={classes.buttonContainer}>
           <Button variant="outlined" color="primary" size="small" className={classes.button} onClick={feelingLucky}>
             I'm feeling lucky
           </Button>
         </div>
-      )}
+      )} */}
       {onConferenceRoom && (
         <Typography variant="overline" className={classes.title} align="center">
           All attendees

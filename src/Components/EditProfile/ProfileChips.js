@@ -3,24 +3,24 @@ import { makeStyles } from "@material-ui/core/styles";
 import Chip from "@material-ui/core/Chip";
 import { Typography } from "@material-ui/core";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
-    flexWrap: "wrap"
+    flexWrap: "wrap",
     // padding: theme.spacing(0.5)
   },
   chip: {
-    margin: theme.spacing(0.5, 1, 0.5, 0)
-  }
+    margin: theme.spacing(0.5, 1, 0.5, 0),
+  },
 }));
 
 export default function ProfileChips(props) {
   const { chips, onDelete, showEmptyMsg, smallChips } = props;
   const classes = useStyles();
 
-  const handleDelete = chipToDelete => () => {
-    let newChips = chips.filter(chip => chip.key !== chipToDelete.key);
-    console.log({ newChips });
+  const handleDelete = (chipToDelete) => () => {
+    let newChips = chips.filter((chip) => chip.key !== chipToDelete.key);
+    // console.log({ newChips });
     onDelete(newChips);
   };
 
@@ -29,7 +29,7 @@ export default function ProfileChips(props) {
   }
   return (
     <div className={classes.root}>
-      {chips.map(data => {
+      {chips.map((data) => {
         return (
           <Chip
             size={smallChips ? "small" : "medium"}

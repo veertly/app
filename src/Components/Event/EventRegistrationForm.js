@@ -83,7 +83,7 @@ function EventRegistrationForm(props) {
       if (!user) {
         return;
       }
-      console.log("--> On use effect...");
+      // console.log("--> On use effect...");
       let userDb = await getUserDb(user.uid);
 
       if (userDb) {
@@ -143,7 +143,7 @@ function EventRegistrationForm(props) {
   const onSubmit = async (e) => {
     e.preventDefault();
 
-    console.log(formValues);
+    // console.log(formValues);
 
     setRegistering(true);
     try {

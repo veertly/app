@@ -113,7 +113,7 @@ function SimpleDialog(props) {
 
   const handleListItemClick = (type) => {
     let url = buildUrl(type);
-    console.log(url);
+    // console.log(url);
 
     if (!isMobile() && (url.startsWith("data") || url.startsWith("BEGIN"))) {
       let filename = "download.ics";

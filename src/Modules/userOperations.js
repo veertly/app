@@ -1,7 +1,7 @@
 import firebase from "./firebaseApp";
 
 export const registerNewUser = async (userAuth) => {
-  console.log("on: registerNewUser");
+  // console.log("on: registerNewUser");
   let { displayName, email, phoneNumber, uid, photoURL, isAnonymous } = userAuth;
   let names = displayName.split(" ");
   let firstName = names[0];
