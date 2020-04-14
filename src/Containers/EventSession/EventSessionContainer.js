@@ -35,6 +35,7 @@ import { isChatOpen } from "../../Redux/selectors";
 
 export const SIDE_PANE_WIDTH = 53;
 const LEFT_PANE_WIDTH = 300;
+
 const useStyles = makeStyles((theme) => ({
   root: {
     paddingTop: 56,
@@ -62,6 +63,8 @@ const useStyles = makeStyles((theme) => ({
     backgroundPosition: "bottom right",
     [theme.breakpoints.down("xs")]: {
       right: 0,
+      left: 0,
+      top: 56,
     },
   },
   noCall: {
@@ -82,6 +85,10 @@ const useStyles = makeStyles((theme) => ({
     width: 370,
     margin: "auto",
     textAlign: "left",
+    maxWidth: "100%",
+    [theme.breakpoints.down("xs")]: {
+      margin: theme.spacing(0, 1),
+    },
   },
   sideMenu: {
     width: SIDE_PANE_WIDTH,
@@ -388,7 +395,6 @@ export default withRouter((props) => {
   // console.log({ composedEventSession });
 
   // console.log({ currentGroup });
-
   return (
     <div
       className={clsx({
