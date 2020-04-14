@@ -4,15 +4,14 @@ import { makeStyles } from "@material-ui/core/styles";
 import { leaveCall } from "../../Modules/eventSessionOperations";
 import NoVideoImage from "../../Assets/illustrations/undraw_video_call_kxyp.svg";
 import { Typography } from "@material-ui/core";
+import { ANNOUNCEMENT_HEIGHT } from "../../Components/EventSession/Announcements";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    width: "100%",
-    height: "100%",
-  },
   videoContainer: {
     width: "100%",
     height: "100%",
+  },
+  root: {
     position: "absolute",
     top: 0,
     bottom: 0,
@@ -108,7 +107,14 @@ export default (props) => {
     user.displayName,
     user.photoURL,
   ]);
-
+  const hasAnnouncement = React.useMemo(
+    () =>
+      eventSession &&
+      eventSession.announcements &&
+      eventSession.announcements.conference &&
+      eventSession.announcements.conference.trim() !== "",
+    [eventSession]
+  );
   if (error) {
     console.log(error);
     return <p>Error :(</p>;
@@ -117,14 +123,16 @@ export default (props) => {
   if (loaded) {
     const getYoutubeFrame = (videoId) => {
       return (
-        <iframe
-          className={classes.videoContainer}
-          src={`https://www.youtube.com/embed/${videoId}?autoplay=1&fs=0&modestbranding=0`}
-          frameBorder="0"
-          allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-          title="livestream"
-        ></iframe>
+        <div className={classes.root} style={{ top: hasAnnouncement ? ANNOUNCEMENT_HEIGHT : 0 }}>
+          <iframe
+            className={classes.videoContainer}
+            src={`https://www.youtube.com/embed/${videoId}?autoplay=1&fs=0&modestbranding=0`}
+            frameBorder="0"
+            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            title="livestream"
+          ></iframe>
+        </div>
       );
     };
     switch (eventSession.conferenceVideoType) {

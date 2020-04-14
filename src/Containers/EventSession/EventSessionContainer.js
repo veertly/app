@@ -26,11 +26,15 @@ import routes from "../../Config/routes";
 import { initFirebasePresenceSync } from "../../Modules/userOperations";
 import Announcements from "../../Components/EventSession/Announcements";
 import { DEFAULT_EVENT_OPEN_MINUTES } from "../../Config/constants";
-import SideMenuIcons from "../../Components/SideMenu/SideMenuIcons";
-import ChatPane from "../../Components/SideMenu/ChatPane";
+import SideMenuIcons from "../../Components/EventSession/SideMenuIcons";
+import ChatPane, { CHAT_DEFAULT_WIDTH } from "../../Components/Chat/ChatPane";
 import EditProfileDialog from "../../Components/EditProfile/EditProfileDialog";
 import EventPageDialog from "../../Components/Event/EventPageDialog";
+import { useSelector } from "react-redux";
+import { isChatOpen } from "../../Redux/selectors";
 
+export const SIDE_PANE_WIDTH = 53;
+const LEFT_PANE_WIDTH = 300;
 const useStyles = makeStyles((theme) => ({
   root: {
     paddingTop: 56,
@@ -41,18 +45,21 @@ const useStyles = makeStyles((theme) => ({
     position: "relative",
   },
   shiftContent: {
-    paddingLeft: 300,
+    paddingLeft: LEFT_PANE_WIDTH,
   },
 
   mainPane: {
-    position: "relative",
-    height: "100%",
+    position: "absolute",
+    // height: "100%",
+    top: 64,
+    bottom: 0,
+    left: LEFT_PANE_WIDTH,
+    right: SIDE_PANE_WIDTH,
     backgroundColor: theme.palette.background.default,
     backgroundImage: "url('/Illustrations/EmptyNetworkingPane.svg')",
     backgroundRepeat: "no-repeat",
     backgroundSize: "50%",
     backgroundPosition: "bottom right",
-    right: 53,
     [theme.breakpoints.down("xs")]: {
       right: 0,
     },
@@ -77,7 +84,7 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "left",
   },
   sideMenu: {
-    width: 53,
+    width: SIDE_PANE_WIDTH,
     top: 64,
     backgroundColor: "white",
     position: "absolute",
@@ -118,6 +125,10 @@ export default withRouter((props) => {
 
   const [openSidebar, setOpenSidebar] = useState(false);
   const history = useHistory();
+
+  let [chatWidth, setChatWidth] = useState(CHAT_DEFAULT_WIDTH);
+
+  const chatOpen = useSelector(isChatOpen);
 
   const handleSidebarClose = () => {
     setOpenSidebar(false);
@@ -209,7 +220,6 @@ export default withRouter((props) => {
           setInitCompleted(true);
         }
       }
-
       if (eventSession && eventSessionDetails && participantsJoined && liveGroups) {
         // console.lo("....WILL UPDATE EVENT SESSION.....");
         let userEventSession = participantsJoinedMap[userId];
@@ -378,6 +388,7 @@ export default withRouter((props) => {
   // console.log({ composedEventSession });
 
   // console.log({ currentGroup });
+
   return (
     <div
       className={clsx({
@@ -396,22 +407,6 @@ export default withRouter((props) => {
         isNetworkingAvailable={composedEventSession.isNetworkingAvailable}
         eventSession={composedEventSession}
       />
-      {!isLive && (
-        <div style={{ marginLeft: -300 }}>
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <Typography align="center" variant="overline" style={{ display: "block" }}>
-            This event is not live yet!
-          </Typography>
-          <Typography align="center" variant="overline" style={{ display: "block" }}>
-            {moment.unix(composedEventSession.liveAt).fromNow()}
-          </Typography>
-        </div>
-      )}
       {isLive && (
         <React.Fragment>
           {/* NETWORKING PANE */}
@@ -426,7 +421,7 @@ export default withRouter((props) => {
                 currentGroup={currentGroup}
                 user={user}
               />
-              <div className={classes.mainPane}>
+              <div className={classes.mainPane} style={chatOpen ? { right: SIDE_PANE_WIDTH + chatWidth } : null}>
                 {!currentGroup && (
                   <div className={classes.noCall}>
                     <Typography variant="h6" className={clsx(classes.blueText, classes.emptyMessage)}>
@@ -463,7 +458,7 @@ export default withRouter((props) => {
                 user={user}
               />
 
-              <div className={classes.mainPane}>
+              <div className={classes.mainPane} style={chatOpen ? { right: SIDE_PANE_WIDTH + chatWidth } : null}>
                 <Announcements eventSession={composedEventSession} />
                 <ConferenceRoomContainer
                   user={user}
@@ -477,7 +472,7 @@ export default withRouter((props) => {
             </React.Fragment>
           )}
           <div className={classes.sideMenu}>
-            <SideMenuIcons eventSession={eventSession} user={user} />
+            <SideMenuIcons eventSession={composedEventSession} user={user} />
           </div>
           {/* <div
             className={clsx(classes.chatPane, {
@@ -485,7 +480,7 @@ export default withRouter((props) => {
             })}
           >
             {`chat open: ${chatOpen ? "true" : "false"}`} */}
-          <ChatPane eventSession={eventSession} user={user} />
+          <ChatPane eventSession={composedEventSession} users={users} user={user} onResize={(w) => setChatWidth(w)} />
           {/* </div> */}
         </React.Fragment>
       )}

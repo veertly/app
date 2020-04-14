@@ -5,12 +5,15 @@ import {
   CLOSE_EVENT_DETAILS,
   OPEN_CHAT,
   CLOSE_CHAT,
+  CHAT_RESIZED,
 } from "../actionTypes";
+import { CHAT_DEFAULT_WIDTH } from "../../Components/Chat/ChatPane";
 
 const initialState = {
   editProfileOpen: false,
   eventDetailsOpen: false,
   chatOpen: false,
+  chatWidth: CHAT_DEFAULT_WIDTH,
 };
 
 export default function (state = initialState, action) {
@@ -51,6 +54,12 @@ export default function (state = initialState, action) {
       return {
         ...state,
         chatOpen: false,
+      };
+    }
+    case CHAT_RESIZED: {
+      return {
+        ...state,
+        chatWidt: action.newWidth,
       };
     }
     default:

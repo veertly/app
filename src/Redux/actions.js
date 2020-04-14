@@ -5,6 +5,7 @@ import {
   CLOSE_EVENT_DETAILS,
   OPEN_CHAT,
   CLOSE_CHAT,
+  CHAT_RESIZED,
 } from "./actionTypes";
 
 export const openEditProfile = () => ({
@@ -30,3 +31,11 @@ export const closeChat = () => ({
 export const openChat = () => ({
   type: OPEN_CHAT,
 });
+export const chatResized = (newWidth) => ({
+  type: CHAT_RESIZED,
+  newWidth,
+});
+
+// export const sendChatMessage = (message) => ({
+//   type: OPEN_CHAT,
+// });
