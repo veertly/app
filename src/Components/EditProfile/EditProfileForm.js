@@ -72,57 +72,56 @@ function EditProfileForm(props) {
   const [interestsChips, setInterestsChips] = React.useState([]);
   const [updating, setUpdating] = React.useState(false);
 
-  const fetchUser = React.useCallback(async () => {
-    if (!user) {
-      return;
-    }
-    let userDb = await getUserDb(user.uid);
-
-    if (userDb) {
-      let {
-        firstName,
-        lastName,
-        email,
-        linkedin,
-        twitter,
-        keybase,
-        emailPublic,
-        avatarUrl,
-        twitterUrl,
-        linkedinUrl,
-        keybaseUrl,
-        interestsChips,
-        company,
-        companyTitle,
-      } = userDb;
-
-      const x = (str) => (str ? str : "");
-
-      setValues({
-        ...values,
-        firstName: x(firstName),
-        lastName: x(lastName),
-        email: x(email),
-        linkedin: x(linkedin),
-        twitter: x(twitter),
-        keybase: x(keybase),
-        emailPublic: emailPublic === true,
-        avatarUrl: x(avatarUrl),
-        twitterUrl: x(twitterUrl),
-        linkedinUrl: x(linkedinUrl),
-        keybaseUrl: x(keybaseUrl),
-        interestsChips: interestsChips ? interestsChips : [],
-        company: x(company),
-        companyTitle: x(companyTitle),
-      });
-
-      setInterestsChips(interestsChips ? interestsChips : []);
-    }
-  }, [user, values]);
-
   useEffect(() => {
+    const fetchUser = async () => {
+      if (!user) {
+        return;
+      }
+      let userDb = await getUserDb(user.uid);
+
+      if (userDb) {
+        let {
+          firstName,
+          lastName,
+          email,
+          linkedin,
+          twitter,
+          keybase,
+          emailPublic,
+          avatarUrl,
+          twitterUrl,
+          linkedinUrl,
+          keybaseUrl,
+          interestsChips,
+          company,
+          companyTitle,
+        } = userDb;
+
+        const x = (str) => (str ? str : "");
+
+        setValues((v) => ({
+          ...v,
+          firstName: x(firstName),
+          lastName: x(lastName),
+          email: x(email),
+          linkedin: x(linkedin),
+          twitter: x(twitter),
+          keybase: x(keybase),
+          emailPublic: emailPublic === true,
+          avatarUrl: x(avatarUrl),
+          twitterUrl: x(twitterUrl),
+          linkedinUrl: x(linkedinUrl),
+          keybaseUrl: x(keybaseUrl),
+          interestsChips: interestsChips ? interestsChips : [],
+          company: x(company),
+          companyTitle: x(companyTitle),
+        }));
+
+        setInterestsChips(interestsChips ? interestsChips : []);
+      }
+    };
     fetchUser();
-  }, [user, fetchUser]);
+  }, [user]);
 
   if (!user && !sessionId) {
     return <p>No session available...</p>;
@@ -173,7 +172,7 @@ function EditProfileForm(props) {
     }
     setUpdating(true);
     await updateUser(user.uid, sessionId, values);
-    await fetchUser();
+    // await fetchUser();
     // snackbar.showMessage("Your profile has been updated successfuly");
     if (profileUpdatedCallback) {
       profileUpdatedCallback();
