@@ -5,13 +5,14 @@ import Typography from "@material-ui/core/Typography";
 import LinkedinIcon from "../../Assets/Icons/Linkedin";
 import TwitterIcon from "../../Assets/Icons/Twitter";
 import KeybaseIcon from "../../Assets/Icons/Keybase";
-// import Button from "@material-ui/core/Button";
+import Button from "@material-ui/core/Button";
 import JoinParticipantDialog from "./JoinParticipantDialog";
 import Badge from "@material-ui/core/Badge";
 import ConversationsIcon from "../../Assets/Icons/Conversations";
 import { Tooltip } from "@material-ui/core";
 import ConferenceIcon from "@material-ui/icons/DesktopMac";
 // import JoinConversationDialog from "./JoinConversationDialog";
+// import _ from "lodash";
 const useStyles = makeStyles((theme) => ({
   root: {},
   participantContainer: {
@@ -103,37 +104,54 @@ export default function (props) {
   // const [participantsList , setParticipantsList
   // console.log({ listParticipantsAvailableTab: eventSession.participantsJoined });
 
-  const participantsAvailable = Object.keys(eventSession.participantsJoined).filter((userId) => {
-    let participant = users[userId];
-    let sessionParticipant = eventSession.participantsJoined[userId];
-    // console.log({ sessionParticipant });
-    if (!participant) {
-      // console.log(users);
-      // console.error("Couldn't find participant for user: '" + userId + "'");
-      return false;
-    }
-    // if (
-    //   // (onConferenceRoom && sessionParticipant.inNetworkingRoom) ||
-    //   (!onConferenceRoom && !sessionParticipant.inNetworkingRoom) ||
-    //   (!onConferenceRoom && sessionParticipant.groupId)
-    // ) {
-    //   return false;
-    // }
+  let participantsAvailable = React.useMemo(() => {
+    let result = Object.keys(eventSession.participantsJoined).filter((userId) => {
+      let participant = users[userId];
+      let sessionParticipant = eventSession.participantsJoined[userId];
+      // console.log({ sessionParticipant });
+      if (!participant) {
+        // console.log(users);
+        // console.error("Couldn't find participant for user: '" + userId + "'");
+        return false;
+      }
+      // if (
+      //   // (onConferenceRoom && sessionParticipant.inNetworkingRoom) ||
+      //   (!onConferenceRoom && !sessionParticipant.inNetworkingRoom) ||
+      //   (!onConferenceRoom && sessionParticipant.groupId)
+      // ) {
+      //   return false;
+      // }
 
-    if (!sessionParticipant.isOnline) {
-      return false;
+      if (!sessionParticipant.isOnline) {
+        return false;
+      }
+      return true;
+    });
+
+    console.log("Num participants: " + result.length);
+    return result;
+  }, [eventSession.participantsJoined, users]);
+
+  const feelingLucky = React.useCallback(() => {
+    if (participantsAvailable.length > 1) {
+      let tries = 0;
+      let findUser = () => {
+        let index = Math.floor(Math.random() * participantsAvailable.length);
+        let userId = participantsAvailable[index];
+        let sessionParticipant = eventSession.participantsJoined[userId];
+
+        if (tries < 5 && (userId === user.uid || !sessionParticipant.inNetworkingRoom)) {
+          tries++;
+          return findUser();
+        }
+
+        return users[userId];
+      };
+      let participant = findUser();
+      setSelectedParticipant(participant);
+      setJoinDialog(true);
     }
-    return true;
-  });
-  // console.log({ participantsAvailable });
-  // const feelingLucky = () => {
-  //   let index = Math.floor(Math.random() * participantsAvailable.length);
-  //   let userId = participantsAvailable[index];
-  //   let participant = users[userId];
-  //   // console.log(participant);
-  //   setSelectedParticipant(participant);
-  //   setJoinDialog(true);
-  // };
+  }, [participantsAvailable, eventSession.participantsJoined, user.uid, users]);
 
   if (!eventSession) {
     return null;
@@ -159,13 +177,20 @@ export default function (props) {
         user={user}
         onConferenceRoom={onConferenceRoom}
       /> */}
-      {/* {!onConferenceRoom && (
+      {!onConferenceRoom && (
         <div className={classes.buttonContainer}>
-          <Button variant="outlined" color="primary" size="small" className={classes.button} onClick={feelingLucky}>
+          <Button
+            variant="outlined"
+            color="primary"
+            size="small"
+            className={classes.button}
+            onClick={feelingLucky}
+            disabled={participantsAvailable.length <= 1}
+          >
             I'm feeling lucky
           </Button>
         </div>
-      )} */}
+      )}
       {onConferenceRoom && (
         <Typography variant="overline" className={classes.title} align="center">
           All attendees
