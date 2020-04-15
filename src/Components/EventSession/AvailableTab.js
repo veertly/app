@@ -237,7 +237,7 @@ export default function (props) {
                     vertical: "bottom",
                     horizontal: "right",
                   }}
-                  badgeContent={<ConferenceIcon style={{ heigth: "0.85em", width: "0.85em" }} />}
+                  badgeContent={<ConferenceIcon style={{ heigth: "0.85em", width: "0.85em", color: "#666" }} />}
                 >
                   {participantAvatar}
                 </Badge>
