@@ -11,8 +11,9 @@ import Badge from "@material-ui/core/Badge";
 import ConversationsIcon from "../../Assets/Icons/Conversations";
 import { Tooltip } from "@material-ui/core";
 import ConferenceIcon from "@material-ui/icons/DesktopMac";
+import FilterAttendeesDialog from "./FilterAttendeesDialog";
 // import JoinConversationDialog from "./JoinConversationDialog";
-// import _ from "lodash";
+import _ from "lodash";
 const useStyles = makeStyles((theme) => ({
   root: {},
   participantContainer: {
@@ -93,9 +94,12 @@ const AvailableBadge = withStyles((theme) => ({
 export default function (props) {
   const classes = useStyles();
   const [joinDialog, setJoinDialog] = React.useState(false);
+  const [filterDialog, setFilterDialog] = React.useState(false);
   const [selectedParticipant, setSelectedParticipant] = React.useState(null);
   const [showJoinButton, setShowJoinButton] = React.useState(false);
   const { users, eventSession, user, onConferenceRoom } = props;
+
+  const [filters, setFilters] = React.useState({});
 
   // const [joinConversationDialog, setJoinConversationDialog] = React.useState(false);
   // const [selectedGroup, setSelectedGroup] = React.useState(null);
@@ -107,6 +111,7 @@ export default function (props) {
   let participantsAvailable = React.useMemo(() => {
     let result = Object.keys(eventSession.participantsJoined).filter((userId) => {
       let participant = users[userId];
+
       let sessionParticipant = eventSession.participantsJoined[userId];
       // console.log({ sessionParticipant });
       if (!participant) {
@@ -125,12 +130,30 @@ export default function (props) {
       if (!sessionParticipant.isOnline) {
         return false;
       }
+      // check interests
+      if (_.size(filters) !== 0) {
+        let { interestsChips } = participant;
+
+        let foundInterest = false;
+
+        for (let i = 0; i < interestsChips.length; i++) {
+          let interest = interestsChips[i];
+          if (filters[interest.label] === true) {
+            foundInterest = true;
+          }
+        }
+
+        if (!foundInterest) {
+          return false;
+        }
+      }
+
       return true;
     });
 
     console.log("Num participants: " + result.length);
     return result;
-  }, [eventSession.participantsJoined, users]);
+  }, [eventSession.participantsJoined, users, filters]);
 
   const feelingLucky = React.useCallback(() => {
     if (participantsAvailable.length > 1) {
@@ -156,7 +179,7 @@ export default function (props) {
   if (!eventSession) {
     return null;
   }
-
+  console.log({ filterDialog });
   return (
     <div className={classes.root}>
       <JoinParticipantDialog
@@ -167,6 +190,18 @@ export default function (props) {
         user={user}
         onConferenceRoom={onConferenceRoom}
         showJoinButton={showJoinButton}
+      />
+      <FilterAttendeesDialog
+        open={filterDialog}
+        setOpen={setFilterDialog}
+        participant={selectedParticipant}
+        eventSession={eventSession}
+        user={user}
+        users={users}
+        filters={filters}
+        setFilters={setFilters}
+        // onConferenceRoom={onConferenceRoom}
+        // showJoinButton={showJoinButton}
       />
       {/* <JoinConversationDialog
         open={joinConversationDialog}
@@ -188,6 +223,17 @@ export default function (props) {
             disabled={participantsAvailable.length <= 1}
           >
             I'm feeling lucky
+          </Button>
+          <Button
+            variant="outlined"
+            color="primary"
+            size="small"
+            className={classes.button}
+            onClick={() => {
+              setFilterDialog(true);
+            }}
+          >
+            Filter
           </Button>
         </div>
       )}
