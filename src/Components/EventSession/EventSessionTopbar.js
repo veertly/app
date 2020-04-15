@@ -37,6 +37,7 @@ const useStyles = makeStyles((theme) => ({
     float: "left",
     width: 135,
     textAlign: "center",
+    whiteSpace: "nowrap",
   },
   roomButtonsContainer: {
     margin: theme.spacing(0, 4, 0, 4),
