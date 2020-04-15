@@ -8,5 +8,8 @@ export const OPEN_CHAT = "OPEN_CHAT";
 export const CLOSE_CHAT = "CLOSE_CHAT";
 export const CHAT_RESIZED = "CHAT_RESIZED";
 
+export const OPEN_SHARE = "OPEN_SHARE";
+export const CLOSE_SHARE = "CLOSE_SHARE";
+
 // export const SEND_CHAT_MESSAGE = "SEND_CHAT_MESSAGE";
 // export const CHAT_MESSAGE_SENT = "CHAT_MESSAGE_SENT";
