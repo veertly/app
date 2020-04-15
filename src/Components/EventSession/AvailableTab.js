@@ -191,15 +191,6 @@ export default function (props) {
         let isInConferenceRoom = !isInConversation && !sessionParticipant.inNetworkingRoom;
         let isAvailable = !isInConversation && sessionParticipant.inNetworkingRoom;
 
-        // console.log({
-        //   name: participant.firstName,
-        //   isInConversation,
-        //   isInConferenceRoom,
-        //   isAvailable,
-        //   participant,
-        //   sessionParticipant,
-        // });
-
         return (
           <div
             className={classes.participantContainer}
@@ -246,7 +237,7 @@ export default function (props) {
                     vertical: "bottom",
                     horizontal: "right",
                   }}
-                  badgeContent={<ConferenceIcon style={{ heigth: "0.85em", width: "0.85em" }} color="primary" />}
+                  badgeContent={<ConferenceIcon style={{ heigth: "0.85em", width: "0.85em" }} />}
                 >
                   {participantAvatar}
                 </Badge>

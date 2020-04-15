@@ -392,11 +392,11 @@ function EditProfileForm(props) {
           label={
             <span>
               I accept the{" "}
-              <a href="https://veertly.com" target="_blank" rel="noopener noreferrer">
-                Terms of Use
+              <a href="https://veertly.com/terms-of-service/" target="_blank" rel="noopener noreferrer">
+                Terms of Service
               </a>{" "}
               &amp;{" "}
-              <a href="https://veertly.com" target="_blank" rel="noopener noreferrer">
+              <a href="https://veertly.com/privacy-policy" target="_blank" rel="noopener noreferrer">
                 Privacy Policy
               </a>
             </span>
