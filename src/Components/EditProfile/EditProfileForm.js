@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { withStyles } from "@material-ui/core/styles";
-import { Button, TextField } from "@material-ui/core";
+import { Button, TextField, Typography } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import FormGroup from "@material-ui/core/FormGroup";
@@ -217,6 +217,16 @@ function EditProfileForm(props) {
           onChange={handleUpdateField("lastName")}
         />
       </Grid>
+      <TextField
+        fullWidth
+        className={classes.textField}
+        label="Profile Picture URL"
+        name="avatarUrl"
+        variant="outlined"
+        value={values.avatarUrl}
+        // style={{ width: 380 }}
+        onChange={handleUpdateField("avatarUrl")}
+      />
       <Grid container justify="space-between" className={classes.textField}>
         <TextField
           fullWidth
@@ -404,6 +414,11 @@ function EditProfileForm(props) {
         />
       </div>
       <div className={classes.bottom}>
+        {values.checkedTerms !== true && (
+          <Typography align="center" color="textSecondary">
+            You need to accept the Terms of Service and the Privacy Policy
+          </Typography>
+        )}
         <Button
           variant="contained"
           color="primary"

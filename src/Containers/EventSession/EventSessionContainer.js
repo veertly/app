@@ -32,6 +32,8 @@ import EditProfileDialog from "../../Components/EditProfile/EditProfileDialog";
 import EventPageDialog from "../../Components/Event/EventPageDialog";
 import { useSelector } from "react-redux";
 import { isChatOpen } from "../../Redux/selectors";
+import ShareEventDialog from "../../Components/Event/ShareEventDialog";
+import FeedbackDialog from "../../Components/EventSession/FeedbackDialog";
 
 export const SIDE_PANE_WIDTH = 53;
 const LEFT_PANE_WIDTH = 300;
@@ -404,6 +406,8 @@ export default withRouter((props) => {
       <Page title={`Veertly | ${composedEventSession.title}`}> </Page>
       <EditProfileDialog user={user} eventSession={composedEventSession} />
       <EventPageDialog eventSession={composedEventSession} />
+      <ShareEventDialog eventSession={composedEventSession} />
+      <FeedbackDialog eventSession={composedEventSession} myUser={myUser} />
 
       <EventSessionTopbar
         isInConferenceRoom={isInConferenceRoom}

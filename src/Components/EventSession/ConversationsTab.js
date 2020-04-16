@@ -7,65 +7,65 @@ import Divider from "@material-ui/core/Divider";
 import GroupAvatars from "./GroupAvatars";
 import { MAX_PARTICIPANTS_GROUP } from "../../Config/constants";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {},
   groupContainer: {
     margin: theme.spacing(1),
     padding: theme.spacing(1),
     display: "flex",
-    position: "relative"
+    position: "relative",
   },
   participantContainer: {
-    marginRight: theme.spacing(2)
+    marginRight: theme.spacing(2),
   },
   participantDetails: {
     flexGrow: 1,
     textAlign: "center",
-    marginTop: 4
+    marginTop: 4,
   },
   topicsInterested: {
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
     overflow: "hidden",
     display: "block",
-    width: 185
+    width: 185,
   },
   avatar: {
     marginTop: 1,
     marginLeft: "auto",
-    marginRight: "auto"
+    marginRight: "auto",
   },
   linkedin: {
     position: "absolute",
     right: 0,
     top: 0,
     width: 16,
-    color: theme.palette.text.secondary
+    color: theme.palette.text.secondary,
   },
   buttonContainer: {
     width: "100%",
-    textAlign: "center"
+    textAlign: "center",
   },
   button: {
-    margin: theme.spacing(1)
+    margin: theme.spacing(1),
   },
   joinButtonContainer: {
     position: "absolute",
     right: 0,
-    top: theme.spacing(2)
+    top: theme.spacing(2),
   },
   noGroupsText: {
     position: "absolute",
     top: 60,
-    width: "100%"
+    width: "100%",
   },
   relativeContainer: {
-    position: "relative"
-  }
+    position: "relative",
+  },
 }));
 // rgba(28, 71, 98, 0.08)
 
-export default function(props) {
+export default function (props) {
   const classes = useStyles();
   const [groupHover, setGroupHover] = React.useState(-1);
   const [joinDialog, setJoinDialog] = React.useState(false);
@@ -90,13 +90,16 @@ export default function(props) {
         {groupIds.map((groupId, index) => {
           let groupData = eventSession.liveGroups[groupId];
           let groupUserIds = Object.keys(groupData.participants);
-          let liveParticipants = groupUserIds.filter(userId => {
+
+          let liveParticipants = groupUserIds.filter((userId) => {
             let participantMetadata = groupData.participants[userId];
-            return !participantMetadata.leftTimestamp;
+            let sessionParticipant = eventSession.participantsJoined[userId];
+            return !participantMetadata.leftTimestamp && sessionParticipant.isOnline;
           });
-          let group = liveParticipants.map(userId => users[userId]);
+
+          let group = liveParticipants.map((userId) => users[userId]);
           let hasLiveParticipants =
-            liveParticipants.filter(participant => participant.leftTimestamp !== null).length > 0;
+            liveParticipants.filter((participant) => participant.leftTimestamp !== null).length > 0;
           let isLast = index === numGroups - 1;
 
           let isMyGroup = liveParticipants.includes(user.uid);

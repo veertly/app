@@ -6,6 +6,10 @@ import {
   OPEN_CHAT,
   CLOSE_CHAT,
   CHAT_RESIZED,
+  OPEN_SHARE,
+  CLOSE_SHARE,
+  OPEN_FEEDBACK,
+  CLOSE_FEEDBACK,
 } from "./actionTypes";
 
 export const openEditProfile = () => ({
@@ -36,6 +40,18 @@ export const chatResized = (newWidth) => ({
   newWidth,
 });
 
-// export const sendChatMessage = (message) => ({
-//   type: OPEN_CHAT,
-// });
+export const openShare = () => ({
+  type: OPEN_SHARE,
+});
+
+export const closeShare = () => ({
+  type: CLOSE_SHARE,
+});
+
+export const openFeedback = () => ({
+  type: OPEN_FEEDBACK,
+});
+
+export const closeFeedback = () => ({
+  type: CLOSE_FEEDBACK,
+});

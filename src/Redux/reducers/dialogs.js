@@ -6,6 +6,10 @@ import {
   OPEN_CHAT,
   CLOSE_CHAT,
   CHAT_RESIZED,
+  OPEN_SHARE,
+  CLOSE_SHARE,
+  OPEN_FEEDBACK,
+  CLOSE_FEEDBACK,
 } from "../actionTypes";
 import { CHAT_DEFAULT_WIDTH } from "../../Components/Chat/ChatPane";
 
@@ -14,6 +18,8 @@ const initialState = {
   eventDetailsOpen: false,
   chatOpen: false,
   chatWidth: CHAT_DEFAULT_WIDTH,
+  shareOpen: false,
+  feedbackOpen: false,
 };
 
 export default function (state = initialState, action) {
@@ -60,6 +66,31 @@ export default function (state = initialState, action) {
       return {
         ...state,
         chatWidt: action.newWidth,
+      };
+    }
+    case OPEN_SHARE: {
+      return {
+        ...state,
+        shareOpen: true,
+      };
+    }
+    case CLOSE_SHARE: {
+      return {
+        ...state,
+        shareOpen: false,
+      };
+    }
+
+    case OPEN_FEEDBACK: {
+      return {
+        ...state,
+        feedbackOpen: true,
+      };
+    }
+    case CLOSE_FEEDBACK: {
+      return {
+        ...state,
+        feedbackOpen: false,
       };
     }
     default:
