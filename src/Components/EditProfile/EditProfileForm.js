@@ -217,6 +217,16 @@ function EditProfileForm(props) {
           onChange={handleUpdateField("lastName")}
         />
       </Grid>
+      <TextField
+        fullWidth
+        className={classes.textField}
+        label="Profile Picture URL"
+        name="avatarUrl"
+        variant="outlined"
+        value={values.avatarUrl}
+        // style={{ width: 380 }}
+        onChange={handleUpdateField("avatarUrl")}
+      />
       <Grid container justify="space-between" className={classes.textField}>
         <TextField
           fullWidth
