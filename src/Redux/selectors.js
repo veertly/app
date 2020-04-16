@@ -7,3 +7,5 @@ export const isChatOpen = (store) => store.dialogs.chatOpen === true;
 export const chatWidth = (store) => store.dialogs.chatWidth;
 
 export const isShareOpen = (store) => store.dialogs.shareOpen === true;
+
+export const isFeedbackOpen = (store) => store.dialogs.feedbackOpen === true;

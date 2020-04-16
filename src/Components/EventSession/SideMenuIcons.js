@@ -15,12 +15,14 @@ import EventDescriptionIcon from "@material-ui/icons/Notes";
 import ShareIcon from "@material-ui/icons/Share";
 
 import { useDispatch, useSelector } from "react-redux";
-import { openEditProfile, openEventDetails, openChat, closeChat, openShare } from "../../Redux/actions";
+import { openEditProfile, openEventDetails, openChat, closeChat, openShare, openFeedback } from "../../Redux/actions";
 import routes from "../../Config/routes";
 import { isChatOpen } from "../../Redux/selectors";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import { logout } from "../../Modules/userOperations";
 import { useHistory } from "react-router-dom";
+import FeedbackIcon from "@material-ui/icons/GraphicEq";
+
 // import { Badge } from "@material-ui/core";
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -48,6 +50,8 @@ export default function SideMenuIcons(props) {
   const openProfile = React.useCallback(() => dispatch(openEditProfile()), [dispatch]);
   const openDetails = React.useCallback(() => dispatch(openEventDetails()), [dispatch]);
   const openShareEvent = React.useCallback(() => dispatch(openShare()), [dispatch]);
+  const openFeedbackDialog = React.useCallback(() => dispatch(openFeedback()), [dispatch]);
+
   const history = useHistory();
 
   const toggleChatPane = React.useCallback(() => {
@@ -154,13 +158,13 @@ export default function SideMenuIcons(props) {
             </ListItemIcon>
           </ListItem>
         </Tooltip>
-        {/* <Tooltip title="Provide Feedback">
-          <ListItem button disabled>
+        <Tooltip title="Share your feedback">
+          <ListItem button onClick={openFeedbackDialog}>
             <ListItemIcon>
-              <FeedbackIcon />
+              <FeedbackIcon color="primary" />
             </ListItemIcon>
           </ListItem>
-        </Tooltip> */}
+        </Tooltip>
       </List>
       <Divider />
       <div style={{ flexGrow: 1 }}></div>

@@ -8,6 +8,8 @@ import {
   CHAT_RESIZED,
   OPEN_SHARE,
   CLOSE_SHARE,
+  OPEN_FEEDBACK,
+  CLOSE_FEEDBACK,
 } from "./actionTypes";
 
 export const openEditProfile = () => ({
@@ -44,4 +46,12 @@ export const openShare = () => ({
 
 export const closeShare = () => ({
   type: CLOSE_SHARE,
+});
+
+export const openFeedback = () => ({
+  type: OPEN_FEEDBACK,
+});
+
+export const closeFeedback = () => ({
+  type: CLOSE_FEEDBACK,
 });
