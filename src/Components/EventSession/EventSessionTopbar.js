@@ -1,12 +1,14 @@
 import React, { useState } from "react";
-import { withRouter } from "react-router-dom";
+import { withRouter, useHistory } from "react-router-dom";
 import clsx from "clsx";
 import Button from "@material-ui/core/Button";
+import MenuItem from "@material-ui/core/MenuItem";
+import Menu from "@material-ui/core/Menu";
 
 import { makeStyles } from "@material-ui/styles";
 import { AppBar, Toolbar, Typography } from "@material-ui/core";
 
-import VeertlyLogo from "../../Assets/Veertly_white.svg";
+import VeertlyLogo from "../../Assets/VeertlyBeta_white.svg";
 
 // import AvatarLogin from "../Topbar/AvatarLogin";
 import GoToNetworkingRoomDialog from "./GoToNetworkingRoomDialog";
@@ -14,6 +16,8 @@ import GoToConferenceRoomDialog from "./GoToConferenceRoomDialog";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme } from "@material-ui/core/styles";
 import UserAvatar from "../Misc/UserAvatar";
+import { logout } from "../../Modules/userOperations";
+import routes from "../../Config/routes";
 // import DesktopMacIcon from "@material-ui/icons/DesktopMac";
 // import ConversationsIcon from "../../Assets/Icons/Conversations";
 
@@ -70,7 +74,6 @@ const useStyles = makeStyles((theme) => ({
 
 const RoomButton = ({ onClick, disabled, isCurrentRoom, children, icon }) => {
   const classes = useStyles();
-
   if (disabled) {
     return (
       <Button
@@ -120,8 +123,28 @@ export default withRouter((props) => {
   const theme = useTheme();
 
   const isMobile = useMediaQuery(theme.breakpoints.down("xs"));
-
+  const history = useHistory();
   const classes = useStyles();
+
+  const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
+  const openMenu = Boolean(menuAnchorEl);
+
+  function handleMenuClose() {
+    setMenuAnchorEl(null);
+  }
+
+  function handleMenu(event) {
+    setMenuAnchorEl(event.currentTarget);
+  }
+
+  const handleLogout = () => {
+    let sessionId = eventSession ? eventSession.id : null;
+    logout(sessionId);
+    handleMenuClose();
+    if (eventSession) {
+      history.push(routes.EVENT_SESSION(eventSession.id));
+    }
+  };
 
   const handleConferenceRoomClick = () => {
     if (isInNetworkingCall) {
@@ -170,7 +193,24 @@ export default withRouter((props) => {
           </div>
           <div className={classes.avatarContainer}>
             {/* <AvatarLogin eventSession={eventSession} /> */}
-            <UserAvatar user={myUser} />
+            <UserAvatar user={myUser} onClick={handleMenu} />
+            <Menu
+              id="menu-appbar"
+              anchorEl={menuAnchorEl}
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "center",
+              }}
+              transformOrigin={{
+                vertical: "bottom",
+                horizontal: "center",
+              }}
+              keepMounted
+              open={openMenu}
+              onClose={handleMenuClose}
+            >
+              <MenuItem onClick={handleLogout}>Log out</MenuItem>
+            </Menu>
           </div>
         </Toolbar>
       </AppBar>
