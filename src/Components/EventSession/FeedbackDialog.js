@@ -16,7 +16,8 @@ const useStyles = makeStyles((theme) => ({
 export default function (props) {
   const classes = useStyles();
 
-  const { eventSession, myUser } = props;
+  const { eventSession, myUser = { firstName: "", lastName: ""} } = props;
+  console.log(myUser);
   const open = useSelector(isFeedbackOpen);
 
   const dispatch = useDispatch();
