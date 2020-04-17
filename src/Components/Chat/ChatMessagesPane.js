@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useLayoutEffect } from "react";
 import { makeStyles /* , useTheme */ } from "@material-ui/core/styles";
 import { Grid } from "@material-ui/core";
 import ChatMessage from "./ChatMessage";
@@ -27,7 +27,7 @@ export default (props) => {
 
   useEffect(() => {
     chatEnd.current.scrollIntoView({ behavior: "auto" });
-  }, [props])
+  }, [messages])
 
   const classes = useStyles();
   return (
