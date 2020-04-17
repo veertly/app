@@ -109,47 +109,50 @@ export default function (props) {
   // console.log({ listParticipantsAvailableTab: eventSession.participantsJoined });
 
   let participantsAvailable = React.useMemo(() => {
-    let result = Object.keys(eventSession.participantsJoined).filter((userId) => {
-      let participant = users[userId];
+    let result = Object.keys(eventSession.participantsJoined).filter(
+      (userId) => {
+        let participant = users[userId];
 
-      let sessionParticipant = eventSession.participantsJoined[userId];
-      // console.log({ sessionParticipant });
-      if (!participant) {
-        // console.log(users);
-        // console.error("Couldn't find participant for user: '" + userId + "'");
-        return false;
-      }
-      // if (
-      //   // (onConferenceRoom && sessionParticipant.inNetworkingRoom) ||
-      //   (!onConferenceRoom && !sessionParticipant.inNetworkingRoom) ||
-      //   (!onConferenceRoom && sessionParticipant.groupId)
-      // ) {
-      //   return false;
-      // }
+        let sessionParticipant = eventSession.participantsJoined[userId];
+        // console.log({ sessionParticipant });
+        if (!participant) {
+          // console.log(users);
+          // console.error("Couldn't find participant for user: '" + userId + "'");
+          return false;
+        }
+        // if (
+        //   // (onConferenceRoom && sessionParticipant.inNetworkingRoom) ||
+        //   (!onConferenceRoom && !sessionParticipant.inNetworkingRoom) ||
+        //   (!onConferenceRoom && sessionParticipant.groupId)
+        // ) {
+        //   return false;
+        // }
 
-      if (!sessionParticipant.isOnline) {
-        return false;
-      }
-      // check interests
-      if (_.size(filters) !== 0) {
-        let { interestsChips } = participant;
+        if (!sessionParticipant.isOnline) {
+          return false;
+        }
+        // check interests
+        if (_.size(filters) !== 0) {
+          let { interestsChips } = participant;
 
-        let foundInterest = false;
+          let foundInterest = false;
 
-        for (let i = 0; i < interestsChips.length; i++) {
-          let interest = interestsChips[i];
-          if (filters[interest.label] === true) {
-            foundInterest = true;
+          for (let i = 0; i < interestsChips.length; i++) {
+            let interest = interestsChips[i];
+            if (filters[interest.label] === true) {
+              foundInterest = true;
+            }
+          }
+
+          if (!foundInterest) {
+            return false;
           }
         }
 
-        if (!foundInterest) {
-          return false;
-        }
-      }
-
-      return true;
-    });
+        return true;
+      },
+      [filters, eventSession.participantsJoined]
+    );
 
     // console.log("Num participants: " + result.length);
     return result;
@@ -179,7 +182,7 @@ export default function (props) {
   if (!eventSession) {
     return null;
   }
-  // console.log({ filterDialog });
+  
   return (
     <div className={classes.root}>
       <JoinParticipantDialog

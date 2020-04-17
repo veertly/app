@@ -75,6 +75,16 @@ export default function (props) {
     return sorted;
   }, [users, eventSession.participantsJoined]);
 
+  const handleFilterChecked = (label) => (e) => {
+    let newFilters = { ...internalFilters };
+    if (e.target.checked === true) {
+      newFilters[label] = true;
+    } else {
+      delete newFilters[label];
+    }
+    setInternalFilters(newFilters);
+  };
+
   const applyFilters = React.useCallback(() => {
     setFilters(internalFilters);
     setOpen(false);
@@ -95,7 +105,7 @@ export default function (props) {
                   control={
                     <Switch
                       checked={internalFilters[label] === true}
-                      onChange={(e) => setInternalFilters((v) => ({ ...v, [label]: e.target.checked }))}
+                      onChange={handleFilterChecked(label)}
                       color="primary"
                     />
                   }
