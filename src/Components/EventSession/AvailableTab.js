@@ -151,7 +151,7 @@ export default function (props) {
       return true;
     });
 
-    console.log("Num participants: " + result.length);
+    // console.log("Num participants: " + result.length);
     return result;
   }, [eventSession.participantsJoined, users, filters]);
 
@@ -179,7 +179,7 @@ export default function (props) {
   if (!eventSession) {
     return null;
   }
-  console.log({ filterDialog });
+  // console.log({ filterDialog });
   return (
     <div className={classes.root}>
       <JoinParticipantDialog
