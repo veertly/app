@@ -12,16 +12,16 @@
           {
             "key": "Pragma",
             "value": "no-cache"
-          }, {
-            "key": "Expires",
-            "value": 0
           }
         ]
       },
       {
         "source": "/service-worker.js",
         "headers": [
-          {"key": "Cache-Control", "value": "no-cache"}
+          {
+            "key": "Cache-Control",
+            "value": "no-cache"
+          }
         ]
       },
       {
