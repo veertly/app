@@ -1,8 +1,7 @@
 import React from "react";
 import clsx from "clsx";
 import { makeStyles /* , useTheme */ } from "@material-ui/core/styles";
-// import { closeChat } from "../../Redux/actions";
-import { isChatOpen } from "../../Redux/selectors";
+import { isChatOpen, closeChat } from "../../Redux/dialogs";
 import { useDispatch, useSelector } from "react-redux";
 // import useIsMounted from "react-is-mounted-hook";
 // import useEventListener from "../../Hooks/useEventListener";
@@ -13,7 +12,6 @@ import { useCollectionData } from "react-firebase-hooks/firestore";
 
 import firebase from "../../Modules/firebaseApp";
 import { sendChatMessage } from "../../Modules/chatMessagesOperations";
-import { /* chatResized,  */ closeChat } from "../../Redux/actions";
 import { Typography, Paper, IconButton, Tooltip } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 

@@ -9,7 +9,7 @@ import firebase from "../../Modules/firebaseApp";
 import { logout } from "../../Modules/userOperations";
 import routes from "../../Config/routes";
 import { useDispatch } from "react-redux";
-import { openEditProfile } from "../../Redux/actions";
+import { openEditProfile } from "../../Redux/dialogs";
 
 const useStyles = makeStyles((theme) => ({
   root: {

@@ -15,9 +15,16 @@ import EventDescriptionIcon from "@material-ui/icons/Notes";
 import ShareIcon from "@material-ui/icons/Share";
 
 import { useDispatch, useSelector } from "react-redux";
-import { openEditProfile, openEventDetails, openChat, closeChat, openShare, openFeedback } from "../../Redux/actions";
+import {
+  openEditProfile,
+  openEventDetails,
+  openChat,
+  closeChat,
+  openShare,
+  openFeedback,
+  isChatOpen,
+} from "../../Redux/dialogs";
 import routes from "../../Config/routes";
-import { isChatOpen } from "../../Redux/selectors";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import { logout } from "../../Modules/userOperations";
 import { useHistory } from "react-router-dom";

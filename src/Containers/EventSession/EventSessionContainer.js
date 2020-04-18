@@ -31,7 +31,7 @@ import ChatPane, { CHAT_DEFAULT_WIDTH } from "../../Components/Chat/ChatPane";
 import EditProfileDialog from "../../Components/EditProfile/EditProfileDialog";
 import EventPageDialog from "../../Components/Event/EventPageDialog";
 import { useSelector } from "react-redux";
-import { isChatOpen } from "../../Redux/selectors";
+import { isChatOpen } from "../../Redux/dialogs";
 import ShareEventDialog from "../../Components/Event/ShareEventDialog";
 import FeedbackDialog from "../../Components/EventSession/FeedbackDialog";
 

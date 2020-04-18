@@ -2,8 +2,7 @@ import React from "react";
 import Dialog from "@material-ui/core/Dialog";
 import { makeStyles } from "@material-ui/core/styles";
 import { useDispatch, useSelector } from "react-redux";
-import { closeEventDetails } from "../../Redux/actions";
-import { isEventDetailsOpen } from "../../Redux/selectors";
+import { closeEventDetails, isEventDetailsOpen } from "../../Redux/dialogs";
 import EventPage from "./EventPage";
 
 const useStyles = makeStyles((theme) => ({

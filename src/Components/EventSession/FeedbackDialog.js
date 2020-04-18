@@ -2,8 +2,7 @@ import React from "react";
 import Dialog from "@material-ui/core/Dialog";
 import { makeStyles } from "@material-ui/core/styles";
 import { useDispatch, useSelector } from "react-redux";
-import { closeFeedback } from "../../Redux/actions";
-import { isFeedbackOpen } from "../../Redux/selectors";
+import { closeFeedback, isFeedbackOpen } from "../../Redux/dialogs";
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -16,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
 export default function (props) {
   const classes = useStyles();
 
-  const { eventSession, myUser = { firstName: "", lastName: ""} } = props;
+  const { eventSession, myUser = { firstName: "", lastName: "" } } = props;
   console.log(myUser);
   const open = useSelector(isFeedbackOpen);
 

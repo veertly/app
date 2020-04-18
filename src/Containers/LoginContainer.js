@@ -1,14 +1,12 @@
-import React, { useEffect /*  { useContext } */ } from "react";
+import React, { useEffect } from "react";
 import { withRouter } from "react-router-dom";
 
 import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
 import firebase from "../Modules/firebaseApp";
-// import queryString from "query-string";
 import CenteredLayout from "./Layouts/CenteredLayout";
 import { makeStyles } from "@material-ui/styles";
 import { registerNewUser, hasUserSession } from "../Modules/userOperations";
 import { useAuthState } from "react-firebase-hooks/auth";
-// import { GlobalContext } from "../Redux/GlobalContext";
 import Typography from "@material-ui/core/Typography";
 import { Button } from "@material-ui/core";
 import routes from "../Config/routes";

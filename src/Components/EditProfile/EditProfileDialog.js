@@ -3,8 +3,7 @@ import Dialog from "@material-ui/core/Dialog";
 import { makeStyles } from "@material-ui/core/styles";
 import EditProfileForm from "./EditProfileForm";
 import { useDispatch, useSelector } from "react-redux";
-import { closeEditProfile } from "../../Redux/actions";
-import { isEditProfileOpen } from "../../Redux/selectors";
+import { closeEditProfile, isEditProfileOpen } from "../../Redux/dialogs";
 
 const useStyles = makeStyles((theme) => ({
   content: {
