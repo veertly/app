@@ -94,7 +94,7 @@ export default function (props) {
           let liveParticipants = groupUserIds.filter((userId) => {
             let participantMetadata = groupData.participants[userId];
             let sessionParticipant = eventSession.participantsJoined[userId];
-            return !participantMetadata.leftTimestamp && sessionParticipant.isOnline;
+            return !participantMetadata.leftTimestamp && sessionParticipant && sessionParticipant.isOnline;
           });
 
           let group = liveParticipants.map((userId) => users[userId]);

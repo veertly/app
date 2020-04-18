@@ -42,27 +42,27 @@ export const setAsAvailable = async (eventSession, userId) => {
   // console.log("SET AS AVAILABLE!!!!!!");
 };
 
-export const setAsOffline = async (eventSession, userId) => {
-  // console.log(eventSession.participantsJoined[userId]);
-  let currentGroupId =
-    eventSession.participantsJoined[userId] && eventSession.participantsJoined[userId].groupId
-      ? eventSession.participantsJoined[userId].groupId
-      : null;
+// export const setAsOffline = async (eventSession, userId) => {
+//   // console.log(eventSession.participantsJoined[userId]);
+//   let currentGroupId =
+//     eventSession.participantsJoined[userId] && eventSession.participantsJoined[userId].groupId
+//       ? eventSession.participantsJoined[userId].groupId
+//       : null;
 
-  if (currentGroupId) {
-    leaveCall(eventSession, userId);
-  }
-  await firebase
-    .firestore()
-    .collection("eventSessions")
-    .doc(eventSession.id)
-    .collection("participantsJoined")
-    .doc(userId)
-    .update({
-      leftTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
-      isOnline: false,
-    });
-};
+//   if (currentGroupId) {
+//     leaveCall(eventSession, userId);
+//   }
+//   await firebase
+//     .firestore()
+//     .collection("eventSessions")
+//     .doc(eventSession.id)
+//     .collection("participantsJoined")
+//     .doc(userId)
+//     .update({
+//       leftTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
+//       isOnline: false,
+//     });
+// };
 
 export const createNewConversation = (eventSession, myUserId, otherUserId, snackbar) => {
   let currentGroupId =

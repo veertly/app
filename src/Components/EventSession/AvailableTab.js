@@ -242,7 +242,7 @@ export default function (props) {
       )}
       {onConferenceRoom && (
         <Typography variant="overline" className={classes.title} align="center">
-          All attendees
+          All attendees ({participantsAvailable.length})
         </Typography>
       )}
       {participantsAvailable.map((userId, index) => {
