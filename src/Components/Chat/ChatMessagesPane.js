@@ -27,7 +27,7 @@ export default (props) => {
 
   useEffect(() => {
     chatEnd.current.scrollIntoView({ behavior: "auto" });
-  }, [props])
+  }, [messages])
 
   const classes = useStyles();
   return (
