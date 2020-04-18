@@ -182,6 +182,7 @@ export default function (props) {
   if (!eventSession) {
     return null;
   }
+
   return (
     <div className={classes.root}>
       <JoinParticipantDialog
