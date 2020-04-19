@@ -1,5 +1,4 @@
 import firebase from "./firebaseApp";
-// import uuidv1 from "uuid/v1";
 
 export const sendChatMessage = async (sessionId, userId, namespace, messageId, message) => {
   let db = firebase.firestore();

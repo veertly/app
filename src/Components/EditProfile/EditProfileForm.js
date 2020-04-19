@@ -11,7 +11,7 @@ import ParticipantCard from "../EventSession/ParticipantCard";
 import ProfileChips from "./ProfileChips";
 import IconButton from "@material-ui/core/IconButton";
 import AddIcon from "@material-ui/icons/Add";
-import uuidv1 from "uuid/v1";
+import { v1 as uuidv1 } from "uuid";
 import { getUserDb, updateUser } from "../../Modules/userOperations";
 import Checkbox from "@material-ui/core/Checkbox";
 import LinkedinIcon from "../../Assets/Icons/Linkedin";

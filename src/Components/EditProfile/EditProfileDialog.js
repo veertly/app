@@ -39,7 +39,7 @@ export default function (props) {
   const classes = useStyles();
   const [userAuth] = useAuthState(firebase.auth());
 
-  const { eventSession } = props;
+  // const { eventSession } = props;
   const open = useSelector(isEditProfileOpen);
   const sessionId = useSelector(getSessionId);
 
@@ -52,7 +52,7 @@ export default function (props) {
     <div>
       <Dialog open={open} onClose={handleClose}>
         <div className={classes.content}>
-          {eventSession && (
+          {sessionId && (
             <EditProfileForm userAuth={userAuth} sessionId={sessionId} profileUpdatedCallback={handleClose} />
           )}
         </div>
