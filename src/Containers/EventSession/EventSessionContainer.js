@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 // import Layout from "../Layouts/EventSessionLayout";
 import NetworkingRoomContainer from "./NetworkingRoomContainer";
 import { useCollectionData, useDocumentData } from "react-firebase-hooks/firestore";
@@ -30,10 +30,26 @@ import SideMenuIcons from "../../Components/EventSession/SideMenuIcons";
 import ChatPane, { CHAT_DEFAULT_WIDTH } from "../../Components/Chat/ChatPane";
 import EditProfileDialog from "../../Components/EditProfile/EditProfileDialog";
 import EventPageDialog from "../../Components/Event/EventPageDialog";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch, shallowEqual } from "react-redux";
 import { isChatOpen } from "../../Redux/dialogs";
 import ShareEventDialog from "../../Components/Event/ShareEventDialog";
 import FeedbackDialog from "../../Components/EventSession/FeedbackDialog";
+import {
+  getEventSession,
+  updateEventSession,
+  getEventSessionDetails,
+  updateEventSessionDetails,
+  updateParticipantsJoined,
+  updateLiveGroups,
+  updateUsers,
+  getUsers,
+  getParticipantsJoined,
+  getLiveGroups,
+  updateUserId,
+  getUser,
+  getUserSession,
+  getUserGroup,
+} from "../../Redux/eventSession";
 
 export const SIDE_PANE_WIDTH = 53;
 const LEFT_PANE_WIDTH = 300;
@@ -107,26 +123,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default withRouter((props) => {
-  const [user /* , initialising, error */] = useAuthState(firebase.auth());
+  const dispatch = useDispatch();
+
+  const [userAuth /* , initialising, error */] = useAuthState(firebase.auth());
 
   const [initCompleted, setInitCompleted] = useState(false);
-  const [currentGroupId, setCurrentGroupId] = useState(null);
-  const [currentGroup, setCurrentGroup] = useState(null);
+
   const [jitsiApi, setJitsiApi] = useState(null);
-  // const [liveAt, setLiveAt] = useState(null);
-  const [lastEventSessionJson, setLastEventSessionJson] = useState("");
-  const [lastEventSessionDetailsJson, setLastEventSessionDetailsJson] = useState("");
-  const [lastParticipantJoinedJson, setLastParticipantJoinedJson] = useState("");
-  const [lastParticipantDetailsJson, setLastParticipantDetailsJson] = useState("");
-  const [lastLiveGroupsJson, setLastLiveGroupsJson] = useState("");
-  const [composedEventSession, setComposedEventSession] = useState(null);
-  const userId = user ? user.uid : null;
-
-  let [isInConferenceRoom, setIsInConferenceRoom] = useState(false);
-
-  let originalSessionId = props.match.params.sessionId;
-
-  let sessionId = originalSessionId ? originalSessionId.toLowerCase() : null;
 
   const classes = useStyles();
   const theme = useTheme();
@@ -139,6 +142,9 @@ export default withRouter((props) => {
 
   const chatOpen = useSelector(isChatOpen);
 
+  // new redux
+  // const eventSessionRedux = useSelector(getEventSession);
+
   const handleSidebarClose = () => {
     setOpenSidebar(false);
   };
@@ -148,157 +154,136 @@ export default withRouter((props) => {
     // setAsOffline(composedEventSession, userId);
   });
 
-  const [eventSession, loadingSession, errorSession] = useDocumentData(
+  // -----------------------------------------------------------------------------------------------------
+  let originalSessionId = props.match.params.sessionId;
+  let sessionId = useMemo(() => (originalSessionId ? originalSessionId.toLowerCase() : null), [originalSessionId]);
+  const userId = useMemo(() => (userAuth ? userAuth.uid : null), [userAuth]);
+
+  const [lastEventSessionDBJson, setLastEventSessionDBJson] = useState("");
+  const [lastEventSessionDetailsDBJson, setLastEventSessionDetailsDBJson] = useState("");
+  const [lastParticipantsJoinedDB, setLastParticipantsJoinedDB] = useState("");
+  const [lastLiveGroupsDB, setLastLiveGroupsDB] = useState("");
+  const [lastUsersDB, setLastUsersDB] = useState("");
+
+  const eventSession = useSelector(getEventSession, shallowEqual);
+  const eventSessionDetails = useSelector(getEventSessionDetails, shallowEqual);
+  const participantsJoined = useSelector(getParticipantsJoined, shallowEqual);
+  const liveGroups = useSelector(getLiveGroups, shallowEqual);
+  const users = useSelector(getUsers, shallowEqual);
+
+  const user = useSelector(getUser, shallowEqual);
+  const userSession = useSelector(getUserSession, shallowEqual);
+  const userGroup = useSelector(getUserGroup, shallowEqual);
+
+  const isInConferenceRoom = useMemo(() => userSession && !userSession.inNetworkingRoom, [userSession]);
+
+  const [eventSessionDB, loadingSessionDB, errorSessionDB] = useDocumentData(
     firebase.firestore().collection("eventSessions").doc(sessionId)
   );
-  const [eventSessionDetails, loadingSessionDetails, errorSessionDetails] = useDocumentData(
+
+  const [eventSessionDetailsDB, loadingSessionDetailsDB, errorSessionDetailsDB] = useDocumentData(
     firebase.firestore().collection("eventSessionsDetails").doc(sessionId)
   );
-  const [
-    participantsJoined,
-    loadingParticipantsJoined,
-    errorParticipantsJoined,
-  ] = useCollectionData(
+
+  const [participantsJoinedDB, loadingParticipantsJoinedDB, errorParticipantsJoinedDB] = useCollectionData(
     firebase.firestore().collection("eventSessions").doc(sessionId).collection("participantsJoined"),
+    // .where("isOnline", "==", true),
     { idField: "id" }
   );
-  const [liveGroups, loadingLiveGroups, errorLiveGroups] = useCollectionData(
+
+  const [liveGroupsDB, loadingLiveGroupsDB, errorLiveGroupsDB] = useCollectionData(
     firebase.firestore().collection("eventSessions").doc(sessionId).collection("liveGroups"),
-    { idField: "idField" }
+    { idField: "id" }
   );
 
-  const [usersFirebase, loadingUsers, errorUsers] = useCollectionData(
+  const [usersDB, loadingUsersDB, errorUsersDB] = useCollectionData(
     firebase.firestore().collection("eventSessions").doc(sessionId).collection("participantsDetails")
   );
 
+  // --- userId ---
   useEffect(() => {
-    const currentEventSessionJson = JSON.stringify(eventSession);
-    const currentEventSessionDetailsJson = JSON.stringify(eventSessionDetails);
-    const currentParticipantsJoinedJson = JSON.stringify(participantsJoined);
-    const currentLiveGroupsJson = JSON.stringify(liveGroups);
-    const currentParticipantsDetailsJson = JSON.stringify(usersFirebase);
+    dispatch(updateUserId(userId));
+  }, [userId, dispatch]);
 
-    if (
-      currentEventSessionJson !== lastEventSessionJson ||
-      currentEventSessionDetailsJson !== lastEventSessionDetailsJson ||
-      currentParticipantsJoinedJson !== lastParticipantJoinedJson ||
-      currentParticipantsDetailsJson !== lastParticipantDetailsJson ||
-      currentLiveGroupsJson !== lastLiveGroupsJson
-    ) {
-      // console.lo({ participantsJoined });
-      // console.lo({ liveGroups });
+  // --- eventSessionDB ---
+  useEffect(() => {
+    const currentEventSessionDBJson = JSON.stringify(eventSessionDB);
 
-      // check if I am the last one in a group
-      // remove from the group
-      // If not in a group:
-      // check if I have been invited to a conversation
-      // if so, choose one of the invites and join it. Reject all the other ones
-
-      const participantsJoinedMap = participantsJoined
-        ? participantsJoined.reduce((result, participantJoinedObj) => {
-            let id = participantJoinedObj.id;
-            result[id] = participantJoinedObj;
-            return result;
-          }, {})
-        : {};
-
-      const liveGroupsMap = liveGroups
-        ? liveGroups.reduce((result, group) => {
-            let id = group.idField;
-            result[id] = group;
-            return result;
-          }, {})
-        : {};
-
-      if (eventSession && eventSessionDetails && usersFirebase) {
-        let tempComposedEventSession = {
-          ...eventSession,
-          ...eventSessionDetails,
-          participantsJoined: participantsJoinedMap,
-          liveGroups: liveGroupsMap,
-        };
-        setComposedEventSession(tempComposedEventSession);
-        if (!initCompleted && liveGroups && participantsJoined) {
-          if (!usersFirebase.find((item) => item.id === userId)) {
-            history.push(routes.EDIT_PROFILE(routes.EVENT_SESSION_LIVE(sessionId)));
-          }
-          // console.lo({ eventSession });
-          // console.lo("ON effect to set as available...");
-          setAsAvailable(tempComposedEventSession, userId);
-          initFirebasePresenceSync(tempComposedEventSession.id, userId);
-          setInitCompleted(true);
-        }
-      }
-      if (eventSession && eventSessionDetails && participantsJoined && liveGroups) {
-        // console.lo("....WILL UPDATE EVENT SESSION.....");
-        let userEventSession = participantsJoinedMap[userId];
-        //console.log({ userEventSession });
-        if (userEventSession) {
-          let { groupId } = userEventSession;
-          setIsInConferenceRoom(!userEventSession.inNetworkingRoom);
-
-          if (!groupId && currentGroupId) {
-            setCurrentGroup(null);
-            setCurrentGroupId(null);
-          } else {
-            let group = liveGroupsMap[groupId];
-
-            // has the group changed?
-            if (JSON.stringify(currentGroup) !== JSON.stringify(group)) {
-              let group = liveGroupsMap[groupId];
-              // if (!group) {
-              //   console.log("Was not able to find the group with the id " + groupId);
-              // }
-
-              // console.log("Group is different, will update it...");
-              // console.log({ currentGroup, group });
-              setCurrentGroup(group);
-              setCurrentGroupId(groupId);
-              // setLiveAt(eventSession.liveAt);
-            }
-          }
-        }
-      }
-
-      setLastEventSessionJson(currentEventSessionJson);
-      setLastEventSessionDetailsJson(currentEventSessionDetailsJson);
-      setLastLiveGroupsJson(currentLiveGroupsJson);
-      setLastParticipantJoinedJson(currentParticipantsJoinedJson);
-      setLastParticipantDetailsJson(currentParticipantsDetailsJson);
+    if (lastEventSessionDBJson !== currentEventSessionDBJson) {
+      dispatch(updateEventSession(eventSessionDB));
+      setLastEventSessionDBJson(currentEventSessionDBJson);
     }
-  }, [
-    eventSession,
-    eventSessionDetails,
-    participantsJoined,
-    liveGroups,
-    currentGroup,
-    currentGroupId,
-    history,
-    initCompleted,
-    lastEventSessionDetailsJson,
-    lastEventSessionJson,
-    lastLiveGroupsJson,
-    lastParticipantDetailsJson,
-    lastParticipantJoinedJson,
-    sessionId,
-    userId,
-    usersFirebase,
-  ]);
+  }, [eventSessionDB, lastEventSessionDBJson, dispatch]);
+
+  // --- eventSessionDetailsDB ---
+  useEffect(() => {
+    const currentEventSessionDetailsDBJson = JSON.stringify(eventSessionDetailsDB);
+
+    if (lastEventSessionDetailsDBJson !== currentEventSessionDetailsDBJson) {
+      dispatch(updateEventSessionDetails(eventSessionDetailsDB));
+      setLastEventSessionDetailsDBJson(currentEventSessionDetailsDBJson);
+    }
+  }, [eventSessionDetailsDB, lastEventSessionDetailsDBJson, dispatch]);
+
+  // --- participantsJoinedDB ---
+  useEffect(() => {
+    const currentParticipantsJoinedDB = JSON.stringify(participantsJoinedDB);
+
+    if (lastParticipantsJoinedDB !== currentParticipantsJoinedDB) {
+      dispatch(updateParticipantsJoined(participantsJoinedDB));
+      setLastParticipantsJoinedDB(currentParticipantsJoinedDB);
+    }
+  }, [participantsJoinedDB, lastParticipantsJoinedDB, dispatch]);
+
+  // --- liveGroupsDB ---
+  useEffect(() => {
+    const currentLiveGroupsDB = JSON.stringify(liveGroupsDB);
+
+    if (lastLiveGroupsDB !== currentLiveGroupsDB) {
+      dispatch(updateLiveGroups(liveGroupsDB));
+      setLastLiveGroupsDB(currentLiveGroupsDB);
+    }
+  }, [liveGroupsDB, lastLiveGroupsDB, dispatch]);
+
+  // --- usersDB ---
+  useEffect(() => {
+    const currentUsersDB = JSON.stringify(usersDB);
+
+    if (lastUsersDB !== currentUsersDB) {
+      dispatch(updateUsers(usersDB));
+      setLastUsersDB(currentUsersDB);
+    }
+  }, [usersDB, lastUsersDB, dispatch]);
+
+  // --- init ---
+  useEffect(() => {
+    if (!initCompleted && liveGroups && participantsJoined && users) {
+      debugger;
+      if (!user) {
+        history.push(routes.EDIT_PROFILE(routes.EVENT_SESSION_LIVE(sessionId)));
+      }
+      setAsAvailable(sessionId, userId, participantsJoined);
+      initFirebasePresenceSync(sessionId, userId);
+      setInitCompleted(true);
+    }
+  }, [initCompleted, liveGroups, participantsJoined, users, userId, sessionId, history, user]);
+
+  // -----------------------------------------------------------------------------------------------------
 
   const handleCreateConference = async () => {
     history.push(routes.CREATE_EVENT_SESSION());
   };
 
   const isLive = React.useMemo(() => {
-    if (!composedEventSession || !composedEventSession.eventBeginDate || !composedEventSession.eventOpens) {
+    if (!eventSessionDetails || !eventSessionDetails.eventBeginDate || !eventSessionDetails.eventOpens) {
       return true;
     }
-    const { eventBeginDate, eventOpens } = composedEventSession;
+    const { eventBeginDate, eventOpens } = eventSessionDetails;
     let openMinutes = eventOpens ? Number(eventOpens) : DEFAULT_EVENT_OPEN_MINUTES;
     let beginDate = moment(eventBeginDate.toDate());
 
     return beginDate.subtract(openMinutes, "minutes").isBefore(moment());
-  }, [composedEventSession]);
+  }, [eventSessionDetails]);
 
   useEffect(() => {
     if (!isLive) {
@@ -306,58 +291,47 @@ export default withRouter((props) => {
     }
   }, [isLive, history, sessionId]);
 
-  const users = React.useMemo(() => {
-    if (!usersFirebase) {
-      return {};
-    }
-    return usersFirebase.reduce((result, user) => {
-      result[user.id] = user;
-      return result;
-    }, {});
-  }, [usersFirebase]);
-
-  const myUser = React.useMemo(() => {
-    return users[userId];
-  }, [users, userId]);
-
-  if (loadingUsers || loadingSession || loadingSessionDetails || loadingParticipantsJoined || loadingLiveGroups) {
+  if (
+    loadingUsersDB ||
+    loadingSessionDB ||
+    loadingSessionDetailsDB ||
+    loadingParticipantsJoinedDB ||
+    loadingLiveGroupsDB
+  ) {
     return <p>Loading...</p>;
   }
-  if (errorUsers || errorSession || errorSessionDetails || errorParticipantsJoined || errorLiveGroups) {
-    console.error(errorUsers);
-    console.error(errorSession);
-    console.error(errorSessionDetails);
-    console.error(errorParticipantsJoined);
-    console.error(errorLiveGroups);
+  if (errorUsersDB || errorSessionDB || errorSessionDetailsDB || errorParticipantsJoinedDB || errorLiveGroupsDB) {
+    console.error(errorUsersDB);
+    console.error(errorSessionDB);
+    console.error(errorSessionDetailsDB);
+    console.error(errorParticipantsJoinedDB);
+    console.error(errorLiveGroupsDB);
     return <p>Error :(</p>;
   }
-  // console.log(users);
-  // console.log(composedEventSession);
-  // console.log(participantsJoined);
-  // console.log(liveGroups);
 
   const handleSetIsInConferenceRoom = (openConference) => {
+    debugger;
     if (openConference) {
-      if (currentGroupId) {
-        leaveCall(composedEventSession, userId);
+      if (userGroup) {
+        leaveCall(sessionId, userGroup, userId);
         if (jitsiApi) {
           jitsiApi.executeCommand("hangup");
           jitsiApi.dispose();
         }
       }
-      setIsInConferenceRoom(true);
-      updateInNetworkingRoom(composedEventSession, userId, false);
+      // setIsInConferenceRoom(true);
+      updateInNetworkingRoom(sessionId, userId, false);
     } else {
       if (jitsiApi) {
         jitsiApi.executeCommand("hangup");
         jitsiApi.dispose();
       }
-      setIsInConferenceRoom(false);
-      updateInNetworkingRoom(composedEventSession, userId, true);
+      // setIsInConferenceRoom(false);
+      updateInNetworkingRoom(sessionId, userId, true);
     }
   };
 
-  if (!composedEventSession) {
+  if (!eventSessionDetails) {
     return (
       <Page title={`Veertly | Event not found`}>
         <div
@@ -369,10 +343,10 @@ export default withRouter((props) => {
           <EventSessionTopbar
             isInConferenceRoom={isInConferenceRoom}
             setIsInConferenceRoom={handleSetIsInConferenceRoom}
-            isInNetworkingCall={currentGroupId !== null}
-            isNetworkingAvailable={false}
-            eventSession={eventSession}
-            myUser={myUser}
+            // isInNetworkingCall={currentGroupId !== null}
+            // isNetworkingAvailable={false}
+            // eventSession={eventSession}
+            // myUser={myUser}
           />
           <div>
             <br />
@@ -403,19 +377,19 @@ export default withRouter((props) => {
         [classes.shiftContent]: isDesktop,
       })}
     >
-      <Page title={`Veertly | ${composedEventSession.title}`}> </Page>
-      <EditProfileDialog user={user} eventSession={composedEventSession} />
-      <EventPageDialog eventSession={composedEventSession} />
-      <ShareEventDialog eventSession={composedEventSession} />
-      <FeedbackDialog eventSession={composedEventSession} myUser={myUser} />
+      <Page title={`Veertly | ${eventSessionDetails.title}`}> </Page>
+      <EditProfileDialog /* user={user} eventSession={composedEventSession}  */ />
+      <EventPageDialog /* eventSession={composedEventSession}  */ />
+      <ShareEventDialog /*  eventSession={composedEventSession}  */ />
+      <FeedbackDialog /* eventSession={composedEventSession} myUser={myUser}  */ />
 
       <EventSessionTopbar
         isInConferenceRoom={isInConferenceRoom}
         setIsInConferenceRoom={handleSetIsInConferenceRoom}
-        isInNetworkingCall={currentGroupId !== null}
-        isNetworkingAvailable={composedEventSession.isNetworkingAvailable}
-        eventSession={composedEventSession}
-        myUser={myUser}
+        // isInNetworkingCall={currentGroupId !== null}
+        // isNetworkingAvailable={composedEventSession.isNetworkingAvailable}
+        // eventSession={composedEventSession}
+        // myUser={myUser}
       />
       {isLive && (
         <React.Fragment>
@@ -426,13 +400,13 @@ export default withRouter((props) => {
                 onClose={handleSidebarClose}
                 open={shouldOpenSidebar}
                 variant={isDesktop ? "persistent" : "temporary"}
-                users={users}
-                eventSession={composedEventSession}
-                currentGroup={currentGroup}
-                user={user}
+                // users={users}
+                // eventSession={composedEventSession}
+                // currentGroup={currentGroup}
+                // user={user}
               />
               <div className={classes.mainPane} style={chatOpen ? { right: SIDE_PANE_WIDTH + chatWidth } : null}>
-                {!currentGroup && (
+                {!userGroup && (
                   <div className={classes.noCall}>
                     <Typography variant="h6" className={clsx(classes.blueText, classes.emptyMessage)}>
                       You are not in any <span className={classes.greenText}>conversation</span> yet,
@@ -442,11 +416,11 @@ export default withRouter((props) => {
                     </Typography>
                   </div>
                 )}
-                {currentGroup && (
+                {userGroup && (
                   <NetworkingRoomContainer
-                    currentGroup={currentGroup}
-                    user={user}
-                    eventSession={composedEventSession}
+                    // currentGroup={currentGroup}
+                    // user={user}
+                    // eventSession={composedEventSession}
                     jitsiApi={jitsiApi}
                     setJitsiApi={setJitsiApi}
                   />
@@ -461,18 +435,18 @@ export default withRouter((props) => {
                 onClose={handleSidebarClose}
                 open={shouldOpenSidebar}
                 variant={isDesktop ? "persistent" : "temporary"}
-                users={users}
-                eventSession={composedEventSession}
+                // users={users}
+                // eventSession={composedEventSession}
                 // participantsJoined={participantsJoined}
                 // liveGroups={liveGroups}
-                user={user}
+                // user={user}
               />
 
               <div className={classes.mainPane} style={chatOpen ? { right: SIDE_PANE_WIDTH + chatWidth } : null}>
-                <Announcements eventSession={composedEventSession} />
+                <Announcements /* eventSession={composedEventSession} */ />
                 <ConferenceRoomContainer
-                  user={user}
-                  eventSession={composedEventSession}
+                  // user={user}
+                  // eventSession={composedEventSession}
                   // participantsJoined={participantsJoined}
                   // liveGroups={liveGroups}
                   jitsiApi={jitsiApi}
@@ -482,7 +456,7 @@ export default withRouter((props) => {
             </React.Fragment>
           )}
           <div className={classes.sideMenu}>
-            <SideMenuIcons eventSession={composedEventSession} user={user} />
+            <SideMenuIcons /* eventSession={composedEventSession} user={user}  */ />
           </div>
           {/* <div
             className={clsx(classes.chatPane, {
@@ -490,7 +464,9 @@ export default withRouter((props) => {
             })}
           >
             {`chat open: ${chatOpen ? "true" : "false"}`} */}
-          <ChatPane eventSession={composedEventSession} users={users} user={user} onResize={(w) => setChatWidth(w)} />
+          <ChatPane
+            /* eventSession={composedEventSession} users={users} user={user} */ onResize={(w) => setChatWidth(w)}
+          />
           {/* </div> */}
         </React.Fragment>
       )}

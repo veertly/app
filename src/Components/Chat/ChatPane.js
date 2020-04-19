@@ -2,7 +2,6 @@ import React from "react";
 import clsx from "clsx";
 import { makeStyles /* , useTheme */ } from "@material-ui/core/styles";
 import { isChatOpen, closeChat } from "../../Redux/dialogs";
-import { useDispatch, useSelector } from "react-redux";
 // import useIsMounted from "react-is-mounted-hook";
 // import useEventListener from "../../Hooks/useEventListener";
 import { SIDE_PANE_WIDTH } from "../../Containers/EventSession/EventSessionContainer";
@@ -14,6 +13,27 @@ import firebase from "../../Modules/firebaseApp";
 import { sendChatMessage } from "../../Modules/chatMessagesOperations";
 import { Typography, Paper, IconButton, Tooltip } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
+
+import { useDispatch, useSelector, shallowEqual } from "react-redux";
+import {
+  getEventSession,
+  updateEventSession,
+  getEventSessionDetails,
+  updateEventSessionDetails,
+  updateParticipantsJoined,
+  updateLiveGroups,
+  updateUsers,
+  getUsers,
+  getParticipantsJoined,
+  getLiveGroups,
+  updateUserId,
+  getUser,
+  getUserSession,
+  getUserGroup,
+  isInNetworkingRoom,
+  getSessionId,
+  getUserId,
+} from "../../Redux/eventSession";
 
 const minWidth = 150;
 // const maxWidth = 800;
@@ -82,7 +102,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ChatPane(props) {
-  const { eventSession, user, users /* onResize */ } = props;
   const classes = useStyles();
   // const theme = useTheme();
   const dispatch = useDispatch();
@@ -129,12 +148,18 @@ export default function ChatPane(props) {
 
   // useEventListener("mousemove", handleMousemove);
   // useEventListener("mouseup", handleMouseup);
+  const sessionId = useSelector(getSessionId);
+  const users = useSelector(getUsers, shallowEqual);
+  const userId = useSelector(getUserId);
+  const user = useSelector(getUser, shallowEqual);
+  const userSession = useSelector(getUserSession, shallowEqual);
+  const onConferenceRoom = !useSelector(isInNetworkingRoom);
 
   const [messagesFirebase /* , loadingMessages, errorMessages */] = useCollectionData(
     firebase
       .firestore()
       .collection("eventSessionsChatMessages")
-      .doc(eventSession.id)
+      .doc(sessionId)
       .collection(CHAT_GLOBAL_NS)
       .orderBy("sentDate", "desc")
       .limit(LIMIT_NUM_MESSAGES_QUERY)
@@ -144,8 +169,8 @@ export default function ChatPane(props) {
     if (message && message.trim() !== "") {
       let timestamp = new Date().getTime();
 
-      let messageId = "" + timestamp + "-" + user.uid;
-      await sendChatMessage(eventSession, user.uid, CHAT_GLOBAL_NS, messageId, message);
+      let messageId = "" + timestamp + "-" + userId;
+      await sendChatMessage(sessionId, user.id, CHAT_GLOBAL_NS, messageId, message);
     }
   };
   // React.useEffect(() => {
@@ -173,7 +198,7 @@ export default function ChatPane(props) {
         />
         <Paper className={classes.toolbar} elevation={1}>
           <Typography variant="button" className={classes.title} align="center" color="primary">
-            CHAT
+            GLOBAL CHAT
           </Typography>
           <div style={{ flexGrow: 1 }}></div>
           <Tooltip title="Close chat">
@@ -189,7 +214,7 @@ export default function ChatPane(props) {
           </Tooltip>
         </Paper>
         <div className={classes.messagesPane}>
-          <ChatMessagesPane eventSession={eventSession} messages={messagesFirebase} users={users} user={user} />
+          <ChatMessagesPane messages={messagesFirebase} users={users} />
         </div>
         <div className={classes.sendMessagePane}>
           <SendMessagePane onMessageSendClicked={handleMessageSend} />

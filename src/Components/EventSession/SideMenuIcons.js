@@ -29,6 +29,7 @@ import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import { logout } from "../../Modules/userOperations";
 import { useHistory } from "react-router-dom";
 import FeedbackIcon from "@material-ui/icons/GraphicEq";
+import { getSessionId } from "../../Redux/eventSession";
 
 // import { Badge } from "@material-ui/core";
 const useStyles = makeStyles((theme) => ({
@@ -51,6 +52,7 @@ export default function SideMenuIcons(props) {
   // const theme = useTheme();
   const dispatch = useDispatch();
   const chatOpen = useSelector(isChatOpen);
+  const sessionId = useSelector(getSessionId);
 
   const isOwner = React.useMemo(() => eventSession && user && eventSession.owner === user.uid, [eventSession, user]);
 
@@ -94,7 +96,7 @@ export default function SideMenuIcons(props) {
             <Tooltip
               title="Edit event"
               onClick={() => {
-                window.open(window.open(routes.EDIT_EVENT_SESSION(eventSession.id), "_blank"));
+                window.open(window.open(routes.EDIT_EVENT_SESSION(sessionId), "_blank"));
               }}
             >
               <ListItem button>
@@ -181,7 +183,7 @@ export default function SideMenuIcons(props) {
             button
             onClick={() => {
               logout();
-              history.push(routes.EVENT_SESSION(eventSession.id));
+              history.push(routes.EVENT_SESSION(sessionId));
             }}
           >
             <ListItemIcon>

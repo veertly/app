@@ -1,7 +1,6 @@
 import React from "react";
 import Dialog from "@material-ui/core/Dialog";
 import { makeStyles } from "@material-ui/core/styles";
-import { useDispatch, useSelector } from "react-redux";
 import { closeShare, isShareOpen } from "../../Redux/dialogs";
 import { getUrl } from "../../Modules/environments";
 import routes from "../../Config/routes";
@@ -10,6 +9,26 @@ import EventShareIcons from "./EventShareIcons";
 import CopyIcon from "@material-ui/icons/FileCopy";
 import { useSnackbar } from "material-ui-snackbar-provider";
 import { CopyToClipboard } from "react-copy-to-clipboard";
+import { useDispatch, useSelector, shallowEqual } from "react-redux";
+import {
+  getEventSession,
+  updateEventSession,
+  getEventSessionDetails,
+  updateEventSessionDetails,
+  updateParticipantsJoined,
+  updateLiveGroups,
+  updateUsers,
+  getUsers,
+  getParticipantsJoined,
+  getLiveGroups,
+  updateUserId,
+  getUser,
+  getUserSession,
+  getUserGroup,
+  isInNetworkingRoom,
+  getSessionId,
+  getUserId,
+} from "../../Redux/eventSession";
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -21,29 +40,31 @@ const useStyles = makeStyles((theme) => ({
 export default function (props) {
   const classes = useStyles();
 
-  const { eventSession } = props;
   const open = useSelector(isShareOpen);
 
   const dispatch = useDispatch();
   const snackbar = useSnackbar();
+
+  const eventSessionDetails = useSelector(getEventSessionDetails, shallowEqual);
+  const sessionId = useSelector(getSessionId);
 
   const handleClose = () => {
     dispatch(closeShare());
   };
 
   const shareText = React.useMemo(
-    () => `Join me in the virtual event ${eventSession.title} that is LIVE NOW on @veertly `,
-    [eventSession.title]
+    () => `Join me in the virtual event ${eventSessionDetails.title} that is LIVE NOW on @veertly `,
+    [eventSessionDetails.title]
   );
 
-  const link = React.useMemo(() => getUrl() + routes.EVENT_SESSION(eventSession.id), [eventSession.id]);
+  const link = React.useMemo(() => getUrl() + routes.EVENT_SESSION(sessionId), [sessionId]);
 
   return (
     <div>
       <Dialog open={open} onClose={handleClose} scroll={"body"}>
         <div className={classes.content}>
           <Typography variant="h5" color="primary" align="center">
-            {eventSession.title}
+            {eventSessionDetails.title}
           </Typography>
           <div style={{ display: "flex", justifyContent: "center", marginTop: 16, marginBottom: 8 }}>
             <Typography align="center">
@@ -57,8 +78,11 @@ export default function (props) {
               </CopyToClipboard>
             </Tooltip>
           </div>
-          {eventSession && (
-            <EventShareIcons url={getUrl() + routes.EVENT_SESSION(eventSession.id)} shareText={shareText} />
+          {eventSessionDetails && (
+            <EventShareIcons
+              url={getUrl() + routes.EVENT_SESSION(eventSessionDetails.originalId)}
+              shareText={shareText}
+            />
           )}
         </div>
       </Dialog>

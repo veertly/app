@@ -5,6 +5,26 @@ import { leaveCall } from "../../Modules/eventSessionOperations";
 import NoVideoImage from "../../Assets/illustrations/undraw_video_call_kxyp.svg";
 import { Typography } from "@material-ui/core";
 import { ANNOUNCEMENT_HEIGHT } from "../../Components/EventSession/Announcements";
+import { useDispatch, useSelector, shallowEqual } from "react-redux";
+import {
+  getEventSession,
+  updateEventSession,
+  getEventSessionDetails,
+  updateEventSessionDetails,
+  updateParticipantsJoined,
+  updateLiveGroups,
+  updateUsers,
+  getUsers,
+  getParticipantsJoined,
+  getLiveGroups,
+  updateUserId,
+  getUser,
+  getUserSession,
+  getUserGroup,
+  isInNetworkingRoom,
+  getSessionId,
+  getUserId,
+} from "../../Redux/eventSession";
 
 const useStyles = makeStyles((theme) => ({
   videoContainer: {
@@ -31,25 +51,34 @@ const useStyles = makeStyles((theme) => ({
 
 export default (props) => {
   const classes = useStyles();
-  const { user, eventSession, jitsiApi, setJitsiApi } = props;
+  const { jitsiApi, setJitsiApi } = props;
   const [loaded, error] = useScript("https://meet.jit.si/external_api.js");
   const [lastRoomLoaded, setLastRoomLoaded] = useState(null);
 
+  const userId = useSelector(getUserId);
+  const user = useSelector(getUser);
+  const userGroup = useSelector(getUserGroup, shallowEqual);
+  const sessionId = useSelector(getSessionId);
+  const eventSessionDetails = useSelector(getEventSessionDetails, shallowEqual);
+
   useEffect(() => {
-    window.analytics.page("ConferenceRoom/" + eventSession.id);
-  }, [eventSession.id]);
+    window.analytics.page("ConferenceRoom/" + sessionId);
+  }, [sessionId]);
 
   const handleCallEnded = React.useCallback(() => {
-    leaveCall(eventSession, user.uid);
-  }, [eventSession, user.uid]);
+    leaveCall(sessionId, userGroup, userId);
+  }, [sessionId, userGroup, userId]);
 
   useEffect(() => {
+    if (!user) {
+      return;
+    }
     let prefix = process.env.REACT_APP_JITSI_ROOM_PREFIX;
     let prefixStr = prefix !== undefined ? `-${prefix}-` : "";
 
-    const roomName = "veertly" + prefixStr + "-" + eventSession.id;
+    const roomName = "veertly" + prefixStr + "-" + sessionId;
 
-    if (eventSession.conferenceVideoType === "JITSI" && loaded && lastRoomLoaded !== roomName) {
+    if (eventSessionDetails.conferenceVideoType === "JITSI" && loaded && lastRoomLoaded !== roomName) {
       // dispose existing jitsi
       if (jitsiApi) {
         jitsiApi.executeCommand("hangup");
@@ -73,9 +102,9 @@ export default (props) => {
 
       const api = new JitsiMeetExternalAPI(domain, options);
       /*eslint-enable no-undef*/
-      api.executeCommand("displayName", user.displayName);
-      if (user.photoURL) {
-        api.executeCommand("avatarUrl", user.photoURL);
+      api.executeCommand("displayName", user.firstName + " " + user.lastName);
+      if (user.avatarUrl) {
+        api.executeCommand("avatarUrl", user.avatarUrl);
       }
       api.addEventListener("videoConferenceLeft", (event) => {
         // console.log("videoConferenceLeft: ", event);
@@ -96,24 +125,15 @@ export default (props) => {
       //   jitsiApi.dispose();
       // }
     };
-  }, [
-    loaded,
-    eventSession.conferenceVideoType,
-    eventSession.id,
-    handleCallEnded,
-    jitsiApi,
-    lastRoomLoaded,
-    setJitsiApi,
-    user.displayName,
-    user.photoURL,
-  ]);
+  }, [loaded, eventSessionDetails, user, handleCallEnded, jitsiApi, lastRoomLoaded, setJitsiApi]);
+
   const hasAnnouncement = React.useMemo(
     () =>
-      eventSession &&
-      eventSession.announcements &&
-      eventSession.announcements.conference &&
-      eventSession.announcements.conference.trim() !== "",
-    [eventSession]
+      eventSessionDetails &&
+      eventSessionDetails.announcements &&
+      eventSessionDetails.announcements.conference &&
+      eventSessionDetails.announcements.conference.trim() !== "",
+    [eventSessionDetails]
   );
   if (error) {
     console.log(error);
@@ -135,9 +155,9 @@ export default (props) => {
         </div>
       );
     };
-    switch (eventSession.conferenceVideoType) {
+    switch (eventSessionDetails.conferenceVideoType) {
       case "YOUTUBE":
-        let videoId = eventSession.conferenceRoomYoutubeVideoId;
+        let videoId = eventSessionDetails.conferenceRoomYoutubeVideoId;
         return getYoutubeFrame(videoId);
 
       case "JITSI":

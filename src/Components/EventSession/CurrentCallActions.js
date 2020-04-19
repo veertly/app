@@ -9,6 +9,9 @@ import LeaveCallIcon from "../../Assets/Icons/LeaveCall";
 import { leaveCall } from "../../Modules/eventSessionOperations";
 import LeaveCallDialog from "./LeaveCallDialog";
 
+import { useSelector, shallowEqual } from "react-redux";
+import { getSessionId, getUsers, getUserGroup, getUserId } from "../../Redux/eventSession";
+
 momentDurationFormatSetup(moment);
 
 const useStyles = makeStyles((theme) => ({
@@ -37,20 +40,23 @@ const useStyles = makeStyles((theme) => ({
 export default function (props) {
   const classes = useStyles();
 
-  const { eventSession, currentGroup, users, user } = props;
-  const userId = user.uid;
   const [elapsedTime, setElapsedTime] = useState(0);
   const [participants, setParticipants] = useState([]);
   const [leaveCallOpen, setLeaveCallOpen] = useState(false);
 
-  if (!currentGroup) {
+  const users = useSelector(getUsers, shallowEqual);
+  const userId = useSelector(getUserId);
+  const userGroup = useSelector(getUserGroup, shallowEqual);
+  const sessionId = useSelector(getSessionId);
+
+  if (!userGroup) {
     return null;
   }
 
   useEffect(() => {
     var timerID = setInterval(() => {
       const currentTimestamp = new Date().getTime();
-      const joinedTimestamp = currentGroup.participants[userId].joinedTimestamp.toDate().getTime();
+      const joinedTimestamp = userGroup.participants[userId].joinedTimestamp.toDate().getTime();
       setElapsedTime(currentTimestamp - joinedTimestamp);
     }, 1000);
 
@@ -61,9 +67,9 @@ export default function (props) {
 
   useEffect(() => {
     // calculate list participants online
-    const participants = Object.keys(currentGroup.participants).reduce((result, participantId) => {
+    const participants = Object.keys(userGroup.participants).reduce((result, participantId) => {
       let participant = users[participantId];
-      let participantSession = currentGroup.participants[participantId];
+      let participantSession = userGroup.participants[participantId];
 
       // console.log({ participantSession, participant });
 
@@ -77,7 +83,7 @@ export default function (props) {
 
     // console.log({ participants });
     setParticipants(participants);
-  }, [currentGroup, users]);
+  }, [userGroup, users]);
 
   const showElapsedTime = () => {
     let elapsedMoment = moment.duration(elapsedTime, "milliseconds");
@@ -85,7 +91,7 @@ export default function (props) {
   };
 
   const handleLeaveCall = () => {
-    leaveCall(eventSession, userId);
+    leaveCall(sessionId, userGroup, userId);
   };
   return (
     <div className={classes.groupContainer}>

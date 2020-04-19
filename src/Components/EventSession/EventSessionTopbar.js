@@ -20,6 +20,8 @@ import { logout } from "../../Modules/userOperations";
 import routes from "../../Config/routes";
 // import DesktopMacIcon from "@material-ui/icons/DesktopMac";
 // import ConversationsIcon from "../../Assets/Icons/Conversations";
+import { useSelector, shallowEqual } from "react-redux";
+import { getSessionId, getUser, getUserGroup, getUserId, getEventSessionDetails } from "../../Redux/eventSession";
 
 // import routes from "../../Config/routes";
 const useStyles = makeStyles((theme) => ({
@@ -109,15 +111,9 @@ const RoomButton = ({ onClick, disabled, isCurrentRoom, children, icon }) => {
     </Button>
   );
 };
+
 export default withRouter((props) => {
-  const {
-    isInConferenceRoom,
-    setIsInConferenceRoom,
-    isInNetworkingCall,
-    isNetworkingAvailable,
-    eventSession,
-    myUser,
-  } = props;
+  const { isInConferenceRoom, setIsInConferenceRoom } = props;
   let [goToNetworkingDialog, setGoToNetworkingDialog] = useState(false);
   let [goToConferenceDialog, setGoToConferenceDialog] = useState(false);
   const theme = useTheme();
@@ -129,6 +125,14 @@ export default withRouter((props) => {
   const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
   const openMenu = Boolean(menuAnchorEl);
 
+  const user = useSelector(getUser, shallowEqual);
+  const userId = useSelector(getUserId);
+  const userGroup = useSelector(getUserGroup, shallowEqual);
+  const sessionId = useSelector(getSessionId);
+  const eventSessionDetails = useSelector(getEventSessionDetails, shallowEqual);
+
+  // isInNetworkingCall,
+  //   isNetworkingAvailable,
   function handleMenuClose() {
     setMenuAnchorEl(null);
   }
@@ -138,16 +142,15 @@ export default withRouter((props) => {
   }
 
   const handleLogout = () => {
-    let sessionId = eventSession ? eventSession.id : null;
     logout(sessionId);
     handleMenuClose();
-    if (eventSession) {
-      history.push(routes.EVENT_SESSION(eventSession.id));
+    if (sessionId) {
+      history.push(routes.EVENT_SESSION(sessionId));
     }
   };
 
   const handleConferenceRoomClick = () => {
-    if (isInNetworkingCall) {
+    if (userGroup) {
       setGoToConferenceDialog(true);
     } else {
       setIsInConferenceRoom(true);
@@ -163,7 +166,7 @@ export default withRouter((props) => {
       <AppBar className={clsx(classes.root)}>
         <Toolbar style={{ position: "relative" }}>
           <img alt="Logo" src={VeertlyLogo} className={classes.logo} />
-          {!isMobile && eventSession && (
+          {!isMobile && eventSessionDetails && (
             <div className={classes.roomButtonsContainer}>
               <RoomButton
                 isCurrentRoom={isInConferenceRoom}
@@ -175,7 +178,7 @@ export default withRouter((props) => {
               <RoomButton
                 isCurrentRoom={!isInConferenceRoom}
                 onClick={handleNetworkingRoomClick}
-                disabled={!isNetworkingAvailable}
+                disabled={!eventSessionDetails.isNetworkingAvailable}
                 // icon={<ConversationsIcon />}
               >
                 Networking Area
@@ -184,16 +187,16 @@ export default withRouter((props) => {
           )}
           {/* </RouterLink> */}
           <div className={classes.flexGrow}>
-            {!isMobile && eventSession && (
+            {!isMobile && eventSessionDetails && (
               // <div className={classes.title}>
               <Typography variant="h5" align="left" style={{ fontWeight: "lighter" }} className={classes.title}>
-                {eventSession.title}
+                {eventSessionDetails.title}
               </Typography>
             )}
           </div>
           <div className={classes.avatarContainer}>
             {/* <AvatarLogin eventSession={eventSession} /> */}
-            <UserAvatar user={myUser} onClick={handleMenu} />
+            <UserAvatar user={user} onClick={handleMenu} />
             <Menu
               id="menu-appbar"
               anchorEl={menuAnchorEl}

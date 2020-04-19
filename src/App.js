@@ -1,4 +1,4 @@
-import React, { useReducer } from "react";
+import React from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import "semantic-ui-css/semantic.min.css";
 // import "react-datepicker/dist/react-datepicker.css";

@@ -7,6 +7,8 @@ import ConversationsIcon from "../../Assets/Icons/Conversations";
 import ConversationsTab from "./ConversationsTab";
 import AvailableTab from "./AvailableTab";
 import CurrentCallActions from "./CurrentCallActions";
+import { useSelector, shallowEqual } from "react-redux";
+import { getSessionId, getUsers, getUserGroup, getUserId } from "../../Redux/eventSession";
 
 const CALL_SECTION_HEIGHT = 110;
 
@@ -44,7 +46,9 @@ const useStyles = makeStyles((theme) => ({
 export default function (props) {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
-  const { users, eventSession, currentGroup, user } = props;
+  // const { users, eventSession, currentGroup, user } = props;
+
+  const userGroup = useSelector(getUserGroup, shallowEqual);
 
   function handleChange(event, newValue) {
     setValue(newValue);
@@ -63,13 +67,13 @@ export default function (props) {
         <Tab icon={<AvailableParticipantsIcon />} label="ATTENDEES" className={classes.tab} />
         <Tab icon={<ConversationsIcon />} label="CONVERSATIONS" className={classes.tab} />
       </Tabs>
-      <div className={classes.tabContent} style={{ bottom: currentGroup ? CALL_SECTION_HEIGHT : 0 }}>
-        {value === 0 && <AvailableTab users={users} eventSession={eventSession} user={user} />}
-        {value === 1 && <ConversationsTab users={users} eventSession={eventSession} user={user} />}
+      <div className={classes.tabContent} style={{ bottom: userGroup ? CALL_SECTION_HEIGHT : 0 }}>
+        {value === 0 && <AvailableTab />}
+        {value === 1 && <ConversationsTab />}
       </div>
-      {currentGroup && (
+      {userGroup && (
         <div className={classes.currentCallContainer}>
-          <CurrentCallActions currentGroup={currentGroup} users={users} user={user} eventSession={eventSession} />
+          <CurrentCallActions />
         </div>
       )}
     </div>
