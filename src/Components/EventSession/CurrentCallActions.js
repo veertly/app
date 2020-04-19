@@ -73,10 +73,9 @@ export default function (props) {
 
       // console.log({ participantSession, participant });
 
-      if (participantSession.leftTimestamp === null) {
+      if (participant && participantSession.leftTimestamp === null) {
         result.push(participant);
       }
-
       // console.log({ result });
       return result;
     }, []);

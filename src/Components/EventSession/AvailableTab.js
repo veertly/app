@@ -112,10 +112,9 @@ export default function (props) {
 
   const users = useSelector(getUsers, shallowEqual);
   const participantsJoined = useSelector(getParticipantsJoined, shallowEqual);
-  // const user = useSelector(getUser, shallowEqual);
   const userSession = useSelector(getUserSession, shallowEqual);
   const onConferenceRoom = !useSelector(isInNetworkingRoom);
-  const myUserId = !useSelector(getUserId);
+  const myUserId = useSelector(getUserId);
 
   const [filters, setFilters] = React.useState({});
 
@@ -125,19 +124,9 @@ export default function (props) {
         let participant = users[userId];
 
         let sessionParticipant = participantsJoined[userId];
-        // console.log({ sessionParticipant });
         if (!participant) {
-          // console.log(users);
-          // console.error("Couldn't find participant for user: '" + userId + "'");
           return false;
         }
-        // if (
-        //   // (onConferenceRoom && sessionParticipant.inNetworkingRoom) ||
-        //   (!onConferenceRoom && !sessionParticipant.inNetworkingRoom) ||
-        //   (!onConferenceRoom && sessionParticipant.groupId)
-        // ) {
-        //   return false;
-        // }
 
         if (!sessionParticipant.isOnline) {
           return false;
@@ -213,15 +202,7 @@ export default function (props) {
         // onConferenceRoom={onConferenceRoom}
         // showJoinButton={showJoinButton}
       />
-      {/* <JoinConversationDialog
-        open={joinConversationDialog}
-        setOpen={setJoinConversationDialog}
-        group={selectedGroup}
-        groupId={selectedGroupId}
-        eventSession={eventSession}
-        user={user}
-        onConferenceRoom={onConferenceRoom}
-      /> */}
+
       {!onConferenceRoom && (
         <div className={classes.buttonContainer}>
           <Button
@@ -265,10 +246,12 @@ export default function (props) {
             {participant.lastName.charAt(0).toUpperCase()}
           </Avatar>
         );
-
-        let isInConversation = userSession && userSession.groupId !== undefined && userSession.groupId !== null;
-        let isInConferenceRoom = !isInConversation && onConferenceRoom;
-        let isAvailable = !isInConversation && !onConferenceRoom;
+        let participantSession = participantsJoined[userId];
+        let isInConversation =
+          participantSession && participantSession.groupId !== undefined && participantSession.groupId !== null;
+        let isInConferenceRoom = !isInConversation && !participantSession.inNetworkingRoom;
+        let isAvailable = !isInConversation && participantSession.inNetworkingRoom;
+        console.log({ userId, isInConversation, isInConferenceRoom, isAvailable, userSession });
 
         return (
           <div

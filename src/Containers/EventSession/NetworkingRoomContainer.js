@@ -3,6 +3,8 @@ import useScript from "../../Hooks/useScript";
 import { makeStyles } from "@material-ui/core/styles";
 import { leaveCall } from "../../Modules/eventSessionOperations";
 
+import { useSelector, shallowEqual } from "react-redux";
+import { getUser, getUserGroup, getSessionId, getUserId } from "../../Redux/eventSession";
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
@@ -12,20 +14,25 @@ const useStyles = makeStyles((theme) => ({
 
 export default (props) => {
   const classes = useStyles();
-  const { currentGroup, user, eventSession, jitsiApi, setJitsiApi } = props;
+  const { /* currentGroup, user, eventSession, */ jitsiApi, setJitsiApi } = props;
   const [loaded, error] = useScript("https://meet.jit.si/external_api.js");
   const [lastRoomLoaded, setLastRoomLoaded] = useState(null);
 
+  const userId = useSelector(getUserId);
+  const user = useSelector(getUser);
+  const currentGroup = useSelector(getUserGroup, shallowEqual);
+  const sessionId = useSelector(getSessionId);
+
   useEffect(() => {
-    window.analytics.page("NetworkingRoom/" + eventSession.id);
+    window.analytics.page("NetworkingRoom/" + sessionId);
     window.analytics.track("Entered Networking Room", {
-      eventSessionId: eventSession.id,
+      eventSessionId: sessionId,
     });
-  }, [eventSession.id]);
+  }, [sessionId]);
 
   const handleCallEnded = React.useCallback(() => {
-    leaveCall(eventSession, user.uid);
-  }, [eventSession, user.uid]);
+    leaveCall(sessionId, currentGroup, userId);
+  }, [sessionId, currentGroup, userId]);
 
   useEffect(() => {
     let prefix = process.env.REACT_APP_JITSI_ROOM_PREFIX;
@@ -54,14 +61,14 @@ export default (props) => {
       /*eslint-disable no-undef*/
       const api = new JitsiMeetExternalAPI(domain, options);
       /*eslint-enable no-undef*/
-      api.executeCommand("displayName", user.displayName);
-      if (user.photoURL) {
-        api.executeCommand("avatarUrl", user.photoURL);
+      api.executeCommand("displayName", user.firstName + " " + user.lastName);
+      if (user.avatarUrl) {
+        api.executeCommand("avatarUrl", user.avatarUrl);
       }
       api.addEventListener("videoConferenceLeft", (event) => {
         // console.log("videoConferenceLeft: ", event);
         window.analytics.track("[Jitsi] Left Call (videoConferenceLeft)", {
-          eventSessionId: eventSession.id,
+          eventSessionId: sessionId,
           roomName,
         });
         handleCallEnded();
@@ -69,13 +76,13 @@ export default (props) => {
       api.addEventListener("readyToClose", (event) => {
         // console.log("readyToClose: ", event);
         window.analytics.track("[Jitsi] Left Call (readyToClose)", {
-          eventSessionId: eventSession.id,
+          eventSessionId: sessionId,
           roomName,
         });
         handleCallEnded();
       });
       window.analytics.track("[Jitsi] Joined Call", {
-        eventSessionId: eventSession.id,
+        eventSessionId: sessionId,
         roomName,
       });
       setLastRoomLoaded(roomName);
@@ -89,17 +96,7 @@ export default (props) => {
       //   jitsiApi.dispose();
       // }
     };
-  }, [
-    loaded,
-    currentGroup,
-    eventSession.id,
-    handleCallEnded,
-    jitsiApi,
-    lastRoomLoaded,
-    setJitsiApi,
-    user.displayName,
-    user.photoURL,
-  ]);
+  }, [loaded, currentGroup, sessionId, handleCallEnded, jitsiApi, lastRoomLoaded, setJitsiApi, user]);
 
   if (error) {
     console.log(error);

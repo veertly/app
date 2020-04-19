@@ -112,7 +112,7 @@ export default function (props) {
             liveParticipants.filter((participant) => participant.leftTimestamp !== null).length > 0;
           let isLast = index === numGroups - 1;
 
-          let isMyGroup = liveParticipants.includes(user.uid);
+          let isMyGroup = liveParticipants.includes(user.id);
 
           if (!hasLiveParticipants) {
             return null;

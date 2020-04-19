@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default withRouter((props) => {
-  const [user, initialising /* error */] = useAuthState(firebase.auth());
+  const [userAuth, initialising /* error */] = useAuthState(firebase.auth());
 
   const classes = useStyles();
   // const queryValues = queryString.parse(props.location.search);
@@ -61,7 +61,7 @@ export default withRouter((props) => {
     // signInSuccessUrl: callbackUrl,
     callbacks: {
       signInSuccessWithAuthResult: async function (authResult, redirectUrl) {
-        var user = authResult.user;
+        var loggedInUserAuth = authResult.user;
         // var credential = authResult.credential;
         var isNewUser = authResult.additionalUserInfo.isNewUser;
         // var providerId = authResult.additionalUserInfo.providerId;
@@ -70,14 +70,14 @@ export default withRouter((props) => {
         // Return type determines whether we continue the redirect automatically
         // or whether we leave that to developer to handle.
 
-        window.analytics.identify(user.uid, {});
+        window.analytics.identify(loggedInUserAuth.uid, {});
         window.analytics.track("Logged In");
 
         if (isNewUser) {
-          registerNewUser(user);
+          registerNewUser(loggedInUserAuth);
         }
 
-        checkAndRedirect(user.uid);
+        checkAndRedirect(loggedInUserAuth.uid);
 
         return false;
       },
@@ -96,13 +96,13 @@ export default withRouter((props) => {
     return null;
   }
 
-  if (user) {
+  if (userAuth) {
     // if (user.isAnonymous) {
     //   props.history.push(routes.EDIT_PROFILE(callbackUrl));
     // } else {
     //   props.history.push(callbackUrl);
     // }
-    checkAndRedirect(user.uid);
+    checkAndRedirect(userAuth.uid);
   }
 
   const loginAnonymously = async () => {
@@ -118,19 +118,19 @@ export default withRouter((props) => {
       });
   };
 
-  firebase.auth().onAuthStateChanged(function (user) {
-    if (user) {
-      // User is signed in.
-      // var isAnonymous = user.isAnonymous;
-      // var uid = user.uid;
-      // ...
-      // console.log({ user });
-    } else {
-      // User is signed out.
-      // ...
-    }
-    // ...
-  });
+  // firebase.auth().onAuthStateChanged(function (user) {
+  //   if (user) {
+  //     // User is signed in.
+  //     // var isAnonymous = user.isAnonymous;
+  //     // var uid = user.uid;
+  //     // ...
+  //     // console.log({ user });
+  //   } else {
+  //     // User is signed out.
+  //     // ...
+  //   }
+  //   // ...
+  // });
 
   return (
     <CenteredLayout>
