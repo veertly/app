@@ -17,7 +17,7 @@ export default function (props) {
   const classes = useStyles();
 
   const { eventSession, myUser = { firstName: "", lastName: ""} } = props;
-  console.log(myUser);
+
   const open = useSelector(isFeedbackOpen);
 
   const dispatch = useDispatch();
