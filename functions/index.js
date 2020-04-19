@@ -3,14 +3,15 @@ const admin = require("firebase-admin");
 admin.initializeApp();
 
 const firestore = admin.firestore();
+const moment = require("moment");
 
 const sendgrid = require("./modules/sendgrid");
 
 const leaveCall = async (sessionId, myUserId) => {
   var eventSessionRef = firestore.collection("eventSessions").doc(sessionId);
-  var eventSessionSnapshot = await eventSessionRef.get();
+  // var eventSessionSnapshot = await eventSessionRef.get();
 
-  let eventSession = eventSessionSnapshot.data();
+  // let eventSession = eventSessionSnapshot.data();
 
   var participantsJoinedRef = await firestore
     .collection("eventSessions")
@@ -34,6 +35,7 @@ const leaveCall = async (sessionId, myUserId) => {
 
   let liveGroupsSnapshot = await liveGroupsRef.get();
   let liveGroups = {};
+
   await liveGroupsSnapshot.forEach(function (doc) {
     liveGroups[doc.id] = doc.data();
   });
@@ -187,16 +189,31 @@ exports.onEventCreated = functions.firestore
 exports.onUserRegisteredEvent = functions.firestore
   .document("eventSessionsRegistrations/{sessionId}/registrations/{ts}")
   .onCreate(async (snap, context) => {
-    const { firstName, email, title } = snap.data();
+    const { firstName, email, title, eventBeginDate } = snap.data();
     let { sessionId } = context.params;
 
-    let baseUrl = functions.config().global.base_url;
+    var featureRef = await firestore.collection("eventSessionsEnabledFeatures").doc(sessionId);
 
-    let eventLink = baseUrl + "/v/" + sessionId;
+    let feature = (await featureRef.get()).data();
+    if (feature.rsvp) {
+      let { registrationEmailTemplateId } = feature.rsvp;
 
-    if (email && email.trim() !== "") {
-      await sendgrid.sendUserRegistered(email, firstName, eventLink, title);
-    } else {
-      await sendgrid.sendUserRegistered("info@veertly.com", "GUEST-" + firstName, eventLink, title);
+      let baseUrl = functions.config().global.base_url;
+      let eventLink = baseUrl + "/v/" + sessionId;
+
+      let eventDate = moment(eventBeginDate.toDate()).format("Do MMMM YYYY HH:mm"); //TODO: make it in the format of the user's locale
+
+      if (email && email.trim() !== "") {
+        await sendgrid.sendUserRegistered(email, firstName, eventLink, title, eventDate, registrationEmailTemplateId);
+      } else {
+        await sendgrid.sendUserRegistered(
+          "info@veertly.com",
+          "GUEST-" + firstName,
+          eventLink,
+          title,
+          eventDate,
+          registrationEmailTemplateId
+        );
+      }
     }
   });
