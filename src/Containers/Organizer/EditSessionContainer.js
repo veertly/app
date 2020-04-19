@@ -91,7 +91,9 @@ export default withRouter((props) => {
     <Layout maxWidth="md">
       <Page title="Veertly | Create new event">
         <Paper className={classes.root}>
-          {user && <EditEventSessionForm user={user} eventSession={eventSessionDetails} />}
+          {user && (
+            <EditEventSessionForm userId={user.uid} isAnonymous={user.isAnonymous} eventSession={eventSessionDetails} />
+          )}
         </Paper>
       </Page>
     </Layout>

@@ -113,7 +113,7 @@ function EditEventSessionForm(props) {
   const classes = useStyles();
   const history = useHistory();
 
-  const { user, eventSession } = props;
+  const { userId, isAnonymous, eventSession } = props;
 
   const isNewEvent = eventSession === undefined;
   // const { register, handleSubmit, watch } = useForm(
@@ -281,12 +281,12 @@ function EditEventSessionForm(props) {
 
     // upload image
     let uploadedBanner =
-      bannerImageBlob && bannerChanged ? await uploadEventBanner(values.sessionId, bannerImageBlob, user.uid) : null;
+      bannerImageBlob && bannerChanged ? await uploadEventBanner(values.sessionId, bannerImageBlob, userId) : null;
     try {
       await createConference(
         isNewEvent,
         values.sessionId,
-        user.uid,
+        userId,
         values.title,
         selectedVideoType,
         values.conferenceRoomYoutubeVideoId,
@@ -330,7 +330,7 @@ function EditEventSessionForm(props) {
 
   // console.log(eventSession);
   // console.log(selectedDate);
-  const isAnonymous = user.isAnonymous;
+
   return (
     <React.Fragment>
       {/* <Paper className={classes.root}> */}

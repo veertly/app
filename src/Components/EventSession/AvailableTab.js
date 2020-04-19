@@ -30,6 +30,7 @@ import {
   getUserSession,
   getUserGroup,
   isInNetworkingRoom,
+  getUserId,
 } from "../../Redux/eventSession";
 
 // import JoinConversationDialog from "./JoinConversationDialog";
@@ -122,9 +123,10 @@ export default function (props) {
 
   const users = useSelector(getUsers, shallowEqual);
   const participantsJoined = useSelector(getParticipantsJoined, shallowEqual);
-  const user = useSelector(getUser, shallowEqual);
+  // const user = useSelector(getUser, shallowEqual);
   const userSession = useSelector(getUserSession, shallowEqual);
   const onConferenceRoom = !useSelector(isInNetworkingRoom);
+  const myUserId = !useSelector(getUserId);
 
   const [filters, setFilters] = React.useState({});
 
@@ -186,7 +188,7 @@ export default function (props) {
         let userId = participantsAvailable[index];
         let sessionParticipant = participantsJoined[userId];
 
-        if (tries < 5 && (userId === user.uid || !sessionParticipant.inNetworkingRoom)) {
+        if (tries < 5 && (userId === myUserId || !sessionParticipant.inNetworkingRoom)) {
           tries++;
           return findUser();
         }
@@ -197,7 +199,7 @@ export default function (props) {
       setSelectedParticipant(participant);
       setJoinDialog(true);
     }
-  }, [participantsAvailable, participantsJoined, user.uid, users]);
+  }, [participantsAvailable, participantsJoined, myUserId, users]);
 
   return (
     <div className={classes.root}>
@@ -208,7 +210,7 @@ export default function (props) {
         // eventSession={eventSession}
         // user={user}
         // onConferenceRoom={onConferenceRoom}
-        // showJoinButton={showJoinButton}
+        showJoinButton={showJoinButton}
       />
       <FilterAttendeesDialog
         open={filterDialog}
@@ -263,7 +265,7 @@ export default function (props) {
       )}
       {participantsAvailable.map((userId, index) => {
         let participant = users[userId];
-        let isMyUser = userId === user.uid;
+        let isMyUser = userId === myUserId;
         const hasSubtitle = participant.company.trim() !== "" || participant.companyTitle.trim() !== "";
 
         const participantAvatar = participant.avatarUrl ? (

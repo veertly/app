@@ -7,6 +7,15 @@ import Typography from "@material-ui/core/Typography";
 import ParticipantCard from "./ParticipantCard";
 import { createNewConversation } from "../../Modules/eventSessionOperations";
 import { useSnackbar } from "material-ui-snackbar-provider";
+import {
+  getParticipantsJoined,
+  getLiveGroups,
+  getUser,
+  getSessionId,
+  getUserId,
+  getUserGroup,
+} from "../../Redux/eventSession";
+import { useSelector, shallowEqual } from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -40,11 +49,19 @@ export default function (props) {
   const classes = useStyles();
   const snackbar = useSnackbar();
 
-  const { open, setOpen, participant, eventSession, user, showJoinButton } = props;
+  const { open, setOpen, participant, showJoinButton } = props;
+
+  const participantsJoined = useSelector(getParticipantsJoined, shallowEqual);
+  const user = useSelector(getUser, shallowEqual);
+  const liveGroups = useSelector(getLiveGroups, shallowEqual);
+  const sessionId = useSelector(getSessionId);
+  const userId = useSelector(getUserId);
+  const userGroup = useSelector(getUserGroup, shallowEqual);
 
   const handleClose = () => {
     setOpen(false);
   };
+
   if (!participant) {
     return null;
   }
@@ -52,7 +69,7 @@ export default function (props) {
   const startConversation = (e) => {
     e.preventDefault();
     try {
-      createNewConversation(eventSession, user.uid, participant.id, snackbar);
+      createNewConversation(sessionId, userId, participant.id, userGroup, snackbar);
     } catch (error) {
       console.error(error);
     }

@@ -7,7 +7,7 @@ const getVideoConferenceAddress = (groupId) => `https://meet.jit.si/veertly-${gr
 export const setAsAvailable = async (sessionId, userId, participantsJoined) => {
   let currentGroupId =
     participantsJoined[userId] && participantsJoined[userId].groupId ? participantsJoined[userId].groupId : null;
-  debugger;
+
   if (!participantsJoined[userId]) {
     // user is not yet added to the DB, so set it on the DB
     await firebase
@@ -62,25 +62,21 @@ export const setAsAvailable = async (sessionId, userId, participantsJoined) => {
 //     });
 // };
 
-export const createNewConversation = (eventSession, myUserId, otherUserId, snackbar) => {
-  let currentGroupId =
-    eventSession.participantsJoined[myUserId] && eventSession.participantsJoined[myUserId].groupId
-      ? eventSession.participantsJoined[myUserId].groupId
-      : null;
+export const createNewConversation = (sessionId, myUserId, otherUserId, currentUserGroup, snackbar) => {
+  let currentGroupId = currentUserGroup ? currentUserGroup.id : null;
+  // participantsJoined[myUserId] && participantsJoined[myUserId].groupId
+  //   ? participantsJoined[myUserId].groupId
+  //   : null;
 
   const groupId = uuidv1();
 
   let db = firebase.firestore();
 
-  let eventSessionRef = db.collection("eventSessions").doc(eventSession.id);
+  let eventSessionRef = db.collection("eventSessions").doc(sessionId);
 
-  let myUserRef = db.collection(`eventSessions`).doc(eventSession.id).collection("participantsJoined").doc(myUserId);
+  let myUserRef = db.collection(`eventSessions`).doc(sessionId).collection("participantsJoined").doc(myUserId);
 
-  let otherUserRef = db
-    .collection(`eventSessions`)
-    .doc(eventSession.id)
-    .collection("participantsJoined")
-    .doc(otherUserId);
+  let otherUserRef = db.collection(`eventSessions`).doc(sessionId).collection("participantsJoined").doc(otherUserId);
 
   var currentGroupRef = currentGroupId !== null ? eventSessionRef.collection("liveGroups").doc(currentGroupId) : null;
   var newGroupRef = eventSessionRef.collection("liveGroups").doc(groupId);
@@ -106,13 +102,13 @@ export const createNewConversation = (eventSession, myUserId, otherUserId, snack
   let participantsRefCurrentGroup = {};
 
   if (currentGroupId !== null) {
-    let participantsKeysCurrentGroup = Object.keys(eventSession.liveGroups[currentGroupId].participants);
+    let participantsKeysCurrentGroup = Object.keys(currentUserGroup.participants);
 
     for (let i = 0; i < participantsKeysCurrentGroup.length; i++) {
       let userId = participantsKeysCurrentGroup[i];
       participantsRefCurrentGroup[userId] = db
         .collection(`eventSessions`)
-        .doc(eventSession.id)
+        .doc(sessionId)
         .collection("participantsJoined")
         .doc(userId);
     }

@@ -7,6 +7,7 @@ const UPDATE_LIVE_GROUPS = "eventSession.UPDATE_LIVE_GROUPS";
 const UPDATE_USERS = "eventSession.UPDATE_USERS";
 
 const UPDATE_USER_ID = "eventSession.UPDATE_USER_ID";
+const STATE_LOADED = "eventSession.STATE_LOADED";
 
 const initialState = {
   eventSession: null,
@@ -18,6 +19,7 @@ const initialState = {
   user: null, // logged in user's participantDetails object
   userSession: null, // logged in user's participantJoined object
   userGroup: null, // current group of the logged in user
+  stateLoaded: false,
 };
 
 export const eventSessionReducer = (state = initialState, action) => {
@@ -75,6 +77,12 @@ export const eventSessionReducer = (state = initialState, action) => {
         user: state.users ? state.users[action.userId] : null,
       };
     }
+    case STATE_LOADED: {
+      return {
+        ...state,
+        stateLoaded: true,
+      };
+    }
     default:
       return state;
   }
@@ -91,6 +99,7 @@ export const getUserSession = (store) => store.eventSession.userSession;
 export const getUserGroup = (store) => store.eventSession.userGroup;
 export const isInNetworkingRoom = (store) =>
   store.eventSession.userSession && store.eventSession.userSession.inNetworkingRoom;
+export const isStateLoaded = (store) => store.eventSession.stateLoaded === true;
 
 export const updateEventSession = (eventSession) => ({
   type: UPDATE_EVENT_SESSION,
@@ -118,4 +127,7 @@ export const updateUsers = (users) => ({
 export const updateUserId = (userId) => ({
   type: UPDATE_USER_ID,
   userId,
+});
+export const setStateLoaded = (userId) => ({
+  type: STATE_LOADED,
 });

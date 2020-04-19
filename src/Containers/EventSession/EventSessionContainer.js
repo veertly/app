@@ -49,6 +49,8 @@ import {
   getUser,
   getUserSession,
   getUserGroup,
+  setStateLoaded,
+  isStateLoaded,
 } from "../../Redux/eventSession";
 
 export const SIDE_PANE_WIDTH = 53;
@@ -165,7 +167,7 @@ export default withRouter((props) => {
   const [lastLiveGroupsDB, setLastLiveGroupsDB] = useState("");
   const [lastUsersDB, setLastUsersDB] = useState("");
 
-  const eventSession = useSelector(getEventSession, shallowEqual);
+  // const eventSession = useSelector(getEventSession, shallowEqual);
   const eventSessionDetails = useSelector(getEventSessionDetails, shallowEqual);
   const participantsJoined = useSelector(getParticipantsJoined, shallowEqual);
   const liveGroups = useSelector(getLiveGroups, shallowEqual);
@@ -174,6 +176,8 @@ export default withRouter((props) => {
   const user = useSelector(getUser, shallowEqual);
   const userSession = useSelector(getUserSession, shallowEqual);
   const userGroup = useSelector(getUserGroup, shallowEqual);
+
+  const stateLoaded = useSelector(isStateLoaded);
 
   const isInConferenceRoom = useMemo(() => userSession && !userSession.inNetworkingRoom, [userSession]);
 
@@ -257,8 +261,7 @@ export default withRouter((props) => {
 
   // --- init ---
   useEffect(() => {
-    if (!initCompleted && liveGroups && participantsJoined && users) {
-      debugger;
+    if (!initCompleted && stateLoaded && participantsJoined && Object.keys(users).length > 0 && liveGroups) {
       if (!user) {
         history.push(routes.EDIT_PROFILE(routes.EVENT_SESSION_LIVE(sessionId)));
       }
@@ -267,6 +270,27 @@ export default withRouter((props) => {
       setInitCompleted(true);
     }
   }, [initCompleted, liveGroups, participantsJoined, users, userId, sessionId, history, user]);
+
+  useEffect(() => {
+    if (
+      !stateLoaded &&
+      loadingUsersDB &&
+      loadingSessionDB &&
+      loadingSessionDetailsDB &&
+      loadingParticipantsJoinedDB &&
+      loadingLiveGroupsDB
+    ) {
+      dispatch(setStateLoaded(userId));
+    }
+  }, [
+    stateLoaded,
+    loadingUsersDB,
+    loadingSessionDB,
+    loadingSessionDetailsDB,
+    loadingParticipantsJoinedDB,
+    loadingLiveGroupsDB,
+    dispatch,
+  ]);
 
   // -----------------------------------------------------------------------------------------------------
 
@@ -310,7 +334,6 @@ export default withRouter((props) => {
   }
 
   const handleSetIsInConferenceRoom = (openConference) => {
-    debugger;
     if (openConference) {
       if (userGroup) {
         leaveCall(sessionId, userGroup, userId);

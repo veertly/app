@@ -14,7 +14,7 @@ import AboutIcon from "@material-ui/icons/Info";
 import EventDescriptionIcon from "@material-ui/icons/Notes";
 import ShareIcon from "@material-ui/icons/Share";
 
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import {
   openEditProfile,
   openEventDetails,
@@ -29,7 +29,7 @@ import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import { logout } from "../../Modules/userOperations";
 import { useHistory } from "react-router-dom";
 import FeedbackIcon from "@material-ui/icons/GraphicEq";
-import { getSessionId } from "../../Redux/eventSession";
+import { getSessionId, getEventSessionDetails, getUserId } from "../../Redux/eventSession";
 
 // import { Badge } from "@material-ui/core";
 const useStyles = makeStyles((theme) => ({
@@ -47,14 +47,19 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function SideMenuIcons(props) {
-  const { eventSession, user } = props;
+  // const { eventSession, user } = props;
   const classes = useStyles();
-  // const theme = useTheme();
   const dispatch = useDispatch();
   const chatOpen = useSelector(isChatOpen);
-  const sessionId = useSelector(getSessionId);
 
-  const isOwner = React.useMemo(() => eventSession && user && eventSession.owner === user.uid, [eventSession, user]);
+  const sessionId = useSelector(getSessionId);
+  const userId = useSelector(getUserId);
+  const eventSessionDetails = useSelector(getEventSessionDetails, shallowEqual);
+
+  const isOwner = React.useMemo(() => eventSessionDetails && eventSessionDetails.owner === userId, [
+    eventSessionDetails,
+    userId,
+  ]);
 
   const openProfile = React.useCallback(() => dispatch(openEditProfile()), [dispatch]);
   const openDetails = React.useCallback(() => dispatch(openEventDetails()), [dispatch]);
