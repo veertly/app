@@ -10,18 +10,7 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
 import { Tooltip } from "@material-ui/core";
 import { useSelector, shallowEqual } from "react-redux";
-import {
-  getUsers,
-  getParticipantsJoined,
-  getLiveGroups,
-  updateUserId,
-  getUser,
-  getUserSession,
-  getUserGroup,
-  isInNetworkingRoom,
-  getSessionId,
-  getUserId,
-} from "../../Redux/eventSession";
+import { getUsers, getParticipantsJoined } from "../../Redux/eventSession";
 const useStyles = makeStyles((theme) => ({
   content: {
     position: "relative",

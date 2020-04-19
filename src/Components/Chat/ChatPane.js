@@ -15,25 +15,7 @@ import { Typography, Paper, IconButton, Tooltip } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
-import {
-  getEventSession,
-  updateEventSession,
-  getEventSessionDetails,
-  updateEventSessionDetails,
-  updateParticipantsJoined,
-  updateLiveGroups,
-  updateUsers,
-  getUsers,
-  getParticipantsJoined,
-  getLiveGroups,
-  updateUserId,
-  getUser,
-  getUserSession,
-  getUserGroup,
-  isInNetworkingRoom,
-  getSessionId,
-  getUserId,
-} from "../../Redux/eventSession";
+import { getUsers, getUser, getSessionId, getUserId } from "../../Redux/eventSession";
 
 const minWidth = 150;
 // const maxWidth = 800;
@@ -152,8 +134,6 @@ export default function ChatPane(props) {
   const users = useSelector(getUsers, shallowEqual);
   const userId = useSelector(getUserId);
   const user = useSelector(getUser, shallowEqual);
-  const userSession = useSelector(getUserSession, shallowEqual);
-  const onConferenceRoom = !useSelector(isInNetworkingRoom);
 
   const [messagesFirebase /* , loadingMessages, errorMessages */] = useCollectionData(
     firebase

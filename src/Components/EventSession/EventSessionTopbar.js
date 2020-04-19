@@ -21,7 +21,7 @@ import routes from "../../Config/routes";
 // import DesktopMacIcon from "@material-ui/icons/DesktopMac";
 // import ConversationsIcon from "../../Assets/Icons/Conversations";
 import { useSelector, shallowEqual } from "react-redux";
-import { getSessionId, getUser, getUserGroup, getUserId, getEventSessionDetails } from "../../Redux/eventSession";
+import { getSessionId, getUser, getUserGroup, getEventSessionDetails } from "../../Redux/eventSession";
 
 // import routes from "../../Config/routes";
 const useStyles = makeStyles((theme) => ({
@@ -126,7 +126,6 @@ export default withRouter((props) => {
   const openMenu = Boolean(menuAnchorEl);
 
   const user = useSelector(getUser, shallowEqual);
-  const userId = useSelector(getUserId);
   const userGroup = useSelector(getUserGroup, shallowEqual);
   const sessionId = useSelector(getSessionId);
   const eventSessionDetails = useSelector(getEventSessionDetails, shallowEqual);

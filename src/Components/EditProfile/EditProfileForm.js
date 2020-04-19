@@ -36,8 +36,8 @@ const styles = (theme) => ({
   },
 });
 
-const getUserDefaultValues = (user) => {
-  let { displayName, isAnonymous } = user;
+const getUserDefaultValues = (userAuth) => {
+  let { displayName, isAnonymous } = userAuth;
   let firstName = "";
   let lastName = "";
   if (displayName) {
@@ -46,14 +46,14 @@ const getUserDefaultValues = (user) => {
     lastName = splitted[splitted.length - 1];
   }
   return {
-    id: user.uid,
+    id: userAuth.uid,
     firstName,
     lastName,
-    email: user.email ? user.email : "",
+    email: userAuth.email ? userAuth.email : "",
     linkedin: "",
     twitter: "",
     emailPublic: false,
-    avatarUrl: user.photoURL,
+    avatarUrl: userAuth.photoURL,
     interest: "",
     twitterUrl: null,
     linkedinUrl: null,
@@ -71,19 +71,19 @@ const twitterUrlStatic = "https://twitter.com/";
 const keybaseUrlStatic = "https://keybase.io/";
 
 function EditProfileForm(props) {
-  const { classes, user, sessionId, profileUpdatedCallback } = props;
+  const { classes, userAuth, sessionId, profileUpdatedCallback } = props;
 
-  let [values, setValues] = React.useState(getUserDefaultValues(user));
+  let [values, setValues] = React.useState(getUserDefaultValues(userAuth));
   let [errors, setErrors] = React.useState({});
   const [interestsChips, setInterestsChips] = React.useState([]);
   const [updating, setUpdating] = React.useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {
-      if (!user) {
+      if (!userAuth) {
         return;
       }
-      let userDb = await getUserDb(user.uid);
+      let userDb = await getUserDb(userAuth.uid);
 
       if (userDb) {
         let {
@@ -131,9 +131,9 @@ function EditProfileForm(props) {
       }
     };
     fetchUser();
-  }, [user]);
+  }, [userAuth]);
 
-  if (!user && !sessionId) {
+  if (!userAuth && !sessionId) {
     return <p>No session available...</p>;
   }
   const handleUpdateField = (name) => (e) => {
@@ -181,7 +181,7 @@ function EditProfileForm(props) {
       return;
     }
     setUpdating(true);
-    await updateUser(user.uid, sessionId, values);
+    await updateUser(userAuth.uid, sessionId, values);
     // await fetchUser();
     // snackbar.showMessage("Your profile has been updated successfuly");
     if (profileUpdatedCallback) {

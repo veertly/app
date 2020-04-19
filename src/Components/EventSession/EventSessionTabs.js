@@ -8,7 +8,7 @@ import ConversationsTab from "./ConversationsTab";
 import AvailableTab from "./AvailableTab";
 import CurrentCallActions from "./CurrentCallActions";
 import { useSelector, shallowEqual } from "react-redux";
-import { getSessionId, getUsers, getUserGroup, getUserId } from "../../Redux/eventSession";
+import { getUserGroup } from "../../Redux/eventSession";
 
 const CALL_SECTION_HEIGHT = 110;
 

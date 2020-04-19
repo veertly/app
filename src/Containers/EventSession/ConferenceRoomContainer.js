@@ -5,26 +5,8 @@ import { leaveCall } from "../../Modules/eventSessionOperations";
 import NoVideoImage from "../../Assets/illustrations/undraw_video_call_kxyp.svg";
 import { Typography } from "@material-ui/core";
 import { ANNOUNCEMENT_HEIGHT } from "../../Components/EventSession/Announcements";
-import { useDispatch, useSelector, shallowEqual } from "react-redux";
-import {
-  getEventSession,
-  updateEventSession,
-  getEventSessionDetails,
-  updateEventSessionDetails,
-  updateParticipantsJoined,
-  updateLiveGroups,
-  updateUsers,
-  getUsers,
-  getParticipantsJoined,
-  getLiveGroups,
-  updateUserId,
-  getUser,
-  getUserSession,
-  getUserGroup,
-  isInNetworkingRoom,
-  getSessionId,
-  getUserId,
-} from "../../Redux/eventSession";
+import { useSelector, shallowEqual } from "react-redux";
+import { getUser, getUserGroup, getSessionId, getUserId, getEventSessionDetails } from "../../Redux/eventSession";
 
 const useStyles = makeStyles((theme) => ({
   videoContainer: {
@@ -126,7 +108,7 @@ export default (props) => {
       //   jitsiApi.dispose();
       // }
     };
-  }, [loaded, eventSessionDetails, user, handleCallEnded, jitsiApi, lastRoomLoaded, setJitsiApi]);
+  }, [loaded, eventSessionDetails, user, handleCallEnded, jitsiApi, lastRoomLoaded, setJitsiApi, sessionId]);
 
   const hasAnnouncement = React.useMemo(
     () =>

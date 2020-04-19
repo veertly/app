@@ -7,24 +7,8 @@ import Divider from "@material-ui/core/Divider";
 import GroupAvatars from "./GroupAvatars";
 import { MAX_PARTICIPANTS_GROUP } from "../../Config/constants";
 
-import { useSelector, useDispatch, shallowEqual } from "react-redux";
-import {
-  getEventSession,
-  updateEventSession,
-  getEventSessionDetails,
-  updateEventSessionDetails,
-  updateParticipantsJoined,
-  updateLiveGroups,
-  updateUsers,
-  getUsers,
-  getParticipantsJoined,
-  getLiveGroups,
-  updateUserId,
-  getUser,
-  getUserSession,
-  getUserGroup,
-  isInNetworkingRoom,
-} from "../../Redux/eventSession";
+import { useSelector, shallowEqual } from "react-redux";
+import { getUsers, getParticipantsJoined, getLiveGroups, getUser } from "../../Redux/eventSession";
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -97,7 +81,6 @@ export default function (props) {
   const users = useSelector(getUsers, shallowEqual);
   const participantsJoined = useSelector(getParticipantsJoined, shallowEqual);
   const user = useSelector(getUser, shallowEqual);
-  const userSession = useSelector(getUserSession, shallowEqual);
   const liveGroups = useSelector(getLiveGroups, shallowEqual);
 
   const groupIds = Object.keys(liveGroups ? liveGroups : {});

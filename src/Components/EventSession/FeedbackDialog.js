@@ -3,25 +3,7 @@ import Dialog from "@material-ui/core/Dialog";
 import { makeStyles } from "@material-ui/core/styles";
 import { closeFeedback, isFeedbackOpen } from "../../Redux/dialogs";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
-import {
-  getEventSession,
-  updateEventSession,
-  getEventSessionDetails,
-  updateEventSessionDetails,
-  updateParticipantsJoined,
-  updateLiveGroups,
-  updateUsers,
-  getUsers,
-  getParticipantsJoined,
-  getLiveGroups,
-  updateUserId,
-  getUser,
-  getUserSession,
-  getUserGroup,
-  isInNetworkingRoom,
-  getSessionId,
-  getUserId,
-} from "../../Redux/eventSession";
+import { getUser, getSessionId, getUserId } from "../../Redux/eventSession";
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -42,10 +24,12 @@ export default function (props) {
   const userId = useSelector(getUserId);
   const sessionId = useSelector(getSessionId);
 
-  const { firstName, lastName, email } = React.useMemo(() =>
-    user
-      ? { firstName: user.firstName, lastName: user.lastName, email: user.email }
-      : { firstName: "", lastName: "", email: "" }
+  const { firstName, lastName, email } = React.useMemo(
+    () =>
+      user
+        ? { firstName: user.firstName, lastName: user.lastName, email: user.email }
+        : { firstName: "", lastName: "", email: "" },
+    [user]
   );
   const handleClose = () => {
     dispatch(closeFeedback());

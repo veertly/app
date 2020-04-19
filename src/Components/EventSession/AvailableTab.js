@@ -13,22 +13,11 @@ import { Tooltip } from "@material-ui/core";
 import ConferenceIcon from "@material-ui/icons/DesktopMac";
 import FilterAttendeesDialog from "./FilterAttendeesDialog";
 
-import { useSelector, useDispatch, shallowEqual } from "react-redux";
+import { useSelector, shallowEqual } from "react-redux";
 import {
-  getEventSession,
-  updateEventSession,
-  getEventSessionDetails,
-  updateEventSessionDetails,
-  updateParticipantsJoined,
-  updateLiveGroups,
-  updateUsers,
   getUsers,
   getParticipantsJoined,
-  getLiveGroups,
-  updateUserId,
-  getUser,
   getUserSession,
-  getUserGroup,
   isInNetworkingRoom,
   getUserId,
 } from "../../Redux/eventSession";

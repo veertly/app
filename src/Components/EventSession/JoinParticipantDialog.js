@@ -7,14 +7,7 @@ import Typography from "@material-ui/core/Typography";
 import ParticipantCard from "./ParticipantCard";
 import { createNewConversation } from "../../Modules/eventSessionOperations";
 import { useSnackbar } from "material-ui-snackbar-provider";
-import {
-  getParticipantsJoined,
-  getLiveGroups,
-  getUser,
-  getSessionId,
-  getUserId,
-  getUserGroup,
-} from "../../Redux/eventSession";
+import { getSessionId, getUserId, getUserGroup } from "../../Redux/eventSession";
 import { useSelector, shallowEqual } from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
@@ -51,9 +44,6 @@ export default function (props) {
 
   const { open, setOpen, participant, showJoinButton } = props;
 
-  const participantsJoined = useSelector(getParticipantsJoined, shallowEqual);
-  const user = useSelector(getUser, shallowEqual);
-  const liveGroups = useSelector(getLiveGroups, shallowEqual);
   const sessionId = useSelector(getSessionId);
   const userId = useSelector(getUserId);
   const userGroup = useSelector(getUserGroup, shallowEqual);

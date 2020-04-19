@@ -35,7 +35,6 @@ import { isChatOpen } from "../../Redux/dialogs";
 import ShareEventDialog from "../../Components/Event/ShareEventDialog";
 import FeedbackDialog from "../../Components/EventSession/FeedbackDialog";
 import {
-  getEventSession,
   updateEventSession,
   getEventSessionDetails,
   updateEventSessionDetails,
@@ -269,7 +268,7 @@ export default withRouter((props) => {
       initFirebasePresenceSync(sessionId, userId);
       setInitCompleted(true);
     }
-  }, [initCompleted, liveGroups, participantsJoined, users, userId, sessionId, history, user]);
+  }, [initCompleted, liveGroups, participantsJoined, users, userId, sessionId, history, user, stateLoaded]);
 
   useEffect(() => {
     if (
@@ -289,6 +288,7 @@ export default withRouter((props) => {
     loadingSessionDetailsDB,
     loadingParticipantsJoinedDB,
     loadingLiveGroupsDB,
+    userId,
     dispatch,
   ]);
 

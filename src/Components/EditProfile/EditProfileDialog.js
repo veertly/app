@@ -4,6 +4,9 @@ import { makeStyles } from "@material-ui/core/styles";
 import EditProfileForm from "./EditProfileForm";
 import { useDispatch, useSelector } from "react-redux";
 import { closeEditProfile, isEditProfileOpen } from "../../Redux/dialogs";
+import { getSessionId } from "../../Redux/eventSession";
+import { useAuthState } from "react-firebase-hooks/auth";
+import firebase from "../../Modules/firebaseApp";
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -34,9 +37,11 @@ const useStyles = makeStyles((theme) => ({
 
 export default function (props) {
   const classes = useStyles();
+  const [userAuth] = useAuthState(firebase.auth());
 
-  const { eventSession, user } = props;
+  const { eventSession } = props;
   const open = useSelector(isEditProfileOpen);
+  const sessionId = useSelector(getSessionId);
 
   const dispatch = useDispatch();
 
@@ -48,7 +53,7 @@ export default function (props) {
       <Dialog open={open} onClose={handleClose}>
         <div className={classes.content}>
           {eventSession && (
-            <EditProfileForm user={user} sessionId={eventSession.id} profileUpdatedCallback={handleClose} />
+            <EditProfileForm userAuth={userAuth} sessionId={sessionId} profileUpdatedCallback={handleClose} />
           )}
         </div>
       </Dialog>

@@ -6,7 +6,7 @@ import EditProfileForm from "../Components/EditProfile/EditProfileForm";
 import { useHistory, useLocation } from "react-router-dom";
 
 export default () => {
-  const [user, initialising, error] = useAuthState(firebase.auth());
+  const [userAuth, initialising, error] = useAuthState(firebase.auth());
   const history = useHistory();
   const location = useLocation();
   let callbackUrl = location.search.replace("?callback=", ""); // queryValues.callback ? queryValues.callback : "/";
@@ -39,9 +39,9 @@ export default () => {
   return (
     <Layout maxWidth="sm">
       <div style={{ padding: "48px 24px" }}>
-        {user && (
+        {userAuth && (
           <EditProfileForm
-            user={user}
+            userAuth={userAuth}
             sessionId={isInSessionPage ? sessionId.toLowerCase() : null}
             profileUpdatedCallback={redirectUser}
           />

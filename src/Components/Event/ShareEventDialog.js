@@ -10,25 +10,7 @@ import CopyIcon from "@material-ui/icons/FileCopy";
 import { useSnackbar } from "material-ui-snackbar-provider";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
-import {
-  getEventSession,
-  updateEventSession,
-  getEventSessionDetails,
-  updateEventSessionDetails,
-  updateParticipantsJoined,
-  updateLiveGroups,
-  updateUsers,
-  getUsers,
-  getParticipantsJoined,
-  getLiveGroups,
-  updateUserId,
-  getUser,
-  getUserSession,
-  getUserGroup,
-  isInNetworkingRoom,
-  getSessionId,
-  getUserId,
-} from "../../Redux/eventSession";
+import { getEventSessionDetails, getSessionId } from "../../Redux/eventSession";
 
 const useStyles = makeStyles((theme) => ({
   content: {
