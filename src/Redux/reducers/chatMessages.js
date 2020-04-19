@@ -5,6 +5,8 @@ const initialState = {
   },
 };
 
+const getAppendedNS = (sessionId) => `CHAT_GLOBAL_${sessionId}`;
+
 // action types
 export const SET_NOTIFICATION_DOT = "CHAT/SET_NOTIFICATION_DOT";
 export const SET_MESSAGE_COUNT = "CHAT/SET_MESSAGE_COUNT";
@@ -22,7 +24,7 @@ export const hideNotificationDot = () => ({
 
 export const setMessageCount = (sessionId, messageCount) => ({
   type: SET_MESSAGE_COUNT,
-  sessionId: sessionId,
+  sessionId: getAppendedNS(sessionId),
   messageCount: messageCount
 })
 
@@ -51,3 +53,4 @@ export default function chatMessagesReducer(state = initialState, action) {
 // selectors
 export const toShowNotificationDot = (state) => state.chat.showNotificationDot;
 export const getMessageCount = (state) => state.chat.messageCount;
+export const getMessageCountByNS = (sessionId) => (state) => state.chat.messageCount[getAppendedNS(sessionId)];

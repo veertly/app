@@ -16,7 +16,7 @@ import { sendChatMessage } from "../../Modules/chatMessagesOperations";
 import { /* chatResized,  */ closeChat } from "../../Redux/actions";
 import { Typography, Paper, IconButton, Tooltip } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
-import { showNotificationDot, getMessageCount, setMessageCount } from "../../Redux/reducers/chatMessages";
+import { showNotificationDot, setMessageCount, getMessageCountByNS } from "../../Redux/reducers/chatMessages";
 
 const minWidth = 150;
 // const maxWidth = 800;
@@ -93,7 +93,7 @@ export default function ChatPane(props) {
 
   // const isOwner = React.useMemo(() => eventSession && user && eventSession.owner === user.uid, [eventSession, user]);
   const chatOpen = useSelector(isChatOpen);
-  const messageCount = useSelector(getMessageCount);
+  const messageCountActual = useSelector(getMessageCountByNS(eventSession.id));
 
   // const handleCloseChat = React.useCallback(() => dispatch(closeChat()), [dispatch]);
   // const openDetails = React.useCallback(() => dispatch(openEventDetails()), [dispatch]);
@@ -145,15 +145,15 @@ export default function ChatPane(props) {
   );
 
   if (messagesFirebase){
-    const messageCountActual = messageCount[eventSession.id];
     if (messageCountActual && messageCountActual!== 0 && messageCountActual < messagesFirebase.length) {
       if (!chatOpen) {
         dispatch(showNotificationDot());
       } 
       dispatch(setMessageCount(eventSession.id, messagesFirebase.length));
-    } 
+    } else if((!messageCountActual || messageCountActual === 0) && messagesFirebase.length > 0) {
+      dispatch(setMessageCount(eventSession.id, messagesFirebase.length));
+    }
   }
-
 
   const handleMessageSend = async (message) => {
     if (message && message.trim() !== "") {
