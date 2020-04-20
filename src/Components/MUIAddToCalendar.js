@@ -26,6 +26,8 @@ function SimpleDialog(props) {
   const classes = useStyles();
   const { onClose, selectedValue, open, event } = props;
 
+  console.log(event)
+
   const handleClose = () => {
     onClose(selectedValue);
   };
@@ -107,7 +109,7 @@ function SimpleDialog(props) {
           "END:VCALENDAR",
         ].join("\n");
     }
-
+    console.log(calendarUrl);
     return calendarUrl;
   };
 
@@ -126,7 +128,8 @@ function SimpleDialog(props) {
         ****************************************************************/
       let link = document.createElement("a");
       link.href = window.URL.createObjectURL(blob);
-      link.setAttribute(event.id, filename);
+      // link.setAttribute(event.id, filename);
+      link.setAttribute("download", filename);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
