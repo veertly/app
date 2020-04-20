@@ -22,6 +22,8 @@ import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import { logout } from "../../Modules/userOperations";
 import { useHistory } from "react-router-dom";
 import FeedbackIcon from "@material-ui/icons/GraphicEq";
+import { hideNotificationDot, toShowNotificationDot } from "../../Redux/reducers/chatMessages";
+import Badge from "@material-ui/core/Badge";
 
 // import { Badge } from "@material-ui/core";
 const useStyles = makeStyles((theme) => ({
@@ -44,7 +46,7 @@ export default function SideMenuIcons(props) {
   // const theme = useTheme();
   const dispatch = useDispatch();
   const chatOpen = useSelector(isChatOpen);
-
+  const showNotificationDot = useSelector(toShowNotificationDot);
   const isOwner = React.useMemo(() => eventSession && user && eventSession.owner === user.uid, [eventSession, user]);
 
   const openProfile = React.useCallback(() => dispatch(openEditProfile()), [dispatch]);
@@ -58,6 +60,7 @@ export default function SideMenuIcons(props) {
     if (chatOpen) {
       dispatch(closeChat());
     } else {
+      dispatch(hideNotificationDot())
       dispatch(openChat());
     }
   }, [dispatch, chatOpen]);
@@ -104,9 +107,9 @@ export default function SideMenuIcons(props) {
         <Tooltip title="Chat" onClick={toggleChatPane}>
           <ListItem button>
             <ListItemIcon>
-              {/* <Badge color="secondary" variant="dot"> */}
-              <ChatIcon color="primary" />
-              {/* </Badge> */}
+              <Badge color="secondary" variant="dot" invisible={!showNotificationDot}>
+                <ChatIcon color="primary" />
+              </Badge>
             </ListItemIcon>
           </ListItem>
         </Tooltip>

@@ -61,11 +61,12 @@ const sendEventCreatedMail = async (toEmail, toFirstName, eventLink, eventTitle)
   }
 };
 
-const sendUserRegistered = async (toEmail, toFirstName, eventLink, eventTitle) => {
+const sendUserRegistered = async (toEmail, toFirstName, eventLink, eventTitle, eventDate, templateId) => {
   const data = {
     event_link: eventLink,
     event_title: eventTitle,
     recipient_name: toFirstName,
+    event_date: eventDate,
   };
 
   const toUser = [
@@ -74,7 +75,9 @@ const sendUserRegistered = async (toEmail, toFirstName, eventLink, eventTitle) =
       name: toFirstName,
     },
   ];
-  await sendMailTemplate(toUser, data, USER_REGISTERED_EVENT_TEMPLATE);
+
+  let template = templateId ? templateId : USER_REGISTERED_EVENT_TEMPLATE;
+  await sendMailTemplate(toUser, data, template);
 
   if (process.env.GCLOUD_PROJECT === "veertly") {
     const toVeertly = [
@@ -83,7 +86,7 @@ const sendUserRegistered = async (toEmail, toFirstName, eventLink, eventTitle) =
         name: "Veertly",
       },
     ];
-    await sendMailTemplate(toVeertly, data, USER_REGISTERED_EVENT_TEMPLATE);
+    await sendMailTemplate(toVeertly, data, template);
   }
 };
 
