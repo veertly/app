@@ -13,6 +13,7 @@ import firebase from "../../Modules/firebaseApp";
 import { sendChatMessage } from "../../Modules/chatMessagesOperations";
 import { Typography, Paper, IconButton, Tooltip } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
+import { showNotificationDot, setMessageCount, getMessageCountByNS } from "../../Redux/chatMessages";
 
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import { getUsers, getUser, getSessionId, getUserId } from "../../Redux/eventSession";
@@ -88,9 +89,13 @@ export default function ChatPane(props) {
   // const theme = useTheme();
   const dispatch = useDispatch();
   // const mounted = useIsMounted();
-
+  const sessionId = useSelector(getSessionId);
+  const users = useSelector(getUsers, shallowEqual);
+  const userId = useSelector(getUserId);
+  const user = useSelector(getUser, shallowEqual);
   // const isOwner = React.useMemo(() => eventSession && user && eventSession.owner === user.uid, [eventSession, user]);
   const chatOpen = useSelector(isChatOpen);
+  const messageCountActual = useSelector(getMessageCountByNS(sessionId));
 
   // const handleCloseChat = React.useCallback(() => dispatch(closeChat()), [dispatch]);
   // const openDetails = React.useCallback(() => dispatch(openEventDetails()), [dispatch]);
@@ -130,10 +135,6 @@ export default function ChatPane(props) {
 
   // useEventListener("mousemove", handleMousemove);
   // useEventListener("mouseup", handleMouseup);
-  const sessionId = useSelector(getSessionId);
-  const users = useSelector(getUsers, shallowEqual);
-  const userId = useSelector(getUserId);
-  const user = useSelector(getUser, shallowEqual);
 
   const [messagesFirebase /* , loadingMessages, errorMessages */] = useCollectionData(
     firebase
@@ -144,6 +145,17 @@ export default function ChatPane(props) {
       .orderBy("sentDate", "desc")
       .limit(LIMIT_NUM_MESSAGES_QUERY)
   );
+
+  if (messagesFirebase) {
+    if (messageCountActual && messageCountActual !== 0 && messageCountActual < messagesFirebase.length) {
+      if (!chatOpen) {
+        dispatch(showNotificationDot());
+      }
+      dispatch(setMessageCount(sessionId, messagesFirebase.length));
+    } else if ((!messageCountActual || messageCountActual === 0) && messagesFirebase.length > 0) {
+      dispatch(setMessageCount(sessionId, messagesFirebase.length));
+    }
+  }
 
   const handleMessageSend = async (message) => {
     if (message && message.trim() !== "") {

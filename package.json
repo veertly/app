@@ -54,6 +54,8 @@
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.4.1",
     "react-share": "^4.1.0",
+    "redux-devtools-extension": "^2.13.8",
+    "redux-persist": "^6.0.0",
     "semantic-ui-css": "^2.2.12",
     "use-combined-reducers": "^1.0.4",
     "uuid": "^7.0.3"
