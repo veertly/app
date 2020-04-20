@@ -225,3 +225,19 @@ export const initFirebasePresenceSync = async (sessionId, userId, participantsJo
         });
     });
 };
+
+export const keepAlive = async (sessionId, userId) => {
+  console.log("Keep alive sent!");
+  var userSessionRef = firebase
+    .firestore()
+    .collection("eventSessions")
+    .doc(sessionId)
+    .collection("participantsJoined")
+    .doc(userId);
+
+  await userSessionRef.update({
+    isOnline: true,
+    lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
+    leftTimestamp: null,
+  });
+};

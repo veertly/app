@@ -14,13 +14,7 @@ import ConferenceIcon from "@material-ui/icons/DesktopMac";
 import FilterAttendeesDialog from "./FilterAttendeesDialog";
 
 import { useSelector, shallowEqual } from "react-redux";
-import {
-  getUsers,
-  getParticipantsJoined,
-  getUserSession,
-  isInNetworkingRoom,
-  getUserId,
-} from "../../Redux/eventSession";
+import { getUsers, isInNetworkingRoom, getAvailableParticipantsList } from "../../Redux/eventSession";
 
 // import JoinConversationDialog from "./JoinConversationDialog";
 import _ from "lodash";
@@ -111,73 +105,67 @@ export default function (props) {
   // const { users, eventSession, user, onConferenceRoom } = props;
 
   const users = useSelector(getUsers, shallowEqual);
-  const participantsJoined = useSelector(getParticipantsJoined, shallowEqual);
-  const userSession = useSelector(getUserSession, shallowEqual);
   const onConferenceRoom = !useSelector(isInNetworkingRoom);
-  const myUserId = useSelector(getUserId);
+  const availableParticipantsList = useSelector(getAvailableParticipantsList, shallowEqual);
 
   const [filters, setFilters] = React.useState({});
 
   let participantsAvailable = React.useMemo(() => {
-    let result = Object.keys(participantsJoined).filter(
-      (userId) => {
-        let participant = users[userId];
+    let result = availableParticipantsList.filter((participantSession) => {
+      let participant = users[participantSession.id];
 
-        let sessionParticipant = participantsJoined[userId];
-        if (!participant) {
-          return false;
-        }
+      if (!participant) {
+        return false;
+      }
 
-        if (!sessionParticipant.isOnline) {
-          return false;
-        }
-        // check interests
-        if (_.size(filters) !== 0) {
-          let { interestsChips } = participant;
+      // check interests
+      if (_.size(filters) !== 0) {
+        let { interestsChips } = participant;
 
-          let foundInterest = false;
+        let foundInterest = false;
 
-          for (let i = 0; i < interestsChips.length; i++) {
-            let interest = interestsChips[i];
-            if (filters[interest.label] === true) {
-              foundInterest = true;
-            }
-          }
-
-          if (!foundInterest) {
-            return false;
+        for (let i = 0; i < interestsChips.length; i++) {
+          let interest = interestsChips[i];
+          if (filters[interest.label] === true) {
+            foundInterest = true;
           }
         }
 
-        return true;
-      },
-      [filters, participantsJoined]
-    );
+        if (!foundInterest) {
+          return false;
+        }
+      }
+
+      return true;
+    });
 
     // console.log("Num participants: " + result.length);
     return result;
-  }, [participantsJoined, users, filters]);
+  }, [availableParticipantsList, users, filters]);
 
   const feelingLucky = React.useCallback(() => {
-    if (participantsAvailable.length > 1) {
-      let tries = 0;
-      let findUser = () => {
-        let index = Math.floor(Math.random() * participantsAvailable.length);
-        let userId = participantsAvailable[index];
-        let sessionParticipant = participantsJoined[userId];
+    let selectedParticipantSession = _.sample(
+      participantsAvailable.filter(({ isMyUser, isAvailable }) => !isMyUser && isAvailable)
+    );
+    let participant = selectedParticipantSession ? users[selectedParticipantSession.id] : null;
+    // if (participantsAvailable.length > 1) {
+    //   let tries = 0;
+    //   let findUser = () => {
+    //     let index = Math.floor(Math.random() * participantsAvailable.length);
+    //     let userId = participantsAvailable[index];
+    //     let sessionParticipant = participantsJoined[userId];
 
-        if (tries < 5 && (userId === myUserId || !sessionParticipant.inNetworkingRoom)) {
-          tries++;
-          return findUser();
-        }
+    //     if (tries < 5 && (userId === myUserId || !sessionParticipant.inNetworkingRoom)) {
+    //       tries++;
+    //       return findUser();
+    //     }
 
-        return users[userId];
-      };
-      let participant = findUser();
-      setSelectedParticipant(participant);
-      setJoinDialog(true);
-    }
-  }, [participantsAvailable, participantsJoined, myUserId, users]);
+    //     return users[userId];
+    //   };
+    //   let participant = findUser();
+    setSelectedParticipant(participant);
+    setJoinDialog(true);
+  }, [participantsAvailable, users]);
 
   return (
     <div className={classes.root}>
@@ -233,9 +221,11 @@ export default function (props) {
           All attendees ({participantsAvailable.length})
         </Typography>
       )}
-      {participantsAvailable.map((userId, index) => {
-        let participant = users[userId];
-        let isMyUser = userId === myUserId;
+      {participantsAvailable.map((participantSession, index) => {
+        let { isInConversation, isInConferenceRoom, isAvailable, isMyUser } = participantSession;
+
+        let participant = users[participantSession.id];
+
         const hasSubtitle = participant.company.trim() !== "" || participant.companyTitle.trim() !== "";
 
         const participantAvatar = participant.avatarUrl ? (
@@ -246,12 +236,6 @@ export default function (props) {
             {participant.lastName.charAt(0).toUpperCase()}
           </Avatar>
         );
-        let participantSession = participantsJoined[userId];
-        let isInConversation =
-          participantSession && participantSession.groupId !== undefined && participantSession.groupId !== null;
-        let isInConferenceRoom = !isInConversation && !participantSession.inNetworkingRoom;
-        let isAvailable = !isInConversation && participantSession.inNetworkingRoom;
-        console.log({ userId, isInConversation, isInConferenceRoom, isAvailable, userSession });
 
         return (
           <div

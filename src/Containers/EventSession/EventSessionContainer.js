@@ -23,9 +23,9 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme } from "@material-ui/core/styles";
 import { useHistory } from "react-router-dom";
 import routes from "../../Config/routes";
-import { initFirebasePresenceSync } from "../../Modules/userOperations";
+import { initFirebasePresenceSync, keepAlive } from "../../Modules/userOperations";
 import Announcements from "../../Components/EventSession/Announcements";
-import { DEFAULT_EVENT_OPEN_MINUTES } from "../../Config/constants";
+import { DEFAULT_EVENT_OPEN_MINUTES, DEFAULT_KEEP_ALIVE_INTERVAL } from "../../Config/constants";
 import SideMenuIcons from "../../Components/EventSession/SideMenuIcons";
 import ChatPane, { CHAT_DEFAULT_WIDTH } from "../../Components/Chat/ChatPane";
 import EditProfileDialog from "../../Components/EditProfile/EditProfileDialog";
@@ -51,6 +51,7 @@ import {
   setStateLoaded,
   isStateLoaded,
 } from "../../Redux/eventSession";
+import useInterval from "../../Hooks/useInterval";
 
 export const SIDE_PANE_WIDTH = 53;
 const LEFT_PANE_WIDTH = 300;
@@ -290,6 +291,10 @@ export default withRouter((props) => {
     userId,
     dispatch,
   ]);
+
+  useInterval(async () => {
+    keepAlive(sessionId, userId);
+  }, DEFAULT_KEEP_ALIVE_INTERVAL);
 
   // -----------------------------------------------------------------------------------------------------
 

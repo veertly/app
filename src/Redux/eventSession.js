@@ -1,4 +1,6 @@
 import _ from "lodash";
+import { DEFAULT_KEEP_ALIVE_INTERVAL } from "../Config/constants";
+import moment from "moment";
 
 const UPDATE_EVENT_SESSION = "eventSession.UPDATE_EVENT_SESSION";
 const UPDATE_EVENT_SESSION_DETAILS = "eventSession.UPDATE_EVENT_SESSION_DETAILS";
@@ -20,7 +22,12 @@ const initialState = {
   userSession: null, // logged in user's participantJoined object
   userGroup: null, // current group of the logged in user
   stateLoaded: false,
+  availableParticipantsList: [],
 };
+
+// const calculateListAvailableParticipants = (participantsJoinedArray) => {
+
+// }
 
 export const eventSessionReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -38,16 +45,60 @@ export const eventSessionReducer = (state = initialState, action) => {
     }
     case UPDATE_PARTICIPANTS_JOINED: {
       let newParticipantsJoined = _.keyBy(action.participantsJoined, "id");
+
       let userSession = state.userId && newParticipantsJoined ? newParticipantsJoined[state.userId] : state.userSession;
+
       let userGroup =
         state.userId && state.liveGroups && userSession && userSession.groupId
           ? state.liveGroups[userSession.groupId]
           : null;
+
+      let now = moment();
+
+      let newAvailableParticipantsList = _.reduce(
+        action.participantsJoined,
+        (result, participant) => {
+          let participantResult = { ...participant };
+
+          //check if still online (keep alive)
+          if (
+            participant.isOnline &&
+            participant.lastSeen &&
+            moment(participant.lastSeen.toDate())
+              .add(1.5 * DEFAULT_KEEP_ALIVE_INTERVAL, "ms")
+              .isBefore(now)
+          ) {
+            return result; // skip this participant as he is offline
+          }
+
+          if (!participant.isOnline) {
+            return result; // skip this participant as he is offline
+          }
+
+          if (participant.id === state.userId) {
+            participantResult.isMyUser = true;
+          }
+
+          let isInConversation = participant && participant.groupId !== undefined && participant.groupId !== null;
+          let isInConferenceRoom = !isInConversation && !participant.inNetworkingRoom;
+          let isAvailable = !isInConversation && participant.inNetworkingRoom;
+
+          participantResult.isInConversation = isInConversation;
+          participantResult.isInConferenceRoom = isInConferenceRoom;
+          participantResult.isAvailable = isAvailable;
+
+          result.push(participantResult);
+          return result;
+        },
+        []
+      );
+
       return {
         ...state,
         participantsJoined: newParticipantsJoined,
         userSession,
         userGroup,
+        availableParticipantsList: newAvailableParticipantsList,
       };
     }
     case UPDATE_LIVE_GROUPS: {
@@ -100,6 +151,7 @@ export const getUserGroup = (store) => store.eventSession.userGroup;
 export const isInNetworkingRoom = (store) =>
   store.eventSession.userSession && store.eventSession.userSession.inNetworkingRoom;
 export const isStateLoaded = (store) => store.eventSession.stateLoaded === true;
+export const getAvailableParticipantsList = (store) => store.eventSession.availableParticipantsList;
 
 export const updateEventSession = (eventSession) => ({
   type: UPDATE_EVENT_SESSION,
