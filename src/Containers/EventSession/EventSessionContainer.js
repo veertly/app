@@ -4,7 +4,7 @@ import NetworkingRoomContainer from "./NetworkingRoomContainer";
 import { useCollectionData, useDocumentData } from "react-firebase-hooks/firestore";
 import firebase from "../../Modules/firebaseApp";
 import { withRouter } from "react-router-dom";
-import { setAsAvailable, leaveCall, updateInNetworkingRoom } from "../../Modules/eventSessionOperations";
+import { leaveCall, updateInNetworkingRoom } from "../../Modules/eventSessionOperations";
 import { useAuthState } from "react-firebase-hooks/auth";
 import Typography from "@material-ui/core/Typography";
 import { useBeforeunload } from "react-beforeunload";
@@ -264,8 +264,7 @@ export default withRouter((props) => {
       if (!user) {
         history.push(routes.EDIT_PROFILE(routes.EVENT_SESSION_LIVE(sessionId)));
       }
-      setAsAvailable(sessionId, userId, participantsJoined);
-      initFirebasePresenceSync(sessionId, userId);
+      initFirebasePresenceSync(sessionId, userId, participantsJoined);
       setInitCompleted(true);
     }
   }, [initCompleted, liveGroups, participantsJoined, users, userId, sessionId, history, user, stateLoaded]);
