@@ -95,19 +95,21 @@ function SimpleDialog(props) {
       default:
         calendarUrl = [
           "BEGIN:VCALENDAR",
+          "PRODID:-//Veertly//NONSGML EventCalender//EN",
           "VERSION:2.0",
           "BEGIN:VEVENT",
+          "UID:" + event.id,
           "URL:" + document.URL,
           "DTSTART:" + formatTime(event.startTime),
           "DTEND:" + formatTime(event.endTime),
           "SUMMARY:" + event.title,
-          "DESCRIPTION:" + event.description,
+          "DESCRIPTION:" + event.rawDescription,
+          "X-ALT-DESC;FMTTYPE=text/html:<!DOCTYPE html><html lang=\"en\"><body>"+ event.description +"</body></html>",
           "LOCATION:" + event.location,
           "END:VEVENT",
           "END:VCALENDAR",
-        ].join("\n");
+        ].join("\r\n");
     }
-
     return calendarUrl;
   };
 
@@ -126,7 +128,8 @@ function SimpleDialog(props) {
         ****************************************************************/
       let link = document.createElement("a");
       link.href = window.URL.createObjectURL(blob);
-      link.setAttribute(event.id, filename);
+      // link.setAttribute(event.id, filename);
+      link.setAttribute("download", filename);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
