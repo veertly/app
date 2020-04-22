@@ -7,8 +7,18 @@ import Typography from "@material-ui/core/Typography";
 import ParticipantCard from "./ParticipantCard";
 import { createNewConversation } from "../../Modules/eventSessionOperations";
 import { useSnackbar } from "material-ui-snackbar-provider";
-import { getSessionId, getUserId, getUserGroup } from "../../Redux/eventSession";
+import {
+  getSessionId,
+  getUserId,
+  getUserLiveGroup,
+  getUserSession,
+  getAvailableParticipantsList,
+  getLiveGroups,
+} from "../../Redux/eventSession";
 import { useSelector, shallowEqual } from "react-redux";
+import _ from "lodash";
+import Alert from "@material-ui/lab/Alert";
+import { MAX_PARTICIPANTS_GROUP } from "../../Config/constants";
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -36,17 +46,50 @@ const useStyles = makeStyles((theme) => ({
   emptySpaceBottom: {
     marginBottom: theme.spacing(4),
   },
+  conversationWith: {
+    margin: theme.spacing(3, 0),
+  },
+  participantContainer: {
+    margin: theme.spacing(2, 0),
+  },
+  alert: {
+    marginTop: theme.spacing(2),
+  },
 }));
 
 export default function (props) {
   const classes = useStyles();
   const snackbar = useSnackbar();
 
-  const { open, setOpen, participant, showJoinButton } = props;
+  const { open, setOpen, participant } = props;
 
   const sessionId = useSelector(getSessionId);
   const userId = useSelector(getUserId);
-  const userGroup = useSelector(getUserGroup, shallowEqual);
+  const userGroup = useSelector(getUserLiveGroup, shallowEqual);
+  const userSession = useSelector(getUserSession, shallowEqual);
+  const availableParticipantsList = useSelector(getAvailableParticipantsList, shallowEqual);
+  const liveGroups = useSelector(getLiveGroups, shallowEqual);
+
+  const participantSession = React.useMemo(
+    () => _.find(availableParticipantsList, (p) => participant && p.id === participant.id),
+    [availableParticipantsList, participant]
+  );
+
+  const liveGroup = React.useMemo(
+    () =>
+      liveGroups && participantSession && participantSession.groupId ? liveGroups[participantSession.groupId] : null,
+    [liveGroups, participantSession]
+  );
+
+  const isMyUser = userId && participant && userId === participant.id;
+
+  let participantInConversation = participantSession && participantSession.groupId !== null;
+  let userInConferenceRoom = userSession && !userSession.inNetworkingRoom;
+  let participantInConferenceRoom = participantSession && !participantSession.inNetworkingRoom;
+
+  let canStartConversation = !isMyUser && !participantInConversation && !participantInConferenceRoom;
+  let canJoinConversation =
+    !isMyUser && !participantInConferenceRoom && liveGroup && liveGroup.participants.length <= MAX_PARTICIPANTS_GROUP;
 
   const handleClose = () => {
     setOpen(false);
@@ -66,29 +109,104 @@ export default function (props) {
     setOpen(false);
   };
 
+  const handleJoinConversation = () => {
+    alert("not implemented...");
+  };
   return (
     <div>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        // PaperComponent={PaperComponent}
-        // aria-labelledby="draggable-dialog-title"
-        maxWidth={"sm"}
-      >
+      <Dialog open={open} onClose={handleClose} maxWidth={"sm"}>
         <div className={classes.content}>
           <ParticipantCard participant={participant} />
-          {showJoinButton && (
+          {isMyUser && (
+            <Alert severity="info" className={classes.alert}>
+              This is yourself{" "}
+              <span role="img" aria-label="happy">
+                🙂
+              </span>
+            </Alert>
+          )}
+          {participantInConversation && (
+            <div className={classes.conversationWith}>
+              <>
+                <Typography variant="button" color="primary">
+                  In a conversation with:
+                </Typography>
+                {/* <Divider color="secondary" /> */}
+                {liveGroup &&
+                  liveGroup.participants.map((p) => {
+                    if (p.id === userId) {
+                      return null;
+                    }
+                    return (
+                      <div key={p.id} className={classes.participantContainer}>
+                        <ParticipantCard participant={participant} />
+                      </div>
+                    );
+                  })}
+
+                {canJoinConversation && (
+                  <div>
+                    <div className={classes.buttonContainer}>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        className={classes.button}
+                        onClick={handleJoinConversation}
+                      >
+                        Join Conversation
+                      </Button>
+                    </div>
+                    {/* <Typography className={classes.hintText} variant="caption"> */}
+                    {!userInConferenceRoom && (
+                      <Alert severity="success" className={classes.alert}>
+                        You will join this conversation video conferencing call
+                      </Alert>
+                    )}
+
+                    {/* </Typography> */}
+                  </div>
+                )}
+              </>
+            </div>
+          )}
+
+          {canStartConversation && (
             <React.Fragment>
               <div className={classes.buttonContainer}>
                 <Button variant="contained" color="primary" className={classes.button} onClick={startConversation}>
                   Start Conversation
                 </Button>
               </div>
-              <Typography className={classes.hintText} variant="caption">
-                You will join new a video conferencing call with the selected participant.
-              </Typography>
+              {/* <Typography className={classes.hintText} variant="caption"> */}
+              {!userInConferenceRoom && (
+                <Alert severity="success" className={classes.alert}>
+                  You will join new a video conferencing call with {participant.firstName}.{/* </Typography> */}
+                </Alert>
+              )}
             </React.Fragment>
           )}
+          {participantInConferenceRoom /* && (canJoinConversation || canStartConversation) */ && (
+            <div className={classes.buttonContainer}>
+              <Alert severity="warning">
+                {participant.firstName} is currently watching the presentation on the main stage and is not available to
+                talk
+              </Alert>
+
+              {/* </Typography> */}
+            </div>
+          )}
+          {userInConferenceRoom && (canJoinConversation || canStartConversation) && (
+            <div className={classes.buttonContainer}>
+              {/* <div style={{ textAlign: "center", width: "100%" }}>
+                <SuccessIcon style={{ fontSize: 64, color: "#53a653" }} />
+              </div> */}
+              <Alert severity="warning">
+                You are currently watching the presentation on the main stage. <br />
+                If you start this conversation you will leave the main stage.
+              </Alert>
+            </div>
+          )}
+
           {/* {participant.id === user.uid && (
             <React.Fragment>
               <div className={classes.buttonContainer}>

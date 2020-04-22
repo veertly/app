@@ -102,8 +102,6 @@ export default function (props) {
   const [selectedParticipant, setSelectedParticipant] = React.useState(null);
   const [showJoinButton, setShowJoinButton] = React.useState(false);
 
-  // const { users, eventSession, user, onConferenceRoom } = props;
-
   const users = useSelector(getUsers, shallowEqual);
   const onConferenceRoom = !useSelector(isInNetworkingRoom);
   const availableParticipantsList = useSelector(getAvailableParticipantsList, shallowEqual);

@@ -87,7 +87,7 @@ export default function (props) {
                 </Button>
               </div>
               <Typography className={classes.hintText} variant="caption">
-                You will join the video conferencing call of the selected group.
+                You will join this conversation video conferencing call
               </Typography>
             </div>
           )}
