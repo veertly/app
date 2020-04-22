@@ -208,18 +208,20 @@ export const initFirebasePresenceSync = async (sessionId, userId, participantsJo
         .update(isOfflineForDatabase)
         .then(function () {
           userStatusDatabaseRef.set(isOnlineForDatabase);
+
           if (!participantsJoined[userId]) {
             userStatusFirestoreRef.set({
               groupId: null,
               isOnline: true,
               joinedTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
               leftTimestamp: null,
+              lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
             });
           } else {
             userStatusFirestoreRef.update({
               isOnline: true,
-              joinedTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
               leftTimestamp: null,
+              lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
             });
           }
         });
@@ -232,12 +234,10 @@ export const keepAlive = async (sessionId, userId) => {
     .firestore()
     .collection("eventSessions")
     .doc(sessionId)
-    .collection("participantsJoined")
+    .collection("keepAlive")
     .doc(userId);
 
-  await userSessionRef.update({
-    isOnline: true,
+  await userSessionRef.set({
     lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
-    leftTimestamp: null,
   });
 };

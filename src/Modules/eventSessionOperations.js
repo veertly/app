@@ -4,64 +4,6 @@ import { MAX_PARTICIPANTS_GROUP } from "../Config/constants";
 
 const getVideoConferenceAddress = (groupId) => `https://meet.jit.si/veertly-${groupId}`;
 
-// export const setAsAvailable = async (sessionId, userId, participantsJoined) => {
-//   let currentGroupId =
-//     participantsJoined[userId] && participantsJoined[userId].groupId ? participantsJoined[userId].groupId : null;
-
-//   if (!participantsJoined[userId]) {
-//     // user is not yet added to the DB, so set it on the DB
-//     await firebase
-//       .firestore()
-//       .collection("eventSessions")
-//       .doc(sessionId)
-//       .collection("participantsJoined")
-//       .doc(userId)
-//       .set({
-//         groupId: currentGroupId,
-//         isOnline: true,
-//         joinedTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
-//         leftTimestamp: null,
-//       });
-//   } else {
-//     //user is already on the DB, so update it
-//     await firebase
-//       .firestore()
-//       .collection("eventSessions")
-//       .doc(sessionId)
-//       .collection("participantsJoined")
-//       .doc(userId)
-//       .update({
-//         groupId: currentGroupId,
-//         isOnline: true,
-//         joinedTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
-//         leftTimestamp: null,
-//       });
-//   }
-//   // console.log("SET AS AVAILABLE!!!!!!");
-// };
-
-// export const setAsOffline = async (eventSession, userId) => {
-//   // console.log(eventSession.participantsJoined[userId]);
-//   let currentGroupId =
-//     eventSession.participantsJoined[userId] && eventSession.participantsJoined[userId].groupId
-//       ? eventSession.participantsJoined[userId].groupId
-//       : null;
-
-//   if (currentGroupId) {
-//     leaveCall(eventSession, userId);
-//   }
-//   await firebase
-//     .firestore()
-//     .collection("eventSessions")
-//     .doc(eventSession.id)
-//     .collection("participantsJoined")
-//     .doc(userId)
-//     .update({
-//       leftTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
-//       isOnline: false,
-//     });
-// };
-
 export const createNewConversation = (sessionId, myUserId, otherUserId, currentUserGroup, snackbar) => {
   let currentGroupId = currentUserGroup ? currentUserGroup.id : null;
   // participantsJoined[myUserId] && participantsJoined[myUserId].groupId
@@ -85,10 +27,12 @@ export const createNewConversation = (sessionId, myUserId, otherUserId, currentU
   groupParticipantsObj[myUserId] = {
     joinedTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
     leftTimestamp: null,
+    id: myUserId,
   };
   groupParticipantsObj[otherUserId] = {
     joinedTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
     leftTimestamp: null,
+    id: otherUserId,
   };
 
   let groupObj = {
@@ -345,6 +289,7 @@ export const joinConversation = (sessionId, participantsJoined, liveGroups, myUs
       let updateObj = {};
       updateObj[`participants.${myUserId}.joinedTimestamp`] = firebase.firestore.FieldValue.serverTimestamp();
       updateObj[`participants.${myUserId}.leftTimestamp`] = null;
+      updateObj[`participants.${myUserId}.id`] = myUserId;
       transaction.update(newGroupRef, updateObj);
     })
     .then(function () {

@@ -7,7 +7,7 @@ import { withRouter } from "react-router-dom";
 import { leaveCall, updateInNetworkingRoom } from "../../Modules/eventSessionOperations";
 import { useAuthState } from "react-firebase-hooks/auth";
 import Typography from "@material-ui/core/Typography";
-import { useBeforeunload } from "react-beforeunload";
+// import { useBeforeunload } from "react-beforeunload";
 import clsx from "clsx";
 
 import { makeStyles /* useTheme */ } from "@material-ui/styles";
@@ -25,7 +25,11 @@ import { useHistory } from "react-router-dom";
 import routes from "../../Config/routes";
 import { initFirebasePresenceSync, keepAlive } from "../../Modules/userOperations";
 import Announcements from "../../Components/EventSession/Announcements";
-import { DEFAULT_EVENT_OPEN_MINUTES, DEFAULT_KEEP_ALIVE_INTERVAL } from "../../Config/constants";
+import {
+  DEFAULT_EVENT_OPEN_MINUTES,
+  DEFAULT_KEEP_ALIVE_INTERVAL,
+  DEFAULT_KEEP_ALIVE_CHECK_INTERVAL,
+} from "../../Config/constants";
 import SideMenuIcons from "../../Components/EventSession/SideMenuIcons";
 import ChatPane, { CHAT_DEFAULT_WIDTH } from "../../Components/Chat/ChatPane";
 import EditProfileDialog from "../../Components/EditProfile/EditProfileDialog";
@@ -50,6 +54,7 @@ import {
   getUserGroup,
   setStateLoaded,
   isStateLoaded,
+  crossCheckKeepAlives,
 } from "../../Redux/eventSession";
 import useInterval from "../../Hooks/useInterval";
 
@@ -152,9 +157,9 @@ export default withRouter((props) => {
   };
 
   const shouldOpenSidebar = isDesktop ? true : openSidebar;
-  useBeforeunload((e) => {
-    // setAsOffline(composedEventSession, userId);
-  });
+  // useBeforeunload((e) => {
+  //   // setAsOffline(composedEventSession, userId);
+  // });
 
   // -----------------------------------------------------------------------------------------------------
   let originalSessionId = props.match.params.sessionId;
@@ -192,6 +197,11 @@ export default withRouter((props) => {
   const [participantsJoinedDB, loadingParticipantsJoinedDB, errorParticipantsJoinedDB] = useCollectionData(
     firebase.firestore().collection("eventSessions").doc(sessionId).collection("participantsJoined"),
     // .where("isOnline", "==", true),
+    { idField: "id" }
+  );
+
+  const [keepALivesDB] = useCollectionData(
+    firebase.firestore().collection("eventSessions").doc(sessionId).collection("keepAlive"),
     { idField: "id" }
   );
 
@@ -267,6 +277,7 @@ export default withRouter((props) => {
       }
       initFirebasePresenceSync(sessionId, userId, participantsJoined);
       setInitCompleted(true);
+      keepAlive(sessionId, userId);
     }
   }, [initCompleted, liveGroups, participantsJoined, users, userId, sessionId, history, user, stateLoaded]);
 
@@ -292,15 +303,21 @@ export default withRouter((props) => {
     dispatch,
   ]);
 
+  // --- send keep alive ---
   useInterval(async () => {
     keepAlive(sessionId, userId);
   }, DEFAULT_KEEP_ALIVE_INTERVAL);
 
+  // --- handle keep alive ---
+  useInterval(async () => {
+    dispatch(crossCheckKeepAlives(keepALivesDB));
+  }, DEFAULT_KEEP_ALIVE_CHECK_INTERVAL);
+
   // -----------------------------------------------------------------------------------------------------
 
-  const handleCreateConference = async () => {
+  const handleCreateConference = React.useCallback(() => {
     history.push(routes.CREATE_EVENT_SESSION());
-  };
+  }, [history]);
 
   const isLive = React.useMemo(() => {
     if (!eventSessionDetails || !eventSessionDetails.eventBeginDate || !eventSessionDetails.eventOpens) {

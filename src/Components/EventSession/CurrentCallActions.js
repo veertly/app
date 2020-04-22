@@ -10,7 +10,7 @@ import { leaveCall } from "../../Modules/eventSessionOperations";
 import LeaveCallDialog from "./LeaveCallDialog";
 
 import { useSelector, shallowEqual } from "react-redux";
-import { getSessionId, getUsers, getUserGroup, getUserId } from "../../Redux/eventSession";
+import { getSessionId, getUsers, getUserGroup, getUserId, getUserLiveGroup } from "../../Redux/eventSession";
 
 momentDurationFormatSetup(moment);
 
@@ -48,6 +48,7 @@ export default function (props) {
   const userId = useSelector(getUserId);
   const userGroup = useSelector(getUserGroup, shallowEqual);
   const sessionId = useSelector(getSessionId);
+  const liveGroup = useSelector(getUserLiveGroup, shallowEqual);
 
   if (!userGroup) {
     return null;
@@ -56,7 +57,8 @@ export default function (props) {
   useEffect(() => {
     var timerID = setInterval(() => {
       const currentTimestamp = new Date().getTime();
-      const joinedTimestamp = userGroup.participants[userId].joinedTimestamp.toDate().getTime();
+      const joinedTimestamp =
+        userGroup.participants[userId] && userGroup.participants[userId].joinedTimestamp.toDate().getTime();
       setElapsedTime(currentTimestamp - joinedTimestamp);
     }, 1000);
 
@@ -67,22 +69,26 @@ export default function (props) {
 
   useEffect(() => {
     // calculate list participants online
-    const participants = Object.keys(userGroup.participants).reduce((result, participantId) => {
-      let participant = users[participantId];
-      let participantSession = userGroup.participants[participantId];
+    if (liveGroup) {
+      const participants = Object.keys(liveGroup.participants).reduce((result, participantId) => {
+        let participant = users[participantId];
+        let participantSession = userGroup.participants[participantId];
 
-      // console.log({ participantSession, participant });
+        // console.log({ participantSession, participant });
 
-      if (participant && participantSession.leftTimestamp === null) {
-        result.push(participant);
-      }
-      // console.log({ result });
-      return result;
-    }, []);
+        if (participant && participantSession.leftTimestamp === null) {
+          result.push(participant);
+        }
+        // console.log({ result });
+        return result;
+      }, []);
 
-    // console.log({ participants });
-    setParticipants(participants);
-  }, [userGroup, users]);
+      // console.log({ participants });
+      setParticipants(participants);
+    } else {
+      setParticipants([]);
+    }
+  }, [liveGroup, users, userGroup.participants]);
 
   const showElapsedTime = () => {
     let elapsedMoment = moment.duration(elapsedTime, "milliseconds");
@@ -92,6 +98,7 @@ export default function (props) {
   const handleLeaveCall = () => {
     leaveCall(sessionId, userGroup, userId);
   };
+
   return (
     <div className={classes.groupContainer}>
       <LeaveCallDialog open={leaveCallOpen} handleLeaveCall={handleLeaveCall} setOpen={setLeaveCallOpen} />
