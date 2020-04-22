@@ -6,7 +6,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 
-export default props => {
+export default (props) => {
   const { open, setOpen, handleLeaveCall } = props;
 
   function handleClose() {
@@ -16,12 +16,11 @@ export default props => {
   return (
     <div>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>{"Go to networking area"}</DialogTitle>
+        <DialogTitle>{"Ready to network with other participants?"}</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to leave the main stage and join the networking area?
-            <br />
-            If you want to come back to the main stage, simply click the “Main stage” button on the top bar at any time.
+            You will leave the 'Main Stage' when joining the 'Networking Area'. <br />
+            But no worries you can come back at any time. Happy networking!
           </DialogContentText>
         </DialogContent>
         <DialogActions>

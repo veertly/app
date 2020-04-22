@@ -246,8 +246,11 @@ export const getUserLiveGroup = (store) => {
   let { liveGroups } = store.eventSession;
   return userSession && liveGroups && userSession.groupId ? liveGroups[userSession.groupId] : null;
 };
-export const isInNetworkingRoom = (store) =>
-  store.eventSession.userSession && store.eventSession.userSession.inNetworkingRoom;
+export const isInNetworkingRoom = (store) => {
+  let userSession = getUserSession(store);
+  return userSession && userSession.inNetworkingRoom;
+};
+
 export const isStateLoaded = (store) => store.eventSession.stateLoaded === true;
 export const getAvailableParticipantsList = (store) => store.eventSession.availableParticipantsList;
 

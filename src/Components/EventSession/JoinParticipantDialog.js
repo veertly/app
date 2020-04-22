@@ -14,6 +14,7 @@ import {
   getUserSession,
   getAvailableParticipantsList,
   getLiveGroups,
+  getUsers,
 } from "../../Redux/eventSession";
 import { useSelector, shallowEqual } from "react-redux";
 import _ from "lodash";
@@ -61,11 +62,12 @@ export default function (props) {
   const classes = useStyles();
   const snackbar = useSnackbar();
 
-  const { open, setOpen, participant } = props;
+  const { open, setOpen, participant, setIsInConferenceRoom } = props;
 
   const sessionId = useSelector(getSessionId);
   const userId = useSelector(getUserId);
   const userGroup = useSelector(getUserLiveGroup, shallowEqual);
+  const users = useSelector(getUsers, shallowEqual);
   const userSession = useSelector(getUserSession, shallowEqual);
   const availableParticipantsList = useSelector(getAvailableParticipantsList, shallowEqual);
   const liveGroups = useSelector(getLiveGroups, shallowEqual);
@@ -83,13 +85,22 @@ export default function (props) {
 
   const isMyUser = userId && participant && userId === participant.id;
 
-  let participantInConversation = participantSession && participantSession.groupId !== null;
+  let participantInConversation = participantSession && participantSession.groupId;
   let userInConferenceRoom = userSession && !userSession.inNetworkingRoom;
-  let participantInConferenceRoom = participantSession && !participantSession.inNetworkingRoom;
+  let participantInConferenceRoom = !isMyUser && participantSession && !participantSession.inNetworkingRoom;
 
   let canStartConversation = !isMyUser && !participantInConversation && !participantInConferenceRoom;
   let canJoinConversation =
-    !isMyUser && !participantInConferenceRoom && liveGroup && liveGroup.participants.length <= MAX_PARTICIPANTS_GROUP;
+    !isMyUser && !participantInConferenceRoom && liveGroup && _.size(liveGroup.participants) <= MAX_PARTICIPANTS_GROUP;
+
+  // console.log({
+  //   participantSession,
+  //   participantInConversation,
+  //   userInConferenceRoom,
+  //   participantInConferenceRoom,
+  //   canStartConversation,
+  //   canJoinConversation,
+  // });
 
   const handleClose = () => {
     setOpen(false);
@@ -102,6 +113,9 @@ export default function (props) {
   const startConversation = (e) => {
     e.preventDefault();
     try {
+      if (userInConferenceRoom) {
+        setIsInConferenceRoom(false);
+      }
       createNewConversation(sessionId, userId, participant.id, userGroup, snackbar);
     } catch (error) {
       console.error(error);
@@ -112,6 +126,7 @@ export default function (props) {
   const handleJoinConversation = () => {
     alert("not implemented...");
   };
+  console.log(liveGroup);
   return (
     <div>
       <Dialog open={open} onClose={handleClose} maxWidth={"sm"}>
@@ -133,13 +148,18 @@ export default function (props) {
                 </Typography>
                 {/* <Divider color="secondary" /> */}
                 {liveGroup &&
-                  liveGroup.participants.map((p) => {
-                    if (p.id === userId) {
+                  liveGroup.participants &&
+                  Object.values(liveGroup.participants).map((p) => {
+                    if (p.id === participant.id) {
+                      return null;
+                    }
+                    let pDetails = users[p.id];
+                    if (!pDetails) {
                       return null;
                     }
                     return (
                       <div key={p.id} className={classes.participantContainer}>
-                        <ParticipantCard participant={participant} />
+                        <ParticipantCard participant={pDetails} />
                       </div>
                     );
                   })}
