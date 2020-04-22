@@ -13,6 +13,8 @@ const STATE_LOADED = "eventSession.STATE_LOADED";
 
 const CROSS_CHECK_KEEP_ALIVES = "eventSession.CROSS_CHECK_KEEP_ALIVES";
 
+const SET_FILTERS = "eventSessions.SET_FILTERS";
+
 const initialState = {
   eventSession: null,
   eventSessionDetails: null,
@@ -27,6 +29,7 @@ const initialState = {
   stateLoaded: false,
   availableParticipantsList: [],
   keepAlives: {},
+  filters: {},
 };
 
 const isStillLive = (keepAlive) =>
@@ -216,6 +219,13 @@ export const eventSessionReducer = (state = initialState, action) => {
       };
     }
 
+    case SET_FILTERS: {
+      return {
+        ...state,
+        filters: action.filters,
+      }
+    }
+
     default:
       return state;
   }
@@ -253,6 +263,7 @@ export const isInNetworkingRoom = (store) => {
 
 export const isStateLoaded = (store) => store.eventSession.stateLoaded === true;
 export const getAvailableParticipantsList = (store) => store.eventSession.availableParticipantsList;
+export const getFilters = (store) => store.eventSession.filters;
 
 export const updateEventSession = (eventSession) => ({
   type: UPDATE_EVENT_SESSION,
@@ -289,3 +300,8 @@ export const crossCheckKeepAlives = (keepAlives) => ({
   type: CROSS_CHECK_KEEP_ALIVES,
   keepAlives,
 });
+
+export const setFilters = (filters) => ({
+  type: SET_FILTERS,
+  filters
+})

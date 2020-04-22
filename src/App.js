@@ -34,6 +34,7 @@ const theme = createMuiTheme({
       default: "#F4F6F8",
       paper: "#FFF",
     },
+    filtersSelected: '#c1d4e3',
   },
   overrides: {
     // Name of the component ⚛️ / style shee

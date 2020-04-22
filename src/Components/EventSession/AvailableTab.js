@@ -14,7 +14,7 @@ import ConferenceIcon from "@material-ui/icons/DesktopMac";
 import FilterAttendeesDialog from "./FilterAttendeesDialog";
 
 import { useSelector, shallowEqual } from "react-redux";
-import { getUsers, isInNetworkingRoom, getAvailableParticipantsList } from "../../Redux/eventSession";
+import { getUsers, isInNetworkingRoom, getAvailableParticipantsList, getFilters } from "../../Redux/eventSession";
 
 // import JoinConversationDialog from "./JoinConversationDialog";
 import _ from "lodash";
@@ -59,6 +59,9 @@ const useStyles = makeStyles((theme) => ({
   button: {
     margin: theme.spacing(1),
   },
+  filterButton: ({filters}) => ({
+    backgroundColor: filters &&  Object.keys(filters).length > 0 ? theme.palette.filtersSelected : 'transparent',
+  }),
   title: {
     marginTop: theme.spacing(1),
     display: "block",
@@ -96,17 +99,17 @@ const AvailableBadge = withStyles((theme) => ({
 }))(Badge);
 
 export default function (props) {
-  const classes = useStyles();
   const [joinDialog, setJoinDialog] = React.useState(false);
   const [filterDialog, setFilterDialog] = React.useState(false);
   const [selectedParticipant, setSelectedParticipant] = React.useState(null);
-  let { setIsInConferenceRoom } = props;
+  let { setIsInConferenceRoom } = props;  
+  
+  const filters = useSelector(getFilters);
+  const classes = useStyles({filters});
 
   const users = useSelector(getUsers, shallowEqual);
   const onConferenceRoom = !useSelector(isInNetworkingRoom);
   const availableParticipantsList = useSelector(getAvailableParticipantsList, shallowEqual);
-
-  const [filters, setFilters] = React.useState({});
 
   let participantsAvailable = React.useMemo(() => {
     let result = availableParticipantsList.filter((participantSession) => {
@@ -181,7 +184,7 @@ export default function (props) {
         // user={user}
         // users={users}
         filters={filters}
-        setFilters={setFilters}
+        // setFilters={setFilters}
         // onConferenceRoom={onConferenceRoom}
         // showJoinButton={showJoinButton}
       />
@@ -202,7 +205,7 @@ export default function (props) {
             variant="outlined"
             color="primary"
             size="small"
-            className={classes.button}
+            className={`${classes.button} ${classes.filterButton}`}
             onClick={() => {
               setFilterDialog(true);
             }}
