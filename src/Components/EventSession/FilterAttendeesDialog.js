@@ -6,8 +6,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import _ from "lodash";
 import FormGroup from "@material-ui/core/FormGroup";
-import { useSelector, shallowEqual } from "react-redux";
-import { getUsers, getParticipantsJoined } from "../../Redux/eventSession";
+import { useSelector, shallowEqual, useDispatch } from "react-redux";
+import { getUsers, getParticipantsJoined, setFilters } from "../../Redux/eventSession";
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
 
@@ -45,12 +45,14 @@ const useStyles = makeStyles((theme) => ({
 export default function (props) {
   const classes = useStyles();
 
-  const { open, setOpen, filters, setFilters } = props;
+  const { open, setOpen, filters } = props;
 
   const [internalFilters, setInternalFilters] = React.useState(filters);
 
   const users = useSelector(getUsers, shallowEqual);
   const participantsJoined = useSelector(getParticipantsJoined, shallowEqual);
+
+  const dispatch = useDispatch();
 
   const handleClose = () => {
     setOpen(false);
@@ -92,14 +94,14 @@ export default function (props) {
       return acc;
     }, {})
     setInternalFilters(newFilters);
-    setFilters(newFilters);
+    dispatch(setFilters(newFilters))
     setValues(interests)
   }
 
   const applyFilters = React.useCallback(() => {
-    setFilters(internalFilters);
+    dispatch(setFilters(internalFilters))
     setOpen(false);
-  }, [internalFilters, setFilters, setOpen]);
+  }, [internalFilters, setOpen, dispatch]);
 
 
   return (

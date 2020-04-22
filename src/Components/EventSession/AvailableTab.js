@@ -14,7 +14,7 @@ import ConferenceIcon from "@material-ui/icons/DesktopMac";
 import FilterAttendeesDialog from "./FilterAttendeesDialog";
 
 import { useSelector, shallowEqual } from "react-redux";
-import { getUsers, isInNetworkingRoom, getAvailableParticipantsList } from "../../Redux/eventSession";
+import { getUsers, isInNetworkingRoom, getAvailableParticipantsList, getFilters } from "../../Redux/eventSession";
 
 // import JoinConversationDialog from "./JoinConversationDialog";
 import _ from "lodash";
@@ -102,10 +102,9 @@ export default function (props) {
   const [joinDialog, setJoinDialog] = React.useState(false);
   const [filterDialog, setFilterDialog] = React.useState(false);
   const [selectedParticipant, setSelectedParticipant] = React.useState(null);
-  let { setIsInConferenceRoom } = props;
-
-  const [filters, setFilters] = React.useState({});
+  let { setIsInConferenceRoom } = props;  
   
+  const filters = useSelector(getFilters);
   const classes = useStyles({filters});
 
   const users = useSelector(getUsers, shallowEqual);
@@ -185,7 +184,7 @@ export default function (props) {
         // user={user}
         // users={users}
         filters={filters}
-        setFilters={setFilters}
+        // setFilters={setFilters}
         // onConferenceRoom={onConferenceRoom}
         // showJoinButton={showJoinButton}
       />
