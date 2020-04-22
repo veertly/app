@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 
@@ -6,11 +6,11 @@ import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import _ from "lodash";
 import FormGroup from "@material-ui/core/FormGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Switch from "@material-ui/core/Switch";
-import { Tooltip } from "@material-ui/core";
-import { useSelector, shallowEqual } from "react-redux";
-import { getUsers, getParticipantsJoined } from "../../Redux/eventSession";
+import { useSelector, shallowEqual, useDispatch } from "react-redux";
+import { getUsers, getParticipantsJoined, setFilters } from "../../Redux/eventSession";
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import TextField from '@material-ui/core/TextField';
+
 const useStyles = makeStyles((theme) => ({
   content: {
     position: "relative",
@@ -37,22 +37,30 @@ const useStyles = makeStyles((theme) => ({
   emptySpaceBottom: {
     marginBottom: theme.spacing(4),
   },
+  autoComplete: {
+    width: '100%',
+  },
+  caption: {
+    marginTop: theme.spacing(1),
+  }
 }));
 
 export default function (props) {
   const classes = useStyles();
 
-  const { open, setOpen, filters, setFilters } = props;
+  const { open, setOpen, filters } = props;
 
   const [internalFilters, setInternalFilters] = React.useState(filters);
 
   const users = useSelector(getUsers, shallowEqual);
   const participantsJoined = useSelector(getParticipantsJoined, shallowEqual);
 
+  const dispatch = useDispatch();
+
   const handleClose = () => {
     setOpen(false);
   };
-
+  
   const usersInterests = React.useMemo(() => {
     let result = {};
     _.forEach(users, (user, id) => {
@@ -78,21 +86,26 @@ export default function (props) {
 
     return sorted;
   }, [users, participantsJoined]);
+  
+  // set the default value
+  const savedFiltersLabel = Object.keys(filters);
+  const [values, setValues] = useState(usersInterests.filter((interest) => savedFiltersLabel.includes(interest.label)));
 
-  const handleFilterChecked = (label) => (e) => {
-    let newFilters = { ...internalFilters };
-    if (e.target.checked === true) {
-      newFilters[label] = true;
-    } else {
-      delete newFilters[label];
-    }
+  const handleFilterSelected = (interests) => {
+    const newFilters = interests.reduce((acc, interest) => {
+      acc[interest.label] = true;
+      return acc;
+    }, {})
     setInternalFilters(newFilters);
-  };
+    dispatch(setFilters(newFilters))
+    setValues(interests)
+  }
 
   const applyFilters = React.useCallback(() => {
-    setFilters(internalFilters);
+    dispatch(setFilters(internalFilters))
     setOpen(false);
-  }, [internalFilters, setFilters, setOpen]);
+  }, [internalFilters, setOpen, dispatch]);
+
 
   return (
     <div>
@@ -103,21 +116,32 @@ export default function (props) {
           </Typography>
 
           <FormGroup row style={{ marginTop: 16 }}>
-            {usersInterests.map(({ label, count }) => (
-              <Tooltip key={label} title={`${count} attendee${count > 1 ? "s have" : " has"} this interest/hobby`}>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={internalFilters[label] === true}
-                      onChange={handleFilterChecked(label)}
-                      color="primary"
-                    />
-                  }
-                  label={`${label}`}
+            <Autocomplete
+              multiple
+              id="tags-outlined"
+              options={usersInterests}
+              getOptionLabel={(option) => option.label}
+              value={values}
+              onChange={(_, value) => {
+                handleFilterSelected(value)
+              }}
+              filterSelectedOptions
+              className={classes.autoComplete}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  variant="outlined"
+                  label="Interests"
+                  placeholder="Select Interests"
                 />
-              </Tooltip>
-            ))}
+              )}
+            />
+
           </FormGroup>
+          
+          <Typography className={classes.caption} variant="caption" display="block">
+            * The more keywords you add, the more results you will see.
+          </Typography>
 
           <React.Fragment>
             <div className={classes.buttonContainer}>
