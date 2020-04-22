@@ -125,8 +125,14 @@ function EventRegistrationForm(props) {
     const { id, description, title, eventBeginDate, eventEndDate } = eventSession;
     const sessionUrl = getUrl() + routes.EVENT_SESSION(id);
     let descriptionText = "";
+    let rawDescription = "";
     if (description) {
-      let descriptionContent = convertFromRaw(JSON.parse(description));
+      const parsedDescription = JSON.parse(description);
+      let descriptionContent = convertFromRaw(parsedDescription);
+      rawDescription = parsedDescription.blocks.reduce((acc, item) => {
+        acc += item.text;
+        return acc;
+      }, "");
       // descriptionText = descriptionContent.getPlainText("\n\n");
       descriptionText = stateToHTML(descriptionContent);
     }
@@ -137,6 +143,7 @@ function EventRegistrationForm(props) {
       location: sessionUrl,
       startTime: moment(eventBeginDate.toDate()),
       endTime: moment(eventEndDate.toDate()),
+      rawDescription,
     };
   }, [eventSession]);
 

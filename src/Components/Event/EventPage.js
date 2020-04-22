@@ -87,8 +87,14 @@ export default function EventPage(props) {
   const calendarEvent = React.useMemo(() => {
     const sessionUrl = getUrl() + routes.EVENT_SESSION(id);
     let descriptionText = "";
+    let rawDescription = "";
     if (description) {
-      let descriptionContent = convertFromRaw(JSON.parse(description));
+      const parsedDescription = JSON.parse(description);
+      let descriptionContent = convertFromRaw(parsedDescription);
+      rawDescription = parsedDescription.blocks.reduce((acc, item) => {
+        acc += item.text;
+        return acc;
+      }, "");
       // descriptionText = descriptionContent.getPlainText("\n\n");
       descriptionText = stateToHTML(descriptionContent);
     }
@@ -99,6 +105,7 @@ export default function EventPage(props) {
       location: sessionUrl,
       startTime: beginDate,
       endTime: endDate,
+      rawDescription,
     };
   }, [id, description, title, beginDate, endDate]);
 
