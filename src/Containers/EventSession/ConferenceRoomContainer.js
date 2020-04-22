@@ -169,7 +169,7 @@ export default (props) => {
               data-width="auto"
               data-show-text="false"
               data-allowfullscreen="true"
-              data-autoplay="true"
+              // data-autoplay="true"
             >
               <div className="fb-xfbml-parse-ignore">
                 {/* <blockquote cite={`https://www.facebook.com/facebook/videos/${videoId}/`}>
