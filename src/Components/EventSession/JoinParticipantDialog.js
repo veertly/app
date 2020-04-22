@@ -126,7 +126,6 @@ export default function (props) {
   const handleJoinConversation = () => {
     alert("not implemented...");
   };
-  console.log(liveGroup);
   return (
     <div>
       <Dialog open={open} onClose={handleClose} maxWidth={"sm"}>
