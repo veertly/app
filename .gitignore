@@ -44,3 +44,4 @@ node_modules
 functions/node_modules
 node_modules
 .env.testing
+firebase-debug.log

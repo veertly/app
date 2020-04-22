@@ -12,9 +12,9 @@ import FormHelperText from "@material-ui/core/FormHelperText";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import moment from "moment";
 import MUIRichTextEditor from "mui-rte";
-
 import { MuiPickersUtilsProvider, KeyboardTimePicker, KeyboardDatePicker } from "@material-ui/pickers";
 import MomentUtils from "@date-io/moment";
+// import useScript from "../../Hooks/useScript";
 
 import Grid from "@material-ui/core/Grid";
 import { getUrl } from "../../Modules/environments";
@@ -109,6 +109,27 @@ const getYoutubeUrl = (eventSession) => {
     : null;
 };
 
+const getFacebookUrl = (eventSession) => {
+  return eventSession
+    ? eventSession.conferenceRoomFacebookVideoId && eventSession.conferenceRoomFacebookVideoId.trim() !== ""
+      ? "https://www.facebook.com/facebook/videos/" + eventSession.conferenceRoomFacebookVideoId
+      : null
+    : null;
+};
+const getVideoId = (link) => {
+  let parsedUrl = parseURL(link);
+  return parsedUrl.searchObject.v;
+};
+const getFacebookVideoId = (link) => {
+  let parsedUrl = parseURL(link);
+  let pathname = parsedUrl.pathname.split("/");
+  let videosIndex = pathname.findIndex((v) => v === "videos");
+  let videoId = pathname[videosIndex + 1];
+  console.log(parsedUrl);
+  debugger;
+  return videoId;
+};
+
 function EditEventSessionForm(props) {
   const classes = useStyles();
   const history = useHistory();
@@ -123,6 +144,10 @@ function EditEventSessionForm(props) {
     conferenceRoomYoutubeLink: !isNewEvent ? getYoutubeUrl(eventSession) : "",
     conferenceRoomYoutubeVideoId:
       !isNewEvent && eventSession.conferenceRoomYoutubeVideoId ? eventSession.conferenceRoomYoutubeVideoId : "",
+
+    conferenceRoomFacebookLink: !isNewEvent ? getFacebookUrl(eventSession) : "",
+    conferenceRoomFacebookVideoId:
+      !isNewEvent && eventSession.conferenceRoomFacebookVideoId ? eventSession.conferenceRoomFacebookVideoId : "",
     website: !isNewEvent && eventSession.website ? eventSession.website : "",
     expectedAmountParticipants:
       !isNewEvent && eventSession.expectedAmountParticipants ? eventSession.expectedAmountParticipants : "",
@@ -130,6 +155,9 @@ function EditEventSessionForm(props) {
     eventCloses: !isNewEvent && eventSession.eventCloses ? eventSession.eventCloses : DEFAULT_EVENT_CLOSES_MINUTES,
     visibility: !isNewEvent && eventSession.visibility ? eventSession.visibility : "LISTED",
   });
+
+  console.log(values);
+
   const selectedSessionId = values.sessionId;
   const [selectedVideoType, setSelectedVideoType] = React.useState(
     !isNewEvent ? eventSession.conferenceVideoType : "YOUTUBE"
@@ -152,12 +180,15 @@ function EditEventSessionForm(props) {
   );
   const [showPreview, setShowPreview] = React.useState(false);
   const [showYoutubePreview, setShowYoutubePreview] = React.useState(false);
+  const [showFacebookPreview, setShowFacebookPreview] = React.useState(false);
   const [showEventCreatedDialog, setShowEventCreatedDialog] = React.useState(false);
   const [bannerChanged, setBannerChanged] = React.useState(false);
   const [errors, setErrors] = React.useState({});
   const snackbar = useSnackbar();
   const mounted = useIsMounted();
-
+  // useScript(
+  //   "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.2"
+  // );
   useEffect(() => {
     let fetchBlob = async () => {
       if (bannerImageBlob === null && eventSession && eventSession.bannerUrl) {
@@ -173,11 +204,6 @@ function EditEventSessionForm(props) {
     [values.title, selectedDate.begin]
   );
 
-  const getVideoId = (link) => {
-    let parsedUrl = parseURL(link);
-    return parsedUrl.searchObject.v;
-  };
-
   const handleUpdateField = (name) => (e) => {
     let value = e.target.value;
     let newValues = { ...values };
@@ -187,6 +213,9 @@ function EditEventSessionForm(props) {
       newValues.conferenceRoomYoutubeVideoId = getVideoId(value);
     }
 
+    if (name === "conferenceRoomFacebookLink" && value.trim() !== "") {
+      newValues.conferenceRoomFacebookVideoId = getFacebookVideoId(value);
+    }
     setValues(newValues);
 
     let newErrors = { ...errors };
@@ -200,6 +229,10 @@ function EditEventSessionForm(props) {
 
     if (name === "conferenceRoomYoutubeLink" && value.trim() !== "" && newValues.conferenceRoomYoutubeVideoId) {
       newErrors.conferenceRoomYoutubeLink = undefined;
+    }
+
+    if (name === "conferenceRoomFacebookLink" && value.trim() !== "" && newValues.conferenceRoomFacebookVideoId) {
+      newErrors.conferenceRoomFacebookLink = undefined;
     }
 
     setErrors(newErrors);
@@ -273,7 +306,18 @@ function EditEventSessionForm(props) {
       newErrors.conferenceRoomYoutubeLink = "Youtube URL can't be empty";
       foundErrors = true;
     }
+
+    if (selectedVideoType === "FACEBOOK" && !values.conferenceRoomFacebookVideoId) {
+      newErrors.conferenceRoomYoutubeLink = "Couldn't retrieve the correct video id from your facebook link";
+      foundErrors = true;
+    }
+    if (selectedVideoType === "FACEBOOK" && values.conferenceRoomFacebookLink.trim() === "") {
+      newErrors.conferenceRoomFacebookLink = "Facebook URL can't be empty";
+      foundErrors = true;
+    }
+
     if (foundErrors) {
+      debugger;
       setErrors(newErrors);
       return;
     }
@@ -290,6 +334,7 @@ function EditEventSessionForm(props) {
         values.title,
         selectedVideoType,
         values.conferenceRoomYoutubeVideoId,
+        values.conferenceRoomFacebookVideoId,
         values.website,
         values.expectedAmountParticipants,
         selectedDate.begin.toDate(),
@@ -625,11 +670,9 @@ function EditEventSessionForm(props) {
                   value={selectedVideoType}
                   onChange={handleVideoTypeChange}
                 >
-                  <FormControlLabel
-                    value="YOUTUBE"
-                    control={<Radio color="primary" />}
-                    label="Youtube live stream (recommended)"
-                  />
+                  <FormControlLabel value="YOUTUBE" control={<Radio color="primary" />} label="Youtube live stream" />
+
+                  <FormControlLabel value="FACEBOOK" control={<Radio color="primary" />} label="Facebook live stream" />
                   <FormControlLabel value="JITSI" control={<Radio color="primary" />} label="Jitsi video conference" />
                 </RadioGroup>
                 {selectedVideoType === "JITSI" && (
@@ -666,6 +709,37 @@ function EditEventSessionForm(props) {
                       Preview
                     </Button>
                   </div>
+                </Grid>
+              )}
+
+              {selectedVideoType === "FACEBOOK" && (
+                <Grid container justify="space-between" className={classes.textField}>
+                  <div style={{ flexGrow: 1, marginRight: 16 }}>
+                    <TextField
+                      fullWidth
+                      label="Facebook livestream video URL"
+                      name="conferenceRoomFacebookLink"
+                      variant="outlined"
+                      onChange={handleUpdateField("conferenceRoomFacebookLink")}
+                      required={selectedVideoType === "FACEBOOK"}
+                      value={values.conferenceRoomFacebookLink}
+                      disabled={isAnonymous}
+                      error={errors.conferenceRoomFacebookLink !== undefined}
+                      helperText={
+                        errors.conferenceRoomFacebookLink !== undefined ? errors.conferenceRoomFacebookLink : null
+                      }
+                    />
+                  </div>
+                  {/* <div style={{ marginTop: 8 }}>
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      onClick={() => setShowFacebookPreview(true)}
+                      // width={150}
+                    >
+                      Preview
+                    </Button>
+                  </div> */}
                 </Grid>
               )}
               <TextField
@@ -796,6 +870,17 @@ function EditEventSessionForm(props) {
           allowFullScreen
           title="livestream"
         />
+      </Dialog>
+      <Dialog onClose={() => setShowFacebookPreview(false)} open={showFacebookPreview} maxWidth="sm">
+        <div
+          style={{ width: 500, height: 300 }}
+          className="fb-video"
+          data-href={`https://www.facebook.com/facebook/videos/${values.conferenceRoomFacebookVideoId}/`}
+          data-width="500"
+          data-show-text="false"
+        >
+          <div className="fb-xfbml-parse-ignore"></div>
+        </div>
       </Dialog>
       <Dialog
         onClose={() => setShowEventCreatedDialog(false)}

@@ -229,7 +229,7 @@ export const initFirebasePresenceSync = async (sessionId, userId, participantsJo
 };
 
 export const keepAlive = async (sessionId, userId, userSession) => {
-  console.log("Keep alive sent!");
+  // console.log("Keep alive sent!");
   var keepAliveSessionRef = firebase
     .firestore()
     .collection("eventSessions")

@@ -29,6 +29,13 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     height: "60%",
   },
+  facebookContainer: {
+    width: "100%",
+    height: "100%",
+    backgroundColor: "black",
+    display: "flex",
+    alignItems: "center",
+  },
 }));
 
 export default (props) => {
@@ -36,6 +43,10 @@ export default (props) => {
   const { jitsiApi, setJitsiApi } = props;
 
   const [loaded, error] = useScript("https://meet.jit.si/external_api.js");
+  const [loadedFacebookStream /* , errorFacebookStream */] = useScript(
+    "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.2"
+  );
+
   const [lastRoomLoaded, setLastRoomLoaded] = useState(null);
 
   const userId = useSelector(getUserId);
@@ -122,8 +133,8 @@ export default (props) => {
     console.log(error);
     return <p>Error :(</p>;
   }
-  if (!loaded) return <div id="conference-container">Loading...</div>;
-  if (loaded) {
+  if (!loaded || !loadedFacebookStream) return <div id="conference-container">Loading...</div>;
+  if (loaded && loadedFacebookStream) {
     const getYoutubeFrame = (videoId) => {
       return (
         <div className={classes.root} style={{ top: hasAnnouncement ? ANNOUNCEMENT_HEIGHT : 0 }}>
@@ -138,10 +149,47 @@ export default (props) => {
         </div>
       );
     };
+
+    const getFacebooFrame = (videoId) => {
+      return (
+        <div className={classes.root} style={{ top: hasAnnouncement ? ANNOUNCEMENT_HEIGHT : 0 }}>
+          {/* <iframe
+            className={classes.videoContainer}
+            src={`https://www.youtube.com/embed/${videoId}?autoplay=1&fs=0&modestbranding=0`}
+            frameBorder="0"
+            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            title="livestream"
+          ></iframe> */}
+          <div className={classes.facebookContainer}>
+            <div
+              style={{ width: "100%" }}
+              className={"fb-video"}
+              data-href={`https://www.facebook.com/facebook/videos/${videoId}/`}
+              data-width="auto"
+              data-show-text="false"
+              data-allowfullscreen="true"
+              // data-autoplay="true"
+            >
+              <div className="fb-xfbml-parse-ignore">
+                {/* <blockquote cite={`https://www.facebook.com/facebook/videos/${videoId}/`}>
+                <a href={`https://www.facebook.com/facebook/videos/${videoId}/`}>How to Share With Just Friends</a>
+                <p>How to share with just friends.</p>
+                Posted by <a href="https://www.facebook.com/facebook/">Facebook</a> on Friday, December 5, 2014
+              </blockquote> */}
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
     switch (eventSessionDetails.conferenceVideoType) {
       case "YOUTUBE":
-        let videoId = eventSessionDetails.conferenceRoomYoutubeVideoId;
-        return getYoutubeFrame(videoId);
+        let youtubeVideoId = eventSessionDetails.conferenceRoomYoutubeVideoId;
+        return getYoutubeFrame(youtubeVideoId);
+      case "FACEBOOK":
+        let facebookVideoId = eventSessionDetails.conferenceRoomFacebookVideoId;
+        return getFacebooFrame(facebookVideoId);
 
       case "JITSI":
         return <div id="conference-container" className={classes.root} />;
