@@ -277,9 +277,20 @@ export default withRouter((props) => {
       }
       initFirebasePresenceSync(sessionId, userId, participantsJoined);
       setInitCompleted(true);
-      keepAlive(sessionId, userId);
+      keepAlive(sessionId, userId, userSession);
     }
-  }, [initCompleted, liveGroups, participantsJoined, users, userId, sessionId, history, user, stateLoaded]);
+  }, [
+    initCompleted,
+    liveGroups,
+    participantsJoined,
+    users,
+    userId,
+    sessionId,
+    history,
+    user,
+    stateLoaded,
+    userSession,
+  ]);
 
   useEffect(() => {
     if (
@@ -305,7 +316,7 @@ export default withRouter((props) => {
 
   // --- send keep alive ---
   useInterval(async () => {
-    keepAlive(sessionId, userId);
+    keepAlive(sessionId, userId, userSession);
   }, DEFAULT_KEEP_ALIVE_INTERVAL);
 
   // --- handle keep alive ---
@@ -444,10 +455,7 @@ export default withRouter((props) => {
                 onClose={handleSidebarClose}
                 open={shouldOpenSidebar}
                 variant={isDesktop ? "persistent" : "temporary"}
-                // users={users}
-                // eventSession={composedEventSession}
-                // currentGroup={currentGroup}
-                // user={user}
+                setIsInConferenceRoom={handleSetIsInConferenceRoom}
               />
               <div className={classes.mainPane} style={chatOpen ? { right: SIDE_PANE_WIDTH + chatWidth } : null}>
                 {!userGroup && (
@@ -460,15 +468,7 @@ export default withRouter((props) => {
                     </Typography>
                   </div>
                 )}
-                {userGroup && (
-                  <NetworkingRoomContainer
-                    // currentGroup={currentGroup}
-                    // user={user}
-                    // eventSession={composedEventSession}
-                    jitsiApi={jitsiApi}
-                    setJitsiApi={setJitsiApi}
-                  />
-                )}
+                {userGroup && <NetworkingRoomContainer jitsiApi={jitsiApi} setJitsiApi={setJitsiApi} />}
               </div>
             </React.Fragment>
           )}
@@ -479,11 +479,7 @@ export default withRouter((props) => {
                 onClose={handleSidebarClose}
                 open={shouldOpenSidebar}
                 variant={isDesktop ? "persistent" : "temporary"}
-                // users={users}
-                // eventSession={composedEventSession}
-                // participantsJoined={participantsJoined}
-                // liveGroups={liveGroups}
-                // user={user}
+                setIsInConferenceRoom={handleSetIsInConferenceRoom}
               />
 
               <div className={classes.mainPane} style={chatOpen ? { right: SIDE_PANE_WIDTH + chatWidth } : null}>

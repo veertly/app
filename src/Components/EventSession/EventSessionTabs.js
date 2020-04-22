@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
 export default function (props) {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
-  // const { users, eventSession, currentGroup, user } = props;
+  const { setIsInConferenceRoom } = props;
 
   const userGroup = useSelector(getUserGroup, shallowEqual);
 
@@ -68,7 +68,7 @@ export default function (props) {
         <Tab icon={<ConversationsIcon />} label="CONVERSATIONS" className={classes.tab} />
       </Tabs>
       <div className={classes.tabContent} style={{ bottom: userGroup ? CALL_SECTION_HEIGHT : 0 }}>
-        {value === 0 && <AvailableTab />}
+        {value === 0 && <AvailableTab setIsInConferenceRoom={setIsInConferenceRoom} />}
         {value === 1 && <ConversationsTab />}
       </div>
       {userGroup && (

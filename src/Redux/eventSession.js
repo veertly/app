@@ -37,7 +37,6 @@ const crossCheckLiveGroups = (participantsJoined, liveGroups, keepAlives) => {
   return _.reduce(
     liveGroups,
     (result, group) => {
-      console.log(group);
       if (!group.isLive) {
         return result; //skip group
       }
@@ -46,29 +45,24 @@ const crossCheckLiveGroups = (participantsJoined, liveGroups, keepAlives) => {
       let newParticipants = {};
       let participants = Object.values(group.participants);
 
-      console.log("--- Participants " + group.id + "---");
       for (let i = 0; i < participants.length; i++) {
         let { leftTimestamp, id } = participants[i];
         if (leftTimestamp !== null) {
           continue; // participant has already left
         }
-        console.log(participants[i]);
 
         let participantSession = participantsJoined[id];
         let keepAlive = keepAlives[id];
-        console.log({ participantSession, keepAlive });
+
         if (participantSession && participantSession.isOnline && isStillLive(keepAlive)) {
           newParticipants[id] = participants[i];
         }
       }
-      console.log("------");
       groupResult.participants = newParticipants;
 
       let numAvailableParticipants = _.size(newParticipants);
 
       if (numAvailableParticipants <= 1) {
-        console.log("skipping group with numAvailableParticipants <= 1 " + numAvailableParticipants);
-
         return result; //skip group
       }
 
@@ -180,8 +174,6 @@ export const eventSessionReducer = (state = initialState, action) => {
 
     case CROSS_CHECK_KEEP_ALIVES: {
       let newKeepAlives = _.keyBy(action.keepAlives, "id");
-      console.log({ newKeepAlives });
-      // let liveGroups = crossCheckLiveGroups(state.participantsJoined, state.liveGroups, newKeepAlives);
 
       let liveGroups = crossCheckLiveGroups(state.participantsJoined, state.liveGroupsOriginal, newKeepAlives);
 
@@ -254,8 +246,11 @@ export const getUserLiveGroup = (store) => {
   let { liveGroups } = store.eventSession;
   return userSession && liveGroups && userSession.groupId ? liveGroups[userSession.groupId] : null;
 };
-export const isInNetworkingRoom = (store) =>
-  store.eventSession.userSession && store.eventSession.userSession.inNetworkingRoom;
+export const isInNetworkingRoom = (store) => {
+  let userSession = getUserSession(store);
+  return userSession && userSession.inNetworkingRoom;
+};
+
 export const isStateLoaded = (store) => store.eventSession.stateLoaded === true;
 export const getAvailableParticipantsList = (store) => store.eventSession.availableParticipantsList;
 

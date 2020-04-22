@@ -100,9 +100,7 @@ export default function (props) {
   const [joinDialog, setJoinDialog] = React.useState(false);
   const [filterDialog, setFilterDialog] = React.useState(false);
   const [selectedParticipant, setSelectedParticipant] = React.useState(null);
-  const [showJoinButton, setShowJoinButton] = React.useState(false);
-
-  // const { users, eventSession, user, onConferenceRoom } = props;
+  let { setIsInConferenceRoom } = props;
 
   const users = useSelector(getUsers, shallowEqual);
   const onConferenceRoom = !useSelector(isInNetworkingRoom);
@@ -173,10 +171,7 @@ export default function (props) {
         open={joinDialog}
         setOpen={setJoinDialog}
         participant={selectedParticipant}
-        // eventSession={eventSession}
-        // user={user}
-        // onConferenceRoom={onConferenceRoom}
-        showJoinButton={showJoinButton}
+        setIsInConferenceRoom={setIsInConferenceRoom}
       />
       <FilterAttendeesDialog
         open={filterDialog}
@@ -222,7 +217,7 @@ export default function (props) {
         </Typography>
       )}
       {participantsAvailable.map((participantSession, index) => {
-        let { isInConversation, isInConferenceRoom, isAvailable, isMyUser } = participantSession;
+        let { isInConversation, isInConferenceRoom, isAvailable } = participantSession;
 
         let participant = users[participantSession.id];
 
@@ -242,7 +237,6 @@ export default function (props) {
             className={classes.participantContainer}
             onClick={() => {
               setSelectedParticipant(participant);
-              setShowJoinButton(!isMyUser && isAvailable);
               setJoinDialog(true);
             }}
             key={index}

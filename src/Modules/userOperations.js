@@ -228,16 +228,31 @@ export const initFirebasePresenceSync = async (sessionId, userId, participantsJo
     });
 };
 
-export const keepAlive = async (sessionId, userId) => {
+export const keepAlive = async (sessionId, userId, userSession) => {
   console.log("Keep alive sent!");
-  var userSessionRef = firebase
+  var keepAliveSessionRef = firebase
     .firestore()
     .collection("eventSessions")
     .doc(sessionId)
     .collection("keepAlive")
     .doc(userId);
 
-  await userSessionRef.set({
+  await keepAliveSessionRef.set({
     lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
   });
+
+  if (userSession && !userSession.isOnline) {
+    var userSessionRef = firebase
+      .firestore()
+      .collection("eventSessions")
+      .doc(sessionId)
+      .collection("participantsJoined")
+      .doc(userId);
+
+    await userSessionRef.update({
+      isOnline: true,
+      leftTimestamp: null,
+      lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+  }
 };
