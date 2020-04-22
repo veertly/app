@@ -39,6 +39,9 @@ const useStyles = makeStyles((theme) => ({
   },
   autoComplete: {
     width: '100%',
+  },
+  caption: {
+    marginTop: theme.spacing(1),
   }
 }));
 
@@ -113,28 +116,32 @@ export default function (props) {
           </Typography>
 
           <FormGroup row style={{ marginTop: 16 }}>
-          <Autocomplete
-            multiple
-            id="tags-outlined"
-            options={usersInterests}
-            getOptionLabel={(option) => option.label}
-            value={values}
-            onChange={(_, value) => {
-              handleFilterSelected(value)
-            }}
-            filterSelectedOptions
-            className={classes.autoComplete}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                variant="outlined"
-                label="Hobbies"
-                placeholder="Select hobbies"
-              />
-            )}
-          />
+            <Autocomplete
+              multiple
+              id="tags-outlined"
+              options={usersInterests}
+              getOptionLabel={(option) => option.label}
+              value={values}
+              onChange={(_, value) => {
+                handleFilterSelected(value)
+              }}
+              filterSelectedOptions
+              className={classes.autoComplete}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  variant="outlined"
+                  label="Interests"
+                  placeholder="Select Interests"
+                />
+              )}
+            />
 
           </FormGroup>
+          
+          <Typography className={classes.caption} variant="caption" display="block">
+            * The more keywords you add, the more results you will see.
+          </Typography>
 
           <React.Fragment>
             <div className={classes.buttonContainer}>
