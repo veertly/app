@@ -165,7 +165,7 @@ export const logout = async (sessionId) => {
   await firebase.auth().signOut();
 };
 
-export const initFirebasePresenceSync = async (sessionId, userId) => {
+export const initFirebasePresenceSync = async (sessionId, userId, participantsJoined) => {
   // https://firebase.google.com/docs/firestore/solutions/presence
 
   var userStatusDatabaseRef = firebase.database().ref("/sessionUsersStatus/" + sessionId + "/" + userId);
@@ -194,12 +194,6 @@ export const initFirebasePresenceSync = async (sessionId, userId) => {
     leftTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
   };
 
-  var isOnlineForFirestore = {
-    isOnline: true,
-    joinedTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
-    leftTimestamp: null,
-  };
-
   firebase
     .database()
     .ref(".info/connected")
@@ -214,7 +208,36 @@ export const initFirebasePresenceSync = async (sessionId, userId) => {
         .update(isOfflineForDatabase)
         .then(function () {
           userStatusDatabaseRef.set(isOnlineForDatabase);
-          userStatusFirestoreRef.update(isOnlineForFirestore);
+
+          if (!participantsJoined[userId]) {
+            userStatusFirestoreRef.set({
+              groupId: null,
+              isOnline: true,
+              joinedTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
+              leftTimestamp: null,
+              lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
+            });
+          } else {
+            userStatusFirestoreRef.update({
+              isOnline: true,
+              leftTimestamp: null,
+              lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
+            });
+          }
         });
     });
+};
+
+export const keepAlive = async (sessionId, userId) => {
+  console.log("Keep alive sent!");
+  var userSessionRef = firebase
+    .firestore()
+    .collection("eventSessions")
+    .doc(sessionId)
+    .collection("keepAlive")
+    .doc(userId);
+
+  await userSessionRef.set({
+    lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
+  });
 };

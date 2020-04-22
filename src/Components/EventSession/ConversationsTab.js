@@ -7,6 +7,9 @@ import Divider from "@material-ui/core/Divider";
 import GroupAvatars from "./GroupAvatars";
 import { MAX_PARTICIPANTS_GROUP } from "../../Config/constants";
 
+import { useSelector, shallowEqual } from "react-redux";
+import { getUsers, getParticipantsJoined, getLiveGroups, getUser } from "../../Redux/eventSession";
+
 const useStyles = makeStyles((theme) => ({
   root: {},
   groupContainer: {
@@ -69,11 +72,18 @@ export default function (props) {
   const classes = useStyles();
   const [groupHover, setGroupHover] = React.useState(-1);
   const [joinDialog, setJoinDialog] = React.useState(false);
+
   const [selectedGroup, setSelectedGroup] = React.useState(null);
   const [selectedGroupId, setSelectedGroupId] = React.useState(null);
-  const { users, eventSession, user } = props;
 
-  const groupIds = Object.keys(eventSession.liveGroups);
+  // const { users, eventSession, user } = props;
+
+  const users = useSelector(getUsers, shallowEqual);
+  const participantsJoined = useSelector(getParticipantsJoined, shallowEqual);
+  const user = useSelector(getUser, shallowEqual);
+  const liveGroups = useSelector(getLiveGroups, shallowEqual);
+
+  const groupIds = Object.keys(liveGroups ? liveGroups : {});
   const numGroups = groupIds.length;
   let hasGroupsLive = false;
   return (
@@ -83,18 +93,18 @@ export default function (props) {
         setOpen={setJoinDialog}
         group={selectedGroup}
         groupId={selectedGroupId}
-        eventSession={eventSession}
-        user={user}
+        // eventSession={eventSession}
+        // user={user}
       />
       <div className={classes.relativeContainer}>
         {groupIds.map((groupId, index) => {
-          let groupData = eventSession.liveGroups[groupId];
+          let groupData = liveGroups[groupId];
           let groupUserIds = Object.keys(groupData.participants);
 
           let liveParticipants = groupUserIds.filter((userId) => {
             let participantMetadata = groupData.participants[userId];
-            let sessionParticipant = eventSession.participantsJoined[userId];
-            return !participantMetadata.leftTimestamp && sessionParticipant.isOnline;
+            let sessionParticipant = participantsJoined[userId];
+            return !participantMetadata.leftTimestamp && sessionParticipant && sessionParticipant.isOnline;
           });
 
           let group = liveParticipants.map((userId) => users[userId]);
@@ -102,7 +112,7 @@ export default function (props) {
             liveParticipants.filter((participant) => participant.leftTimestamp !== null).length > 0;
           let isLast = index === numGroups - 1;
 
-          let isMyGroup = liveParticipants.includes(user.uid);
+          let isMyGroup = liveParticipants.includes(user.id);
 
           if (!hasLiveParticipants) {
             return null;

@@ -9,7 +9,8 @@ import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
 import { Tooltip } from "@material-ui/core";
-
+import { useSelector, shallowEqual } from "react-redux";
+import { getUsers, getParticipantsJoined } from "../../Redux/eventSession";
 const useStyles = makeStyles((theme) => ({
   content: {
     position: "relative",
@@ -41,9 +42,12 @@ const useStyles = makeStyles((theme) => ({
 export default function (props) {
   const classes = useStyles();
 
-  const { open, setOpen, users, eventSession, filters, setFilters } = props;
+  const { open, setOpen, filters, setFilters } = props;
 
   const [internalFilters, setInternalFilters] = React.useState(filters);
+
+  const users = useSelector(getUsers, shallowEqual);
+  const participantsJoined = useSelector(getParticipantsJoined, shallowEqual);
 
   const handleClose = () => {
     setOpen(false);
@@ -53,7 +57,7 @@ export default function (props) {
     let result = {};
     _.forEach(users, (user, id) => {
       let { interestsChips } = user;
-      let sessionParticipant = eventSession.participantsJoined[id];
+      let sessionParticipant = participantsJoined[id];
 
       if (interestsChips && interestsChips.length > 0 && sessionParticipant && sessionParticipant.isOnline) {
         for (let i = 0; i < interestsChips.length; i++) {
@@ -73,7 +77,7 @@ export default function (props) {
     let sorted = Object.values(result).sort((a, b) => b.count - a.count);
 
     return sorted;
-  }, [users, eventSession.participantsJoined]);
+  }, [users, participantsJoined]);
 
   const handleFilterChecked = (label) => (e) => {
     let newFilters = { ...internalFilters };

@@ -7,6 +7,8 @@ import ParticipantCard from "./ParticipantCard";
 import { joinConversation } from "../../Modules/eventSessionOperations";
 import { useSnackbar } from "material-ui-snackbar-provider";
 
+import { useSelector, shallowEqual } from "react-redux";
+import { getParticipantsJoined, getLiveGroups, getSessionId, getUserId } from "../../Redux/eventSession";
 const useStyles = makeStyles((theme) => ({
   content: {
     position: "relative",
@@ -42,7 +44,12 @@ export default function (props) {
   const classes = useStyles();
   const snackbar = useSnackbar();
 
-  const { open, setOpen, group, eventSession, groupId, user } = props;
+  const { open, setOpen, group, groupId } = props;
+
+  const participantsJoined = useSelector(getParticipantsJoined, shallowEqual);
+  const liveGroups = useSelector(getLiveGroups, shallowEqual);
+  const sessionId = useSelector(getSessionId);
+  const userId = useSelector(getUserId);
 
   const handleClose = () => {
     setOpen(false);
@@ -53,12 +60,12 @@ export default function (props) {
 
   const handleJoinConversation = (e) => {
     e.preventDefault();
-    joinConversation(eventSession, user.uid, groupId, snackbar);
+    joinConversation(sessionId, participantsJoined, liveGroups, userId, groupId, snackbar);
     setOpen(false);
   };
-  // let myUser = group.find((participant) => participant.id === user.uid);
-  let isMyGroup = group.find((participant) => participant.id === user.uid) !== undefined;
-  // console.log({ group, isMyGroup, myId: user.uid, myUser });
+
+  let isMyGroup = group.find((participant) => participant.id === userId) !== undefined;
+
   return (
     <div>
       <Dialog open={open} onClose={handleClose} aria-labelledby="draggable-dialog-title">

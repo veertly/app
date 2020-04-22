@@ -1,14 +1,12 @@
-import React, { useEffect /*  { useContext } */ } from "react";
+import React, { useEffect } from "react";
 import { withRouter } from "react-router-dom";
 
 import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
 import firebase from "../Modules/firebaseApp";
-// import queryString from "query-string";
 import CenteredLayout from "./Layouts/CenteredLayout";
 import { makeStyles } from "@material-ui/styles";
 import { registerNewUser, hasUserSession } from "../Modules/userOperations";
 import { useAuthState } from "react-firebase-hooks/auth";
-// import { GlobalContext } from "../Redux/GlobalContext";
 import Typography from "@material-ui/core/Typography";
 import { Button } from "@material-ui/core";
 import routes from "../Config/routes";
@@ -20,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default withRouter((props) => {
-  const [user, initialising /* error */] = useAuthState(firebase.auth());
+  const [userAuth, initialising /* error */] = useAuthState(firebase.auth());
 
   const classes = useStyles();
   // const queryValues = queryString.parse(props.location.search);
@@ -63,7 +61,7 @@ export default withRouter((props) => {
     // signInSuccessUrl: callbackUrl,
     callbacks: {
       signInSuccessWithAuthResult: async function (authResult, redirectUrl) {
-        var user = authResult.user;
+        var loggedInUserAuth = authResult.user;
         // var credential = authResult.credential;
         var isNewUser = authResult.additionalUserInfo.isNewUser;
         // var providerId = authResult.additionalUserInfo.providerId;
@@ -72,14 +70,14 @@ export default withRouter((props) => {
         // Return type determines whether we continue the redirect automatically
         // or whether we leave that to developer to handle.
 
-        window.analytics.identify(user.uid, {});
+        window.analytics.identify(loggedInUserAuth.uid, {});
         window.analytics.track("Logged In");
 
         if (isNewUser) {
-          registerNewUser(user);
+          registerNewUser(loggedInUserAuth);
         }
 
-        checkAndRedirect(user.uid);
+        checkAndRedirect(loggedInUserAuth.uid);
 
         return false;
       },
@@ -98,13 +96,13 @@ export default withRouter((props) => {
     return null;
   }
 
-  if (user) {
+  if (userAuth) {
     // if (user.isAnonymous) {
     //   props.history.push(routes.EDIT_PROFILE(callbackUrl));
     // } else {
     //   props.history.push(callbackUrl);
     // }
-    checkAndRedirect(user.uid);
+    checkAndRedirect(userAuth.uid);
   }
 
   const loginAnonymously = async () => {
@@ -120,19 +118,19 @@ export default withRouter((props) => {
       });
   };
 
-  firebase.auth().onAuthStateChanged(function (user) {
-    if (user) {
-      // User is signed in.
-      // var isAnonymous = user.isAnonymous;
-      // var uid = user.uid;
-      // ...
-      // console.log({ user });
-    } else {
-      // User is signed out.
-      // ...
-    }
-    // ...
-  });
+  // firebase.auth().onAuthStateChanged(function (user) {
+  //   if (user) {
+  //     // User is signed in.
+  //     // var isAnonymous = user.isAnonymous;
+  //     // var uid = user.uid;
+  //     // ...
+  //     // console.log({ user });
+  //   } else {
+  //     // User is signed out.
+  //     // ...
+  //   }
+  //   // ...
+  // });
 
   return (
     <CenteredLayout>

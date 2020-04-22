@@ -12,6 +12,10 @@ import ConversationsIcon from "../../Assets/Icons/Conversations";
 import { Tooltip } from "@material-ui/core";
 import ConferenceIcon from "@material-ui/icons/DesktopMac";
 import FilterAttendeesDialog from "./FilterAttendeesDialog";
+
+import { useSelector, shallowEqual } from "react-redux";
+import { getUsers, isInNetworkingRoom, getAvailableParticipantsList } from "../../Redux/eventSession";
+
 // import JoinConversationDialog from "./JoinConversationDialog";
 import _ from "lodash";
 const useStyles = makeStyles((theme) => ({
@@ -97,91 +101,71 @@ export default function (props) {
   const [filterDialog, setFilterDialog] = React.useState(false);
   const [selectedParticipant, setSelectedParticipant] = React.useState(null);
   const [showJoinButton, setShowJoinButton] = React.useState(false);
-  const { users, eventSession, user, onConferenceRoom } = props;
+
+  // const { users, eventSession, user, onConferenceRoom } = props;
+
+  const users = useSelector(getUsers, shallowEqual);
+  const onConferenceRoom = !useSelector(isInNetworkingRoom);
+  const availableParticipantsList = useSelector(getAvailableParticipantsList, shallowEqual);
 
   const [filters, setFilters] = React.useState({});
 
-  // const [joinConversationDialog, setJoinConversationDialog] = React.useState(false);
-  // const [selectedGroup, setSelectedGroup] = React.useState(null);
-  // const [selectedGroupId, setSelectedGroupId] = React.useState(null);
-
-  // const [participantsList , setParticipantsList
-  // console.log({ listParticipantsAvailableTab: eventSession.participantsJoined });
-
   let participantsAvailable = React.useMemo(() => {
-    let result = Object.keys(eventSession.participantsJoined).filter(
-      (userId) => {
-        let participant = users[userId];
+    let result = availableParticipantsList.filter((participantSession) => {
+      let participant = users[participantSession.id];
 
-        let sessionParticipant = eventSession.participantsJoined[userId];
-        // console.log({ sessionParticipant });
-        if (!participant) {
-          // console.log(users);
-          // console.error("Couldn't find participant for user: '" + userId + "'");
-          return false;
-        }
-        // if (
-        //   // (onConferenceRoom && sessionParticipant.inNetworkingRoom) ||
-        //   (!onConferenceRoom && !sessionParticipant.inNetworkingRoom) ||
-        //   (!onConferenceRoom && sessionParticipant.groupId)
-        // ) {
-        //   return false;
-        // }
+      if (!participant) {
+        return false;
+      }
 
-        if (!sessionParticipant.isOnline) {
-          return false;
-        }
-        // check interests
-        if (_.size(filters) !== 0) {
-          let { interestsChips } = participant;
+      // check interests
+      if (_.size(filters) !== 0) {
+        let { interestsChips } = participant;
 
-          let foundInterest = false;
+        let foundInterest = false;
 
-          for (let i = 0; i < interestsChips.length; i++) {
-            let interest = interestsChips[i];
-            if (filters[interest.label] === true) {
-              foundInterest = true;
-            }
-          }
-
-          if (!foundInterest) {
-            return false;
+        for (let i = 0; i < interestsChips.length; i++) {
+          let interest = interestsChips[i];
+          if (filters[interest.label] === true) {
+            foundInterest = true;
           }
         }
 
-        return true;
-      },
-      [filters, eventSession.participantsJoined]
-    );
+        if (!foundInterest) {
+          return false;
+        }
+      }
+
+      return true;
+    });
 
     // console.log("Num participants: " + result.length);
     return result;
-  }, [eventSession.participantsJoined, users, filters]);
+  }, [availableParticipantsList, users, filters]);
 
   const feelingLucky = React.useCallback(() => {
-    if (participantsAvailable.length > 1) {
-      let tries = 0;
-      let findUser = () => {
-        let index = Math.floor(Math.random() * participantsAvailable.length);
-        let userId = participantsAvailable[index];
-        let sessionParticipant = eventSession.participantsJoined[userId];
+    let selectedParticipantSession = _.sample(
+      participantsAvailable.filter(({ isMyUser, isAvailable }) => !isMyUser && isAvailable)
+    );
+    let participant = selectedParticipantSession ? users[selectedParticipantSession.id] : null;
+    // if (participantsAvailable.length > 1) {
+    //   let tries = 0;
+    //   let findUser = () => {
+    //     let index = Math.floor(Math.random() * participantsAvailable.length);
+    //     let userId = participantsAvailable[index];
+    //     let sessionParticipant = participantsJoined[userId];
 
-        if (tries < 5 && (userId === user.uid || !sessionParticipant.inNetworkingRoom)) {
-          tries++;
-          return findUser();
-        }
+    //     if (tries < 5 && (userId === myUserId || !sessionParticipant.inNetworkingRoom)) {
+    //       tries++;
+    //       return findUser();
+    //     }
 
-        return users[userId];
-      };
-      let participant = findUser();
-      setSelectedParticipant(participant);
-      setJoinDialog(true);
-    }
-  }, [participantsAvailable, eventSession.participantsJoined, user.uid, users]);
-
-  if (!eventSession) {
-    return null;
-  }
+    //     return users[userId];
+    //   };
+    //   let participant = findUser();
+    setSelectedParticipant(participant);
+    setJoinDialog(true);
+  }, [participantsAvailable, users]);
 
   return (
     <div className={classes.root}>
@@ -189,32 +173,24 @@ export default function (props) {
         open={joinDialog}
         setOpen={setJoinDialog}
         participant={selectedParticipant}
-        eventSession={eventSession}
-        user={user}
-        onConferenceRoom={onConferenceRoom}
+        // eventSession={eventSession}
+        // user={user}
+        // onConferenceRoom={onConferenceRoom}
         showJoinButton={showJoinButton}
       />
       <FilterAttendeesDialog
         open={filterDialog}
         setOpen={setFilterDialog}
         participant={selectedParticipant}
-        eventSession={eventSession}
-        user={user}
-        users={users}
+        // eventSession={eventSession}
+        // user={user}
+        // users={users}
         filters={filters}
         setFilters={setFilters}
         // onConferenceRoom={onConferenceRoom}
         // showJoinButton={showJoinButton}
       />
-      {/* <JoinConversationDialog
-        open={joinConversationDialog}
-        setOpen={setJoinConversationDialog}
-        group={selectedGroup}
-        groupId={selectedGroupId}
-        eventSession={eventSession}
-        user={user}
-        onConferenceRoom={onConferenceRoom}
-      /> */}
+
       {!onConferenceRoom && (
         <div className={classes.buttonContainer}>
           <Button
@@ -242,12 +218,14 @@ export default function (props) {
       )}
       {onConferenceRoom && (
         <Typography variant="overline" className={classes.title} align="center">
-          All attendees
+          All attendees ({participantsAvailable.length})
         </Typography>
       )}
-      {participantsAvailable.map((userId, index) => {
-        let participant = users[userId];
-        let isMyUser = userId === user.uid;
+      {participantsAvailable.map((participantSession, index) => {
+        let { isInConversation, isInConferenceRoom, isAvailable, isMyUser } = participantSession;
+
+        let participant = users[participantSession.id];
+
         const hasSubtitle = participant.company.trim() !== "" || participant.companyTitle.trim() !== "";
 
         const participantAvatar = participant.avatarUrl ? (
@@ -258,12 +236,6 @@ export default function (props) {
             {participant.lastName.charAt(0).toUpperCase()}
           </Avatar>
         );
-
-        let sessionParticipant = eventSession.participantsJoined[userId];
-
-        let isInConversation = sessionParticipant.groupId !== undefined && sessionParticipant.groupId !== null;
-        let isInConferenceRoom = !isInConversation && !sessionParticipant.inNetworkingRoom;
-        let isAvailable = !isInConversation && sessionParticipant.inNetworkingRoom;
 
         return (
           <div

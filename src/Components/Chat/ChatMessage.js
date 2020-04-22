@@ -29,7 +29,7 @@ export default (props) => {
   let { message /* , user */, users } = props;
 
   const classes = useStyles();
-  // const isMyMessage = React.useMemo(() => message.userId === user.uid, [user, message]);
+  // const isMyMessage = React.useMemo(() => message.userId === user.id, [user, message]);
 
   const messageUser = React.useMemo(() => users[message.userId], [users, message.userId]);
   const sentDate = React.useMemo(() => (message.sentDate ? moment(message.sentDate.toDate()) : null), [

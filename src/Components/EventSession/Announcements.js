@@ -1,8 +1,11 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Typography } from "@material-ui/core";
+import { useSelector, shallowEqual } from "react-redux";
+import { getEventSessionDetails } from "../../Redux/eventSession";
 
 export const ANNOUNCEMENT_HEIGHT = 37;
+
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
@@ -26,18 +29,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default (props) => {
+export default () => {
   const classes = useStyles();
-  const { eventSession } = props;
+  const eventSessionDetails = useSelector(getEventSessionDetails, shallowEqual);
+
   if (
-    eventSession.announcements &&
-    eventSession.announcements.conference &&
-    eventSession.announcements.conference.trim() !== ""
+    eventSessionDetails.announcements &&
+    eventSessionDetails.announcements.conference &&
+    eventSessionDetails.announcements.conference.trim() !== ""
   ) {
     return (
       <div id="conference-container" className={classes.root}>
         <Typography align="center" variant="caption" display="block">
-          {eventSession.announcements.conference}
+          {eventSessionDetails.announcements.conference}
         </Typography>
       </div>
     );
