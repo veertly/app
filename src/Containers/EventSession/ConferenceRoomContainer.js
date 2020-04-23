@@ -7,6 +7,8 @@ import { Typography } from "@material-ui/core";
 import { ANNOUNCEMENT_HEIGHT } from "../../Components/EventSession/Announcements";
 import { useSelector, shallowEqual } from "react-redux";
 import { getUser, getUserGroup, getSessionId, getUserId, getEventSessionDetails } from "../../Redux/eventSession";
+import ReactPlayer from "react-player";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const useStyles = makeStyles((theme) => ({
   videoContainer: {
@@ -29,12 +31,21 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     height: "60%",
   },
-  facebookContainer: {
+  reactPlayerContainer: {
     width: "100%",
     height: "100%",
+    position: "relative",
+    paddingTop: "56.25%" /* Player ratio: 100 / (1280 / 720) */,
     backgroundColor: "black",
-    display: "flex",
-    alignItems: "center",
+    // display: "flex",
+    // alignItems: "center",
+  },
+  reactPlayer: {
+    position: "absolute",
+    margin: 0,
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
   },
 }));
 
@@ -43,11 +54,12 @@ export default (props) => {
   const { jitsiApi, setJitsiApi } = props;
 
   const [loaded, error] = useScript("https://meet.jit.si/external_api.js");
-  const [loadedFacebookStream /* , errorFacebookStream */] = useScript(
-    "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.2"
-  );
+  // const [loadedFacebookStream /* , errorFacebookStream */] = useScript(
+  //   "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.2"
+  // );
 
   const [lastRoomLoaded, setLastRoomLoaded] = useState(null);
+  const [loadingPlayer, setLoadingPlayer] = useState(true);
 
   const userId = useSelector(getUserId);
   const user = useSelector(getUser);
@@ -133,8 +145,8 @@ export default (props) => {
     console.log(error);
     return <p>Error :(</p>;
   }
-  if (!loaded || !loadedFacebookStream) return <div id="conference-container">Loading...</div>;
-  if (loaded && loadedFacebookStream) {
+  if (!loaded) return <div id="conference-container">Loading...</div>;
+  if (loaded) {
     const getYoutubeFrame = (videoId) => {
       return (
         <div className={classes.root} style={{ top: hasAnnouncement ? ANNOUNCEMENT_HEIGHT : 0 }}>
@@ -153,32 +165,20 @@ export default (props) => {
     const getFacebooFrame = (videoId) => {
       return (
         <div className={classes.root} style={{ top: hasAnnouncement ? ANNOUNCEMENT_HEIGHT : 0 }}>
-          {/* <iframe
-            className={classes.videoContainer}
-            src={`https://www.youtube.com/embed/${videoId}?autoplay=1&fs=0&modestbranding=0`}
-            frameBorder="0"
-            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            title="livestream"
-          ></iframe> */}
-          <div className={classes.facebookContainer}>
-            <div
-              style={{ width: "100%" }}
-              className={"fb-video"}
-              data-href={`https://www.facebook.com/facebook/videos/${videoId}/`}
-              data-width="auto"
-              data-show-text="false"
-              data-allowfullscreen="true"
-              // data-autoplay="true"
-            >
-              <div className="fb-xfbml-parse-ignore">
-                {/* <blockquote cite={`https://www.facebook.com/facebook/videos/${videoId}/`}>
-                <a href={`https://www.facebook.com/facebook/videos/${videoId}/`}>How to Share With Just Friends</a>
-                <p>How to share with just friends.</p>
-                Posted by <a href="https://www.facebook.com/facebook/">Facebook</a> on Friday, December 5, 2014
-              </blockquote> */}
+          <div className={classes.reactPlayerContainer}>
+            <ReactPlayer
+              url={`https://www.facebook.com/facebook/videos/${videoId}`}
+              width="100%"
+              height="none"
+              className={classes.reactPlayer}
+              // playing
+              onReady={() => setLoadingPlayer(false)}
+            />
+            {loadingPlayer && (
+              <div className={classes.reactPlayer}>
+                <CircularProgress color="secondary" />
               </div>
-            </div>
+            )}
           </div>
         </div>
       );
@@ -206,14 +206,5 @@ export default (props) => {
           </div>
         );
     }
-    // return (
-    //   <div className={classes.root}>
-    //     <Typography variant="caption">
-    //       <pre>
-    //         <code>{JSON.stringify(currentGroup, null, 2)}</code>
-    //       </pre>
-    //     </Typography>
-    //   </div>
-    // );
   }
 };
