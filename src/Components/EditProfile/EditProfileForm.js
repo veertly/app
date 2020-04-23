@@ -34,6 +34,15 @@ const styles = (theme) => ({
     marginTop: 16,
     // marginBottom: 16
   },
+  star: {
+    fontSize: 16,
+    marginRight: 4,
+  },
+  termsContainer: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+  },
 });
 
 const getUserDefaultValues = (userAuth) => {
@@ -392,12 +401,23 @@ function EditProfileForm(props) {
         />
         <FormControlLabel
           control={
-            <Checkbox
-              checked={values.checkedTerms}
-              onChange={handleCheckbox("checkedTerms")}
-              name="checkedTerms"
-              color="primary"
-            />
+            <div className={classes.termsContainer}>
+              <Checkbox
+                checked={values.checkedTerms}
+                onChange={handleCheckbox("checkedTerms")}
+                name="checkedTerms"
+                color="primary"
+              />
+              {
+                values.checkedTerms !== true && 
+                (
+                  <Typography className={classes.star} color="error" align="center" variant="caption">
+                  *
+                  </Typography>
+                )
+              }
+            </div>
+           
           }
           label={
             <span>

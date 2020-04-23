@@ -39,7 +39,7 @@ export default withRouter((props) => {
   let sessionId = originalSessionId ? originalSessionId.toLowerCase() : null;
 
   const [eventSessionDetails, loadingSessionDetails, errorSessionDetails] = useDocumentData(
-    firebase.firestore().collection("eventSessionsDetails").doc(sessionId)
+    firebase.firestore().collection("eventSessionsDetails").doc(sessionId),
   );
   const [
     eventSessionsEnabledFeatures,
@@ -58,7 +58,7 @@ export default withRouter((props) => {
 
   if (!eventSessionDetails) {
     return (
-      <Page title={`Veertly | Event not found`}>
+      <Page title={"Veertly | Event not found"}>
         <div className={classes.root}>
           <CenteredTopbar />
           <div>
