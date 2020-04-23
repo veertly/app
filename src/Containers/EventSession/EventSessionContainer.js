@@ -29,6 +29,7 @@ import {
   DEFAULT_EVENT_OPEN_MINUTES,
   DEFAULT_KEEP_ALIVE_INTERVAL,
   DEFAULT_KEEP_ALIVE_CHECK_INTERVAL,
+  DEFAULT_EVENT_CLOSES_MINUTES,
 } from "../../Config/constants";
 import SideMenuIcons from "../../Components/EventSession/SideMenuIcons";
 import ChatPane, { CHAT_DEFAULT_WIDTH } from "../../Components/Chat/ChatPane";
@@ -331,14 +332,29 @@ export default withRouter((props) => {
   }, [history]);
 
   const isLive = React.useMemo(() => {
-    if (!eventSessionDetails || !eventSessionDetails.eventBeginDate || !eventSessionDetails.eventOpens) {
+    if (
+      !eventSessionDetails ||
+      !eventSessionDetails.eventBeginDate ||
+      !eventSessionDetails.eventOpens ||
+      !eventSessionDetails.eventEndDate ||
+      !eventSessionDetails.eventCloses
+    ) {
       return true;
     }
-    const { eventBeginDate, eventOpens } = eventSessionDetails;
+    const { eventBeginDate, eventOpens, eventEndDate, eventCloses } = eventSessionDetails;
+
     let openMinutes = eventOpens ? Number(eventOpens) : DEFAULT_EVENT_OPEN_MINUTES;
     let beginDate = moment(eventBeginDate.toDate());
 
-    return beginDate.subtract(openMinutes, "minutes").isBefore(moment());
+    let closeMinutes = eventCloses ? Number(eventCloses) : DEFAULT_EVENT_CLOSES_MINUTES;
+    let endDate = moment(eventEndDate.toDate());
+    // console.log(endDate.add(closeMinutes, "minutes"));
+    // console.log(endDate.add(closeMinutes, "minutes").isAfter(moment()));
+
+    return (
+      beginDate.subtract(openMinutes, "minutes").isBefore(moment()) &&
+      endDate.add(closeMinutes, "minutes").isAfter(moment())
+    );
   }, [eventSessionDetails]);
 
   useEffect(() => {

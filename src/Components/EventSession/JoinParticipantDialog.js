@@ -68,7 +68,7 @@ export default function (props) {
   const { setIsInConferenceRoom } = props;
 
   const open = useSelector(isJoinParticipantOpen);
-  const participant = useSelector(getJoinParticipantEntity);
+  const participant = useSelector(getJoinParticipantEntity, shallowEqual);
   const sessionId = useSelector(getSessionId);
   const userId = useSelector(getUserId);
   const userGroup = useSelector(getUserLiveGroup, shallowEqual);
