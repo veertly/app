@@ -186,31 +186,31 @@ export default withRouter((props) => {
   const isInConferenceRoom = useMemo(() => userSession && !userSession.inNetworkingRoom, [userSession]);
 
   const [eventSessionDB, loadingSessionDB, errorSessionDB] = useDocumentData(
-    firebase.firestore().collection("eventSessions").doc(sessionId)
+    firebase.firestore().collection("eventSessions").doc(sessionId),
   );
 
   const [eventSessionDetailsDB, loadingSessionDetailsDB, errorSessionDetailsDB] = useDocumentData(
-    firebase.firestore().collection("eventSessionsDetails").doc(sessionId)
+    firebase.firestore().collection("eventSessionsDetails").doc(sessionId),
   );
 
   const [participantsJoinedDB, loadingParticipantsJoinedDB, errorParticipantsJoinedDB] = useCollectionData(
     firebase.firestore().collection("eventSessions").doc(sessionId).collection("participantsJoined"),
     // .where("isOnline", "==", true),
-    { idField: "id" }
+    { idField: "id" },
   );
 
   const [keepALivesDB] = useCollectionData(
     firebase.firestore().collection("eventSessions").doc(sessionId).collection("keepAlive"),
-    { idField: "id" }
+    { idField: "id" },
   );
 
   const [liveGroupsDB, loadingLiveGroupsDB, errorLiveGroupsDB] = useCollectionData(
     firebase.firestore().collection("eventSessions").doc(sessionId).collection("liveGroups"),
-    { idField: "id" }
+    { idField: "id" },
   );
 
   const [usersDB, loadingUsersDB, errorUsersDB] = useCollectionData(
-    firebase.firestore().collection("eventSessions").doc(sessionId).collection("participantsDetails")
+    firebase.firestore().collection("eventSessions").doc(sessionId).collection("participantsDetails"),
   );
 
   // --- userId ---
@@ -404,7 +404,7 @@ export default withRouter((props) => {
 
   if (!eventSessionDetails) {
     return (
-      <Page title={`Veertly | Event not found`}>
+      <Page title={"Veertly | Event not found"}>
         <div
           className={clsx({
             [classes.root]: true,

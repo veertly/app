@@ -36,7 +36,7 @@ export default function (props) {
 
   const shareText = React.useMemo(
     () => `Join me in the virtual event ${eventSessionDetails.title} that is LIVE NOW on @veertly `,
-    [eventSessionDetails.title]
+    [eventSessionDetails.title],
   );
 
   const link = React.useMemo(() => getUrl() + routes.EVENT_SESSION(sessionId), [sessionId]);
@@ -62,7 +62,7 @@ export default function (props) {
           </div>
           {eventSessionDetails && (
             <EventShareIcons
-              url={getUrl() + routes.EVENT_SESSION(eventSessionDetails.originalId)}
+              url={getUrl() + routes.EVENT_SESSION(eventSessionDetails.originalSessionId)}
               shareText={shareText}
             />
           )}

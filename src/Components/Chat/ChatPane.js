@@ -143,7 +143,7 @@ export default function ChatPane(props) {
       .doc(sessionId)
       .collection(CHAT_GLOBAL_NS)
       .orderBy("sentDate", "desc")
-      .limit(LIMIT_NUM_MESSAGES_QUERY)
+      .limit(LIMIT_NUM_MESSAGES_QUERY),
   );
 
   if (messagesFirebase) {
