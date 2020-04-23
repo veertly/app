@@ -13,11 +13,12 @@ import { Tooltip } from "@material-ui/core";
 import ConferenceIcon from "@material-ui/icons/DesktopMac";
 import FilterAttendeesDialog from "./FilterAttendeesDialog";
 
-import { useSelector, shallowEqual } from "react-redux";
+import { useSelector, shallowEqual, useDispatch } from "react-redux";
 import { getUsers, isInNetworkingRoom, getAvailableParticipantsList, getFilters } from "../../Redux/eventSession";
 
 // import JoinConversationDialog from "./JoinConversationDialog";
 import _ from "lodash";
+import { openJoinParticipant } from "../../Redux/dialogs";
 const useStyles = makeStyles((theme) => ({
   root: {},
   participantContainer: {
@@ -55,12 +56,17 @@ const useStyles = makeStyles((theme) => ({
   buttonContainer: {
     width: "100%",
     textAlign: "center",
+    position: "sticky",
+    top: -8,
+    paddingTop: theme.spacing(1),
+    backgroundColor: "#fff",
+    zIndex: 2,
   },
   button: {
     margin: theme.spacing(1),
   },
-  filterButton: ({filters}) => ({
-    backgroundColor: filters &&  Object.keys(filters).length > 0 ? theme.palette.filtersSelected : 'transparent',
+  filterButton: ({ filters }) => ({
+    backgroundColor: filters && Object.keys(filters).length > 0 ? theme.palette.filtersSelected : "transparent",
   }),
   title: {
     marginTop: theme.spacing(1),
@@ -99,13 +105,12 @@ const AvailableBadge = withStyles((theme) => ({
 }))(Badge);
 
 export default function (props) {
-  const [joinDialog, setJoinDialog] = React.useState(false);
   const [filterDialog, setFilterDialog] = React.useState(false);
-  const [selectedParticipant, setSelectedParticipant] = React.useState(null);
-  let { setIsInConferenceRoom } = props;  
-  
+  let { setIsInConferenceRoom } = props;
+
   const filters = useSelector(getFilters);
-  const classes = useStyles({filters});
+  const classes = useStyles({ filters });
+  const dispatch = useDispatch();
 
   const users = useSelector(getUsers, shallowEqual);
   const onConferenceRoom = !useSelector(isInNetworkingRoom);
@@ -140,7 +145,6 @@ export default function (props) {
       return true;
     });
 
-    // console.log("Num participants: " + result.length);
     return result;
   }, [availableParticipantsList, users, filters]);
 
@@ -149,45 +153,16 @@ export default function (props) {
       participantsAvailable.filter(({ isMyUser, isAvailable }) => !isMyUser && isAvailable)
     );
     let participant = selectedParticipantSession ? users[selectedParticipantSession.id] : null;
-    // if (participantsAvailable.length > 1) {
-    //   let tries = 0;
-    //   let findUser = () => {
-    //     let index = Math.floor(Math.random() * participantsAvailable.length);
-    //     let userId = participantsAvailable[index];
-    //     let sessionParticipant = participantsJoined[userId];
 
-    //     if (tries < 5 && (userId === myUserId || !sessionParticipant.inNetworkingRoom)) {
-    //       tries++;
-    //       return findUser();
-    //     }
+    dispatch(openJoinParticipant(participant));
 
-    //     return users[userId];
-    //   };
-    //   let participant = findUser();
-    setSelectedParticipant(participant);
-    setJoinDialog(true);
-  }, [participantsAvailable, users]);
+    window.analytics.track("Feeling lucky clicked", {});
+  }, [participantsAvailable, users, dispatch]);
 
   return (
     <div className={classes.root}>
-      <JoinParticipantDialog
-        open={joinDialog}
-        setOpen={setJoinDialog}
-        participant={selectedParticipant}
-        setIsInConferenceRoom={setIsInConferenceRoom}
-      />
-      <FilterAttendeesDialog
-        open={filterDialog}
-        setOpen={setFilterDialog}
-        participant={selectedParticipant}
-        // eventSession={eventSession}
-        // user={user}
-        // users={users}
-        filters={filters}
-        // setFilters={setFilters}
-        // onConferenceRoom={onConferenceRoom}
-        // showJoinButton={showJoinButton}
-      />
+      <JoinParticipantDialog setIsInConferenceRoom={setIsInConferenceRoom} />
+      <FilterAttendeesDialog open={filterDialog} setOpen={setFilterDialog} filters={filters} />
 
       {!onConferenceRoom && (
         <div className={classes.buttonContainer}>
@@ -199,7 +174,7 @@ export default function (props) {
             onClick={feelingLucky}
             disabled={participantsAvailable.length <= 1}
           >
-            I'm feeling lucky
+            Start a conversation
           </Button>
           <Button
             variant="outlined"
@@ -208,6 +183,7 @@ export default function (props) {
             className={`${classes.button} ${classes.filterButton}`}
             onClick={() => {
               setFilterDialog(true);
+              window.analytics.track("Filter clicked", {});
             }}
           >
             Filter
@@ -239,8 +215,7 @@ export default function (props) {
           <div
             className={classes.participantContainer}
             onClick={() => {
-              setSelectedParticipant(participant);
-              setJoinDialog(true);
+              dispatch(openJoinParticipant(participant));
             }}
             key={index}
           >

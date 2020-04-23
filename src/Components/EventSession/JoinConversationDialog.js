@@ -2,13 +2,13 @@ import React from "react";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import { makeStyles } from "@material-ui/core/styles";
-import Typography from "@material-ui/core/Typography";
 import ParticipantCard from "./ParticipantCard";
 import { joinConversation } from "../../Modules/eventSessionOperations";
 import { useSnackbar } from "material-ui-snackbar-provider";
 
 import { useSelector, shallowEqual } from "react-redux";
 import { getParticipantsJoined, getLiveGroups, getSessionId, getUserId } from "../../Redux/eventSession";
+import Alert from "@material-ui/lab/Alert";
 const useStyles = makeStyles((theme) => ({
   content: {
     position: "relative",
@@ -37,6 +37,9 @@ const useStyles = makeStyles((theme) => ({
   },
   participantContainer: {
     marginBottom: theme.spacing(3),
+  },
+  alert: {
+    marginTop: theme.spacing(2),
   },
 }));
 
@@ -86,9 +89,9 @@ export default function (props) {
                   Join Conversation
                 </Button>
               </div>
-              <Typography className={classes.hintText} variant="caption">
+              <Alert severity="info" className={classes.alert}>
                 You will join this conversation video conferencing call
-              </Typography>
+              </Alert>
             </div>
           )}
           {/* {isMyGroup && <div className={classes.emptySpaceBottom}></div>} */}

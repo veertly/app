@@ -57,6 +57,7 @@ import {
   crossCheckKeepAlives,
 } from "../../Redux/eventSession";
 import useInterval from "../../Hooks/useInterval";
+import JoinParticipantDialog from "../../Components/EventSession/JoinParticipantDialog";
 
 export const SIDE_PANE_WIDTH = 53;
 const LEFT_PANE_WIDTH = 300;
@@ -436,6 +437,7 @@ export default withRouter((props) => {
       <EventPageDialog /* eventSession={composedEventSession}  */ />
       <ShareEventDialog /*  eventSession={composedEventSession}  */ />
       <FeedbackDialog /* eventSession={composedEventSession} myUser={myUser}  */ />
+      <JoinParticipantDialog setIsInConferenceRoom={handleSetIsInConferenceRoom} />
 
       <EventSessionTopbar
         isInConferenceRoom={isInConferenceRoom}
