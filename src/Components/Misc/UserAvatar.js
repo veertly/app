@@ -11,24 +11,23 @@ export default (props) => {
   const handleOnClick = (e) => {
     if (onClick) onClick(e);
   };
+
+  let style = {};
+  if (size === "small") {
+    style = { width: 32, height: 32 };
+  }
+  if (onClick) {
+    style.cursor = "pointer";
+  }
   return (
     <React.Fragment>
       {user && (
         <>
           {user && user.avatarUrl && (
-            <Avatar
-              alt={user.firstName}
-              src={user.avatarUrl}
-              onClick={handleOnClick}
-              style={size === "small" ? { width: 32, height: 32 } : null}
-            />
+            <Avatar alt={user.firstName} src={user.avatarUrl} onClick={handleOnClick} style={style} />
           )}
           {user && !user.avatarUrl && (
-            <Avatar
-              onClick={handleOnClick}
-              alt={user.firstName}
-              style={size === "small" ? { width: 32, height: 32 } : null}
-            >
+            <Avatar onClick={handleOnClick} alt={user.firstName} style={style}>
               {user.firstName.trim() !== "" && <span>{getAvatarLetters()}</span>}
               {user.firstName.trim() === "" && <span>G</span>}
             </Avatar>

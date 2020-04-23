@@ -165,7 +165,7 @@ export const logout = async (sessionId) => {
   await firebase.auth().signOut();
 };
 
-export const initFirebasePresenceSync = async (sessionId, userId) => {
+export const initFirebasePresenceSync = async (sessionId, userId, participantsJoined) => {
   // https://firebase.google.com/docs/firestore/solutions/presence
 
   var userStatusDatabaseRef = firebase.database().ref("/sessionUsersStatus/" + sessionId + "/" + userId);
@@ -194,27 +194,68 @@ export const initFirebasePresenceSync = async (sessionId, userId) => {
     leftTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
   };
 
-  var isOnlineForFirestore = {
-    isOnline: true,
-    joinedTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
-    leftTimestamp: null,
-  };
-
   firebase
     .database()
     .ref(".info/connected")
     .on("value", function (snapshot) {
       if (snapshot.val() === false) {
-        userStatusFirestoreRef.update(isOfflineForFirestore);
+        userStatusFirestoreRef.set(isOfflineForFirestore, { merge: true });
         return;
       }
 
       userStatusDatabaseRef
         .onDisconnect()
-        .update(isOfflineForDatabase)
+        .set(isOfflineForDatabase)
         .then(function () {
           userStatusDatabaseRef.set(isOnlineForDatabase);
-          userStatusFirestoreRef.update(isOnlineForFirestore);
+
+          if (!participantsJoined[userId]) {
+            userStatusFirestoreRef.set({
+              groupId: null,
+              isOnline: true,
+              joinedTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
+              leftTimestamp: null,
+              lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
+            });
+          } else {
+            userStatusFirestoreRef.update({
+              isOnline: true,
+              leftTimestamp: null,
+              lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
+            });
+          }
         });
     });
+};
+
+export const keepAlive = async (sessionId, userId, userSession) => {
+  // console.log("Keep alive sent!");
+  var keepAliveSessionRef = firebase
+    .firestore()
+    .collection("eventSessions")
+    .doc(sessionId)
+    .collection("keepAlive")
+    .doc(userId);
+
+  await keepAliveSessionRef.set({
+    lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
+  });
+
+  if (userSession && !userSession.isOnline) {
+    var userSessionRef = firebase
+      .firestore()
+      .collection("eventSessions")
+      .doc(sessionId)
+      .collection("participantsJoined")
+      .doc(userId);
+
+    await userSessionRef.set(
+      {
+        isOnline: true,
+        leftTimestamp: null,
+        lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
+      },
+      { merge: true }
+    );
+  }
 };

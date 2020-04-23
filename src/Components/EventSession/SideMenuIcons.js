@@ -14,15 +14,23 @@ import AboutIcon from "@material-ui/icons/Info";
 import EventDescriptionIcon from "@material-ui/icons/Notes";
 import ShareIcon from "@material-ui/icons/Share";
 
-import { useDispatch, useSelector } from "react-redux";
-import { openEditProfile, openEventDetails, openChat, closeChat, openShare, openFeedback } from "../../Redux/actions";
+import { useDispatch, useSelector, shallowEqual } from "react-redux";
+import {
+  openEditProfile,
+  openEventDetails,
+  openChat,
+  closeChat,
+  openShare,
+  openFeedback,
+  isChatOpen,
+} from "../../Redux/dialogs";
 import routes from "../../Config/routes";
-import { isChatOpen } from "../../Redux/selectors";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import { logout } from "../../Modules/userOperations";
 import { useHistory } from "react-router-dom";
 import FeedbackIcon from "@material-ui/icons/GraphicEq";
-import { hideNotificationDot, toShowNotificationDot } from "../../Redux/reducers/chatMessages";
+import { getSessionId, getEventSessionDetails, getUserId } from "../../Redux/eventSession";
+import { hideNotificationDot, toShowNotificationDot } from "../../Redux/chatMessages";
 import Badge from "@material-ui/core/Badge";
 
 // import { Badge } from "@material-ui/core";
@@ -41,13 +49,20 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function SideMenuIcons(props) {
-  const { eventSession, user } = props;
+  // const { eventSession, user } = props;
   const classes = useStyles();
-  // const theme = useTheme();
   const dispatch = useDispatch();
   const chatOpen = useSelector(isChatOpen);
+
+  const sessionId = useSelector(getSessionId);
+  const userId = useSelector(getUserId);
+  const eventSessionDetails = useSelector(getEventSessionDetails, shallowEqual);
+
+  const isOwner = React.useMemo(() => eventSessionDetails && eventSessionDetails.owner === userId, [
+    eventSessionDetails,
+    userId,
+  ]);
   const showNotificationDot = useSelector(toShowNotificationDot);
-  const isOwner = React.useMemo(() => eventSession && user && eventSession.owner === user.uid, [eventSession, user]);
 
   const openProfile = React.useCallback(() => dispatch(openEditProfile()), [dispatch]);
   const openDetails = React.useCallback(() => dispatch(openEventDetails()), [dispatch]);
@@ -60,7 +75,7 @@ export default function SideMenuIcons(props) {
     if (chatOpen) {
       dispatch(closeChat());
     } else {
-      dispatch(hideNotificationDot())
+      dispatch(hideNotificationDot());
       dispatch(openChat());
     }
   }, [dispatch, chatOpen]);
@@ -90,7 +105,7 @@ export default function SideMenuIcons(props) {
             <Tooltip
               title="Edit event"
               onClick={() => {
-                window.open(window.open(routes.EDIT_EVENT_SESSION(eventSession.id), "_blank"));
+                window.open(window.open(routes.EDIT_EVENT_SESSION(sessionId), "_blank"));
               }}
             >
               <ListItem button>
@@ -177,7 +192,7 @@ export default function SideMenuIcons(props) {
             button
             onClick={() => {
               logout();
-              history.push(routes.EVENT_SESSION(eventSession.id));
+              history.push(routes.EVENT_SESSION(sessionId));
             }}
           >
             <ListItemIcon>

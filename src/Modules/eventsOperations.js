@@ -1,5 +1,4 @@
 import firebase from "./firebaseApp";
-// import uuidv1 from "uuid/v1";
 
 export const conferenceExists = async (sessionId) => {
   let docRef = firebase.firestore().collection("eventSessionsDetails").doc(sessionId.toLowerCase());

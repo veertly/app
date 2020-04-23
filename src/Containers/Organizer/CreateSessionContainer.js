@@ -61,7 +61,7 @@ const useStyles = makeStyles((theme) => ({
 export default withRouter((props) => {
   const classes = useStyles();
 
-  const [user, initialising, error] = useAuthState(firebase.auth());
+  const [userAuth, initialising, error] = useAuthState(firebase.auth());
 
   if (initialising) {
     return <p>Loading...</p>;
@@ -74,7 +74,9 @@ export default withRouter((props) => {
   return (
     <Layout maxWidth="md">
       <Page title="Veertly | Create new event">
-        <Paper className={classes.root}>{user && <EditEventSessionForm user={user} />}</Paper>
+        <Paper className={classes.root}>
+          {userAuth && <EditEventSessionForm userId={userAuth.uid} isAnonymous={userAuth.isAnonymous} />}
+        </Paper>
       </Page>
     </Layout>
   );

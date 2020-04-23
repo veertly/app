@@ -1,88 +1,24 @@
 import firebase from "./firebaseApp";
-import uuidv1 from "uuid/v1";
+import { v1 as uuidv1 } from "uuid";
 import { MAX_PARTICIPANTS_GROUP } from "../Config/constants";
 
 const getVideoConferenceAddress = (groupId) => `https://meet.jit.si/veertly-${groupId}`;
 
-export const setAsAvailable = async (eventSession, userId) => {
-  let currentGroupId =
-    eventSession.participantsJoined[userId] && eventSession.participantsJoined[userId].groupId
-      ? eventSession.participantsJoined[userId].groupId
-      : null;
-
-  if (!eventSession.participantsJoined[userId]) {
-    // user is not yet added to the DB, so set it on the DB
-    await firebase
-      .firestore()
-      .collection("eventSessions")
-      .doc(eventSession.id)
-      .collection("participantsJoined")
-      .doc(userId)
-      .set({
-        groupId: currentGroupId,
-        isOnline: true,
-        joinedTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
-        leftTimestamp: null,
-      });
-  } else {
-    //user is already on the DB, so update it
-    await firebase
-      .firestore()
-      .collection("eventSessions")
-      .doc(eventSession.id)
-      .collection("participantsJoined")
-      .doc(userId)
-      .update({
-        groupId: currentGroupId,
-        isOnline: true,
-        joinedTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
-        leftTimestamp: null,
-      });
-  }
-  // console.log("SET AS AVAILABLE!!!!!!");
-};
-
-export const setAsOffline = async (eventSession, userId) => {
-  // console.log(eventSession.participantsJoined[userId]);
-  let currentGroupId =
-    eventSession.participantsJoined[userId] && eventSession.participantsJoined[userId].groupId
-      ? eventSession.participantsJoined[userId].groupId
-      : null;
-
-  if (currentGroupId) {
-    leaveCall(eventSession, userId);
-  }
-  await firebase
-    .firestore()
-    .collection("eventSessions")
-    .doc(eventSession.id)
-    .collection("participantsJoined")
-    .doc(userId)
-    .update({
-      leftTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
-      isOnline: false,
-    });
-};
-
-export const createNewConversation = (eventSession, myUserId, otherUserId, snackbar) => {
-  let currentGroupId =
-    eventSession.participantsJoined[myUserId] && eventSession.participantsJoined[myUserId].groupId
-      ? eventSession.participantsJoined[myUserId].groupId
-      : null;
+export const createNewConversation = (sessionId, myUserId, otherUserId, currentUserGroup, snackbar) => {
+  let currentGroupId = currentUserGroup ? currentUserGroup.id : null;
+  // participantsJoined[myUserId] && participantsJoined[myUserId].groupId
+  //   ? participantsJoined[myUserId].groupId
+  //   : null;
 
   const groupId = uuidv1();
 
   let db = firebase.firestore();
 
-  let eventSessionRef = db.collection("eventSessions").doc(eventSession.id);
+  let eventSessionRef = db.collection("eventSessions").doc(sessionId);
 
-  let myUserRef = db.collection(`eventSessions`).doc(eventSession.id).collection("participantsJoined").doc(myUserId);
+  let myUserRef = db.collection(`eventSessions`).doc(sessionId).collection("participantsJoined").doc(myUserId);
 
-  let otherUserRef = db
-    .collection(`eventSessions`)
-    .doc(eventSession.id)
-    .collection("participantsJoined")
-    .doc(otherUserId);
+  let otherUserRef = db.collection(`eventSessions`).doc(sessionId).collection("participantsJoined").doc(otherUserId);
 
   var currentGroupRef = currentGroupId !== null ? eventSessionRef.collection("liveGroups").doc(currentGroupId) : null;
   var newGroupRef = eventSessionRef.collection("liveGroups").doc(groupId);
@@ -91,10 +27,12 @@ export const createNewConversation = (eventSession, myUserId, otherUserId, snack
   groupParticipantsObj[myUserId] = {
     joinedTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
     leftTimestamp: null,
+    id: myUserId,
   };
   groupParticipantsObj[otherUserId] = {
     joinedTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
     leftTimestamp: null,
+    id: otherUserId,
   };
 
   let groupObj = {
@@ -102,18 +40,19 @@ export const createNewConversation = (eventSession, myUserId, otherUserId, snack
     startTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
     videoConferenceAddress: getVideoConferenceAddress(groupId),
     participants: groupParticipantsObj,
+    isLive: true,
   };
 
   let participantsRefCurrentGroup = {};
 
   if (currentGroupId !== null) {
-    let participantsKeysCurrentGroup = Object.keys(eventSession.liveGroups[currentGroupId].participants);
+    let participantsKeysCurrentGroup = Object.keys(currentUserGroup.participants);
 
     for (let i = 0; i < participantsKeysCurrentGroup.length; i++) {
       let userId = participantsKeysCurrentGroup[i];
       participantsRefCurrentGroup[userId] = db
         .collection(`eventSessions`)
-        .doc(eventSession.id)
+        .doc(sessionId)
         .collection("participantsJoined")
         .doc(userId);
     }
@@ -221,31 +160,29 @@ export const createNewConversation = (eventSession, myUserId, otherUserId, snack
     });
 };
 
-export const joinConversation = (eventSession, myUserId, newGroupId, snackbar) => {
+export const joinConversation = (sessionId, participantsJoined, liveGroups, myUserId, newGroupId, snackbar) => {
   let currentGroupId =
-    eventSession.participantsJoined[myUserId] && eventSession.participantsJoined[myUserId].groupId
-      ? eventSession.participantsJoined[myUserId].groupId
-      : null;
+    participantsJoined[myUserId] && participantsJoined[myUserId].groupId ? participantsJoined[myUserId].groupId : null;
 
   let db = firebase.firestore();
 
-  let eventSessionRef = db.collection("eventSessions").doc(eventSession.id);
+  let eventSessionRef = db.collection("eventSessions").doc(sessionId);
 
   var currentGroupRef = currentGroupId !== null ? eventSessionRef.collection("liveGroups").doc(currentGroupId) : null;
   var newGroupRef = eventSessionRef.collection("liveGroups").doc(newGroupId);
 
-  let myUserRef = db.collection(`eventSessions`).doc(eventSession.id).collection("participantsJoined").doc(myUserId);
+  let myUserRef = db.collection(`eventSessions`).doc(sessionId).collection("participantsJoined").doc(myUserId);
 
   let participantsRefCurrentGroup = {};
 
   if (currentGroupId !== null) {
-    let participantsKeysCurrentGroup = Object.keys(eventSession.liveGroups[currentGroupId].participants);
+    let participantsKeysCurrentGroup = Object.keys(liveGroups[currentGroupId].participants);
 
     for (let i = 0; i < participantsKeysCurrentGroup.length; i++) {
       let userId = participantsKeysCurrentGroup[i];
       participantsRefCurrentGroup[userId] = db
         .collection(`eventSessions`)
-        .doc(eventSession.id)
+        .doc(sessionId)
         .collection("participantsJoined")
         .doc(userId);
     }
@@ -352,6 +289,7 @@ export const joinConversation = (eventSession, myUserId, newGroupId, snackbar) =
       let updateObj = {};
       updateObj[`participants.${myUserId}.joinedTimestamp`] = firebase.firestore.FieldValue.serverTimestamp();
       updateObj[`participants.${myUserId}.leftTimestamp`] = null;
+      updateObj[`participants.${myUserId}.id`] = myUserId;
       transaction.update(newGroupRef, updateObj);
     })
     .then(function () {
@@ -364,27 +302,28 @@ export const joinConversation = (eventSession, myUserId, newGroupId, snackbar) =
     });
 };
 
-export const leaveCall = (eventSession, myUserId) => {
-  let myGroupId = eventSession.participantsJoined[myUserId].groupId;
-  if (!myGroupId) {
+export const leaveCall = (sessionId, group, myUserId) => {
+  if (!group) {
     console.log("User is not on a call...");
     return;
   }
+  let myGroupId = group.id;
+
   let db = firebase.firestore();
 
-  let eventSessionRef = db.collection("eventSessions").doc(eventSession.id);
-  let myUserRef = db.collection(`eventSessions`).doc(eventSession.id).collection("participantsJoined").doc(myUserId);
+  let eventSessionRef = db.collection("eventSessions").doc(sessionId);
+  let myUserRef = db.collection(`eventSessions`).doc(sessionId).collection("participantsJoined").doc(myUserId);
 
   var myGroupRef = eventSessionRef.collection("liveGroups").doc(myGroupId);
 
-  let participantsKeys = Object.keys(eventSession.liveGroups[myGroupId].participants);
+  let participantsKeys = Object.keys(group.participants);
   let participantsRef = {};
 
   for (let i = 0; i < participantsKeys.length; i++) {
     let userId = participantsKeys[i];
     participantsRef[userId] = db
       .collection(`eventSessions`)
-      .doc(eventSession.id)
+      .doc(sessionId)
       .collection("participantsJoined")
       .doc(userId);
   }
@@ -458,11 +397,11 @@ export const leaveCall = (eventSession, myUserId) => {
     });
 };
 
-export const updateInNetworkingRoom = async (eventSession, myUserId, inNetworkingRoom) => {
+export const updateInNetworkingRoom = async (sessionId, myUserId, inNetworkingRoom) => {
   await firebase
     .firestore()
     .collection("eventSessions")
-    .doc(eventSession.id)
+    .doc(sessionId)
     .collection("participantsJoined")
     .doc(myUserId)
     .update({
@@ -477,6 +416,7 @@ export const createConference = async (
   title,
   conferenceVideoType,
   conferenceRoomYoutubeVideoId,
+  conferenceRoomFacebookVideoId,
   website,
   expectedAmountParticipants,
   eventBeginDate,
@@ -502,6 +442,7 @@ export const createConference = async (
     title: x(title),
     conferenceVideoType: x(conferenceVideoType),
     conferenceRoomYoutubeVideoId: x(conferenceRoomYoutubeVideoId),
+    conferenceRoomFacebookVideoId: x(conferenceRoomFacebookVideoId),
     website: x(website),
     expectedAmountParticipants: x(expectedAmountParticipants),
     eventBeginDate: firebase.firestore.Timestamp.fromDate(eventBeginDate),

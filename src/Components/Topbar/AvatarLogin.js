@@ -9,7 +9,7 @@ import firebase from "../../Modules/firebaseApp";
 import { logout } from "../../Modules/userOperations";
 import routes from "../../Config/routes";
 import { useDispatch } from "react-redux";
-import { openEditProfile } from "../../Redux/actions";
+import { openEditProfile } from "../../Redux/dialogs";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -33,12 +33,12 @@ export default (props) => {
   // const [openEditProfile, setOpenEditProfile] = useState(false);
 
   const classes = useStyles();
-  const [user] = useAuthState(firebase.auth());
+  const [userAuth] = useAuthState(firebase.auth());
   const dispatch = useDispatch();
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
-  const isOwner = eventSession && user && eventSession.owner === user.uid;
+  const isOwner = eventSession && userAuth && eventSession.owner === userAuth.uid;
 
   function handleClose() {
     setAnchorEl(null);
@@ -54,7 +54,7 @@ export default (props) => {
   };
 
   const getAvatarLetters = () => {
-    let names = user.displayName.split(" ");
+    let names = userAuth.displayName.split(" ");
     let firstName = names[0];
     let lastName = names.length > 1 ? names[names.length - 1] : "";
     return firstName.charAt(0).toUpperCase() + lastName.charAt(0).toUpperCase();
@@ -64,15 +64,15 @@ export default (props) => {
 
   return (
     <React.Fragment>
-      {user && (
+      {userAuth && (
         <div>
-          {user && user.photoURL && (
-            <Avatar alt="" src={user.photoURL} className={classes.avatar} onClick={handleMenu} />
+          {userAuth && userAuth.photoURL && (
+            <Avatar alt="" src={userAuth.photoURL} className={classes.avatar} onClick={handleMenu} />
           )}
-          {user && !user.photoURL && (
+          {userAuth && !userAuth.photoURL && (
             <Avatar className={classes.avatar} onClick={handleMenu}>
-              {user.displayName && <span>{getAvatarLetters()}</span>}
-              {!user.displayName && <span>G</span>}
+              {userAuth.displayName && <span>{getAvatarLetters()}</span>}
+              {!userAuth.displayName && <span>G</span>}
             </Avatar>
           )}
           <Menu

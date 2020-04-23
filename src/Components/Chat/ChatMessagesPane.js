@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { makeStyles /* , useTheme */ } from "@material-ui/core/styles";
 import { Grid } from "@material-ui/core";
 import ChatMessage from "./ChatMessage";
@@ -23,11 +23,22 @@ const useStyles = makeStyles((theme) => ({
 
 export default (props) => {
   const chatEnd = useRef(null);
-  let { messages, user, users } = props;
+  let { user, users } = props;
+
+  const [messages, setMessages] = useState([]);
 
   useEffect(() => {
+    setMessages(props.messages);
     chatEnd.current.scrollIntoView({ behavior: "auto" });
-  }, [messages])
+  }, [props.messages])
+
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+     setMessages((mess) => [...mess])
+    }, 60 * 1000);
+    return () => clearInterval(intervalId); 
+  }, []);
 
   const classes = useStyles();
   return (

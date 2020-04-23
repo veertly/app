@@ -53,7 +53,7 @@ function EventRegistrationForm(props) {
   let { eventBeginDate, eventEndDate, title } = eventSession;
 
   const classes = useStyles();
-  const [user] = useAuthState(firebase.auth());
+  const [userAuth] = useAuthState(firebase.auth());
   // const [userDb, setUserDb] = React.useState(null);
 
   const [registering, setRegistering] = React.useState(false);
@@ -80,11 +80,11 @@ function EventRegistrationForm(props) {
 
   useEffect(() => {
     const fetchUser = async () => {
-      if (!user) {
+      if (!userAuth) {
         return;
       }
       // console.log("--> On use effect...");
-      let userDb = await getUserDb(user.uid);
+      let userDb = await getUserDb(userAuth.uid);
 
       if (userDb) {
         const x = (str) => (str ? str : "");
@@ -98,7 +98,7 @@ function EventRegistrationForm(props) {
         setFormValues(newFormValues);
       }
       if (isRegistered === null) {
-        setIsRegistered(await isUserRegisteredToEvent(eventSession.id, user.uid));
+        setIsRegistered(await isUserRegisteredToEvent(eventSession.id, userAuth.uid));
       }
     };
     fetchUser();
@@ -125,8 +125,14 @@ function EventRegistrationForm(props) {
     const { id, description, title, eventBeginDate, eventEndDate } = eventSession;
     const sessionUrl = getUrl() + routes.EVENT_SESSION(id);
     let descriptionText = "";
+    let rawDescription = "";
     if (description) {
-      let descriptionContent = convertFromRaw(JSON.parse(description));
+      const parsedDescription = JSON.parse(description);
+      let descriptionContent = convertFromRaw(parsedDescription);
+      rawDescription = parsedDescription.blocks.reduce((acc, item) => {
+        acc += item.text;
+        return acc;
+      }, "");
       // descriptionText = descriptionContent.getPlainText("\n\n");
       descriptionText = stateToHTML(descriptionContent);
     }
@@ -137,6 +143,7 @@ function EventRegistrationForm(props) {
       location: sessionUrl,
       startTime: moment(eventBeginDate.toDate()),
       endTime: moment(eventEndDate.toDate()),
+      rawDescription,
     };
   }, [eventSession]);
 
@@ -147,7 +154,7 @@ function EventRegistrationForm(props) {
 
     setRegistering(true);
     try {
-      await registerToEvent(eventSession, user ? user.uid : null, formValues);
+      await registerToEvent(eventSession, userAuth ? userAuth.uid : null, formValues);
       setRegistrationComplete(true);
     } catch (e) {
       console.error(e);

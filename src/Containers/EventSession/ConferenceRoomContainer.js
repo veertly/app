@@ -5,6 +5,10 @@ import { leaveCall } from "../../Modules/eventSessionOperations";
 import NoVideoImage from "../../Assets/illustrations/undraw_video_call_kxyp.svg";
 import { Typography } from "@material-ui/core";
 import { ANNOUNCEMENT_HEIGHT } from "../../Components/EventSession/Announcements";
+import { useSelector, shallowEqual } from "react-redux";
+import { getUser, getUserGroup, getSessionId, getUserId, getEventSessionDetails } from "../../Redux/eventSession";
+import ReactPlayer from "react-player";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const useStyles = makeStyles((theme) => ({
   videoContainer: {
@@ -27,29 +31,60 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     height: "60%",
   },
+  reactPlayerContainer: {
+    width: "100%",
+    height: "100%",
+    position: "relative",
+    paddingTop: "56.25%" /* Player ratio: 100 / (1280 / 720) */,
+    backgroundColor: "black",
+    // display: "flex",
+    // alignItems: "center",
+  },
+  reactPlayer: {
+    position: "absolute",
+    margin: 0,
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+  },
 }));
 
 export default (props) => {
   const classes = useStyles();
-  const { user, eventSession, jitsiApi, setJitsiApi } = props;
+  const { jitsiApi, setJitsiApi } = props;
+
   const [loaded, error] = useScript("https://meet.jit.si/external_api.js");
+  // const [loadedFacebookStream /* , errorFacebookStream */] = useScript(
+  //   "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.2"
+  // );
+
   const [lastRoomLoaded, setLastRoomLoaded] = useState(null);
+  const [loadingPlayer, setLoadingPlayer] = useState(true);
+
+  const userId = useSelector(getUserId);
+  const user = useSelector(getUser);
+  const userGroup = useSelector(getUserGroup, shallowEqual);
+  const sessionId = useSelector(getSessionId);
+  const eventSessionDetails = useSelector(getEventSessionDetails, shallowEqual);
 
   useEffect(() => {
-    window.analytics.page("ConferenceRoom/" + eventSession.id);
-  }, [eventSession.id]);
+    window.analytics.page("ConferenceRoom/" + sessionId);
+  }, [sessionId]);
 
   const handleCallEnded = React.useCallback(() => {
-    leaveCall(eventSession, user.uid);
-  }, [eventSession, user.uid]);
+    leaveCall(sessionId, userGroup, userId);
+  }, [sessionId, userGroup, userId]);
 
   useEffect(() => {
+    if (!user) {
+      return;
+    }
     let prefix = process.env.REACT_APP_JITSI_ROOM_PREFIX;
     let prefixStr = prefix !== undefined ? `-${prefix}-` : "";
 
-    const roomName = "veertly" + prefixStr + "-" + eventSession.id;
+    const roomName = "veertly" + prefixStr + "-" + sessionId;
 
-    if (eventSession.conferenceVideoType === "JITSI" && loaded && lastRoomLoaded !== roomName) {
+    if (eventSessionDetails.conferenceVideoType === "JITSI" && loaded && lastRoomLoaded !== roomName) {
       // dispose existing jitsi
       if (jitsiApi) {
         jitsiApi.executeCommand("hangup");
@@ -73,9 +108,9 @@ export default (props) => {
 
       const api = new JitsiMeetExternalAPI(domain, options);
       /*eslint-enable no-undef*/
-      api.executeCommand("displayName", user.displayName);
-      if (user.photoURL) {
-        api.executeCommand("avatarUrl", user.photoURL);
+      api.executeCommand("displayName", user.firstName + " " + user.lastName);
+      if (user.avatarUrl) {
+        api.executeCommand("avatarUrl", user.avatarUrl);
       }
       api.addEventListener("videoConferenceLeft", (event) => {
         // console.log("videoConferenceLeft: ", event);
@@ -96,24 +131,15 @@ export default (props) => {
       //   jitsiApi.dispose();
       // }
     };
-  }, [
-    loaded,
-    eventSession.conferenceVideoType,
-    eventSession.id,
-    handleCallEnded,
-    jitsiApi,
-    lastRoomLoaded,
-    setJitsiApi,
-    user.displayName,
-    user.photoURL,
-  ]);
+  }, [loaded, eventSessionDetails, user, handleCallEnded, jitsiApi, lastRoomLoaded, setJitsiApi, sessionId]);
+
   const hasAnnouncement = React.useMemo(
     () =>
-      eventSession &&
-      eventSession.announcements &&
-      eventSession.announcements.conference &&
-      eventSession.announcements.conference.trim() !== "",
-    [eventSession]
+      eventSessionDetails &&
+      eventSessionDetails.announcements &&
+      eventSessionDetails.announcements.conference &&
+      eventSessionDetails.announcements.conference.trim() !== "",
+    [eventSessionDetails]
   );
   if (error) {
     console.log(error);
@@ -135,10 +161,35 @@ export default (props) => {
         </div>
       );
     };
-    switch (eventSession.conferenceVideoType) {
+
+    const getFacebooFrame = (videoId) => {
+      return (
+        <div className={classes.root} style={{ top: hasAnnouncement ? ANNOUNCEMENT_HEIGHT : 0 }}>
+          <div className={classes.reactPlayerContainer}>
+            <ReactPlayer
+              url={`https://www.facebook.com/facebook/videos/${videoId}`}
+              width="100%"
+              height="none"
+              className={classes.reactPlayer}
+              // playing
+              onReady={() => setLoadingPlayer(false)}
+            />
+            {loadingPlayer && (
+              <div className={classes.reactPlayer}>
+                <CircularProgress color="secondary" />
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    };
+    switch (eventSessionDetails.conferenceVideoType) {
       case "YOUTUBE":
-        let videoId = eventSession.conferenceRoomYoutubeVideoId;
-        return getYoutubeFrame(videoId);
+        let youtubeVideoId = eventSessionDetails.conferenceRoomYoutubeVideoId;
+        return getYoutubeFrame(youtubeVideoId);
+      case "FACEBOOK":
+        let facebookVideoId = eventSessionDetails.conferenceRoomFacebookVideoId;
+        return getFacebooFrame(facebookVideoId);
 
       case "JITSI":
         return <div id="conference-container" className={classes.root} />;
@@ -155,14 +206,5 @@ export default (props) => {
           </div>
         );
     }
-    // return (
-    //   <div className={classes.root}>
-    //     <Typography variant="caption">
-    //       <pre>
-    //         <code>{JSON.stringify(currentGroup, null, 2)}</code>
-    //       </pre>
-    //     </Typography>
-    //   </div>
-    // );
   }
 };

@@ -2,9 +2,9 @@ import React from "react";
 import Dialog from "@material-ui/core/Dialog";
 import { makeStyles } from "@material-ui/core/styles";
 import { useDispatch, useSelector } from "react-redux";
-import { closeEventDetails } from "../../Redux/actions";
-import { isEventDetailsOpen } from "../../Redux/selectors";
+import { closeEventDetails, isEventDetailsOpen } from "../../Redux/dialogs";
 import EventPage from "./EventPage";
+import { getEventSessionDetails } from "../../Redux/eventSession";
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -36,8 +36,9 @@ const useStyles = makeStyles((theme) => ({
 export default function (props) {
   const classes = useStyles();
 
-  const { eventSession } = props;
+  // const { eventSession } = props;
   const open = useSelector(isEventDetailsOpen);
+  const eventSessionDetails = useSelector(getEventSessionDetails);
 
   const dispatch = useDispatch();
 
@@ -48,7 +49,7 @@ export default function (props) {
     <div>
       <Dialog open={open} onClose={handleClose} scroll={"body"}>
         <div className={classes.content}>
-          {eventSession && <EventPage event={eventSession} hideButtons={true} isPreview={true} />}
+          {eventSessionDetails && <EventPage event={eventSessionDetails} hideButtons={true} isPreview={true} />}
         </div>
       </Dialog>
     </div>

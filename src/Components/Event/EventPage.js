@@ -8,7 +8,7 @@ import { CardMedia, Button } from "@material-ui/core";
 import moment from "moment";
 import routes from "../../Config/routes";
 import { useHistory } from "react-router-dom";
-import { DEFAULT_EVENT_OPEN_MINUTES } from "../../Config/constants";
+import { DEFAULT_EVENT_OPEN_MINUTES, DEFAULT_EVENT_CLOSES_MINUTES } from "../../Config/constants";
 import { useAuthState } from "react-firebase-hooks/auth";
 import firebase from "../../Modules/firebaseApp";
 import MUIAddToCalendar from "../MUIAddToCalendar";
@@ -21,6 +21,7 @@ import { getFeatureDetails, FEATURES } from "../../Modules/features";
 import EventRegistrationForm from "./EventRegistrationForm";
 import { userRegisteredEvent } from "../../Modules/eventsOperations";
 import SuccessIcon from "@material-ui/icons/CheckCircleOutline";
+import Alert from "@material-ui/lab/Alert";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -58,7 +59,18 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function EventPage(props) {
-  let { bannerUrl, eventBeginDate, eventEndDate, title, description, website, id, eventOpens, owner } = props.event;
+  let {
+    bannerUrl,
+    eventBeginDate,
+    eventEndDate,
+    title,
+    description,
+    website,
+    id,
+    eventOpens,
+    eventCloses,
+    owner,
+  } = props.event;
   let { isPreview, hideButtons, enabledFeatures } = props;
   const classes = useStyles();
 
@@ -84,11 +96,27 @@ export default function EventPage(props) {
     return beginDate.subtract(openMinutes, "minutes").isBefore(moment());
   }, [eventBeginDate, eventOpens]);
 
+  const isOver = React.useMemo(() => {
+    if (!eventEndDate) {
+      return true;
+    }
+    let closeMinutes = eventCloses ? Number(eventCloses) : DEFAULT_EVENT_CLOSES_MINUTES;
+    let endDate = moment(eventEndDate.toDate());
+
+    return endDate.add(closeMinutes, "minutes").isBefore(moment());
+  }, [eventCloses, eventEndDate]);
+
   const calendarEvent = React.useMemo(() => {
     const sessionUrl = getUrl() + routes.EVENT_SESSION(id);
     let descriptionText = "";
+    let rawDescription = "";
     if (description) {
-      let descriptionContent = convertFromRaw(JSON.parse(description));
+      const parsedDescription = JSON.parse(description);
+      let descriptionContent = convertFromRaw(parsedDescription);
+      rawDescription = parsedDescription.blocks.reduce((acc, item) => {
+        acc += item.text;
+        return acc;
+      }, "");
       // descriptionText = descriptionContent.getPlainText("\n\n");
       descriptionText = stateToHTML(descriptionContent);
     }
@@ -99,6 +127,7 @@ export default function EventPage(props) {
       location: sessionUrl,
       startTime: beginDate,
       endTime: endDate,
+      rawDescription,
     };
   }, [id, description, title, beginDate, endDate]);
 
@@ -158,7 +187,7 @@ export default function EventPage(props) {
 
         {!hideButtons && (
           <div className={classes.ctaContainer}>
-            {!isLive && (
+            {!isLive && !isOver && (
               <div>
                 {hasRsvpEnabled && !isRegistered && (
                   <Button
@@ -192,7 +221,7 @@ export default function EventPage(props) {
                 <MUIAddToCalendar event={calendarEvent} isPrimaryButton={!hasRsvpEnabled} />
               </div>
             )}
-            {isLive && (
+            {isLive && !isOver && (
               <Button
                 variant="contained"
                 color="primary"
@@ -204,6 +233,23 @@ export default function EventPage(props) {
               >
                 Join event now
               </Button>
+            )}
+            {isOver && (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: " center",
+                  alignItems: "center",
+                  color: "green",
+                  marginBottom: 8,
+                }}
+              >
+                {/* <span style={{ paddingRight: 8, paddingTop: 4 }}>
+                  <SuccessIcon />
+                </span>
+                <Typography>This event has finished!</Typography> */}
+                <Alert severity="info">This event has finished</Alert>
+              </div>
             )}
           </div>
         )}

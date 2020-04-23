@@ -9,6 +9,9 @@ import LeaveCallIcon from "../../Assets/Icons/LeaveCall";
 import { leaveCall } from "../../Modules/eventSessionOperations";
 import LeaveCallDialog from "./LeaveCallDialog";
 
+import { useSelector, shallowEqual } from "react-redux";
+import { getSessionId, getUsers, getUserGroup, getUserId, getUserLiveGroup } from "../../Redux/eventSession";
+
 momentDurationFormatSetup(moment);
 
 const useStyles = makeStyles((theme) => ({
@@ -37,20 +40,25 @@ const useStyles = makeStyles((theme) => ({
 export default function (props) {
   const classes = useStyles();
 
-  const { eventSession, currentGroup, users, user } = props;
-  const userId = user.uid;
   const [elapsedTime, setElapsedTime] = useState(0);
   const [participants, setParticipants] = useState([]);
   const [leaveCallOpen, setLeaveCallOpen] = useState(false);
 
-  if (!currentGroup) {
+  const users = useSelector(getUsers, shallowEqual);
+  const userId = useSelector(getUserId);
+  const userGroup = useSelector(getUserGroup, shallowEqual);
+  const sessionId = useSelector(getSessionId);
+  const liveGroup = useSelector(getUserLiveGroup, shallowEqual);
+
+  if (!userGroup) {
     return null;
   }
 
   useEffect(() => {
     var timerID = setInterval(() => {
       const currentTimestamp = new Date().getTime();
-      const joinedTimestamp = currentGroup.participants[userId].joinedTimestamp.toDate().getTime();
+      const joinedTimestamp =
+        userGroup.participants[userId] && userGroup.participants[userId].joinedTimestamp.toDate().getTime();
       setElapsedTime(currentTimestamp - joinedTimestamp);
     }, 1000);
 
@@ -61,23 +69,26 @@ export default function (props) {
 
   useEffect(() => {
     // calculate list participants online
-    const participants = Object.keys(currentGroup.participants).reduce((result, participantId) => {
-      let participant = users[participantId];
-      let participantSession = currentGroup.participants[participantId];
+    if (liveGroup) {
+      const participants = Object.keys(liveGroup.participants).reduce((result, participantId) => {
+        let participant = users[participantId];
+        let participantSession = userGroup.participants[participantId];
 
-      // console.log({ participantSession, participant });
+        // console.log({ participantSession, participant });
 
-      if (participantSession.leftTimestamp === null) {
-        result.push(participant);
-      }
+        if (participant && participantSession.leftTimestamp === null) {
+          result.push(participant);
+        }
+        // console.log({ result });
+        return result;
+      }, []);
 
-      // console.log({ result });
-      return result;
-    }, []);
-
-    // console.log({ participants });
-    setParticipants(participants);
-  }, [currentGroup, users]);
+      // console.log({ participants });
+      setParticipants(participants);
+    } else {
+      setParticipants([]);
+    }
+  }, [liveGroup, users, userGroup.participants]);
 
   const showElapsedTime = () => {
     let elapsedMoment = moment.duration(elapsedTime, "milliseconds");
@@ -85,8 +96,9 @@ export default function (props) {
   };
 
   const handleLeaveCall = () => {
-    leaveCall(eventSession, userId);
+    leaveCall(sessionId, userGroup, userId);
   };
+
   return (
     <div className={classes.groupContainer}>
       <LeaveCallDialog open={leaveCallOpen} handleLeaveCall={handleLeaveCall} setOpen={setLeaveCallOpen} />

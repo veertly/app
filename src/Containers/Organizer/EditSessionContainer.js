@@ -64,7 +64,7 @@ const useStyles = makeStyles((theme) => ({
 export default withRouter((props) => {
   const classes = useStyles();
 
-  const [user, initialising, error] = useAuthState(firebase.auth());
+  const [userAuth, initialising, error] = useAuthState(firebase.auth());
 
   let originalSessionId = props.match.params.sessionId;
 
@@ -84,14 +84,20 @@ export default withRouter((props) => {
     return <p>Error :(</p>;
   }
 
-  if (!user || (user && eventSessionDetails && user.uid !== eventSessionDetails.owner)) {
+  if (!userAuth || (userAuth && eventSessionDetails && userAuth.uid !== eventSessionDetails.owner)) {
     history.push(routes.EVENT_SESSION(sessionId));
   }
   return (
     <Layout maxWidth="md">
       <Page title="Veertly | Create new event">
         <Paper className={classes.root}>
-          {user && <EditEventSessionForm user={user} eventSession={eventSessionDetails} />}
+          {userAuth && (
+            <EditEventSessionForm
+              userId={userAuth.uid}
+              isAnonymous={userAuth.isAnonymous}
+              eventSession={eventSessionDetails}
+            />
+          )}
         </Paper>
       </Page>
     </Layout>
