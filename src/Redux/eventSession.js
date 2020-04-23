@@ -215,7 +215,7 @@ export const eventSessionReducer = (state = initialState, action) => {
     case STATE_LOADED: {
       return {
         ...state,
-        stateLoaded: true,
+        stateLoaded: action.stateLoaded,
       };
     }
 
@@ -223,7 +223,7 @@ export const eventSessionReducer = (state = initialState, action) => {
       return {
         ...state,
         filters: action.filters,
-      }
+      };
     }
 
     default:
@@ -292,8 +292,9 @@ export const updateUserId = (userId) => ({
   type: UPDATE_USER_ID,
   userId,
 });
-export const setStateLoaded = (userId) => ({
+export const setStateLoaded = (stateLoaded) => ({
   type: STATE_LOADED,
+  stateLoaded,
 });
 
 export const crossCheckKeepAlives = (keepAlives) => ({
@@ -303,5 +304,5 @@ export const crossCheckKeepAlives = (keepAlives) => ({
 
 export const setFilters = (filters) => ({
   type: SET_FILTERS,
-  filters
-})
+  filters,
+});

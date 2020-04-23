@@ -1,18 +1,16 @@
 {
-    "extends": "react-app",
-    "rules": {
-        // "quotes": ["error", "double", { "avoidEscape": true }],
-        // "object-curly-spacing": ["error", "always"],
-        // // require trailing commas in multiline object literals
-        // "comma-dangle": ["error", {
-        //     "arrays": "always-multiline",
-        //     "objects": "always-multiline",
-        //     "imports": "always-multiline",
-        //     "exports": "always-multiline",
-        //     "functions": "always-multiline"
-        //     }
-        // ]
-    }
+  "extends": "react-app",
+  "rules": {
+    // "quotes": ["error", "double", { "avoidEscape": true }],
+    // "object-curly-spacing": ["error", "always"],
+    // // require trailing commas in multiline object literals
+    // "comma-dangle": ["error", {
+    //     "arrays": "always-multiline",
+    //     "objects": "always-multiline",
+    //     "imports": "always-multiline",
+    //     "exports": "always-multiline",
+    //     "functions": "always-multiline"
+    //     }
+    // ]
+  }
 }
-
-    

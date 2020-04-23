@@ -64,21 +64,38 @@ export default function SideMenuIcons(props) {
   ]);
   const showNotificationDot = useSelector(toShowNotificationDot);
 
-  const openProfile = React.useCallback(() => dispatch(openEditProfile()), [dispatch]);
-  const openDetails = React.useCallback(() => dispatch(openEventDetails()), [dispatch]);
-  const openShareEvent = React.useCallback(() => dispatch(openShare()), [dispatch]);
-  const openFeedbackDialog = React.useCallback(() => dispatch(openFeedback()), [dispatch]);
+  const openProfile = React.useCallback(() => {
+    window.analytics.track("SideMenu: Open profile clicked", { sessionId });
+    dispatch(openEditProfile());
+  }, [dispatch, sessionId]);
+
+  const openDetails = React.useCallback(() => {
+    window.analytics.track("SideMenu: Open event details clicked", { sessionId });
+    dispatch(openEventDetails());
+  }, [dispatch, sessionId]);
+
+  const openShareEvent = React.useCallback(() => {
+    window.analytics.track("SideMenu: Open share event clicked", { sessionId });
+    dispatch(openShare());
+  }, [dispatch, sessionId]);
+
+  const openFeedbackDialog = React.useCallback(() => {
+    window.analytics.track("SideMenu: Open event details clicked", { sessionId });
+    dispatch(openFeedback());
+  }, [dispatch, sessionId]);
 
   const history = useHistory();
 
   const toggleChatPane = React.useCallback(() => {
     if (chatOpen) {
+      window.analytics.track("SideMenu: Chat closed clicked", { sessionId });
       dispatch(closeChat());
     } else {
       dispatch(hideNotificationDot());
       dispatch(openChat());
+      window.analytics.track("SideMenu: Chat opened clicked", { sessionId });
     }
-  }, [dispatch, chatOpen]);
+  }, [dispatch, chatOpen, sessionId]);
 
   return (
     <div className={classes.root}>
@@ -105,6 +122,7 @@ export default function SideMenuIcons(props) {
             <Tooltip
               title="Edit event"
               onClick={() => {
+                window.analytics.track("Edit event clicked", { sessionId });
                 window.open(window.open(routes.EDIT_EVENT_SESSION(sessionId), "_blank"));
               }}
             >
