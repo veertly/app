@@ -29,6 +29,7 @@ import {
   DEFAULT_EVENT_OPEN_MINUTES,
   DEFAULT_KEEP_ALIVE_INTERVAL,
   DEFAULT_KEEP_ALIVE_CHECK_INTERVAL,
+  DEFAULT_EVENT_CLOSES_MINUTES,
 } from "../../Config/constants";
 import SideMenuIcons from "../../Components/EventSession/SideMenuIcons";
 import ChatPane, { CHAT_DEFAULT_WIDTH } from "../../Components/Chat/ChatPane";
@@ -57,6 +58,7 @@ import {
   crossCheckKeepAlives,
 } from "../../Redux/eventSession";
 import useInterval from "../../Hooks/useInterval";
+import JoinParticipantDialog from "../../Components/EventSession/JoinParticipantDialog";
 
 export const SIDE_PANE_WIDTH = 53;
 const LEFT_PANE_WIDTH = 300;
@@ -148,9 +150,6 @@ export default withRouter((props) => {
   let [chatWidth, setChatWidth] = useState(CHAT_DEFAULT_WIDTH);
 
   const chatOpen = useSelector(isChatOpen);
-
-  // new redux
-  // const eventSessionRedux = useSelector(getEventSession);
 
   const handleSidebarClose = () => {
     setOpenSidebar(false);
@@ -271,7 +270,7 @@ export default withRouter((props) => {
 
   // --- init ---
   useEffect(() => {
-    if (!initCompleted && stateLoaded && participantsJoined && Object.keys(users).length > 0 && liveGroups) {
+    if (!initCompleted && stateLoaded && participantsJoined && liveGroups) {
       if (!user) {
         history.push(routes.EDIT_PROFILE(routes.EVENT_SESSION_LIVE(sessionId)));
       }
@@ -295,11 +294,11 @@ export default withRouter((props) => {
   useEffect(() => {
     if (
       !stateLoaded &&
-      loadingUsersDB &&
-      loadingSessionDB &&
-      loadingSessionDetailsDB &&
-      loadingParticipantsJoinedDB &&
-      loadingLiveGroupsDB
+      !loadingUsersDB &&
+      !loadingSessionDB &&
+      !loadingSessionDetailsDB &&
+      !loadingParticipantsJoinedDB &&
+      !loadingLiveGroupsDB
     ) {
       dispatch(setStateLoaded(userId));
     }
@@ -316,7 +315,9 @@ export default withRouter((props) => {
 
   // --- send keep alive ---
   useInterval(async () => {
-    keepAlive(sessionId, userId, userSession);
+    if (stateLoaded) {
+      keepAlive(sessionId, userId, userSession);
+    }
   }, DEFAULT_KEEP_ALIVE_INTERVAL);
 
   // --- handle keep alive ---
@@ -331,14 +332,29 @@ export default withRouter((props) => {
   }, [history]);
 
   const isLive = React.useMemo(() => {
-    if (!eventSessionDetails || !eventSessionDetails.eventBeginDate || !eventSessionDetails.eventOpens) {
+    if (
+      !eventSessionDetails ||
+      !eventSessionDetails.eventBeginDate ||
+      !eventSessionDetails.eventOpens ||
+      !eventSessionDetails.eventEndDate ||
+      !eventSessionDetails.eventCloses
+    ) {
       return true;
     }
-    const { eventBeginDate, eventOpens } = eventSessionDetails;
+    const { eventBeginDate, eventOpens, eventEndDate, eventCloses } = eventSessionDetails;
+
     let openMinutes = eventOpens ? Number(eventOpens) : DEFAULT_EVENT_OPEN_MINUTES;
     let beginDate = moment(eventBeginDate.toDate());
 
-    return beginDate.subtract(openMinutes, "minutes").isBefore(moment());
+    let closeMinutes = eventCloses ? Number(eventCloses) : DEFAULT_EVENT_CLOSES_MINUTES;
+    let endDate = moment(eventEndDate.toDate());
+    // console.log(endDate.add(closeMinutes, "minutes"));
+    // console.log(endDate.add(closeMinutes, "minutes").isAfter(moment()));
+
+    return (
+      beginDate.subtract(openMinutes, "minutes").isBefore(moment()) &&
+      endDate.add(closeMinutes, "minutes").isAfter(moment())
+    );
   }, [eventSessionDetails]);
 
   useEffect(() => {
@@ -437,6 +453,7 @@ export default withRouter((props) => {
       <EventPageDialog /* eventSession={composedEventSession}  */ />
       <ShareEventDialog /*  eventSession={composedEventSession}  */ />
       <FeedbackDialog /* eventSession={composedEventSession} myUser={myUser}  */ />
+      <JoinParticipantDialog setIsInConferenceRoom={handleSetIsInConferenceRoom} />
 
       <EventSessionTopbar
         isInConferenceRoom={isInConferenceRoom}

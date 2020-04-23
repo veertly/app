@@ -4,6 +4,8 @@ import { Grid, Typography } from "@material-ui/core";
 import moment from "moment";
 import UserAvatar from "../Misc/UserAvatar";
 import EllipsisLoader from "../Misc/EllipsisLoader";
+import { useDispatch } from "react-redux";
+import { openJoinParticipant } from "../../Redux/dialogs";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -30,6 +32,7 @@ export default (props) => {
 
   const classes = useStyles();
   // const isMyMessage = React.useMemo(() => message.userId === user.id, [user, message]);
+  const dispatch = useDispatch();
 
   const messageUser = React.useMemo(() => users[message.userId], [users, message.userId]);
   const sentDate = React.useMemo(() => (message.sentDate ? moment(message.sentDate.toDate()) : null), [
@@ -41,10 +44,15 @@ export default (props) => {
     return null;
   }
   const { firstName, lastName } = messageUser;
+
+  const handleAvatarClick = React.useCallback(() => dispatch(openJoinParticipant(messageUser)), [
+    messageUser,
+    dispatch,
+  ]);
   return (
     <Grid container justify="flex-start" className={classes.root}>
       <Grid item className={classes.avatar}>
-        <UserAvatar user={messageUser} size="small" />
+        <UserAvatar user={messageUser} size="small" onClick={handleAvatarClick} />
       </Grid>
       <Grid item className={classes.messageContainer}>
         <Typography className={classes.userName}>{`${firstName} ${lastName}`}</Typography>

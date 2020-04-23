@@ -11,6 +11,8 @@ const OPEN_SHARE = "dialogs.OPEN_SHARE";
 const CLOSE_SHARE = "dialogs.CLOSE_SHARE";
 const OPEN_FEEDBACK = "dialogs.OPEN_FEEDBACK";
 const CLOSE_FEEDBACK = "dialogs.CLOSE_FEEDBACK";
+const OPEN_JOIN_PARTICIPANT = "dialogs.OPEN_JOIN_PARTICIPANT";
+const CLOSE_JOIN_PARTICIPANT = "dialogs.CLOSE_JOIN_PARTICIPANT";
 
 const initialState = {
   editProfileOpen: false,
@@ -19,6 +21,8 @@ const initialState = {
   chatWidth: CHAT_DEFAULT_WIDTH,
   shareOpen: false,
   feedbackOpen: false,
+  joinParticipantOpen: false,
+  joinParticipantEntity: null,
 };
 
 export const dialogsReducer = (state = initialState, action) => {
@@ -92,6 +96,20 @@ export const dialogsReducer = (state = initialState, action) => {
         feedbackOpen: false,
       };
     }
+
+    case OPEN_JOIN_PARTICIPANT: {
+      return {
+        ...state,
+        joinParticipantOpen: true,
+        joinParticipantEntity: action.participant,
+      };
+    }
+    case CLOSE_JOIN_PARTICIPANT: {
+      return {
+        ...state,
+        joinParticipantOpen: false,
+      };
+    }
     default:
       return state;
   }
@@ -108,6 +126,10 @@ export const chatWidth = (store) => store.dialogs.chatWidth;
 export const isShareOpen = (store) => store.dialogs.shareOpen === true;
 
 export const isFeedbackOpen = (store) => store.dialogs.feedbackOpen === true;
+
+export const isJoinParticipantOpen = (store) => store.dialogs.joinParticipantOpen === true;
+
+export const getJoinParticipantEntity = (store) => store.dialogs.joinParticipantEntity;
 
 export const openEditProfile = () => ({
   type: OPEN_EDIT_PROFILE,
@@ -151,4 +173,13 @@ export const openFeedback = () => ({
 
 export const closeFeedback = () => ({
   type: CLOSE_FEEDBACK,
+});
+
+export const openJoinParticipant = (participant) => ({
+  type: OPEN_JOIN_PARTICIPANT,
+  participant,
+});
+
+export const closeJoinParticipant = () => ({
+  type: CLOSE_JOIN_PARTICIPANT,
 });

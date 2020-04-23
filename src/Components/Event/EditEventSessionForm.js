@@ -125,8 +125,6 @@ const getFacebookVideoId = (link) => {
   let pathname = parsedUrl.pathname.split("/");
   let videosIndex = pathname.findIndex((v) => v === "videos");
   let videoId = pathname[videosIndex + 1];
-  console.log(parsedUrl);
-  debugger;
   return videoId;
 };
 
@@ -155,8 +153,6 @@ function EditEventSessionForm(props) {
     eventCloses: !isNewEvent && eventSession.eventCloses ? eventSession.eventCloses : DEFAULT_EVENT_CLOSES_MINUTES,
     visibility: !isNewEvent && eventSession.visibility ? eventSession.visibility : "LISTED",
   });
-
-  console.log(values);
 
   const selectedSessionId = values.sessionId;
   const [selectedVideoType, setSelectedVideoType] = React.useState(
@@ -317,7 +313,6 @@ function EditEventSessionForm(props) {
     }
 
     if (foundErrors) {
-      debugger;
       setErrors(newErrors);
       return;
     }
