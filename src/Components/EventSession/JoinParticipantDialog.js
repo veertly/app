@@ -57,6 +57,7 @@ const useStyles = makeStyles((theme) => ({
   },
   alert: {
     marginTop: theme.spacing(2),
+    textAlign: "left",
   },
 }));
 
@@ -99,7 +100,8 @@ export default function (props) {
   let userInConferenceRoom = userSession && !userSession.inNetworkingRoom;
   let participantInConferenceRoom = !isMyUser && participantSession && !participantSession.inNetworkingRoom;
 
-  let canStartConversation = !isMyUser && !isMyGroup && !participantInConversation && !participantInConferenceRoom;
+  let canStartConversation =
+    !isMyUser && !isMyGroup && !participantInConversation && !participantInConferenceRoom && participantSession;
   let canJoinConversation =
     !isMyUser &&
     !isMyGroup &&
@@ -127,7 +129,11 @@ export default function (props) {
       <div>
         <Dialog open={open} onClose={handleClose} maxWidth={"sm"}>
           <div className={classes.content}>
-            <Typography align="center">We couldn't find a participant available...</Typography>
+            <Alert severity="info">
+              Sorry no attendee is available for a conversation at the moment. Either they are on the ‘Main Stage’ or
+              busy talking to others already on the ‘Networking Area’. <br />
+              Check out the ‘Conversations’ tab to join an existing conversation.
+            </Alert>
           </div>
         </Dialog>
       </div>
@@ -249,7 +255,7 @@ export default function (props) {
           )}
           {participantInConferenceRoom /* && (canJoinConversation || canStartConversation) */ && (
             <div className={classes.buttonContainer}>
-              <Alert severity="info">
+              <Alert severity="info" className={classes.alert}>
                 {participant.firstName} is currently watching the presentation on the main stage and is not available to
                 talk
               </Alert>
@@ -262,28 +268,23 @@ export default function (props) {
               {/* <div style={{ textAlign: "center", width: "100%" }}>
                 <SuccessIcon style={{ fontSize: 64, color: "#53a653" }} />
               </div> */}
-              <Alert severity="info">
+              <Alert severity="info" className={classes.alert}>
                 When starting this conversation, you will leave the "Main Stage and enter the 'Networking Area', but you
                 can come back at any time. Happy networking!
               </Alert>
             </div>
           )}
 
-          {/* {participant.id === user.uid && (
-            <React.Fragment>
-              <div className={classes.buttonContainer}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  className={classes.button}
-                  onClick={() => history.push(routes.EDIT_PROFILE(routes.EVENT_SESSION(eventSession.id)))}
-                >
-                  Edit profile
-                </Button>
-              </div>
-            </React.Fragment>
-          )} */}
-          {/* {(onConferenceRoom || participant.id === user.uid) && <div className={classes.emptySpaceBottom}></div>} */}
+          {!participantSession && (
+            <div className={classes.buttonContainer}>
+              {/* <div style={{ textAlign: "center", width: "100%" }}>
+                <SuccessIcon style={{ fontSize: 64, color: "#53a653" }} />
+              </div> */}
+              <Alert severity="info" className={classes.alert}>
+                {participant.firstName} is currently offline
+              </Alert>
+            </div>
+          )}
         </div>
       </Dialog>
     </div>

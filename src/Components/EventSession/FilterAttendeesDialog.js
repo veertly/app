@@ -8,8 +8,8 @@ import _ from "lodash";
 import FormGroup from "@material-ui/core/FormGroup";
 import { useSelector, shallowEqual, useDispatch } from "react-redux";
 import { getUsers, getParticipantsJoined, setFilters } from "../../Redux/eventSession";
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import TextField from '@material-ui/core/TextField';
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import TextField from "@material-ui/core/TextField";
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -38,11 +38,11 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(4),
   },
   autoComplete: {
-    width: '100%',
+    width: "100%",
   },
   caption: {
     marginTop: theme.spacing(1),
-  }
+  },
 }));
 
 export default function (props) {

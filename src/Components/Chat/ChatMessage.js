@@ -12,11 +12,8 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(1.5, 1.5),
     "&:hover": {
       backgroundColor: "rgba(28, 71, 98, 0.08)", //"#e0f3ff", //"#e4ffe4",
-      // cursor: "pointer",
       borderRadius: 0,
     },
-    // overflow: "auto",
-    // flexWrap: "inherit",
   },
   messageContainer: {
     flexGrow: 1,
@@ -25,6 +22,14 @@ const useStyles = makeStyles((theme) => ({
   avatar: {
     margin: theme.spacing(0, 1, 0, 0),
   },
+  userName: {
+    padding: 0,
+    'text-transform': 'none',
+    fontSize: '1rem',
+    "&:hover": {
+      cursor: 'pointer',
+    }
+  }
 }));
 
 export default (props) => {
@@ -55,7 +60,7 @@ export default (props) => {
         <UserAvatar user={messageUser} size="small" onClick={handleAvatarClick} />
       </Grid>
       <Grid item className={classes.messageContainer}>
-        <Typography className={classes.userName}>{`${firstName} ${lastName}`}</Typography>
+        <Typography className={classes.userName} onClick={handleAvatarClick}>{`${firstName} ${lastName}`}</Typography>
         <Typography className={classes.messageText} color="textSecondary">
           {message.message}
         </Typography>

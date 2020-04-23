@@ -212,7 +212,6 @@ export default withRouter((props) => {
   const [usersDB, loadingUsersDB, errorUsersDB] = useCollectionData(
     firebase.firestore().collection("eventSessions").doc(sessionId).collection("participantsDetails")
   );
-
   // --- userId ---
   useEffect(() => {
     dispatch(updateUserId(userId));
@@ -272,6 +271,7 @@ export default withRouter((props) => {
   useEffect(() => {
     if (!initCompleted && stateLoaded && participantsJoined && liveGroups) {
       if (!user) {
+        dispatch(setStateLoaded(false));
         history.push(routes.EDIT_PROFILE(routes.EVENT_SESSION_LIVE(sessionId)));
       }
       initFirebasePresenceSync(sessionId, userId, participantsJoined);
@@ -289,6 +289,7 @@ export default withRouter((props) => {
     user,
     stateLoaded,
     userSession,
+    dispatch,
   ]);
 
   useEffect(() => {
@@ -300,7 +301,7 @@ export default withRouter((props) => {
       !loadingParticipantsJoinedDB &&
       !loadingLiveGroupsDB
     ) {
-      dispatch(setStateLoaded(userId));
+      dispatch(setStateLoaded(true));
     }
   }, [
     stateLoaded,
@@ -404,7 +405,7 @@ export default withRouter((props) => {
 
   if (!eventSessionDetails) {
     return (
-      <Page title={`Veertly | Event not found`}>
+      <Page title={"Veertly | Event not found"}>
         <div
           className={clsx({
             [classes.root]: true,
