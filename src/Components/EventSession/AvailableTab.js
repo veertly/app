@@ -150,7 +150,7 @@ export default function (props) {
 
   const feelingLucky = React.useCallback(() => {
     let selectedParticipantSession = _.sample(
-      participantsAvailable.filter(({ isMyUser, isAvailable }) => !isMyUser && isAvailable)
+      participantsAvailable.filter(({ isMyUser, isAvailable }) => !isMyUser && isAvailable),
     );
     let participant = selectedParticipantSession ? users[selectedParticipantSession.id] : null;
 
@@ -164,37 +164,37 @@ export default function (props) {
       <JoinParticipantDialog setIsInConferenceRoom={setIsInConferenceRoom} />
       <FilterAttendeesDialog open={filterDialog} setOpen={setFilterDialog} filters={filters} />
 
-      {!onConferenceRoom && (
-        <div className={classes.buttonContainer}>
-          <Button
-            variant="outlined"
-            color="primary"
-            size="small"
-            className={classes.button}
-            onClick={feelingLucky}
-            disabled={participantsAvailable.length <= 1}
-          >
-            Start a conversation
-          </Button>
-          <Button
-            variant="outlined"
-            color="primary"
-            size="small"
-            className={`${classes.button} ${classes.filterButton}`}
-            onClick={() => {
-              setFilterDialog(true);
-              window.analytics.track("Filter clicked", {});
-            }}
-          >
-            Filter
-          </Button>
-        </div>
-      )}
       {onConferenceRoom && (
         <Typography variant="overline" className={classes.title} align="center">
           All attendees ({participantsAvailable.length})
         </Typography>
       )}
+    
+      <div className={classes.buttonContainer}>
+        <Button
+          variant="outlined"
+          color="primary"
+          size="small"
+          className={classes.button}
+          onClick={feelingLucky}
+          disabled={participantsAvailable.length <= 1}
+        >
+          Start a conversation
+        </Button>
+        <Button
+          variant="outlined"
+          color="primary"
+          size="small"
+          className={`${classes.button} ${classes.filterButton}`}
+          onClick={() => {
+            setFilterDialog(true);
+            window.analytics.track("Filter clicked", {});
+          }}
+        >
+          Filter
+        </Button>
+      </div>
+    
       {participantsAvailable.map((participantSession, index) => {
         let { isInConversation, isInConferenceRoom, isAvailable } = participantSession;
 

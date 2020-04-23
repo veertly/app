@@ -17,8 +17,8 @@ const useStyles = makeStyles((theme) => ({
   },
   shadowElement: {
     float:"left",
-    clear: "both"
-  }
+    clear: "both",
+  },
 }));
 
 export default (props) => {
