@@ -130,8 +130,9 @@ export default function (props) {
         <Dialog open={open} onClose={handleClose} maxWidth={"sm"}>
           <div className={classes.content}>
             <Alert severity="info">
-              Sorry, no one is available at the moment. <br />
-              Check out the ‘Conversations’ tab and join an existing conversation.
+              Sorry no attendee is available for a conversation at the moment. Either they are on the ‘Main Stage’ or
+              busy talking to others already on the ‘Networking Area’. <br />
+              Check out the ‘Conversations’ tab to join an existing conversation.
             </Alert>
           </div>
         </Dialog>
