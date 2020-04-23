@@ -149,9 +149,6 @@ export default withRouter((props) => {
 
   const chatOpen = useSelector(isChatOpen);
 
-  // new redux
-  // const eventSessionRedux = useSelector(getEventSession);
-
   const handleSidebarClose = () => {
     setOpenSidebar(false);
   };
@@ -271,7 +268,7 @@ export default withRouter((props) => {
 
   // --- init ---
   useEffect(() => {
-    if (!initCompleted && stateLoaded && participantsJoined && Object.keys(users).length > 0 && liveGroups) {
+    if (!initCompleted && stateLoaded && participantsJoined && liveGroups) {
       if (!user) {
         history.push(routes.EDIT_PROFILE(routes.EVENT_SESSION_LIVE(sessionId)));
       }
@@ -295,11 +292,11 @@ export default withRouter((props) => {
   useEffect(() => {
     if (
       !stateLoaded &&
-      loadingUsersDB &&
-      loadingSessionDB &&
-      loadingSessionDetailsDB &&
-      loadingParticipantsJoinedDB &&
-      loadingLiveGroupsDB
+      !loadingUsersDB &&
+      !loadingSessionDB &&
+      !loadingSessionDetailsDB &&
+      !loadingParticipantsJoinedDB &&
+      !loadingLiveGroupsDB
     ) {
       dispatch(setStateLoaded(userId));
     }
@@ -316,7 +313,9 @@ export default withRouter((props) => {
 
   // --- send keep alive ---
   useInterval(async () => {
-    keepAlive(sessionId, userId, userSession);
+    if (stateLoaded) {
+      keepAlive(sessionId, userId, userSession);
+    }
   }, DEFAULT_KEEP_ALIVE_INTERVAL);
 
   // --- handle keep alive ---

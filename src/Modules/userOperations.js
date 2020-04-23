@@ -199,13 +199,13 @@ export const initFirebasePresenceSync = async (sessionId, userId, participantsJo
     .ref(".info/connected")
     .on("value", function (snapshot) {
       if (snapshot.val() === false) {
-        userStatusFirestoreRef.update(isOfflineForFirestore);
+        userStatusFirestoreRef.set(isOfflineForFirestore, { merge: true });
         return;
       }
 
       userStatusDatabaseRef
         .onDisconnect()
-        .update(isOfflineForDatabase)
+        .set(isOfflineForDatabase)
         .then(function () {
           userStatusDatabaseRef.set(isOnlineForDatabase);
 
@@ -249,10 +249,13 @@ export const keepAlive = async (sessionId, userId, userSession) => {
       .collection("participantsJoined")
       .doc(userId);
 
-    await userSessionRef.update({
-      isOnline: true,
-      leftTimestamp: null,
-      lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
-    });
+    await userSessionRef.set(
+      {
+        isOnline: true,
+        leftTimestamp: null,
+        lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
+      },
+      { merge: true }
+    );
   }
 };
