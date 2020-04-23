@@ -74,8 +74,8 @@ function EventRegistrationForm(props) {
         result[properties.name] = "";
         return result;
       },
-      { checkedTerms: false, checkedNewsletter: false }
-    )
+      { checkedTerms: false, checkedNewsletter: false },
+    ),
   );
 
   useEffect(() => {
@@ -116,9 +116,9 @@ function EventRegistrationForm(props) {
           }
           return result;
         },
-        formValues.checkedTerms
+        formValues.checkedTerms,
       ),
-    [formValues, rsvpProperties.fields]
+    [formValues, rsvpProperties.fields],
   );
 
   const calendarEvent = React.useMemo(() => {
@@ -170,9 +170,9 @@ function EventRegistrationForm(props) {
   const shareText = React.useMemo(
     () =>
       `Join me in the virtual event ${eventSession.title} at ${moment(eventSession.eventBeginDate.toDate()).format(
-        "lll"
+        "lll",
       )} on @veertly `,
-    [eventSession.title, eventSession.eventBeginDate]
+    [eventSession.title, eventSession.eventBeginDate],
   );
 
   if (isRegistered === true) {

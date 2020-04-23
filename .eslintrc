@@ -2,7 +2,7 @@
   "extends": "react-app",
   "rules": {
     // "quotes": ["error", "double", { "avoidEscape": true }],
-    // "object-curly-spacing": ["error", "always"]
+    // "object-curly-spacing": ["error", "always"],
     // // require trailing commas in multiline object literals
     // "comma-dangle": ["error", {
     //     "arrays": "always-multiline",
