@@ -9,3 +9,4 @@ ReactDOM.render(<App />, document.getElementById("root"));
 // if service worker is present we unregister it.
 // registerServiceWorker();
 unregister();
+console.log("Loaded!");
