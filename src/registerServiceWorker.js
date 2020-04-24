@@ -102,7 +102,9 @@ function checkValidServiceWorker(swUrl) {
 export function unregister() {
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.ready.then(registration => {
-      registration.unregister();
+      registration.unregister().then(isSuccess => {
+        console.log(`service worker un-registration is ${isSuccess ? "successful" : "unsuccessful"}`)
+      });
     });
   }
 }
