@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import useScript from "../../Hooks/useScript";
 import { makeStyles } from "@material-ui/core/styles";
 import { leaveCall } from "../../Modules/eventSessionOperations";
@@ -9,6 +9,7 @@ import { useSelector, shallowEqual } from "react-redux";
 import { getUser, getUserGroup, getSessionId, getUserId, getEventSessionDetails } from "../../Redux/eventSession";
 import ReactPlayer from "react-player";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import JitsiContext from "./JitsiContext";
 
 const useStyles = makeStyles((theme) => ({
   videoContainer: {
@@ -49,9 +50,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default (props) => {
+export default () => {
   const classes = useStyles();
-  const { jitsiApi, setJitsiApi } = props;
+
+  const { jitsiApi, setJitsiApi } = useContext(JitsiContext);
+
+  // const { jitsiApi, setJitsiApi } = props;
 
   const [loaded, error] = useScript("https://meet.jit.si/external_api.js");
   // const [loadedFacebookStream /* , errorFacebookStream */] = useScript(

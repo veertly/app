@@ -1,4 +1,4 @@
-import moment from 'moment';
+import moment from "moment";
 
 export const nearestMinutes = (interval, someMoment) => {
     const roundedMinutes = Math.round(someMoment.clone().minute() / interval) * interval;
