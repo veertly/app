@@ -9,8 +9,12 @@ import AvailableTab from "./AvailableTab";
 import CurrentCallActions from "./CurrentCallActions";
 import { useSelector, shallowEqual } from "react-redux";
 import { getUserGroup } from "../../Redux/eventSession";
+import SmallPlayerContainer from "../../Containers/EventSession/SmallPlayerContainer";
 
 const CALL_SECTION_HEIGHT = 110;
+
+const PLAYER_HEIGHT = '30vh';
+const MIN_PLAYER_HEIGHT = 200;
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -23,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
   },
   tabContent: {
     position: "absolute",
-    bottom: 0,
+    bottom: PLAYER_HEIGHT > MIN_PLAYER_HEIGHT ? PLAYER_HEIGHT : MIN_PLAYER_HEIGHT,
     top: 72,
     left: 0,
     right: 0,
@@ -32,15 +36,27 @@ const useStyles = makeStyles((theme) => ({
   },
   currentCallContainer: {
     position: "absolute",
-    bottom: 0,
+    bottom: PLAYER_HEIGHT > MIN_PLAYER_HEIGHT ? PLAYER_HEIGHT : MIN_PLAYER_HEIGHT,
     left: 0,
     right: 0,
     height: CALL_SECTION_HEIGHT,
     backgroundColor: theme.palette.background.default, //"rgba(28, 71, 98, 0.08)", //"#e0f3ff", //"#e4ffe4",
+    // backgroundColor: 'green',
     overflowY: "auto",
     padding: theme.spacing(1),
     borderTop: "1px solid rgba(0, 0, 0, 0.12)",
   },
+  smallPlayerContainer: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: PLAYER_HEIGHT,
+    minHeight: MIN_PLAYER_HEIGHT,
+    overflowY: "auto",
+    padding: theme.spacing(1),
+    borderTop: "1px solid rgba(0, 0, 0, 0.12)",
+  }
 }));
 
 export default function (props) {
@@ -67,7 +83,9 @@ export default function (props) {
         <Tab icon={<AvailableParticipantsIcon />} label="ATTENDEES" className={classes.tab} />
         <Tab icon={<ConversationsIcon />} label="CONVERSATIONS" className={classes.tab} />
       </Tabs>
-      <div className={classes.tabContent} style={{ bottom: userGroup ? CALL_SECTION_HEIGHT : 0 }}>
+      <div className={classes.tabContent}
+      // style={{ bottom: userGroup ? CALL_SECTION_HEIGHT : 0 }}
+      >
         {value === 0 && <AvailableTab setIsInConferenceRoom={setIsInConferenceRoom} />}
         {value === 1 && <ConversationsTab />}
       </div>
@@ -76,6 +94,13 @@ export default function (props) {
           <CurrentCallActions />
         </div>
       )}
+      {/* <div className={classes.currentCallContainer}>
+        <CurrentCallActions />
+      </div> */}
+      <div className={classes.smallPlayerContainer}>
+        <SmallPlayerContainer />
+      </div>
+
     </div>
   );
 }

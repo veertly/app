@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import useScript from "../../Hooks/useScript";
 import { makeStyles } from "@material-ui/core/styles";
 import { leaveCall } from "../../Modules/eventSessionOperations";
 
 import { useSelector, shallowEqual } from "react-redux";
 import { getUser, getUserGroup, getSessionId, getUserId } from "../../Redux/eventSession";
+import JitsiContext from "./JitsiContext";
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
@@ -12,9 +13,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default (props) => {
+export default () => {
   const classes = useStyles();
-  const { /* currentGroup, user, eventSession, */ jitsiApi, setJitsiApi } = props;
+  const { jitsiApi, setJitsiApi } = useContext(JitsiContext);
   const [loaded, error] = useScript("https://meet.jit.si/external_api.js");
   const [lastRoomLoaded, setLastRoomLoaded] = useState(null);
 
