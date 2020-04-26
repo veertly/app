@@ -6,6 +6,7 @@ const firestore = admin.firestore();
 const moment = require("moment");
 
 const sendgrid = require("./modules/sendgrid");
+const backups = require("./modules/backups");
 
 const leaveCall = async (sessionId, myUserId) => {
   var eventSessionRef = firestore.collection("eventSessions").doc(sessionId);
@@ -217,3 +218,7 @@ exports.onUserRegisteredEvent = functions.firestore
       }
     }
   });
+
+exports.scheduledFirestoreExport = functions.pubsub.schedule("every 24 hours").onRun(async (context) => {
+  return backups.exportFirestore();
+});
