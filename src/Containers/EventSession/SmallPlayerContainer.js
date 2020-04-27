@@ -10,6 +10,10 @@ import JitsiContext from "./JitsiContext";
 import useJitsi from "../../Hooks/useJitsi";
 import FacebookPlayer from "../../Components/EventSession/FacebookPlayer";
 import YoutubePlayer from "../../Components/EventSession/YoutubePlayer";
+import VolumeDownIcon from '@material-ui/icons/VolumeDown';
+import VolumeUpIcon from '@material-ui/icons/VolumeUp';
+import VolumeOffIcon from '@material-ui/icons/VolumeOff';
+import CloseIcon from '@material-ui/icons/Close';
 
 const useStyles = makeStyles((theme) => ({
   videoContainer: {
@@ -32,23 +36,59 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     height: "60%",
   },
-  reactPlayerContainer: {
-    width: "100%",
-    height: "100%",
-    position: "relative",
-    // paddingTop: "56.25%" /* Player ratio: 100 / (1280 / 720) */,
-    backgroundColor: "black",
-    // display: "flex",
-    // alignItems: "center",
-  },
-  reactPlayer: {
+  playerOuterContainer: {
     position: "absolute",
-    margin: 0,
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
+    top: 0,
+    bottom: 0,
+    right: 0,
+    left: 0,
+    display: 'flex',
+    flexDirection: 'column'
   },
+  toolbar: {
+    width: '100%',
+    flex: 0.1,
+    backgroundColor: theme.palette.secondary.main,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1)
+  },
+  playerContainer: {
+    width: '100%',
+    flex: 0.9,
+    position: 'relative',
+  },
+  volumeControlContainer: {
+    flex: 0.5,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  }
 }));
+
+const CustomYoutubeFrame = ({ videoId }) => {
+  const classes = useStyles(); 
+  return (
+    <div className={classes.root}
+    // style={{ top: hasAnnouncement ? ANNOUNCEMENT_HEIGHT : 0 }}
+    >
+     <YoutubePlayer videoId={videoId} />
+    </div>
+  );
+};
+
+const CustomFacebookFrame = ({ videoId }) => {
+  const classes = useStyles();
+  return (
+    <div className={classes.root}
+    // style={{ top: hasAnnouncement ? ANNOUNCEMENT_HEIGHT : 0 }}
+    >
+      <FacebookPlayer videoId={videoId} />
+    </div>
+  );
+};
 
 export const SmallPlayerContainer =  () => {
   const classes = useStyles();
@@ -84,39 +124,14 @@ export const SmallPlayerContainer =  () => {
     callEndedCb: () => handleCallEnded()
   })
 
-  if (error) {
-    console.log(error);
-    return <p>Error :(</p>;
-  }
-  if (!loaded) return <div id="conference-container">Loading...</div>;
-  if (loaded) {
-    const getYoutubeFrame = (videoId) => {
-      return (
-        <div className={classes.root}
-        // style={{ top: hasAnnouncement ? ANNOUNCEMENT_HEIGHT : 0 }}
-        >
-         <YoutubePlayer videoId={videoId} />
-        </div>
-      );
-    };
-
-    const getFacebooFrame = (videoId) => {
-      return (
-        <div className={classes.root}
-        // style={{ top: hasAnnouncement ? ANNOUNCEMENT_HEIGHT : 0 }}
-        >
-          <FacebookPlayer videoId={videoId} />
-        </div>
-      );
-    };
+  const getPlayer = () => {
     switch (eventSessionDetails.conferenceVideoType) {
       case "YOUTUBE":
         let youtubeVideoId = eventSessionDetails.conferenceRoomYoutubeVideoId;
-        return getYoutubeFrame(youtubeVideoId);
+        return <CustomYoutubeFrame videoId={youtubeVideoId} />;
       case "FACEBOOK":
         let facebookVideoId = eventSessionDetails.conferenceRoomFacebookVideoId;
-        return getFacebooFrame(facebookVideoId);
-
+        return <CustomFacebookFrame  videoId={facebookVideoId} />;
       case "JITSI":
         return <div id="conference-container" className={classes.root} />;
       default:
@@ -132,6 +147,32 @@ export const SmallPlayerContainer =  () => {
           </div>
         );
     }
+  }
+
+  if (error) {
+    console.log(error);
+    return <p>Error :(</p>;
+  }
+  if (!loaded) return <div id="conference-container">Loading...</div>;
+  if (loaded) {
+  
+    return (
+      <div className={classes.playerOuterContainer}>
+        <div className={classes.toolbar}>
+          <div className={classes.volumeControlContainer}>
+            <VolumeDownIcon />
+            <VolumeUpIcon />
+            <VolumeOffIcon />
+          </div>
+          <CloseIcon></CloseIcon>
+        </div>
+        <div className={classes.playerContainer}>
+          {getPlayer()}
+        </div>
+      </div>
+    )
+
+ 
   }
 };
 
