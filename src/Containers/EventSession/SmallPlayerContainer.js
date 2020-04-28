@@ -1,12 +1,17 @@
-import React, { useEffect, useContext, useState } from "react";
+import React, { useEffect, useState } from "react";
 import useScript from "../../Hooks/useScript";
 import { makeStyles } from "@material-ui/core/styles";
-import { leaveCall } from "../../Modules/eventSessionOperations";
+// import { leaveCall } from "../../Modules/eventSessionOperations";
 import { Typography } from "@material-ui/core";
 import { useSelector, shallowEqual } from "react-redux";
-import { getUser, getUserGroup, getSessionId, getUserId, getEventSessionDetails } from "../../Redux/eventSession";
-import JitsiContext from "./JitsiContext";
-import useJitsi from "../../Hooks/useJitsi";
+import {
+  // getUser,
+  // getUserGroup,
+  getSessionId,
+  // getUserId,
+  getEventSessionDetails } from "../../Redux/eventSession";
+// import JitsiContext from "./JitsiContext";
+// import useJitsi from "../../Hooks/useJitsi";
 import FacebookPlayer from "../../Components/EventSession/FacebookPlayer";
 import YoutubePlayer from "../../Components/EventSession/YoutubePlayer";
 import VolumeDownIcon from '@material-ui/icons/VolumeDown';
@@ -111,7 +116,7 @@ const CustomFacebookFrame = ({ videoId }) => {
 
 export const SmallPlayerContainer =  () => {
   const classes = useStyles();
-  const { jitsiApi, setJitsiApi } = useContext(JitsiContext);
+  // const { jitsiApi, setJitsiApi } = useContext(JitsiContext);
 
   const [loaded, error] = useScript("https://meet.jit.si/external_api.js");
   // const [loadedFacebookStream /* , errorFacebookStream */] = useScript(
@@ -122,9 +127,9 @@ export const SmallPlayerContainer =  () => {
 
   const [volume, setVolume] = useState(50)
 
-  const userId = useSelector(getUserId);
-  const user = useSelector(getUser);
-  const userGroup = useSelector(getUserGroup, shallowEqual);
+  // const userId = useSelector(getUserId);
+  // const user = useSelector(getUser);
+  // const userGroup = useSelector(getUserGroup, shallowEqual);
   const sessionId = useSelector(getSessionId);
   const eventSessionDetails = useSelector(getEventSessionDetails, shallowEqual);
 
@@ -132,20 +137,20 @@ export const SmallPlayerContainer =  () => {
     window.analytics.page("ConferenceRoom/" + sessionId);
   }, [sessionId]);
 
-  const handleCallEnded = React.useCallback(() => {
-    leaveCall(sessionId, userGroup, userId);
-  }, [sessionId, userGroup, userId]);
+  // const handleCallEnded = React.useCallback(() => {
+  //   leaveCall(sessionId, userGroup, userId);
+  // }, [sessionId, userGroup, userId]);
 
-  useJitsi({
-    avatarUrl: user ? user.avatarUrl : "",
-    displayName: user ? user.firstName + " " + user.lastName : "",
-    sessionId,
-    conferenceVideoType: eventSessionDetails.conferenceVideoType,
-    containerId: '#conference-container',
-    jitsiApi,
-    setJitsiApi,
-    callEndedCb: () => handleCallEnded()
-  })
+  // useJitsi({
+  //   avatarUrl: user ? user.avatarUrl : "",
+  //   displayName: user ? user.firstName + " " + user.lastName : "",
+  //   sessionId,
+  //   conferenceVideoType: eventSessionDetails.conferenceVideoType,
+  //   containerId: '#conference-container',
+  //   jitsiApi,
+  //   setJitsiApi,
+  //   callEndedCb: () => handleCallEnded()
+  // })
 
   const handleVolumeChange = (event, newValue) => {
     setVolume(newValue);
