@@ -22,7 +22,7 @@ const minWidth = 150;
 // const maxWidth = 800;
 export const CHAT_DEFAULT_WIDTH = 350;
 const CHAT_GLOBAL_NS = "global";
-const LIMIT_NUM_MESSAGES_QUERY = 1000;
+const LIMIT_NUM_MESSAGES_QUERY = 500;
 const CHAT_TOOLBAR_HEIGHT = 37;
 
 const useStyles = makeStyles((theme) => ({
@@ -143,7 +143,7 @@ export default function ChatPane(props) {
       .doc(sessionId)
       .collection(CHAT_GLOBAL_NS)
       .orderBy("sentDate", "desc")
-      .limit(LIMIT_NUM_MESSAGES_QUERY),
+      .limit(LIMIT_NUM_MESSAGES_QUERY)
   );
 
   if (messagesFirebase) {
