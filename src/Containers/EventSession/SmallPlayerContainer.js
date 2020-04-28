@@ -180,7 +180,7 @@ export const SmallPlayerContainer =  () => {
       <div className={classes.playerOuterContainer}>
         <div className={classes.toolbar}>
           <div className={classes.toolbarTitle}>
-            <Typography variant="body1">
+            <Typography variant="subtitle1">
               Main Stage
             </Typography>
           </div>
