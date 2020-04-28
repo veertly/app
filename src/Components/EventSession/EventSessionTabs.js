@@ -13,7 +13,7 @@ import SmallPlayerContainer from "../../Containers/EventSession/SmallPlayerConta
 
 const CALL_SECTION_HEIGHT = 110;
 
-const PLAYER_HEIGHT = Math.floor(0.3 * window.innerHeight);
+const PLAYER_HEIGHT = Math.floor(0.32 * window.innerHeight);
 const MIN_PLAYER_HEIGHT = 200;
 
 const useStyles = makeStyles((theme) => ({
