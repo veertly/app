@@ -123,8 +123,6 @@ export const SmallPlayerContainer =  () => {
   //   "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.2"
   // );
 
-  const [closePlayer, setClosePlayer] = useState(false);
-
   const [volume, setVolume] = useState(50)
 
   // const userId = useSelector(getUserId);
@@ -132,6 +130,8 @@ export const SmallPlayerContainer =  () => {
   // const userGroup = useSelector(getUserGroup, shallowEqual);
   const sessionId = useSelector(getSessionId);
   const eventSessionDetails = useSelector(getEventSessionDetails, shallowEqual);
+  
+  const [closePlayer, setClosePlayer] = useState(eventSessionDetails.conferenceVideoType === 'JITSI' ? true : false);
 
   useEffect(() => {
     window.analytics.page("ConferenceRoom/" + sessionId);
