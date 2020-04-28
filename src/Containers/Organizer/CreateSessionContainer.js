@@ -5,6 +5,8 @@ import firebase from "../../Modules/firebaseApp";
 import EditEventSessionForm from "../../Components/Event/EditEventSessionForm";
 import { withRouter } from "react-router-dom";
 import Page from "../../Components/Core/Page";
+import SplashScreen from "../../Components/Misc/SplashScreen";
+
 import { Paper } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -64,7 +66,7 @@ export default withRouter((props) => {
   const [userAuth, initialising, error] = useAuthState(firebase.auth());
 
   if (initialising) {
-    return <p>Loading...</p>;
+    return <SplashScreen />;
   }
 
   if (error) {

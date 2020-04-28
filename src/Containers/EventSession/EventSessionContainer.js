@@ -59,6 +59,7 @@ import {
 } from "../../Redux/eventSession";
 import useInterval from "../../Hooks/useInterval";
 import JoinParticipantDialog from "../../Components/EventSession/JoinParticipantDialog";
+import SplashScreen from "../../Components/Misc/SplashScreen";
 
 export const SIDE_PANE_WIDTH = 53;
 const LEFT_PANE_WIDTH = 300;
@@ -371,7 +372,7 @@ export default withRouter((props) => {
     loadingParticipantsJoinedDB ||
     loadingLiveGroupsDB
   ) {
-    return <p>Loading...</p>;
+    return <SplashScreen />;
   }
   if (errorUsersDB || errorSessionDB || errorSessionDetailsDB || errorParticipantsJoinedDB || errorLiveGroupsDB) {
     console.error(errorUsersDB);

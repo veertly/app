@@ -10,6 +10,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { useDocumentData } from "react-firebase-hooks/firestore";
 import { useHistory } from "react-router-dom";
 import routes from "../../Config/routes";
+import SplashScreen from "../../Components/Misc/SplashScreen";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -76,7 +77,7 @@ export default withRouter((props) => {
   );
 
   if (initialising || loadingSessionDetails) {
-    return <p>Loading...</p>;
+    return <SplashScreen />;
   }
 
   if (error || errorSessionDetails) {
