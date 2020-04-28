@@ -118,7 +118,7 @@ function SimpleDialog(props) {
     // console.log(url);
 
     if (!isMobile() && (url.startsWith("data") || url.startsWith("BEGIN"))) {
-      let filename = "download.ics";
+      let filename = `${event.title}.ics`;
       let blob = new Blob([url], { type: "text/calendar;charset=utf-8" });
 
       /****************************************************************
