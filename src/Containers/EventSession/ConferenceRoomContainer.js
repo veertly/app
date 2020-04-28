@@ -98,6 +98,7 @@ export default (props) => {
         interfaceConfigOverwrite: {
           // filmStripOnly: true,
           DEFAULT_REMOTE_DISPLAY_NAME: "Veertlier",
+
           // SHOW_JITSI_WATERMARK: false,
           // SUPPORT_URL: 'https://github.com/jitsi/jitsi-meet/issues/new',
         },
@@ -109,6 +110,8 @@ export default (props) => {
       const api = new JitsiMeetExternalAPI(domain, options);
       /*eslint-enable no-undef*/
       api.executeCommand("displayName", user.firstName + " " + user.lastName);
+      api.executeCommand("subject", `Veertly | ${eventSessionDetails.title}`);
+
       if (user.avatarUrl) {
         api.executeCommand("avatarUrl", user.avatarUrl);
       }

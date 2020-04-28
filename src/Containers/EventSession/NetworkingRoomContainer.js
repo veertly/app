@@ -53,15 +53,17 @@ export default (props) => {
         parentNode: document.querySelector("#conference-container"),
         interfaceConfigOverwrite: {
           // filmStripOnly: true,
+          enableWelcomePage: false,
           DEFAULT_REMOTE_DISPLAY_NAME: "Veertlier",
-          // SHOW_JITSI_WATERMARK: false,
-          // SUPPORT_URL: 'https://github.com/jitsi/jitsi-meet/issues/new',
+          SHOW_CHROME_EXTENSION_BANNER: false,
         },
       };
       /*eslint-disable no-undef*/
       const api = new JitsiMeetExternalAPI(domain, options);
       /*eslint-enable no-undef*/
       api.executeCommand("displayName", user.firstName + " " + user.lastName);
+      api.executeCommand("subject", "Veertly | Networking Conversation");
+
       if (user.avatarUrl) {
         api.executeCommand("avatarUrl", user.avatarUrl);
       }
