@@ -1,8 +1,7 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, useContext, useState } from "react";
 import useScript from "../../Hooks/useScript";
 import { makeStyles } from "@material-ui/core/styles";
 import { leaveCall } from "../../Modules/eventSessionOperations";
-import NoVideoImage from "../../Assets/illustrations/undraw_video_call_kxyp.svg";
 import { Typography } from "@material-ui/core";
 import { useSelector, shallowEqual } from "react-redux";
 import { getUser, getUserGroup, getSessionId, getUserId, getEventSessionDetails } from "../../Redux/eventSession";
@@ -12,8 +11,8 @@ import FacebookPlayer from "../../Components/EventSession/FacebookPlayer";
 import YoutubePlayer from "../../Components/EventSession/YoutubePlayer";
 import VolumeDownIcon from '@material-ui/icons/VolumeDown';
 import VolumeUpIcon from '@material-ui/icons/VolumeUp';
-import VolumeOffIcon from '@material-ui/icons/VolumeOff';
 import CloseIcon from '@material-ui/icons/Close';
+import Slider from '@material-ui/core/Slider';
 
 const useStyles = makeStyles((theme) => ({
   videoContainer: {
@@ -48,12 +47,16 @@ const useStyles = makeStyles((theme) => ({
   toolbar: {
     width: '100%',
     flex: 0.1,
-    backgroundColor: theme.palette.secondary.main,
+    backgroundColor: theme.palette.primary.main,
+    color: 'white',
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
     paddingLeft: theme.spacing(1),
-    paddingRight: theme.spacing(1)
+    paddingRight: theme.spacing(1),
+    paddingTop: theme.spacing(0.4),
+    paddingBottom: theme.spacing(0.4),
   },
   playerContainer: {
     width: '100%',
@@ -64,17 +67,33 @@ const useStyles = makeStyles((theme) => ({
     flex: 0.5,
     display: 'flex',
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-around',
+    "& > * + *" : {
+      marginLeft: theme.spacing(0.8),
+    }
+  },
+  icon: {
+    "&:hover": {
+      cursor: "pointer",
+    }
+  },
+  toolbarTitle: {
+    flex: 0.4,
+    fontWeight: 600,
+  },
+  slider: {
+    color: 'white',
   }
 }));
 
-const CustomYoutubeFrame = ({ videoId }) => {
+const CustomYoutubeFrame = ({ videoId, volume }) => {
   const classes = useStyles(); 
   return (
     <div className={classes.root}
     // style={{ top: hasAnnouncement ? ANNOUNCEMENT_HEIGHT : 0 }}
     >
-     <YoutubePlayer videoId={videoId} />
+     <YoutubePlayer volume={volume} videoId={videoId} />
     </div>
   );
 };
@@ -98,6 +117,10 @@ export const SmallPlayerContainer =  () => {
   // const [loadedFacebookStream /* , errorFacebookStream */] = useScript(
   //   "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.2"
   // );
+
+  const [closePlayer, setClosePlayer] = useState(false);
+
+  const [volume, setVolume] = useState(50)
 
   const userId = useSelector(getUserId);
   const user = useSelector(getUser);
@@ -124,28 +147,23 @@ export const SmallPlayerContainer =  () => {
     callEndedCb: () => handleCallEnded()
   })
 
+  const handleVolumeChange = (event, newValue) => {
+    setVolume(newValue);
+  };
+
   const getPlayer = () => {
+    const vol = Math.floor(volume * 10 / 100) / 10;
     switch (eventSessionDetails.conferenceVideoType) {
       case "YOUTUBE":
         let youtubeVideoId = eventSessionDetails.conferenceRoomYoutubeVideoId;
-        return <CustomYoutubeFrame videoId={youtubeVideoId} />;
+        return <CustomYoutubeFrame volume={vol} videoId={youtubeVideoId} />;
       case "FACEBOOK":
         let facebookVideoId = eventSessionDetails.conferenceRoomFacebookVideoId;
         return <CustomFacebookFrame  videoId={facebookVideoId} />;
-      case "JITSI":
-        return <div id="conference-container" className={classes.root} />;
+      // case "JITSI":
+      //   return <div id="conference-container" className={classes.root} />;
       default:
-        return (
-          <div className={classes.videoContainer}>
-            <Typography align="center" gutterBottom style={{ marginTop: 16 }}>
-              Livestream not correctly configured...
-            </Typography>
-            <Typography variant="caption" display="block" align="center">
-              Please contact the event organizer or Veertly team
-            </Typography>
-            <img alt="No Video available" src={NoVideoImage} className={classes.noVideoImage} />
-          </div>
-        );
+        return null;
     }
   }
 
@@ -153,18 +171,25 @@ export const SmallPlayerContainer =  () => {
     console.log(error);
     return <p>Error :(</p>;
   }
-  if (!loaded) return <div id="conference-container">Loading...</div>;
+  if (!loaded) return null;
+
+  if(closePlayer) return null;
+
   if (loaded) {
-  
     return (
       <div className={classes.playerOuterContainer}>
         <div className={classes.toolbar}>
-          <div className={classes.volumeControlContainer}>
-            <VolumeDownIcon />
-            <VolumeUpIcon />
-            <VolumeOffIcon />
+          <div className={classes.toolbarTitle}>
+            <Typography variant="body1">
+              Main Stage
+            </Typography>
           </div>
-          <CloseIcon></CloseIcon>
+          <div className={classes.volumeControlContainer}>
+            <VolumeDownIcon className={classes.icon} />
+              <Slider className={classes.slider} value={volume} onChange={handleVolumeChange} aria-labelledby="continuous-slider" />
+            <VolumeUpIcon className={classes.icon} />
+            <CloseIcon className={classes.icon} onClick={() => setClosePlayer(true)}></CloseIcon>
+          </div>
         </div>
         <div className={classes.playerContainer}>
           {getPlayer()}
