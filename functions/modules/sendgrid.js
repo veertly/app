@@ -5,6 +5,20 @@ const EVENT_CREATED_TEMPLATE = "d-d400f667dadb444ba38a66f6dbd22b44";
 const USER_REGISTERED_EVENT_TEMPLATE = "d-c94d4cf68b1a420999c5dab58a1ffea9";
 
 const sendMailTemplate = async (to, data, templateId) => {
+  let personalizations = {
+    to,
+    dynamic_template_data: data,
+  };
+
+  if (process.env.GCLOUD_PROJECT === "veertly") {
+    personalizations.bcc = [
+      {
+        email: "info@veertly.com",
+        name: "Veertly",
+      },
+    ];
+  }
+
   var options = {
     method: "POST",
     url: "https://api.sendgrid.com/v3/mail/send",
@@ -13,12 +27,7 @@ const sendMailTemplate = async (to, data, templateId) => {
       authorization: "Bearer " + functions.config().sendgrid.key,
     },
     body: {
-      personalizations: [
-        {
-          to,
-          dynamic_template_data: data,
-        },
-      ],
+      personalizations: [personalizations],
       from: {
         email: "info@veertly.com",
         name: "Veertly",
@@ -50,15 +59,15 @@ const sendEventCreatedMail = async (toEmail, toFirstName, eventLink, eventTitle)
   ];
   await sendMailTemplate(toUser, data, EVENT_CREATED_TEMPLATE);
 
-  if (process.env.GCLOUD_PROJECT === "veertly") {
-    const toVeertly = [
-      {
-        email: "info@veertly.com",
-        name: "Veertly",
-      },
-    ];
-    await sendMailTemplate(toVeertly, data, EVENT_CREATED_TEMPLATE);
-  }
+  // if (process.env.GCLOUD_PROJECT === "veertly") {
+  //   const toVeertly = [
+  //     {
+  //       email: "info@veertly.com",
+  //       name: "Veertly",
+  //     },
+  //   ];
+  //   await sendMailTemplate(toVeertly, data, EVENT_CREATED_TEMPLATE);
+  // }
 };
 
 const sendUserRegistered = async (toEmail, toFirstName, eventLink, eventTitle, eventDate, templateId) => {
@@ -79,15 +88,15 @@ const sendUserRegistered = async (toEmail, toFirstName, eventLink, eventTitle, e
   let template = templateId ? templateId : USER_REGISTERED_EVENT_TEMPLATE;
   await sendMailTemplate(toUser, data, template);
 
-  if (process.env.GCLOUD_PROJECT === "veertly") {
-    const toVeertly = [
-      {
-        email: "info@veertly.com",
-        name: "Veertly",
-      },
-    ];
-    await sendMailTemplate(toVeertly, data, template);
-  }
+  // if (process.env.GCLOUD_PROJECT === "veertly") {
+  //   const toVeertly = [
+  //     {
+  //       email: "info@veertly.com",
+  //       name: "Veertly",
+  //     },
+  //   ];
+  //   await sendMailTemplate(toVeertly, data, template);
+  // }
 };
 
 module.exports = {
