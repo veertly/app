@@ -1,17 +1,11 @@
 import React, { useEffect, useState } from "react";
 import useScript from "../../Hooks/useScript";
 import { makeStyles } from "@material-ui/core/styles";
-// import { leaveCall } from "../../Modules/eventSessionOperations";
 import { Typography } from "@material-ui/core";
 import { useSelector, shallowEqual } from "react-redux";
 import {
-  // getUser,
-  // getUserGroup,
   getSessionId,
-  // getUserId,
   getEventSessionDetails } from "../../Redux/eventSession";
-// import JitsiContext from "./JitsiContext";
-// import useJitsi from "../../Hooks/useJitsi";
 import FacebookPlayer from "../../Components/EventSession/FacebookPlayer";
 import YoutubePlayer from "../../Components/EventSession/YoutubePlayer";
 import VolumeDownIcon from '@material-ui/icons/VolumeDown';
