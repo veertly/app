@@ -86,6 +86,8 @@ export default function EventPage(props) {
 
   const [user] = useAuthState(firebase.auth());
 
+  const websiteNormalized = website.includes("http") ? website : `https://${website}`;
+
   const isLive = React.useMemo(() => {
     if (!eventBeginDate) {
       return true;
@@ -165,7 +167,7 @@ export default function EventPage(props) {
         <div style={{ marginRight: 16 }}>
           {beginDate && (
             <Typography color="textSecondary">
-              <span role="img" aria-label="calendar">
+              <span role="img" aria-label="calendar" style={{ marginRight: 16 }}>
                 📅
               </span>
               {isSameDay
@@ -175,8 +177,8 @@ export default function EventPage(props) {
           )}
           {website && website.trim() !== "" && (
             <Typography color="textSecondary">
-              <a href={website} target="_blank" rel="noopener noreferrer">
-                <span role="img" aria-label="website">
+              <a href={websiteNormalized} target="_blank" rel="noopener noreferrer">
+                <span role="img" aria-label="website" style={{ marginRight: 16 }}>
                   🔗
                 </span>
                 {website}

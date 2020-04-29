@@ -6,6 +6,7 @@ import UserAvatar from "../Misc/UserAvatar";
 import EllipsisLoader from "../Misc/EllipsisLoader";
 import { useDispatch } from "react-redux";
 import { openJoinParticipant } from "../../Redux/dialogs";
+import Linkify from "react-linkify";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -24,13 +25,19 @@ const useStyles = makeStyles((theme) => ({
   },
   userName: {
     padding: 0,
-    'text-transform': 'none',
-    fontSize: '1rem',
+    "text-transform": "none",
+    fontSize: "1rem",
     "&:hover": {
-      cursor: 'pointer',
-    }
-  }
+      cursor: "pointer",
+    },
+  },
 }));
+
+const componentDecorator = (href, text, key) => (
+  <a href={href} key={key} target="_blank" rel="noopener noreferrer">
+    {text}
+  </a>
+);
 
 export default (props) => {
   let { message /* , user */, users } = props;
@@ -54,6 +61,7 @@ export default (props) => {
     messageUser,
     dispatch,
   ]);
+
   return (
     <Grid container justify="flex-start" className={classes.root}>
       <Grid item className={classes.avatar}>
@@ -62,7 +70,7 @@ export default (props) => {
       <Grid item className={classes.messageContainer}>
         <Typography className={classes.userName} onClick={handleAvatarClick}>{`${firstName} ${lastName}`}</Typography>
         <Typography className={classes.messageText} color="textSecondary">
-          {message.message}
+          <Linkify componentDecorator={componentDecorator}>{message.message}</Linkify>
         </Typography>
         <Typography variant="caption" className={classes.sentDate}>
           {sentDate && sentDate.fromNow()}

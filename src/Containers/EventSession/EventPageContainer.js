@@ -11,6 +11,7 @@ import { useHistory } from "react-router-dom";
 import routes from "../../Config/routes";
 import EventPage from "../../Components/Event/EventPage";
 import CenteredTopbar from "../Layouts/CenteredTopbar";
+import SplashScreen from "../../Components/Misc/SplashScreen";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -39,7 +40,7 @@ export default withRouter((props) => {
   let sessionId = originalSessionId ? originalSessionId.toLowerCase() : null;
 
   const [eventSessionDetails, loadingSessionDetails, errorSessionDetails] = useDocumentData(
-    firebase.firestore().collection("eventSessionsDetails").doc(sessionId),
+    firebase.firestore().collection("eventSessionsDetails").doc(sessionId)
   );
   const [
     eventSessionsEnabledFeatures,
@@ -49,7 +50,7 @@ export default withRouter((props) => {
   const history = useHistory();
 
   if (loadingSessionDetails || loadingEventSessionsEnabledFeatures) {
-    return <p>Loading...</p>;
+    return <SplashScreen />;
   }
   if (errorSessionDetails || errorEventSessionsEnabledFeatures) {
     console.error(errorSessionDetails);
