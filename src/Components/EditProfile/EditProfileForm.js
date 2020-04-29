@@ -151,15 +151,21 @@ function EditProfileForm(props) {
     let newValues = { ...values };
     newValues[name] = value;
     if (name === "linkedin") {
-      newValues.linkedinUrl = value.trim() !== "" ? linkedinUrlStatic + value : null;
+      let v = value.includes("linkedin.com") ? value : linkedinUrlStatic + value;
+      v = v.includes("http") ? v : `https://${v}`;
+      newValues.linkedinUrl = value.trim() !== "" ? v : null;
     }
 
     if (name === "twitter") {
-      newValues.twitterUrl = value.trim() !== "" ? twitterUrlStatic + value : null;
+      let v = value.includes("twitter.com") ? value : twitterUrlStatic + value;
+      v = v.includes("http") ? v : `https://${v}`;
+      newValues.twitterUrl = value.trim() !== "" ? v : null;
     }
 
     if (name === "keybase") {
-      newValues.keybaseUrl = value.trim() !== "" ? keybaseUrlStatic + value : null;
+      let v = value.includes("keybase.io") ? value : keybaseUrlStatic + value;
+      v = v.includes("http") ? v : `https://${v}`;
+      newValues.keybaseUrl = value.trim() !== "" ? v : null;
     }
     setValues(newValues);
   };
@@ -409,16 +415,12 @@ function EditProfileForm(props) {
                 name="checkedTerms"
                 color="primary"
               />
-              {
-                values.checkedTerms !== true && 
-                (
-                  <Typography className={classes.star} color="error" align="center" variant="caption">
+              {values.checkedTerms !== true && (
+                <Typography className={classes.star} color="error" align="center" variant="caption">
                   *
-                  </Typography>
-                )
-              }
+                </Typography>
+              )}
             </div>
-           
           }
           label={
             <span>

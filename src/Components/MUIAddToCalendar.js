@@ -104,7 +104,7 @@ function SimpleDialog(props) {
           "DTEND:" + formatTime(event.endTime),
           "SUMMARY:" + event.title,
           "DESCRIPTION:" + event.rawDescription,
-          "X-ALT-DESC;FMTTYPE=text/html:<!DOCTYPE html><html lang=\"en\"><body>"+ event.description +"</body></html>",
+          'X-ALT-DESC;FMTTYPE=text/html:<!DOCTYPE html><html lang="en"><body>' + event.description + "</body></html>",
           "LOCATION:" + event.location,
           "END:VEVENT",
           "END:VCALENDAR",
@@ -118,7 +118,7 @@ function SimpleDialog(props) {
     // console.log(url);
 
     if (!isMobile() && (url.startsWith("data") || url.startsWith("BEGIN"))) {
-      let filename = "download.ics";
+      let filename = `${event.title}.ics`;
       let blob = new Blob([url], { type: "text/calendar;charset=utf-8" });
 
       /****************************************************************
@@ -152,24 +152,24 @@ function SimpleDialog(props) {
           </ListItemAvatar>
           <ListItemText primary={"Google"} />
         </ListItem>
-
+        {/* 
         <ListItem button onClick={() => handleListItemClick("outlookcom")}>
           <ListItemAvatar>
             <img src="/icons/calendar/outlook.svg" alt="Outlook" className={classes.icon} />
           </ListItemAvatar>
           <ListItemText primary={"Outlook"} />
-        </ListItem>
+        </ListItem> */}
 
         <ListItem button onClick={() => handleListItemClick("yahoo")}>
           <ListItemAvatar>
-            <img src="/icons/calendar/yahoo.svg" alt="Outlook" className={classes.icon} />
+            <img src="/icons/calendar/yahoo.svg" alt="Yahoo" className={classes.icon} />
           </ListItemAvatar>
           <ListItemText primary={"Yahoo"} />
         </ListItem>
 
         <ListItem button onClick={() => handleListItemClick("download")}>
           <ListItemAvatar>
-            <img src="/icons/calendar/default-calendar.svg" alt="Outlook" className={classes.icon} />
+            <img src="/icons/calendar/default-calendar.svg" alt="Calendar .ics" className={classes.icon} />
           </ListItemAvatar>
           <ListItemText primary={"Download .ics"} />
         </ListItem>

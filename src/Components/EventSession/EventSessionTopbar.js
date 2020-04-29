@@ -20,8 +20,9 @@ import { logout } from "../../Modules/userOperations";
 import routes from "../../Config/routes";
 // import DesktopMacIcon from "@material-ui/icons/DesktopMac";
 // import ConversationsIcon from "../../Assets/Icons/Conversations";
-import { useSelector, shallowEqual } from "react-redux";
+import { useSelector, shallowEqual, useDispatch } from "react-redux";
 import { getSessionId, getUser, getUserGroup, getEventSessionDetails } from "../../Redux/eventSession";
+import { openEditProfile } from "../../Redux/dialogs";
 
 // import routes from "../../Config/routes";
 const useStyles = makeStyles((theme) => ({
@@ -121,6 +122,7 @@ export default withRouter((props) => {
   const isMobile = useMediaQuery(theme.breakpoints.down("xs"));
   const history = useHistory();
   const classes = useStyles();
+  const dispatch = useDispatch();
 
   const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
   const openMenu = Boolean(menuAnchorEl);
@@ -140,7 +142,7 @@ export default withRouter((props) => {
     setMenuAnchorEl(event.currentTarget);
   }
 
-  const handleLogout = () => {
+  const handleLogoutClick = () => {
     logout(sessionId);
     handleMenuClose();
     if (sessionId) {
@@ -158,6 +160,10 @@ export default withRouter((props) => {
 
   const handleNetworkingRoomClick = () => {
     setGoToNetworkingDialog(true);
+  };
+
+  const handleEditProfileClick = () => {
+    dispatch(openEditProfile());
   };
 
   return (
@@ -211,7 +217,8 @@ export default withRouter((props) => {
               open={openMenu}
               onClose={handleMenuClose}
             >
-              <MenuItem onClick={handleLogout}>Log out</MenuItem>
+              <MenuItem onClick={handleEditProfileClick}>Edit profile</MenuItem>
+              <MenuItem onClick={handleLogoutClick}>Log out</MenuItem>
             </Menu>
           </div>
         </Toolbar>

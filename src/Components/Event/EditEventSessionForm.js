@@ -220,7 +220,11 @@ function EditEventSessionForm(props) {
     }
 
     if (name === "sessionId" && value.trim() !== "") {
-      newErrors.sessionId = undefined;
+      if (/^([a-zA-Z0-9-])+$/.test(value) === false) {
+        newErrors.sessionId = "Event URL not valid (only letters, numbers or the characters '-' and '_' are allowed)";
+      } else {
+        newErrors.sessionId = undefined;
+      }
     }
 
     if (name === "conferenceRoomYoutubeLink" && value.trim() !== "" && newValues.conferenceRoomYoutubeVideoId) {
@@ -363,10 +367,10 @@ function EditEventSessionForm(props) {
         }
       }
     };
-    if (selectedSessionId && selectedSessionId.trim() !== "") {
+    if (selectedSessionId && selectedSessionId.trim() !== "" && !eventCreated) {
       verifySessionId(selectedSessionId.trim());
     }
-  }, [selectedSessionId, eventSession, mounted]);
+  }, [selectedSessionId, eventSession, mounted, eventCreated]);
 
   // console.log(eventSession);
   // console.log(selectedDate);

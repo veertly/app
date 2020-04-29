@@ -3,6 +3,7 @@ import Layout from "./Layouts/CenteredLayout";
 import { useAuthState } from "react-firebase-hooks/auth";
 import firebase from "../Modules/firebaseApp";
 import EditProfileForm from "../Components/EditProfile/EditProfileForm";
+import SplashScreen from "../Components/Misc/SplashScreen";
 import { useHistory, useLocation } from "react-router-dom";
 
 export default () => {
@@ -29,7 +30,7 @@ export default () => {
   };
 
   if (initialising) {
-    return <p>Loading...</p>;
+    return <SplashScreen />;
   }
 
   if (error) {
