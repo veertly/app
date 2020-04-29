@@ -6,50 +6,55 @@ import HomeComponent from "../Components/HomeComponent";
 
 import TwitterIcon from "../Assets/Icons/Twitter";
 import TelegramIcon from "../Assets/Icons/Telegram";
+import LinkedinIcon from "../Assets/Icons/Linkedin";
+import GithubIcon from "../Assets/Icons/Github";
+import MediumIcon from "../Assets/Icons/Medium";
+import FacebookIcon from "@material-ui/icons/Facebook";
+import InstagramIcon from "@material-ui/icons/Instagram";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   icon: {
-    marginRight: theme.spacing(2)
+    marginRight: theme.spacing(2),
   },
   heroContent: {
     backgroundColor: theme.palette.background.paper,
-    padding: theme.spacing(12, 0, 6)
+    padding: theme.spacing(12, 0, 6),
   },
   heroButtons: {
-    marginTop: theme.spacing(4)
+    marginTop: theme.spacing(4),
   },
   cardGrid: {
     paddingTop: theme.spacing(8),
-    paddingBottom: theme.spacing(8)
+    paddingBottom: theme.spacing(8),
   },
   card: {
     height: "100%",
     display: "flex",
-    flexDirection: "column"
+    flexDirection: "column",
   },
   cardMedia: {
-    paddingTop: "56.25%" // 16:9
+    paddingTop: "56.25%", // 16:9
   },
   cardContent: {
-    flexGrow: 1
+    flexGrow: 1,
   },
   footer: {
     // backgroundColor: theme.palette.background.paper,
     padding: theme.spacing(2, 6, 6, 6),
-    textAlign: "center"
+    textAlign: "center",
   },
   buttonJoin: {
-    margin: "auto"
+    margin: "auto",
   },
   subscriptionField: {
-    width: 200
+    width: 200,
   },
   buttonSubscribe: {
     marginLeft: theme.spacing(2),
-    marginTop: theme.spacing(3)
+    marginTop: theme.spacing(3),
   },
   subscriptionContainer: {
-    marginBottom: theme.spacing(3)
+    marginBottom: theme.spacing(3),
   },
   socialNetworkIcon: {
     marginTop: 3,
@@ -57,9 +62,9 @@ const useStyles = makeStyles(theme => ({
     color: theme.palette.primary.main,
     "&:hover": {
       color: theme.palette.secondary.main,
-      cursor: "pointer"
-    }
-  }
+      cursor: "pointer",
+    },
+  },
 }));
 
 export default () => {
@@ -120,9 +125,25 @@ export default () => {
         <a href="https://twitter.com/veertly" target="_blank" rel="noopener noreferrer">
           <TwitterIcon className={classes.socialNetworkIcon} />
         </a>
+        <a href="https://www.linkedin.com/company/veertly" target="_blank" rel="noopener noreferrer">
+          <LinkedinIcon className={classes.socialNetworkIcon} />
+        </a>
         <a href="https://t.me/Veertly" target="_blank" rel="noopener noreferrer">
           <TelegramIcon className={classes.socialNetworkIcon} />
         </a>
+        <a href="https://fb.me/Veertly" target="_blank" rel="noopener noreferrer">
+          <FacebookIcon className={classes.socialNetworkIcon} />
+        </a>
+        <a href="https://instagram.com/veert.ly" target="_blank" rel="noopener noreferrer">
+          <InstagramIcon className={classes.socialNetworkIcon} />
+        </a>
+        <a href="https://medium.com/veertly" target="_blank" rel="noopener noreferrer">
+          <MediumIcon className={classes.socialNetworkIcon} />
+        </a>
+        <a href="https://github.com/veertly/app" target="_blank" rel="noopener noreferrer">
+          <GithubIcon className={classes.socialNetworkIcon} />
+        </a>
+
         {/* <a href="https://t.me/Veertly" target="_blank"></a> */}
         {/* <Typography variant="subtitle1" align="center" color="textSecondary" component="p">
           info@veertly.com{" "}
