@@ -220,7 +220,11 @@ function EditEventSessionForm(props) {
     }
 
     if (name === "sessionId" && value.trim() !== "") {
-      newErrors.sessionId = undefined;
+      if (/^([a-zA-Z0-9-])+$/.test(value) === false) {
+        newErrors.sessionId = "Event URL not valid (only letters, numbers or the characters '-' and '_' are allowed)";
+      } else {
+        newErrors.sessionId = undefined;
+      }
     }
 
     if (name === "conferenceRoomYoutubeLink" && value.trim() !== "" && newValues.conferenceRoomYoutubeVideoId) {
