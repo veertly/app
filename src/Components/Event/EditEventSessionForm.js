@@ -367,10 +367,10 @@ function EditEventSessionForm(props) {
         }
       }
     };
-    if (selectedSessionId && selectedSessionId.trim() !== "") {
+    if (selectedSessionId && selectedSessionId.trim() !== "" && !eventCreated) {
       verifySessionId(selectedSessionId.trim());
     }
-  }, [selectedSessionId, eventSession, mounted]);
+  }, [selectedSessionId, eventSession, mounted, eventCreated]);
 
   // console.log(eventSession);
   // console.log(selectedDate);
