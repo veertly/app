@@ -40,6 +40,7 @@ jobs:
           REACT_APP_FIREBASE_APP_ID: ${{ secrets.STAGE_REACT_APP_FIREBASE_APP_ID }}
           REACT_APP_JITSI_ROOM_PREFIX: stage
           REACT_APP_ENV: STAGE
+          REACT_APP_GOOGLE_MAPS_API_KEY: ${{ secrets.STAGE_REACT_APP_GOOGLE_MAPS_API_KEY }}
 
       - name: Deploy hosting
         run: |

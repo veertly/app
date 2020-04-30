@@ -8,7 +8,7 @@ import Menu from "@material-ui/core/Menu";
 import { makeStyles } from "@material-ui/styles";
 import { AppBar, Toolbar, Typography } from "@material-ui/core";
 
-import VeertlyLogo from "../../Assets/VeertlyBeta_white.svg";
+import VeertlyLogo from "../../Assets/Veertly_white.svg";
 
 // import AvatarLogin from "../Topbar/AvatarLogin";
 import GoToNetworkingRoomDialog from "./GoToNetworkingRoomDialog";
@@ -164,6 +164,7 @@ export default withRouter((props) => {
 
   const handleEditProfileClick = () => {
     dispatch(openEditProfile());
+    handleMenuClose();
   };
 
   return (

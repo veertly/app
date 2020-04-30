@@ -278,6 +278,7 @@ export default withRouter((props) => {
       initFirebasePresenceSync(sessionId, userId, participantsJoined);
       setInitCompleted(true);
       keepAlive(sessionId, userId, userSession);
+      dispatch(crossCheckKeepAlives(keepALivesDB));
     }
   }, [
     initCompleted,
@@ -290,6 +291,7 @@ export default withRouter((props) => {
     user,
     stateLoaded,
     userSession,
+    keepALivesDB,
     dispatch,
   ]);
 
@@ -350,8 +352,6 @@ export default withRouter((props) => {
 
     let closeMinutes = eventCloses ? Number(eventCloses) : DEFAULT_EVENT_CLOSES_MINUTES;
     let endDate = moment(eventEndDate.toDate());
-    // console.log(endDate.add(closeMinutes, "minutes"));
-    // console.log(endDate.add(closeMinutes, "minutes").isAfter(moment()));
 
     return (
       beginDate.subtract(openMinutes, "minutes").isBefore(moment()) &&
