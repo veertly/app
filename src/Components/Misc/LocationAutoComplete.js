@@ -29,16 +29,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function LocationAutoComplete() {
+export default function LocationAutoComplete(props) {
   const classes = useStyles();
-  const [inputValue, setInputValue] = React.useState("");
+  const { onLocationChanged, value } = props;
+  const [inputValue, setInputValue] = React.useState(value);
   const [options, setOptions] = React.useState([]);
   const loaded = React.useRef(false);
-
   if (typeof window !== "undefined" && !loaded.current) {
     if (!document.querySelector("#google-maps")) {
       loadScript(
-        "https://maps.googleapis.com/maps/api/js?key=AIzaSyBwRp1e12ec1vOTtGiA4fcCt2sCUS78UYc&libraries=places",
+        `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}&libraries=places`,
         document.querySelector("head"),
         "google-maps"
       );
@@ -84,18 +84,22 @@ export default function LocationAutoComplete() {
       active = false;
     };
   }, [inputValue, fetch]);
+  const handleLocationChanged = (e, v) => {
+    onLocationChanged(v);
+  };
 
   return (
     <Autocomplete
       id="google-map-demo"
-      style={{ width: 300 }}
       getOptionLabel={(option) => (typeof option === "string" ? option : option.description)}
       filterOptions={(x) => x}
       options={options}
       autoComplete
       includeInputInList
+      value={value}
+      onChange={handleLocationChanged}
       renderInput={(params) => (
-        <TextField {...params} label="Add a location" variant="outlined" fullWidth onChange={handleChange} />
+        <TextField {...params} label="Location" variant="outlined" fullWidth onChange={handleChange} />
       )}
       renderOption={(option) => {
         const matches = option.structured_formatting.main_text_matched_substrings;

@@ -17,6 +17,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 import LinkedinIcon from "../../Assets/Icons/Linkedin";
 import TwitterIcon from "../../Assets/Icons/Twitter";
 import KeybaseIcon from "../../Assets/Icons/Keybase";
+import LocationAutoComplete from "../Misc/LocationAutoComplete";
 // import LocationAutoComplete from "../Misc/LocationAutoComplete";
 
 const styles = (theme) => ({
@@ -73,6 +74,7 @@ const getUserDefaultValues = (userAuth) => {
     isAnonymous,
     checkedTerms: false,
     checkedNewsletter: false,
+    location: "",
   };
 };
 
@@ -84,6 +86,7 @@ function EditProfileForm(props) {
   const { classes, userAuth, sessionId, profileUpdatedCallback } = props;
 
   let [values, setValues] = React.useState(getUserDefaultValues(userAuth));
+  let [dbCheckNewsletter, setDbCheckNewsletter] = React.useState(null);
   let [errors, setErrors] = React.useState({});
   const [interestsChips, setInterestsChips] = React.useState([]);
   const [updating, setUpdating] = React.useState(false);
@@ -113,6 +116,8 @@ function EditProfileForm(props) {
           companyTitle,
           checkedTerms,
           checkedNewsletter,
+          location,
+          locationDetails,
         } = userDb;
 
         const x = (str) => (str ? str : "");
@@ -135,9 +140,12 @@ function EditProfileForm(props) {
           companyTitle: x(companyTitle),
           checkedNewsletter: checkedNewsletter === true,
           checkedTerms: checkedTerms === true,
+          location: x(location),
+          locationDetails: locationDetails ? locationDetails : null,
         }));
 
         setInterestsChips(interestsChips ? interestsChips : []);
+        setDbCheckNewsletter(checkedNewsletter === true);
       }
     };
     fetchUser();
@@ -205,10 +213,22 @@ function EditProfileForm(props) {
     }
     setUpdating(false);
   };
+
+  const handlePictureChanged = (pictureUrl) => {
+    setValues({ ...values, avatarUrl: pictureUrl });
+  };
+  const handleLocationChange = (value) => {
+    if (value) {
+      setValues({ ...values, location: value.description, locationDetails: value });
+    } else {
+      setValues({ ...values, location: "", locationDetails: null });
+    }
+  };
+
   return (
     <React.Fragment>
       <div style={{ marginBottom: 32 }}>
-        <ParticipantCard participant={values} />
+        <ParticipantCard participant={values} editPicture={true} onPictureChanged={handlePictureChanged} />
       </div>
       <Grid container justify="space-between" className={classes.textField}>
         <TextField
@@ -233,16 +253,7 @@ function EditProfileForm(props) {
           onChange={handleUpdateField("lastName")}
         />
       </Grid>
-      <TextField
-        fullWidth
-        className={classes.textField}
-        label="Profile Picture URL"
-        name="avatarUrl"
-        variant="outlined"
-        value={values.avatarUrl}
-        // style={{ width: 380 }}
-        onChange={handleUpdateField("avatarUrl")}
-      />
+
       <Grid container justify="space-between" className={classes.textField}>
         <TextField
           fullWidth
@@ -306,7 +317,9 @@ function EditProfileForm(props) {
         value={values.shortBio}
         onChange={handleUpdateField("shortBio")}
       /> */}
-      {/* <LocationAutoComplete /> */}
+      <div className={classes.textField} style={{ width: "100%" }}>
+        <LocationAutoComplete onLocationChanged={handleLocationChange} value={values.location} />
+      </div>
       <Grid container justify="space-between" className={classes.textField}>
         <TextField
           fullWidth
@@ -395,17 +408,19 @@ function EditProfileForm(props) {
       </div>
 
       <div style={{ textAlign: "left", marginTop: 16 }}>
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={values.checkedNewsletter}
-              onChange={handleCheckbox("checkedNewsletter")}
-              name="checkedNewsletter"
-              color="primary"
-            />
-          }
-          label={<span>Join our monthly newsletter and stay updated on new features</span>}
-        />
+        {dbCheckNewsletter !== true && (
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={values.checkedNewsletter}
+                onChange={handleCheckbox("checkedNewsletter")}
+                name="checkedNewsletter"
+                color="primary"
+              />
+            }
+            label={<span>Join our monthly newsletter and stay updated on new features</span>}
+          />
+        )}
         <FormControlLabel
           control={
             <div className={classes.termsContainer}>
