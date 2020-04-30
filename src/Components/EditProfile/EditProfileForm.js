@@ -86,6 +86,7 @@ function EditProfileForm(props) {
   const { classes, userAuth, sessionId, profileUpdatedCallback } = props;
 
   let [values, setValues] = React.useState(getUserDefaultValues(userAuth));
+  let [dbCheckNewsletter, setDbCheckNewsletter] = React.useState(null);
   let [errors, setErrors] = React.useState({});
   const [interestsChips, setInterestsChips] = React.useState([]);
   const [updating, setUpdating] = React.useState(false);
@@ -144,6 +145,7 @@ function EditProfileForm(props) {
         }));
 
         setInterestsChips(interestsChips ? interestsChips : []);
+        setDbCheckNewsletter(checkedNewsletter === true);
       }
     };
     fetchUser();
@@ -406,17 +408,19 @@ function EditProfileForm(props) {
       </div>
 
       <div style={{ textAlign: "left", marginTop: 16 }}>
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={values.checkedNewsletter}
-              onChange={handleCheckbox("checkedNewsletter")}
-              name="checkedNewsletter"
-              color="primary"
-            />
-          }
-          label={<span>Join our monthly newsletter and stay updated on new features</span>}
-        />
+        {dbCheckNewsletter !== true && (
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={values.checkedNewsletter}
+                onChange={handleCheckbox("checkedNewsletter")}
+                name="checkedNewsletter"
+                color="primary"
+              />
+            }
+            label={<span>Join our monthly newsletter and stay updated on new features</span>}
+          />
+        )}
         <FormControlLabel
           control={
             <div className={classes.termsContainer}>
