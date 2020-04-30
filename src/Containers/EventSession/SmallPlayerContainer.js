@@ -6,8 +6,7 @@ import { useSelector, shallowEqual } from "react-redux";
 import {
   getSessionId,
   getEventSessionDetails } from "../../Redux/eventSession";
-import FacebookPlayer from "../../Components/EventSession/FacebookPlayer";
-import YoutubePlayer from "../../Components/EventSession/YoutubePlayer";
+import VideoPlayer from "../../Components/EventSession/VideoPlayer";
 import VolumeDownIcon from '@material-ui/icons/VolumeDown';
 import VolumeUpIcon from '@material-ui/icons/VolumeUp';
 import CloseIcon from '@material-ui/icons/Close';
@@ -90,20 +89,24 @@ const CustomYoutubeFrame = ({ videoId, volume }) => {
   const classes = useStyles(); 
   return (
     <div className={classes.root}
-    // style={{ top: hasAnnouncement ? ANNOUNCEMENT_HEIGHT : 0 }}
     >
-     <YoutubePlayer volume={volume} videoId={videoId} />
+     <VideoPlayer 
+      url={`https://www.youtube.com/watch?v=${videoId}`}
+      volume={volume} />
     </div>
   );
 };
 
-const CustomFacebookFrame = ({ videoId }) => {
+const CustomFacebookFrame = ({ videoId, volume }) => {
   const classes = useStyles();
   return (
     <div className={classes.root}
-    // style={{ top: hasAnnouncement ? ANNOUNCEMENT_HEIGHT : 0 }}
     >
-      <FacebookPlayer videoId={videoId} />
+      <VideoPlayer 
+        volume={volume}
+        showLoader
+        url={`https://www.facebook.com/facebook/videos/${videoId}`}
+      />
     </div>
   );
 };
@@ -158,7 +161,7 @@ export const SmallPlayerContainer =  () => {
         return <CustomYoutubeFrame volume={vol} videoId={youtubeVideoId} />;
       case "FACEBOOK":
         let facebookVideoId = eventSessionDetails.conferenceRoomFacebookVideoId;
-        return <CustomFacebookFrame  videoId={facebookVideoId} />;
+        return <CustomFacebookFrame volume={vol}  videoId={facebookVideoId} />;
       // case "JITSI":
       //   return <div id="conference-container" className={classes.root} />;
       default:

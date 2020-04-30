@@ -1,6 +1,7 @@
 import React from 'react';
 import { makeStyles } from "@material-ui/core/styles";
 import ReactPlayer from 'react-player';
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const useStyles = makeStyles(() => ({
   videoContainer: {
@@ -26,34 +27,31 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const YoutubePlayer = ({ videoId, volume=50 }) => {
+const VideoPlayer = ({ url, showLoader, volume=50 }) => {
   const classes = useStyles();
+  const [loadingPlayer, setLoadingPlayer] = React.useState(showLoader);
 
-  // return (
-  //   <iframe
-  //   className={classes.videoContainer}
-  //   src={`https://www.youtube.com/embed/${videoId}?autoplay=1&fs=0&modestbranding=0`}
-  //   frameBorder="0"
-  //   allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-  //   allowFullScreen
-  //   title="livestream"
-  // ></iframe>
-  // )
   return (
     <div className={classes.reactPlayerContainer}>
       <ReactPlayer
-        url={`https://www.youtube.com/watch?v=${videoId}`}
+        url={url}
         width="100%"
         height="100%"
         className={classes.reactPlayer}
         playing
         volume={volume}
+        onReady={() => setLoadingPlayer(false)}
         controls
       />
+       {loadingPlayer && (
+        <div className={classes.reactPlayer}>
+          <CircularProgress color="secondary" />
+        </div>
+      )}
     </div>
   );
 
 
 }
 
-export default YoutubePlayer;
+export default VideoPlayer;
