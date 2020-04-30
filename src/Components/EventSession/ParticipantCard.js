@@ -10,9 +10,7 @@ import MailOutlineIcon from "@material-ui/icons/MailOutline";
 import clsx from "clsx";
 import { Tooltip, CircularProgress } from "@material-ui/core";
 import { uploadProfilePicture } from "../../Modules/storage";
-import _ from "lodash";
-import countries from "../../Config/countries";
-import ReactCountryFlag from "react-country-flag";
+import Flag from "../Misc/Flag";
 
 const useStyles = makeStyles((theme) => ({
   headlineContainer: {
@@ -73,20 +71,6 @@ const useStyles = makeStyles((theme) => ({
     zIndex: 2,
   },
 }));
-
-const getFlag = (locationDetails) => {
-  if (locationDetails) {
-    let { terms } = locationDetails;
-    let countryName = _.last(terms);
-    if (countryName) {
-      let country = _.find(countries, (c) => c.name.toLowerCase() === countryName.value.toLowerCase());
-      if (country) {
-        return <ReactCountryFlag countryCode={country.countryCode} />;
-      }
-    }
-  }
-  return null;
-};
 
 export default function (props) {
   const classes = useStyles();
@@ -213,7 +197,7 @@ export default function (props) {
         )}
         {participant.location && (
           <Typography color="textSecondary" /* className={classes.companyTitle} */ className={classes.topicsInterested}>
-            {participant.location} {getFlag(participant.locationDetails)}
+            {participant.location} <Flag locationDetails={participant.locationDetails} />
           </Typography>
         )}
         <ProfileChips chips={participant.interestsChips} showDelete={false} smallChips={true} />

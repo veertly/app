@@ -4,7 +4,7 @@ import Avatar from "@material-ui/core/Avatar";
 import Typography from "@material-ui/core/Typography";
 import LinkedinIcon from "../../Assets/Icons/Linkedin";
 import TwitterIcon from "../../Assets/Icons/Twitter";
-import KeybaseIcon from "../../Assets/Icons/Keybase";
+// import KeybaseIcon from "../../Assets/Icons/Keybase";
 import Button from "@material-ui/core/Button";
 import JoinParticipantDialog from "./JoinParticipantDialog";
 import Badge from "@material-ui/core/Badge";
@@ -19,6 +19,7 @@ import { getUsers, isInNetworkingRoom, getAvailableParticipantsList, getFilters 
 // import JoinConversationDialog from "./JoinConversationDialog";
 import _ from "lodash";
 import { openJoinParticipant } from "../../Redux/dialogs";
+import Flag from "../Misc/Flag";
 const useStyles = makeStyles((theme) => ({
   root: {},
   participantContainer: {
@@ -52,6 +53,20 @@ const useStyles = makeStyles((theme) => ({
     top: 0,
     // wi dth: 16,
     color: theme.palette.text.secondary,
+  },
+  flagContainer: {
+    position: "absolute",
+    right: 0,
+    bottom: 0,
+    // wi dth: 16,
+    // color: theme.palette.text.secondary,
+  },
+  name: {
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    display: "block",
+    width: 155,
   },
   buttonContainer: {
     width: "100%",
@@ -150,7 +165,7 @@ export default function (props) {
 
   const feelingLucky = React.useCallback(() => {
     let selectedParticipantSession = _.sample(
-      participantsAvailable.filter(({ isMyUser, isAvailable }) => !isMyUser && isAvailable),
+      participantsAvailable.filter(({ isMyUser, isAvailable }) => !isMyUser && isAvailable)
     );
     let participant = selectedParticipantSession ? users[selectedParticipantSession.id] : null;
 
@@ -169,7 +184,7 @@ export default function (props) {
           All attendees ({participantsAvailable.length})
         </Typography>
       )}
-    
+
       <div className={classes.buttonContainer}>
         <Button
           variant="outlined"
@@ -194,13 +209,15 @@ export default function (props) {
           Filter
         </Button>
       </div>
-    
+
       {participantsAvailable.map((participantSession, index) => {
         let { isInConversation, isInConferenceRoom, isAvailable } = participantSession;
 
         let participant = users[participantSession.id];
-
+        const { twitterUrl, linkedinUrl, locationDetails } = participant;
         const hasSubtitle = participant.company.trim() !== "" || participant.companyTitle.trim() !== "";
+        const hasSocials = (twitterUrl && twitterUrl.trim() !== "") || (linkedinUrl && linkedinUrl.trim() !== "");
+        const hasFlag = locationDetails !== null;
 
         const participantAvatar = participant.avatarUrl ? (
           <Avatar alt={participant.firstName} src={participant.avatarUrl} className={classes.avatar} />
@@ -262,20 +279,34 @@ export default function (props) {
               </Tooltip>
             )}
             <div className={classes.participantDetails} style={{ paddingTop: hasSubtitle ? 0 : 8 }}>
-              <Typography variant="subtitle1">{`${participant.firstName} ${participant.lastName}`}</Typography>
+              <Typography
+                variant="subtitle1"
+                className={classes.name}
+                style={{ width: hasSocials || hasFlag ? 155 : 190 }}
+              >{`${participant.firstName} ${participant.lastName}`}</Typography>
 
               {hasSubtitle && (
-                <Typography color="textSecondary" variant="caption" className={classes.topicsInterested}>
+                <Typography
+                  color="textSecondary"
+                  variant="caption"
+                  className={classes.topicsInterested}
+                  style={{ width: hasFlag ? 155 : 190 }}
+                >
                   {`${participant.companyTitle}${participant.companyTitle.trim() !== "" ? " @ " : ""}${
                     participant.company
                   }`}
                 </Typography>
               )}
 
-              <div className={classes.socialContainer} style={{ top: hasSubtitle ? 0 : 8 }}>
-                {participant.keybaseUrl && <KeybaseIcon className={classes.socialIcon} />}
+              <div className={classes.socialContainer} style={{ top: hasSubtitle || hasFlag ? 0 : 8 }}>
+                {/* {participant.keybaseUrl && <KeybaseIcon className={classes.socialIcon} />} */}
                 {participant.twitterUrl && <TwitterIcon className={classes.socialIcon} />}
                 {participant.linkedinUrl && <LinkedinIcon className={classes.socialIcon} />}
+              </div>
+              <div className={classes.flagContainer} style={{ top: hasSocials ? null : hasSubtitle ? 0 : 10 }}>
+                <Typography>
+                  <Flag locationDetails={participant.locationDetails} />
+                </Typography>
               </div>
             </div>
           </div>
