@@ -48,6 +48,13 @@ const crossCheckLiveGroups = (participantsJoined, liveGroups, keepAlives) => {
       let newParticipants = {};
       let participants = Object.values(group.participants);
 
+      let { isRoom } = group;
+
+      if (isRoom) {
+        result[group.id] = groupResult;
+        return result;
+      }
+
       for (let i = 0; i < participants.length; i++) {
         let { leftTimestamp, id } = participants[i];
         if (leftTimestamp !== null) {
