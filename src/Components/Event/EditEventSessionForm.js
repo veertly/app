@@ -220,7 +220,7 @@ function EditEventSessionForm(props) {
     }
 
     if (name === "sessionId" && value.trim() !== "") {
-      if (/^([a-zA-Z0-9-])+$/.test(value) === false) {
+      if (/^([a-zA-Z0-9-_])+$/.test(value) === false) {
         newErrors.sessionId = "Event URL not valid (only letters, numbers or the characters '-' and '_' are allowed)";
       } else {
         newErrors.sessionId = undefined;
