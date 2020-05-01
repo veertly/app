@@ -75,6 +75,7 @@ export default function EventPage(props) {
   const classes = useStyles();
 
   const history = useHistory();
+  console.log({ enabledFeatures });
 
   const [registerOpen, setRegisterOpen] = React.useState(false);
   const [isRegistered, setIsRegistered] = React.useState(userRegisteredEvent(id));
@@ -138,6 +139,12 @@ export default function EventPage(props) {
   ]);
   const rsvpProperties = React.useMemo(() => getFeatureDetails(enabledFeatures, FEATURES.RSVP), [enabledFeatures]);
 
+  const ticketsProperties = React.useMemo(() => {
+    const ticketsDetails = getFeatureDetails(enabledFeatures, FEATURES.TICKETS);
+    return ticketsDetails && ticketsDetails.enabled === true ? ticketsDetails : null;
+  }, [enabledFeatures]);
+  const hasTicketsEnabled = React.useMemo(() => ticketsProperties !== null, [ticketsProperties]);
+  console.log({ hasTicketsEnabled, ticketsProperties });
   return (
     <Card className={classes.root}>
       {!isPreview && user && user.uid === owner && (
@@ -164,7 +171,7 @@ export default function EventPage(props) {
         </Typography>
 
         {/* <Grid container justify="space-between" className={classes.textField}> */}
-        <div style={{ marginRight: 16 }}>
+        <div style={{ marginRight: 8 }}>
           {beginDate && (
             <Typography color="textSecondary">
               <span role="img" aria-label="calendar" style={{ marginRight: 16 }}>
@@ -183,6 +190,15 @@ export default function EventPage(props) {
                 </span>
                 {website}
               </a>
+            </Typography>
+          )}
+
+          {hasTicketsEnabled && (
+            <Typography color="textSecondary">
+              <span role="img" aria-label="price" style={{ marginRight: 16 }}>
+                💰
+              </span>
+              {ticketsProperties.label}
             </Typography>
           )}
         </div>
