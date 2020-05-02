@@ -5,7 +5,7 @@ import Card from "@material-ui/core/Card";
 import Typography from "@material-ui/core/Typography";
 import MUIRichTextEditor from "mui-rte";
 import { CardMedia, Button } from "@material-ui/core";
-import moment from "moment";
+import * as moment from "moment";
 import routes from "../../Config/routes";
 import { useHistory } from "react-router-dom";
 import { DEFAULT_EVENT_OPEN_MINUTES, DEFAULT_EVENT_CLOSES_MINUTES } from "../../Config/constants";
@@ -138,6 +138,12 @@ export default function EventPage(props) {
   ]);
   const rsvpProperties = React.useMemo(() => getFeatureDetails(enabledFeatures, FEATURES.RSVP), [enabledFeatures]);
 
+  const ticketsProperties = React.useMemo(() => {
+    const ticketsDetails = getFeatureDetails(enabledFeatures, FEATURES.TICKETS);
+    return ticketsDetails && ticketsDetails.enabled === true ? ticketsDetails : null;
+  }, [enabledFeatures]);
+  const hasTicketsEnabled = React.useMemo(() => ticketsProperties !== null, [ticketsProperties]);
+  console.log({ hasTicketsEnabled, ticketsProperties });
   return (
     <Card className={classes.root}>
       {!isPreview && user && user.uid === owner && (
@@ -164,7 +170,7 @@ export default function EventPage(props) {
         </Typography>
 
         {/* <Grid container justify="space-between" className={classes.textField}> */}
-        <div style={{ marginRight: 16 }}>
+        <div style={{ marginRight: 8 }}>
           {beginDate && (
             <Typography color="textSecondary">
               <span role="img" aria-label="calendar" style={{ marginRight: 16 }}>
@@ -183,6 +189,15 @@ export default function EventPage(props) {
                 </span>
                 {website}
               </a>
+            </Typography>
+          )}
+
+          {hasTicketsEnabled && (
+            <Typography color="textSecondary">
+              <span role="img" aria-label="price" style={{ marginRight: 16 }}>
+                💰
+              </span>
+              {ticketsProperties.label}
             </Typography>
           )}
         </div>

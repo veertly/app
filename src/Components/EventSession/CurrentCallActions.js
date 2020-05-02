@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import GroupAvatars from "./GroupAvatars";
-import moment from "moment";
+import * as moment from "moment";
 import momentDurationFormatSetup from "moment-duration-format";
 import { IconButton, Tooltip } from "@material-ui/core";
 import LeaveCallIcon from "../../Assets/Icons/LeaveCall";

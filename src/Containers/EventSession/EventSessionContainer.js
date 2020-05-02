@@ -16,7 +16,7 @@ import NetworkingSidebar from "./NetworkingSidebar";
 import EventSessionTopbar from "../../Components/EventSession/EventSessionTopbar";
 import ConferenceRoomContainer from "./ConferenceRoomContainer";
 import ConferenceSidebar from "./ConferenceSidebar";
-import moment from "moment";
+import * as moment from "moment";
 import Button from "@material-ui/core/Button";
 import Page from "../../Components/Core/Page";
 import useMediaQuery from "@material-ui/core/useMediaQuery";

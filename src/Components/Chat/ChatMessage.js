@@ -1,7 +1,7 @@
 import React from "react";
 import { makeStyles /* , useTheme */ } from "@material-ui/core/styles";
 import { Grid, Typography } from "@material-ui/core";
-import moment from "moment";
+import * as moment from "moment";
 import UserAvatar from "../Misc/UserAvatar";
 import EllipsisLoader from "../Misc/EllipsisLoader";
 import { useDispatch } from "react-redux";

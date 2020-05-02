@@ -7,7 +7,7 @@ import firebase from "../../Modules/firebaseApp";
 
 import _ from "lodash";
 import { getUserDb } from "../../Modules/userOperations";
-import moment from "moment";
+import * as moment from "moment";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import { registerToEvent, isUserRegisteredToEvent } from "../../Modules/eventsOperations";
@@ -18,6 +18,7 @@ import { stateToHTML } from "draft-js-export-html";
 import { getUrl } from "../../Modules/environments";
 import SuccessIcon from "@material-ui/icons/CheckCircleOutline";
 import EventShareIcons from "./EventShareIcons";
+import Alert from "@material-ui/lab/Alert";
 
 const useStyles = makeStyles((theme) => ({
   row: {
@@ -74,8 +75,8 @@ function EventRegistrationForm(props) {
         result[properties.name] = "";
         return result;
       },
-      { checkedTerms: false, checkedNewsletter: false },
-    ),
+      { checkedTerms: false, checkedNewsletter: false }
+    )
   );
 
   useEffect(() => {
@@ -116,9 +117,9 @@ function EventRegistrationForm(props) {
           }
           return result;
         },
-        formValues.checkedTerms,
+        formValues.checkedTerms
       ),
-    [formValues, rsvpProperties.fields],
+    [formValues, rsvpProperties.fields]
   );
 
   const calendarEvent = React.useMemo(() => {
@@ -170,9 +171,9 @@ function EventRegistrationForm(props) {
   const shareText = React.useMemo(
     () =>
       `Join me in the virtual event ${eventSession.title} at ${moment(eventSession.eventBeginDate.toDate()).format(
-        "lll",
+        "lll"
       )} on @veertly `,
-    [eventSession.title, eventSession.eventBeginDate],
+    [eventSession.title, eventSession.eventBeginDate]
   );
 
   if (isRegistered === true) {
@@ -200,6 +201,9 @@ function EventRegistrationForm(props) {
           {_.map(formFields, (properties, fieldName) => {
             if (properties.visible === false) {
               return null;
+            }
+            if (properties.type === "alert") {
+              return <Alert severity={properties.data.severity}>{properties.data.text}</Alert>;
             }
             return (
               <TextField

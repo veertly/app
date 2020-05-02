@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { MAX_PARTICIPANTS_GROUP, DEFAULT_OFFLINE_INTERVAL } from "../Config/constants";
-import moment from "moment";
+import * as moment from "moment";
 
 const UPDATE_EVENT_SESSION = "eventSession.UPDATE_EVENT_SESSION";
 const UPDATE_EVENT_SESSION_DETAILS = "eventSession.UPDATE_EVENT_SESSION_DETAILS";

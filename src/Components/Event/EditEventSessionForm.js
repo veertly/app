@@ -10,7 +10,7 @@ import FormLabel from "@material-ui/core/FormLabel";
 import { makeStyles } from "@material-ui/core/styles";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import moment from "moment";
+import * as moment from "moment";
 import MUIRichTextEditor from "mui-rte";
 import { MuiPickersUtilsProvider, KeyboardTimePicker, KeyboardDatePicker } from "@material-ui/pickers";
 import MomentUtils from "@date-io/moment";
@@ -220,7 +220,7 @@ function EditEventSessionForm(props) {
     }
 
     if (name === "sessionId" && value.trim() !== "") {
-      if (/^([a-zA-Z0-9-])+$/.test(value) === false) {
+      if (/^([a-zA-Z0-9-_])+$/.test(value) === false) {
         newErrors.sessionId = "Event URL not valid (only letters, numbers or the characters '-' and '_' are allowed)";
       } else {
         newErrors.sessionId = undefined;
