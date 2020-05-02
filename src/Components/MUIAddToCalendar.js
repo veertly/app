@@ -8,7 +8,7 @@ import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import ListItemText from "@material-ui/core/ListItemText";
 import Dialog from "@material-ui/core/Dialog";
 import { blue } from "@material-ui/core/colors";
-import moment from "moment";
+import * as moment from "moment";
 import { isMobile } from "../Utils/device";
 import CalendarIcon from "@material-ui/icons/Event";
 const useStyles = makeStyles({

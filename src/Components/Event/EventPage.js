@@ -5,7 +5,7 @@ import Card from "@material-ui/core/Card";
 import Typography from "@material-ui/core/Typography";
 import MUIRichTextEditor from "mui-rte";
 import { CardMedia, Button } from "@material-ui/core";
-import moment from "moment";
+import * as moment from "moment";
 import routes from "../../Config/routes";
 import { useHistory } from "react-router-dom";
 import { DEFAULT_EVENT_OPEN_MINUTES, DEFAULT_EVENT_CLOSES_MINUTES } from "../../Config/constants";
@@ -75,7 +75,6 @@ export default function EventPage(props) {
   const classes = useStyles();
 
   const history = useHistory();
-  console.log({ enabledFeatures });
 
   const [registerOpen, setRegisterOpen] = React.useState(false);
   const [isRegistered, setIsRegistered] = React.useState(userRegisteredEvent(id));

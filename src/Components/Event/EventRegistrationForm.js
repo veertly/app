@@ -7,7 +7,7 @@ import firebase from "../../Modules/firebaseApp";
 
 import _ from "lodash";
 import { getUserDb } from "../../Modules/userOperations";
-import moment from "moment";
+import * as moment from "moment";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import { registerToEvent, isUserRegisteredToEvent } from "../../Modules/eventsOperations";
