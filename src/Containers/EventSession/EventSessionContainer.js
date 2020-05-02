@@ -21,10 +21,7 @@ import NetworkingSidebar from "./NetworkingSidebar";
 import EventSessionTopbar from "../../Components/EventSession/EventSessionTopbar";
 import ConferenceRoomContainer from "./ConferenceRoomContainer";
 import ConferenceSidebar from "./ConferenceSidebar";
-import * as moment from "moment";
-import Button from "@material-ui/core/Button";
 import Page from "../../Components/Core/Page";
-
 import routes from "../../Config/routes";
 import { initFirebasePresenceSync, keepAlive } from "../../Modules/userOperations";
 import Announcements from "../../Components/EventSession/Announcements";
