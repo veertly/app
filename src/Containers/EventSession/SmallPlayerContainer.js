@@ -14,6 +14,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import { Rnd } from 'react-rnd';
 import { SMALL_PLAYER_INITIAL_HEIGHT, SMALL_PLAYER_INITIAL_WIDTH } from "../../Utils";
 import JitsiContext from "./JitsiContext";
+import { SIDE_PANE_WIDTH } from "./EventSessionContainer";
 
 const useStyles = makeStyles((theme) => ({
   videoContainer: {
@@ -43,7 +44,8 @@ const useStyles = makeStyles((theme) => ({
     right: 0,
     left: 0,
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    zIndex: 1301,
   },
   toolbar: {
     width: '100%',
@@ -189,13 +191,14 @@ export const SmallPlayerContainer =  ({bounds=""}) => {
     return (
       <Rnd
        default={{
-        x: 0,
-        y: 0,
+        x: window.innerWidth - SMALL_PLAYER_INITIAL_WIDTH - SIDE_PANE_WIDTH,
+        y: window.innerHeight - SMALL_PLAYER_INITIAL_HEIGHT,
         width: SMALL_PLAYER_INITIAL_WIDTH,
         height: SMALL_PLAYER_INITIAL_HEIGHT,
       }}
       bounds={bounds}
       lockAspectRatio={true}
+      className={classes.playerOuterContainer}
       >
         <div className={classes.playerOuterContainer}>
           <div className={classes.toolbar}>
