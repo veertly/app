@@ -1,16 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import useScript from "../../Hooks/useScript";
-import { makeStyles } from "@material-ui/core/styles";
-import { Typography } from "@material-ui/core";
+import makeStyles from "@material-ui/core/styles/makeStyles";
+import Typography from "@material-ui/core/Typography";
 import { useSelector, shallowEqual } from "react-redux";
 import {
   getSessionId,
   getEventSessionDetails } from "../../Redux/eventSession";
 import VideoPlayer from "../../Components/EventSession/VideoPlayer";
-import VolumeDownIcon from '@material-ui/icons/VolumeDown';
-import VolumeUpIcon from '@material-ui/icons/VolumeUp';
+// import VolumeDownIcon from '@material-ui/icons/VolumeDown';
+// import VolumeUpIcon from '@material-ui/icons/VolumeUp';
 import CloseIcon from '@material-ui/icons/Close';
-import Slider from '@material-ui/core/Slider';
+// import Slider from '@material-ui/core/Slider';
+import { Rnd } from 'react-rnd';
+import { SMALL_PLAYER_INITIAL_HEIGHT, SMALL_PLAYER_INITIAL_WIDTH } from "../../Utils";
+import JitsiContext from "./JitsiContext";
 
 const useStyles = makeStyles((theme) => ({
   videoContainer: {
@@ -44,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
   },
   toolbar: {
     width: '100%',
-    flex: 0.1,
+    flex: 0.15,
     backgroundColor: theme.palette.primary.main,
     color: 'white',
     display: 'flex',
@@ -66,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-around',
+    justifyContent: 'flex-end',
     "& > * + *" : {
       marginLeft: theme.spacing(0.8),
     }
@@ -82,6 +85,11 @@ const useStyles = makeStyles((theme) => ({
   },
   slider: {
     color: 'white',
+  },
+  toolbarClosed: {
+    position: 'absolute',
+    left: 0,
+    bottom: 0,
   }
 }));
 
@@ -111,7 +119,7 @@ const CustomFacebookFrame = ({ videoId, volume }) => {
   );
 };
 
-export const SmallPlayerContainer =  () => {
+export const SmallPlayerContainer =  ({bounds=""}) => {
   const classes = useStyles();
   // const { jitsiApi, setJitsiApi } = useContext(JitsiContext);
 
@@ -120,7 +128,7 @@ export const SmallPlayerContainer =  () => {
   //   "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.2"
   // );
 
-  const [volume, setVolume] = useState(50)
+  const [volume] = useState(50)
 
   // const userId = useSelector(getUserId);
   // const user = useSelector(getUser);
@@ -128,7 +136,7 @@ export const SmallPlayerContainer =  () => {
   const sessionId = useSelector(getSessionId);
   const eventSessionDetails = useSelector(getEventSessionDetails, shallowEqual);
   
-  const [closePlayer, setClosePlayer] = useState(eventSessionDetails.conferenceVideoType === 'JITSI' ? true : false);
+  const { showSmallPlayer, setShowSmallPlayer } = useContext(JitsiContext);
 
   useEffect(() => {
     window.analytics.page("ConferenceRoom/" + sessionId);
@@ -149,9 +157,9 @@ export const SmallPlayerContainer =  () => {
   //   callEndedCb: () => handleCallEnded()
   // })
 
-  const handleVolumeChange = (event, newValue) => {
-    setVolume(newValue);
-  };
+  // const handleVolumeChange = (event, newValue) => {
+  //   setVolume(newValue);
+  // };
 
   const getPlayer = () => {
     const vol = Math.floor(volume * 10 / 100) / 10;
@@ -175,31 +183,40 @@ export const SmallPlayerContainer =  () => {
   }
   if (!loaded) return null;
 
-  if(closePlayer) return null;
+  if(!showSmallPlayer) return null;
 
   if (loaded) {
     return (
-      <div className={classes.playerOuterContainer}>
-        <div className={classes.toolbar}>
-          <div className={classes.toolbarTitle}>
-            <Typography variant="subtitle1">
-              Main Stage
-            </Typography>
+      <Rnd
+       default={{
+        x: 0,
+        y: 0,
+        width: SMALL_PLAYER_INITIAL_WIDTH,
+        height: SMALL_PLAYER_INITIAL_HEIGHT,
+      }}
+      bounds={bounds}
+      lockAspectRatio={true}
+      >
+        <div className={classes.playerOuterContainer}>
+          <div className={classes.toolbar}>
+            <div className={classes.toolbarTitle}>
+              <Typography variant="subtitle1">
+                Main Stage
+              </Typography>
+            </div>
+            <div className={classes.volumeControlContainer}>
+              {/* <VolumeDownIcon className={classes.icon} />
+                <Slider className={classes.slider} value={volume} onChange={handleVolumeChange} aria-labelledby="continuous-slider" />
+              <VolumeUpIcon className={classes.icon} /> */}
+              <CloseIcon className={classes.icon} onClick={() => setShowSmallPlayer(false)}></CloseIcon>
+            </div>
           </div>
-          <div className={classes.volumeControlContainer}>
-            <VolumeDownIcon className={classes.icon} />
-              <Slider className={classes.slider} value={volume} onChange={handleVolumeChange} aria-labelledby="continuous-slider" />
-            <VolumeUpIcon className={classes.icon} />
-            <CloseIcon className={classes.icon} onClick={() => setClosePlayer(true)}></CloseIcon>
+          <div className={classes.playerContainer}>
+            {getPlayer()}
           </div>
         </div>
-        <div className={classes.playerContainer}>
-          {getPlayer()}
-        </div>
-      </div>
+      </Rnd>
     )
-
- 
   }
 };
 

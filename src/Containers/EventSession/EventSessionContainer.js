@@ -21,11 +21,8 @@ import NetworkingSidebar from "./NetworkingSidebar";
 import EventSessionTopbar from "../../Components/EventSession/EventSessionTopbar";
 import ConferenceRoomContainer from "./ConferenceRoomContainer";
 import ConferenceSidebar from "./ConferenceSidebar";
-<<<<<<< HEAD
 import * as moment from "moment";
 import Button from "@material-ui/core/Button";
-=======
->>>>>>> feat: add small player in networking area
 import Page from "../../Components/Core/Page";
 
 import routes from "../../Config/routes";
@@ -64,11 +61,10 @@ import {
 } from "../../Redux/eventSession";
 import useInterval from "../../Hooks/useInterval";
 import JoinParticipantDialog from "../../Components/EventSession/JoinParticipantDialog";
-<<<<<<< HEAD
 import SplashScreen from "../../Components/Misc/SplashScreen";
-=======
 import JitsiContext from "./JitsiContext";
->>>>>>> feat: add small player in networking area
+import SmallPlayerContainer from "./SmallPlayerContainer";
+import { SMALL_PLAYER_INITIAL_HEIGHT, SMALL_PLAYER_INITIAL_WIDTH } from "../../Utils";
 
 export const SIDE_PANE_WIDTH = 53;
 const LEFT_PANE_WIDTH = 300;
@@ -137,7 +133,18 @@ const useStyles = makeStyles((theme) => ({
     borderLeft: "1px solid rgba(0, 0, 0, 0.12)",
     [theme.breakpoints.down("xs")]: {
       display: "none",
-    },
+    }
+  },
+  smallPlayerContainer: {
+    position: "absolute",
+    bottom: 0,
+    // left: 0,
+    right: SIDE_PANE_WIDTH,
+    zIndex: 1201,
+    height: SMALL_PLAYER_INITIAL_HEIGHT,
+    width: SMALL_PLAYER_INITIAL_WIDTH,
+    padding: theme.spacing(1),
+    // borderTop: "1px solid rgba(0, 0, 0, 0.12)",
   },
 }));
 
@@ -149,6 +156,8 @@ export default withRouter((props) => {
   const [initCompleted, setInitCompleted] = useState(false);
 
   const [jitsiApi, setJitsiApi] = useState(null);
+
+  const [showSmallPlayer, setShowSmallPlayer] = useState(true);
 
   const classes = useStyles();
   const theme = useTheme();
@@ -455,7 +464,7 @@ export default withRouter((props) => {
   }
 
   return (
-    <JitsiContext.Provider value={{ jitsiApi, setJitsiApi }}>
+    <JitsiContext.Provider value={{ jitsiApi, setJitsiApi, showSmallPlayer, setShowSmallPlayer }}>
       <div
         className={clsx({
           [classes.root]: true,
@@ -468,6 +477,7 @@ export default withRouter((props) => {
         <ShareEventDialog /*  eventSession={composedEventSession}  */ />
         <FeedbackDialog /* eventSession={composedEventSession} myUser={myUser}  */ />
         <JoinParticipantDialog setIsInConferenceRoom={handleSetIsInConferenceRoom} />
+        
 
         <EventSessionTopbar
           isInConferenceRoom={isInConferenceRoom}
@@ -507,6 +517,9 @@ export default withRouter((props) => {
                   </div>
                 )}
                 {userGroup && <NetworkingRoomContainer jitsiApi={jitsiApi} setJitsiApi={setJitsiApi} />}
+              </div>
+              <div className={classes.smallPlayerContainer}>
+                <SmallPlayerContainer bounds={`.${classes.root}`}/>
               </div>
             </>
           )}
