@@ -9,6 +9,7 @@ import { MAX_PARTICIPANTS_GROUP } from "../../Config/constants";
 
 import { useSelector, shallowEqual } from "react-redux";
 import { getUsers, getParticipantsJoined, getLiveGroups, getUser } from "../../Redux/eventSession";
+import RoomCard from "./RoomCard";
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -107,12 +108,20 @@ export default function (props) {
             return !participantMetadata.leftTimestamp && sessionParticipant && sessionParticipant.isOnline;
           });
 
-          let group = liveParticipants.map((userId) => users[userId]);
+          let participants = liveParticipants.map((userId) => users[userId]);
           let hasLiveParticipants =
             liveParticipants.filter((participant) => participant.leftTimestamp !== null).length > 0;
           let isLast = index === numGroups - 1;
 
           let isMyGroup = liveParticipants.includes(user.id);
+
+          if (groupData.isRoom) {
+            hasGroupsLive = true;
+
+            return (
+              <RoomCard key={index} group={groupData} participants={groupUserIds.map((userId) => users[userId])} />
+            );
+          }
 
           if (!hasLiveParticipants) {
             return null;
@@ -129,8 +138,8 @@ export default function (props) {
                   setGroupHover(-1);
                 }}
               >
-                <GroupAvatars group={group} />
-                {groupHover === index && group.length < MAX_PARTICIPANTS_GROUP && (
+                <GroupAvatars group={participants} />
+                {groupHover === index && participants.length < MAX_PARTICIPANTS_GROUP && (
                   <div className={classes.joinButtonContainer}>
                     <Button
                       variant="outlined"
@@ -138,7 +147,7 @@ export default function (props) {
                       size="small"
                       className={classes.button}
                       onClick={() => {
-                        setSelectedGroup(group);
+                        setSelectedGroup(participants);
                         setSelectedGroupId(groupId);
                         setJoinDialog(true);
                       }}
