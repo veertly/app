@@ -54,6 +54,7 @@
     "react-markdown": "^4.2.2",
     "react-player": "^1.15.3",
     "react-redux": "^7.2.0",
+    "react-rnd": "^10.1.9",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.4.1",
     "react-share": "^4.1.0",
