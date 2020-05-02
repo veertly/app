@@ -515,9 +515,9 @@ export default withRouter((props) => {
                 )}
                 {userGroup && <NetworkingRoomContainer jitsiApi={jitsiApi} setJitsiApi={setJitsiApi} />}
               </div>
-              <div className={classes.smallPlayerContainer}>
+              {/* <div className={classes.smallPlayerContainer}> */}
                 <SmallPlayerContainer bounds={`.${classes.root}`}/>
-              </div>
+              {/* </div> */}
             </>
           )}
           {/* CONFERENCE PANE */}
