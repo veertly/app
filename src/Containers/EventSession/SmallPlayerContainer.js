@@ -187,6 +187,10 @@ export const SmallPlayerContainer =  ({bounds=""}) => {
 
   if(!showSmallPlayer) return null;
 
+  if (eventSessionDetails.conferenceVideoType === "JITSI") {
+    return null;
+  }
+
   if (loaded) {
     return (
       <Rnd
