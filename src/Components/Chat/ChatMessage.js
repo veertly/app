@@ -51,7 +51,7 @@ export default (props) => {
     message.sentDate,
   ]);
 
-  if (messageUser === null) {
+  if (!messageUser) {
     console.error("Couldn't find the user for this message which should never happen...");
     return null;
   }
