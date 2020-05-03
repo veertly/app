@@ -98,6 +98,8 @@ export function unregister() {
       registration.unregister().then((isSuccess) => {
         console.log(`service worker un-registration is ${isSuccess ? "successful" : "unsuccessful"}`);
       });
+    }).catch(error => {
+      console.log('Please disable clear cookies on restart in preferences');
     });
   }
 }
