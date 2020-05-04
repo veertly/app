@@ -62,7 +62,11 @@ export default (props) => {
       const api = new JitsiMeetExternalAPI(domain, options);
       /*eslint-enable no-undef*/
       api.executeCommand("displayName", user.firstName + " " + user.lastName);
-      api.executeCommand("subject", "Veertly | Networking Conversation");
+      if (currentGroup.isRoom) {
+        api.executeCommand("subject", `Veertly | ${currentGroup.roomName}`);
+      } else {
+        api.executeCommand("subject", "Veertly | Networking Conversation");
+      }
 
       if (user.avatarUrl) {
         api.executeCommand("avatarUrl", user.avatarUrl);

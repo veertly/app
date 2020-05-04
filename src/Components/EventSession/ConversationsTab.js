@@ -7,9 +7,14 @@ import Divider from "@material-ui/core/Divider";
 import GroupAvatars from "./GroupAvatars";
 import { MAX_PARTICIPANTS_GROUP } from "../../Config/constants";
 
-import { useSelector, shallowEqual } from "react-redux";
-import { getUsers, getParticipantsJoined, getLiveGroups, getUser } from "../../Redux/eventSession";
+import { useSelector, shallowEqual, useDispatch } from "react-redux";
+import { getUsers, getLiveGroups, getUser } from "../../Redux/eventSession";
 import RoomCard from "./RoomCard";
+import _ from "lodash";
+import { Collapse } from "@material-ui/core";
+import ExpandLess from "@material-ui/icons/ExpandLess";
+import ExpandMore from "@material-ui/icons/ExpandMore";
+import { openCreateRoom } from "../../Redux/dialogs";
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -59,12 +64,29 @@ const useStyles = makeStyles((theme) => ({
     top: theme.spacing(2),
   },
   noGroupsText: {
-    position: "absolute",
-    top: 60,
+    marginTop: theme.spacing(3),
+    marginBottom: theme.spacing(3),
     width: "100%",
   },
   relativeContainer: {
     position: "relative",
+  },
+  title: {
+    margin: theme.spacing(2, 2, 1, 2),
+    display: "block",
+    position: "relative",
+    paddingLeft: theme.spacing(2.5),
+    cursor: "pointer",
+  },
+  expandIcon: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    color: theme.palette.secondary.main,
+  },
+  centerButton: {
+    width: "100%",
+    textAlign: "center",
   },
 }));
 // rgba(28, 71, 98, 0.08)
@@ -77,16 +99,42 @@ export default function (props) {
   const [selectedGroup, setSelectedGroup] = React.useState(null);
   const [selectedGroupId, setSelectedGroupId] = React.useState(null);
 
+  const [roomsExpanded, setRoomsExpanded] = React.useState(true);
+  const [conversationsExpanded, setConversationsExpanded] = React.useState(true);
   // const { users, eventSession, user } = props;
+  const dispatch = useDispatch();
 
   const users = useSelector(getUsers, shallowEqual);
-  const participantsJoined = useSelector(getParticipantsJoined, shallowEqual);
   const user = useSelector(getUser, shallowEqual);
   const liveGroups = useSelector(getLiveGroups, shallowEqual);
 
-  const groupIds = Object.keys(liveGroups ? liveGroups : {});
-  const numGroups = groupIds.length;
-  let hasGroupsLive = false;
+  const toggleExpandRooms = React.useCallback(() => setRoomsExpanded(!roomsExpanded), [roomsExpanded]);
+  const toggleExpandConversations = React.useCallback(() => setConversationsExpanded(!conversationsExpanded), [
+    conversationsExpanded,
+  ]);
+
+  const handleCreateRoom = React.useCallback(() => dispatch(openCreateRoom()), [dispatch]);
+
+  const { rooms, conversations } = React.useMemo(() => {
+    let rooms = [];
+    let conversations = [];
+
+    _.forEach(liveGroups, (group) => {
+      let extendedGroup = { ...group };
+      let participantsIds = Object.keys(group.participants);
+      extendedGroup.participants = participantsIds.map((userId) => users[userId]);
+      extendedGroup.isMyGoup = participantsIds.includes(user.id);
+
+      if (extendedGroup.isRoom) {
+        rooms.push(extendedGroup);
+      } else {
+        conversations.push(extendedGroup);
+      }
+    });
+    return { rooms, conversations };
+  }, [liveGroups, users, user]);
+
+  const numConversations = conversations.length;
   return (
     <div className={classes.root}>
       <JoinConversationDialog
@@ -94,80 +142,83 @@ export default function (props) {
         setOpen={setJoinDialog}
         group={selectedGroup}
         groupId={selectedGroupId}
-        // eventSession={eventSession}
-        // user={user}
       />
       <div className={classes.relativeContainer}>
-        {groupIds.map((groupId, index) => {
-          let groupData = liveGroups[groupId];
-          let groupUserIds = Object.keys(groupData.participants);
-
-          let liveParticipants = groupUserIds.filter((userId) => {
-            let participantMetadata = groupData.participants[userId];
-            let sessionParticipant = participantsJoined[userId];
-            return !participantMetadata.leftTimestamp && sessionParticipant && sessionParticipant.isOnline;
-          });
-
-          let participants = liveParticipants.map((userId) => users[userId]);
-          let hasLiveParticipants =
-            liveParticipants.filter((participant) => participant.leftTimestamp !== null).length > 0;
-          let isLast = index === numGroups - 1;
-
-          let isMyGroup = liveParticipants.includes(user.id);
-
-          if (groupData.isRoom) {
-            hasGroupsLive = true;
-
-            return (
-              <RoomCard key={index} group={groupData} participants={groupUserIds.map((userId) => users[userId])} />
-            );
-          }
-
-          if (!hasLiveParticipants) {
-            return null;
-          }
-          hasGroupsLive = true;
-          return (
-            <div key={index}>
-              <div
-                className={classes.groupContainer}
-                onMouseEnter={() => {
-                  setGroupHover(index);
-                }}
-                onMouseLeave={() => {
-                  setGroupHover(-1);
-                }}
-              >
-                <GroupAvatars group={participants} />
-                {groupHover === index && participants.length < MAX_PARTICIPANTS_GROUP && (
-                  <div className={classes.joinButtonContainer}>
-                    <Button
-                      variant="outlined"
-                      color="primary"
-                      size="small"
-                      className={classes.button}
-                      onClick={() => {
-                        setSelectedGroup(participants);
-                        setSelectedGroupId(groupId);
-                        setJoinDialog(true);
-                      }}
-                    >
-                      {isMyGroup ? "View" : "Join"}
-                    </Button>
-                  </div>
-                )}
-              </div>
-
-              {!isLast && <Divider variant="middle" />}
-            </div>
-          );
-        })}
-        {!hasGroupsLive && (
-          <Typography variant="caption" align="center" className={classes.noGroupsText}>
-            There are no conversations yet, <br />
-            so select someone and start networking!
+        <div className={classes.title} onClick={toggleExpandRooms}>
+          <div className={classes.expandIcon}>{roomsExpanded ? <ExpandLess /> : <ExpandMore />}</div>
+          <Typography color="secondary" align="left">
+            ROOMS
           </Typography>
-        )}
+        </div>
+        <Collapse in={roomsExpanded} timeout="auto" unmountOnExit>
+          {rooms.map((room) => {
+            return <RoomCard key={room.id} room={room} />;
+          })}
+          <div className={classes.centerButton}>
+            <Button
+              variant="outlined"
+              color="primary"
+              size="small"
+              className={classes.button}
+              onClick={handleCreateRoom}
+              // disabled={participantsAvailable.length <= 1}
+            >
+              Create room
+            </Button>
+          </div>
+        </Collapse>
+
+        <div className={classes.title} onClick={toggleExpandConversations}>
+          <div className={classes.expandIcon}>{conversationsExpanded ? <ExpandLess /> : <ExpandMore />}</div>
+          <Typography color="secondary" align="left">
+            CONVERSATIONS
+          </Typography>
+        </div>
+        <Collapse in={conversationsExpanded} timeout="auto" unmountOnExit>
+          {conversations.map((group, index) => {
+            let isLast = index === numConversations - 1;
+            return (
+              <div key={group.id}>
+                <div
+                  className={classes.groupContainer}
+                  onMouseEnter={() => {
+                    setGroupHover(group.id);
+                  }}
+                  onMouseLeave={() => {
+                    setGroupHover(-1);
+                  }}
+                >
+                  <GroupAvatars group={group.participants} />
+                  {groupHover === group.id && group.participants.length < MAX_PARTICIPANTS_GROUP && (
+                    <div className={classes.joinButtonContainer}>
+                      <Button
+                        variant="outlined"
+                        color="primary"
+                        size="small"
+                        className={classes.button}
+                        onClick={() => {
+                          setSelectedGroup(group.participants);
+                          setSelectedGroupId(group.id);
+                          setJoinDialog(true);
+                        }}
+                      >
+                        {group.isMyGroup ? "View" : "Join"}
+                      </Button>
+                    </div>
+                  )}
+                </div>
+
+                {!isLast && <Divider variant="middle" />}
+              </div>
+            );
+          })}
+          {numConversations === 0 && (
+            <Typography variant="caption" align="center" display="block" className={classes.noGroupsText}>
+              There are no conversations yet, <br />
+              select someone and start networking!
+            </Typography>
+          )}
+        </Collapse>
       </div>
     </div>
   );

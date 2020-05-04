@@ -60,6 +60,8 @@ import {
 import useInterval from "../../Hooks/useInterval";
 import JoinParticipantDialog from "../../Components/EventSession/JoinParticipantDialog";
 import SplashScreen from "../../Components/Misc/SplashScreen";
+import JoinRoomDialog from "../../Components/EventSession/JoinRoomDialog";
+import CreateRoomDialog from "../../Components/EventSession/CreateRoomDialog";
 
 export const SIDE_PANE_WIDTH = 53;
 const LEFT_PANE_WIDTH = 300;
@@ -456,6 +458,8 @@ export default withRouter((props) => {
       <ShareEventDialog /*  eventSession={composedEventSession}  */ />
       <FeedbackDialog /* eventSession={composedEventSession} myUser={myUser}  */ />
       <JoinParticipantDialog setIsInConferenceRoom={handleSetIsInConferenceRoom} />
+      <JoinRoomDialog setIsInConferenceRoom={handleSetIsInConferenceRoom} />
+      <CreateRoomDialog />
 
       <EventSessionTopbar
         isInConferenceRoom={isInConferenceRoom}

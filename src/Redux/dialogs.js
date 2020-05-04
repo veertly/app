@@ -14,6 +14,12 @@ const CLOSE_FEEDBACK = "dialogs.CLOSE_FEEDBACK";
 const OPEN_JOIN_PARTICIPANT = "dialogs.OPEN_JOIN_PARTICIPANT";
 const CLOSE_JOIN_PARTICIPANT = "dialogs.CLOSE_JOIN_PARTICIPANT";
 
+const OPEN_CREATE_ROOM = "dialogs.OPEN_CREATE_ROOM";
+const CLOSE_CREATE_ROOM = "dialogs.CLOSE_CREATE_ROOM";
+
+const OPEN_JOIN_ROOM = "dialogs.OPEN_JOIN_ROOM";
+const CLOSE_JOIN_ROOM = "dialogs.CLOSE_JOIN_ROOM";
+
 const initialState = {
   editProfileOpen: false,
   eventDetailsOpen: false,
@@ -23,6 +29,9 @@ const initialState = {
   feedbackOpen: false,
   joinParticipantOpen: false,
   joinParticipantEntity: null,
+  createRoomOpen: false,
+  joinRoomOpen: false,
+  joinRoomEntity: null,
 };
 
 export const dialogsReducer = (state = initialState, action) => {
@@ -108,6 +117,35 @@ export const dialogsReducer = (state = initialState, action) => {
       return {
         ...state,
         joinParticipantOpen: false,
+        joinRoomEntity: null,
+      };
+    }
+
+    case OPEN_CREATE_ROOM: {
+      return {
+        ...state,
+        createRoomOpen: true,
+      };
+    }
+    case CLOSE_CREATE_ROOM: {
+      return {
+        ...state,
+        createRoomOpen: false,
+      };
+    }
+
+    case OPEN_JOIN_ROOM: {
+      return {
+        ...state,
+        joinRoomOpen: true,
+        joinRoomEntity: action.room,
+      };
+    }
+    case CLOSE_JOIN_ROOM: {
+      return {
+        ...state,
+        joinRoomOpen: false,
+        joinRoomEntity: null,
       };
     }
     default:
@@ -130,6 +168,12 @@ export const isFeedbackOpen = (store) => store.dialogs.feedbackOpen === true;
 export const isJoinParticipantOpen = (store) => store.dialogs.joinParticipantOpen === true;
 
 export const getJoinParticipantEntity = (store) => store.dialogs.joinParticipantEntity;
+
+export const isCreateRoomOpen = (store) => store.dialogs.createRoomOpen === true;
+
+export const isJoinRoomOpen = (store) => store.dialogs.joinRoomOpen === true;
+
+export const getJoinRoomEntity = (store) => store.dialogs.joinRoomEntity;
 
 export const openEditProfile = () => ({
   type: OPEN_EDIT_PROFILE,
@@ -182,4 +226,22 @@ export const openJoinParticipant = (participant) => ({
 
 export const closeJoinParticipant = () => ({
   type: CLOSE_JOIN_PARTICIPANT,
+});
+
+export const openCreateRoom = () => ({
+  type: OPEN_CREATE_ROOM,
+});
+
+export const closeCreateRoom = () => ({
+  type: CLOSE_CREATE_ROOM,
+});
+
+export const openJoinRoom = (room) => ({
+  type: OPEN_JOIN_ROOM,
+
+  room,
+});
+
+export const closeJoinRoom = () => ({
+  type: CLOSE_JOIN_ROOM,
 });
