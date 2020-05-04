@@ -92,6 +92,8 @@ export default function (props) {
     }
   }, [liveGroup, users, userGroup.participants]);
 
+  const isRoom = React.useMemo(() => liveGroup && liveGroup.isRoom, [liveGroup]);
+
   const showElapsedTime = () => {
     let elapsedMoment = moment.duration(elapsedTime, "milliseconds");
     return elapsedMoment.format();
@@ -105,11 +107,11 @@ export default function (props) {
     <div className={classes.groupContainer}>
       <LeaveCallDialog open={leaveCallOpen} handleLeaveCall={handleLeaveCall} setOpen={setLeaveCallOpen} />
       <Typography variant="caption" className={classes.title}>
-        {liveGroup.isRoom ? liveGroup.roomName : "CURRENT CONVERSATION"} ({showElapsedTime()})
+        {isRoom ? liveGroup.roomName : "CURRENT CONVERSATION"} ({showElapsedTime()})
       </Typography>
       <div className={classes.avatarsContainer}>
-        {!liveGroup.isRoom && <GroupAvatars group={participants} />}
-        {liveGroup.isRoom && (
+        {!isRoom && <GroupAvatars group={participants} />}
+        {isRoom && (
           <>
             <AvatarGroup max={4} spacing="medium">
               {participants.map((participant) => {

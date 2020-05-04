@@ -236,7 +236,7 @@ export default function (props) {
                         className={classes.button}
                         onClick={handleJoinConversation}
                       >
-                        Join Conversation
+                        Join {liveGroup && liveGroup.isRoom ? "Room" : "Conversation"}
                       </Button>
                     </div>
                     {/* <Typography className={classes.hintText} variant="caption"> */}

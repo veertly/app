@@ -64,7 +64,7 @@ const useStyles = makeStyles((theme) => ({
     top: theme.spacing(2),
   },
   noGroupsText: {
-    marginTop: theme.spacing(3),
+    marginTop: theme.spacing(2),
     marginBottom: theme.spacing(3),
     width: "100%",
   },
@@ -123,7 +123,7 @@ export default function (props) {
       let extendedGroup = { ...group };
       let participantsIds = Object.keys(group.participants);
       extendedGroup.participants = participantsIds.map((userId) => users[userId]);
-      extendedGroup.isMyGoup = participantsIds.includes(user.id);
+      extendedGroup.isMyGoup = user && participantsIds.includes(user.id);
 
       if (extendedGroup.isRoom) {
         rooms.push(extendedGroup);
@@ -214,8 +214,9 @@ export default function (props) {
           })}
           {numConversations === 0 && (
             <Typography variant="caption" align="center" display="block" className={classes.noGroupsText}>
-              There are no conversations yet, <br />
-              select someone and start networking!
+              {/* There are no conversations yet, <br />
+              select someone and start networking! */}
+              There are no conversations yet, check out the topic rooms or select someone and start networking!
             </Typography>
           )}
         </Collapse>

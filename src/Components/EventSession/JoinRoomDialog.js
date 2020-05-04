@@ -6,7 +6,13 @@ import { joinConversation } from "../../Modules/eventSessionOperations";
 import { useSnackbar } from "material-ui-snackbar-provider";
 
 import { useSelector, shallowEqual, useDispatch } from "react-redux";
-import { getParticipantsJoined, getLiveGroups, getSessionId, getUserId } from "../../Redux/eventSession";
+import {
+  getParticipantsJoined,
+  getLiveGroups,
+  getSessionId,
+  getUserId,
+  getUserSession,
+} from "../../Redux/eventSession";
 import Alert from "@material-ui/lab/Alert";
 import { isJoinRoomOpen, getJoinRoomEntity, closeJoinRoom } from "../../Redux/dialogs";
 import { Typography, Grid } from "@material-ui/core";
@@ -61,6 +67,7 @@ export default function (props) {
 
   const participantsJoined = useSelector(getParticipantsJoined, shallowEqual);
   const liveGroups = useSelector(getLiveGroups, shallowEqual);
+  const userSession = useSelector(getUserSession, shallowEqual);
   const sessionId = useSelector(getSessionId);
   const userId = useSelector(getUserId);
 
@@ -78,7 +85,10 @@ export default function (props) {
     handleClose();
   };
 
-  let isMyGroup = room.participants.find((participant) => participant.id === userId) !== undefined;
+  const isMyGroup = room.participants.find((participant) => participant.id === userId) !== undefined;
+
+  let userInConversation = userSession && !!userSession.groupId;
+
   return (
     <div>
       <Dialog open={open} onClose={handleClose} aria-labelledby="draggable-dialog-title">
@@ -114,9 +124,17 @@ export default function (props) {
                   Join Room
                 </Button>
               </div>
-              <Alert severity="info" className={classes.alert}>
-                You will join this room video conferencing call
-              </Alert>
+              {!userInConversation && (
+                <Alert severity="info" className={classes.alert}>
+                  You will join this room video conferencing call
+                </Alert>
+              )}
+
+              {userInConversation && (
+                <Alert severity="warning" className={classes.alert}>
+                  You will leave your current conversation and join this room
+                </Alert>
+              )}
             </div>
           )}
           {/* {isMyGroup && <div className={classes.emptySpaceBottom}></div>} */}

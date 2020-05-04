@@ -12,6 +12,10 @@ export default function (props) {
 
   const { participant, ...rest } = props;
 
+  if (!participant) {
+    return null;
+  }
+
   if (participant.avatarUrl) {
     return (
       <Tooltip title={`${participant.firstName} ${participant.lastName}`}>

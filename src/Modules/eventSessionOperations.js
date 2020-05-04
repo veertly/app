@@ -126,8 +126,8 @@ export const createNewConversation = (sessionId, myUserId, otherUserId, currentU
         updateObj[`participants.${myUserId}.leftTimestamp`] = firebase.firestore.FieldValue.serverTimestamp();
         transaction.update(currentGroupRef, updateObj);
 
-        // 2.4. check if only one participant remaining on the current group
-        if (activeParticipantsCurrentGroup.length === 1) {
+        // 2.4. check if only one participant remaining on the current group (if not a room)
+        if (!currentGroup.isRoom && activeParticipantsCurrentGroup.length === 1) {
           //5.1 set the remaining participant group to null
           let participant = activeParticipantsCurrentGroup[0];
           transaction.update(participantsRefCurrentGroup[participant.userId], { groupId: null });
