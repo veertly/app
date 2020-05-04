@@ -11,6 +11,8 @@ import LeaveCallDialog from "./LeaveCallDialog";
 
 import { useSelector, shallowEqual } from "react-redux";
 import { getSessionId, getUsers, getUserGroup, getUserId, getUserLiveGroup } from "../../Redux/eventSession";
+import AvatarGroup from "@material-ui/lab/AvatarGroup";
+import ParticipantAvatar from "../Misc/ParticipantAvatar";
 
 momentDurationFormatSetup(moment);
 
@@ -103,10 +105,19 @@ export default function (props) {
     <div className={classes.groupContainer}>
       <LeaveCallDialog open={leaveCallOpen} handleLeaveCall={handleLeaveCall} setOpen={setLeaveCallOpen} />
       <Typography variant="caption" className={classes.title}>
-        CURRENT CONVERSATION ({showElapsedTime()})
+        {liveGroup.isRoom ? liveGroup.roomName : "CURRENT CONVERSATION"} ({showElapsedTime()})
       </Typography>
       <div className={classes.avatarsContainer}>
-        <GroupAvatars group={participants} />
+        {!liveGroup.isRoom && <GroupAvatars group={participants} />}
+        {liveGroup.isRoom && (
+          <>
+            <AvatarGroup max={4} spacing="medium">
+              {participants.map((participant) => {
+                return <ParticipantAvatar participant={participant} style={{ marginLeft: 2, marginRight: 2 }} />;
+              })}
+            </AvatarGroup>
+          </>
+        )}
       </div>
       <div className={classes.leaveCallContainer}>
         <Tooltip title="Leave conversation" placement="right">

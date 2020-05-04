@@ -22,6 +22,7 @@ import { useSelector, shallowEqual, useDispatch } from "react-redux";
 import _ from "lodash";
 import Alert from "@material-ui/lab/Alert";
 import { MAX_PARTICIPANTS_GROUP } from "../../Config/constants";
+import ParticipantAvatar from "../Misc/ParticipantAvatar";
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -179,11 +180,20 @@ export default function (props) {
           {participantInConversation && (
             <div className={classes.conversationWith}>
               <>
-                <Typography variant="button" color="primary">
-                  In a conversation with:
-                </Typography>
+                {!liveGroup.isRoom && (
+                  <Typography variant="button" color="primary">
+                    In a conversation with:
+                  </Typography>
+                )}
+
+                {liveGroup.isRoom && (
+                  <Typography variant="button" color="primary">
+                    In the room: {liveGroup.roomName}
+                  </Typography>
+                )}
                 {/* <Divider color="secondary" /> */}
                 {liveGroup &&
+                  !liveGroup.isRoom &&
                   liveGroup.participants &&
                   Object.values(liveGroup.participants).map((p) => {
                     if (p.id === participant.id) {
@@ -196,6 +206,23 @@ export default function (props) {
                     return (
                       <div key={p.id} className={classes.participantContainer}>
                         <ParticipantCard participant={pDetails} />
+                      </div>
+                    );
+                  })}
+                {liveGroup &&
+                  liveGroup.isRoom &&
+                  liveGroup.participants &&
+                  Object.values(liveGroup.participants).map((p) => {
+                    if (p.id === participant.id) {
+                      return null;
+                    }
+                    let pDetails = users[p.id];
+                    if (!pDetails) {
+                      return null;
+                    }
+                    return (
+                      <div key={p.id} className={classes.avatar}>
+                        <ParticipantAvatar participant={pDetails} />
                       </div>
                     );
                   })}
