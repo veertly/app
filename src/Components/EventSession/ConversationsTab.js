@@ -8,7 +8,7 @@ import GroupAvatars from "./GroupAvatars";
 import { MAX_PARTICIPANTS_GROUP } from "../../Config/constants";
 
 import { useSelector, shallowEqual, useDispatch } from "react-redux";
-import { getUsers, getLiveGroups, getUser } from "../../Redux/eventSession";
+import { getUsers, getLiveGroups, getUser, getEventSessionDetails } from "../../Redux/eventSession";
 import RoomCard from "./RoomCard";
 import _ from "lodash";
 import { Collapse } from "@material-ui/core";
@@ -64,7 +64,7 @@ const useStyles = makeStyles((theme) => ({
     top: theme.spacing(2),
   },
   noGroupsText: {
-    marginTop: theme.spacing(3),
+    marginTop: theme.spacing(2),
     marginBottom: theme.spacing(3),
     width: "100%",
   },
@@ -107,6 +107,7 @@ export default function (props) {
   const users = useSelector(getUsers, shallowEqual);
   const user = useSelector(getUser, shallowEqual);
   const liveGroups = useSelector(getLiveGroups, shallowEqual);
+  const eventSessionDetails = useSelector(getEventSessionDetails, shallowEqual);
 
   const toggleExpandRooms = React.useCallback(() => setRoomsExpanded(!roomsExpanded), [roomsExpanded]);
   const toggleExpandConversations = React.useCallback(() => setConversationsExpanded(!conversationsExpanded), [
@@ -114,7 +115,10 @@ export default function (props) {
   ]);
 
   const handleCreateRoom = React.useCallback(() => dispatch(openCreateRoom()), [dispatch]);
-
+  const isRoomCreationAllowed = React.useMemo(
+    () => !eventSessionDetails || eventSessionDetails.denyRoomCreation !== true,
+    [eventSessionDetails]
+  );
   const { rooms, conversations } = React.useMemo(() => {
     let rooms = [];
     let conversations = [];
@@ -123,7 +127,7 @@ export default function (props) {
       let extendedGroup = { ...group };
       let participantsIds = Object.keys(group.participants);
       extendedGroup.participants = participantsIds.map((userId) => users[userId]);
-      extendedGroup.isMyGoup = participantsIds.includes(user.id);
+      extendedGroup.isMyGoup = user && participantsIds.includes(user.id);
 
       if (extendedGroup.isRoom) {
         rooms.push(extendedGroup);
@@ -154,18 +158,20 @@ export default function (props) {
           {rooms.map((room) => {
             return <RoomCard key={room.id} room={room} />;
           })}
-          <div className={classes.centerButton}>
-            <Button
-              variant="outlined"
-              color="primary"
-              size="small"
-              className={classes.button}
-              onClick={handleCreateRoom}
-              // disabled={participantsAvailable.length <= 1}
-            >
-              Create room
-            </Button>
-          </div>
+          {isRoomCreationAllowed && (
+            <div className={classes.centerButton}>
+              <Button
+                variant="outlined"
+                color="primary"
+                size="small"
+                className={classes.button}
+                onClick={handleCreateRoom}
+                // disabled={participantsAvailable.length <= 1}
+              >
+                Create room
+              </Button>
+            </div>
+          )}
         </Collapse>
 
         <div className={classes.title} onClick={toggleExpandConversations}>
@@ -214,8 +220,9 @@ export default function (props) {
           })}
           {numConversations === 0 && (
             <Typography variant="caption" align="center" display="block" className={classes.noGroupsText}>
-              There are no conversations yet, <br />
-              select someone and start networking!
+              {/* There are no conversations yet, <br />
+              select someone and start networking! */}
+              There are no conversations yet, check out the topic rooms or select someone and start networking!
             </Typography>
           )}
         </Collapse>

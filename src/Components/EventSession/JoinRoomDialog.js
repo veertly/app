@@ -6,11 +6,18 @@ import { joinConversation } from "../../Modules/eventSessionOperations";
 import { useSnackbar } from "material-ui-snackbar-provider";
 
 import { useSelector, shallowEqual, useDispatch } from "react-redux";
-import { getParticipantsJoined, getLiveGroups, getSessionId, getUserId } from "../../Redux/eventSession";
+import {
+  getParticipantsJoined,
+  getLiveGroups,
+  getSessionId,
+  getUserId,
+  getUserSession,
+} from "../../Redux/eventSession";
 import Alert from "@material-ui/lab/Alert";
 import { isJoinRoomOpen, getJoinRoomEntity, closeJoinRoom } from "../../Redux/dialogs";
 import { Typography, Grid } from "@material-ui/core";
 import ParticipantAvatar from "../Misc/ParticipantAvatar";
+
 const useStyles = makeStyles((theme) => ({
   content: {
     position: "relative",
@@ -49,7 +56,18 @@ const useStyles = makeStyles((theme) => ({
   avatar: {
     margin: theme.spacing(0.5),
   },
+  // hoverContainer: display,
 }));
+
+// const HtmlTooltip = withStyles((theme) => ({
+//   tooltip: {
+//     backgroundColor: "#f5f5f9",
+//     color: "rgba(0, 0, 0, 0.87)",
+//     maxWidth: 220,
+//     fontSize: theme.typography.pxToRem(12),
+//     border: "1px solid #dadde9",
+//   },
+// }))(Tooltip);
 
 export default function (props) {
   const classes = useStyles();
@@ -61,6 +79,7 @@ export default function (props) {
 
   const participantsJoined = useSelector(getParticipantsJoined, shallowEqual);
   const liveGroups = useSelector(getLiveGroups, shallowEqual);
+  const userSession = useSelector(getUserSession, shallowEqual);
   const sessionId = useSelector(getSessionId);
   const userId = useSelector(getUserId);
 
@@ -78,7 +97,10 @@ export default function (props) {
     handleClose();
   };
 
-  let isMyGroup = room.participants.find((participant) => participant.id === userId) !== undefined;
+  const isMyGroup = room.participants.find((participant) => participant.id === userId) !== undefined;
+
+  let userInConversation = userSession && !!userSession.groupId;
+
   return (
     <div>
       <Dialog open={open} onClose={handleClose} aria-labelledby="draggable-dialog-title">
@@ -96,16 +118,22 @@ export default function (props) {
               spacing={2}
             >
               {room.participants.map((participant) => {
+                if (!participant) return null;
                 return (
-                  <div className={classes.avatar}>
+                  <div key={participant.id} style={{ bacgroundColor: "red" }} className={classes.avatar}>
                     <ParticipantAvatar participant={participant} />
                   </div>
                 );
               })}
               {room.participants.length === 0 && (
-                <Typography color="textsecondary">No one is currently on this room!</Typography>
+                <Typography color="textSecondary">No one is currently on this room!</Typography>
               )}
             </Grid>
+            {/* {room.participants.length > 0 && (
+              <div className={classes.hoverContainer}>
+                {hoveredParticipant && <ParticipantCard participant={hoveredParticipant} />}
+              </div>
+            )} */}
           </div>
           {!isMyGroup && (
             <div>
@@ -114,9 +142,17 @@ export default function (props) {
                   Join Room
                 </Button>
               </div>
-              <Alert severity="info" className={classes.alert}>
-                You will join this room video conferencing call
-              </Alert>
+              {!userInConversation && (
+                <Alert severity="info" className={classes.alert}>
+                  You will join this room's video conferencing call
+                </Alert>
+              )}
+
+              {userInConversation && (
+                <Alert severity="warning" className={classes.alert}>
+                  You will leave your current conversation and join this room
+                </Alert>
+              )}
             </div>
           )}
           {/* {isMyGroup && <div className={classes.emptySpaceBottom}></div>} */}

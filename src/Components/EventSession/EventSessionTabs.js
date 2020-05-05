@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function (props) {
   const classes = useStyles();
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = React.useState(1);
   const { setIsInConferenceRoom } = props;
 
   const userGroup = useSelector(getUserGroup, shallowEqual);
