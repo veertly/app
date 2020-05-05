@@ -17,6 +17,7 @@ import Alert from "@material-ui/lab/Alert";
 import { isJoinRoomOpen, getJoinRoomEntity, closeJoinRoom } from "../../Redux/dialogs";
 import { Typography, Grid } from "@material-ui/core";
 import ParticipantAvatar from "../Misc/ParticipantAvatar";
+
 const useStyles = makeStyles((theme) => ({
   content: {
     position: "relative",
@@ -55,7 +56,18 @@ const useStyles = makeStyles((theme) => ({
   avatar: {
     margin: theme.spacing(0.5),
   },
+  // hoverContainer: display,
 }));
+
+// const HtmlTooltip = withStyles((theme) => ({
+//   tooltip: {
+//     backgroundColor: "#f5f5f9",
+//     color: "rgba(0, 0, 0, 0.87)",
+//     maxWidth: 220,
+//     fontSize: theme.typography.pxToRem(12),
+//     border: "1px solid #dadde9",
+//   },
+// }))(Tooltip);
 
 export default function (props) {
   const classes = useStyles();
@@ -106,16 +118,22 @@ export default function (props) {
               spacing={2}
             >
               {room.participants.map((participant) => {
+                if (!participant) return null;
                 return (
-                  <div className={classes.avatar}>
+                  <div key={participant.id} style={{ bacgroundColor: "red" }} className={classes.avatar}>
                     <ParticipantAvatar participant={participant} />
                   </div>
                 );
               })}
               {room.participants.length === 0 && (
-                <Typography color="textsecondary">No one is currently on this room!</Typography>
+                <Typography color="textSecondary">No one is currently on this room!</Typography>
               )}
             </Grid>
+            {/* {room.participants.length > 0 && (
+              <div className={classes.hoverContainer}>
+                {hoveredParticipant && <ParticipantCard participant={hoveredParticipant} />}
+              </div>
+            )} */}
           </div>
           {!isMyGroup && (
             <div>
@@ -126,7 +144,7 @@ export default function (props) {
               </div>
               {!userInConversation && (
                 <Alert severity="info" className={classes.alert}>
-                  You will join this room video conferencing call
+                  You will join this room's video conferencing call
                 </Alert>
               )}
 

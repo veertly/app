@@ -83,7 +83,7 @@ export default function (props) {
             Create new room
           </Typography>
           <TextField
-            // fullWidth
+            autoFocus
             label="Room Name"
             name="roomName"
             variant="outlined"
@@ -104,8 +104,13 @@ export default function (props) {
             </Button>
           </div>
           <Alert severity="info" className={classes.alert}>
-            A room will be created with this name and any attendee will be able to join it{" "}
+            A room will be created with this name and any attendee will be able to join it
           </Alert>
+          {userGroup && (
+            <Alert severity="warning" className={classes.alert}>
+              You will leave your current call
+            </Alert>
+          )}
         </div>
         {/* </div> */}
       </Dialog>

@@ -8,7 +8,7 @@ import GroupAvatars from "./GroupAvatars";
 import { MAX_PARTICIPANTS_GROUP } from "../../Config/constants";
 
 import { useSelector, shallowEqual, useDispatch } from "react-redux";
-import { getUsers, getLiveGroups, getUser } from "../../Redux/eventSession";
+import { getUsers, getLiveGroups, getUser, getEventSessionDetails } from "../../Redux/eventSession";
 import RoomCard from "./RoomCard";
 import _ from "lodash";
 import { Collapse } from "@material-ui/core";
@@ -107,6 +107,7 @@ export default function (props) {
   const users = useSelector(getUsers, shallowEqual);
   const user = useSelector(getUser, shallowEqual);
   const liveGroups = useSelector(getLiveGroups, shallowEqual);
+  const eventSessionDetails = useSelector(getEventSessionDetails, shallowEqual);
 
   const toggleExpandRooms = React.useCallback(() => setRoomsExpanded(!roomsExpanded), [roomsExpanded]);
   const toggleExpandConversations = React.useCallback(() => setConversationsExpanded(!conversationsExpanded), [
@@ -114,7 +115,10 @@ export default function (props) {
   ]);
 
   const handleCreateRoom = React.useCallback(() => dispatch(openCreateRoom()), [dispatch]);
-
+  const isRoomCreationAllowed = React.useMemo(
+    () => !eventSessionDetails || eventSessionDetails.denyRoomCreation !== true,
+    [eventSessionDetails]
+  );
   const { rooms, conversations } = React.useMemo(() => {
     let rooms = [];
     let conversations = [];
@@ -154,18 +158,20 @@ export default function (props) {
           {rooms.map((room) => {
             return <RoomCard key={room.id} room={room} />;
           })}
-          <div className={classes.centerButton}>
-            <Button
-              variant="outlined"
-              color="primary"
-              size="small"
-              className={classes.button}
-              onClick={handleCreateRoom}
-              // disabled={participantsAvailable.length <= 1}
-            >
-              Create room
-            </Button>
-          </div>
+          {isRoomCreationAllowed && (
+            <div className={classes.centerButton}>
+              <Button
+                variant="outlined"
+                color="primary"
+                size="small"
+                className={classes.button}
+                onClick={handleCreateRoom}
+                // disabled={participantsAvailable.length <= 1}
+              >
+                Create room
+              </Button>
+            </div>
+          )}
         </Collapse>
 
         <div className={classes.title} onClick={toggleExpandConversations}>

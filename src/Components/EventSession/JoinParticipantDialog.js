@@ -60,6 +60,9 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(2),
     textAlign: "left",
   },
+  avatar: {
+    marginRight: theme.spacing(2),
+  },
 }));
 
 export default function (props) {
@@ -180,13 +183,13 @@ export default function (props) {
           {participantInConversation && (
             <div className={classes.conversationWith}>
               <>
-                {!liveGroup.isRoom && (
+                {liveGroup && !liveGroup.isRoom && (
                   <Typography variant="button" color="primary">
                     In a conversation with:
                   </Typography>
                 )}
 
-                {liveGroup.isRoom && (
+                {liveGroup && liveGroup.isRoom && (
                   <Typography variant="button" color="primary">
                     In the room: {liveGroup.roomName}
                   </Typography>
@@ -209,23 +212,26 @@ export default function (props) {
                       </div>
                     );
                   })}
-                {liveGroup &&
-                  liveGroup.isRoom &&
-                  liveGroup.participants &&
-                  Object.values(liveGroup.participants).map((p) => {
-                    if (p.id === participant.id) {
-                      return null;
-                    }
-                    let pDetails = users[p.id];
-                    if (!pDetails) {
-                      return null;
-                    }
-                    return (
-                      <div key={p.id} className={classes.avatar}>
-                        <ParticipantAvatar participant={pDetails} />
-                      </div>
-                    );
-                  })}
+                {liveGroup && liveGroup.isRoom && liveGroup.participants && (
+                  <>
+                    <div style={{ display: "flex", marginTop: 16 }}>
+                      {Object.values(liveGroup.participants).map((p) => {
+                        if (p.id === participant.id) {
+                          return null;
+                        }
+                        let pDetails = users[p.id];
+                        if (!pDetails) {
+                          return null;
+                        }
+                        return (
+                          <div key={p.id} className={classes.avatar}>
+                            <ParticipantAvatar participant={pDetails} />
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
 
                 {canJoinConversation && (
                   <div>
@@ -242,7 +248,8 @@ export default function (props) {
                     {/* <Typography className={classes.hintText} variant="caption"> */}
                     {!userInConferenceRoom && !userInConversation && (
                       <Alert severity="info" className={classes.alert}>
-                        You will join this conversation video conferencing call
+                        You will join this {liveGroup && liveGroup.isRoom ? "room's" : "conversation's"} video
+                        conferencing call
                       </Alert>
                     )}
 

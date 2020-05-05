@@ -378,8 +378,8 @@ export const leaveCall = (sessionId, group, myUserId) => {
       updateObj[`participants.${myUserId}.leftTimestamp`] = firebase.firestore.FieldValue.serverTimestamp();
       transaction.update(myGroupRef, updateObj);
 
-      //5. check if only one participant remaining
-      if (activeParticipants.length === 1) {
+      //5. check if only one participant remaining (if not room)
+      if (!myGroup.isRoom && activeParticipants.length === 1) {
         //5.1 set the remaining participant group to null
         let participant = activeParticipants[0];
         transaction.update(participantsRef[participant.userId], { groupId: null });
@@ -434,6 +434,7 @@ export const createNewRoom = (sessionId, roomName, myUserId, currentUserGroup, s
     isRoom: true,
     roomName,
     roomCreatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    roomOwner: myUserId,
   };
 
   let participantsRefCurrentGroup = {};

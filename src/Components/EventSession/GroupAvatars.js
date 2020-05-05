@@ -43,8 +43,9 @@ export default function (props) {
   return (
     <React.Fragment>
       {group.map((participant) => {
+        if (!participant) return null;
         return (
-          <Tooltip title={`${participant.firstName} ${participant.lastName}`}>
+          <Tooltip key={participant.id} title={`${participant.firstName} ${participant.lastName}`}>
             <div className={classes.participantContainer} key={participant.id} onClick={handleAvatarClick(participant)}>
               {participant.avatarUrl && (
                 <Avatar alt={participant.firstName} src={participant.avatarUrl} className={classes.avatar} />

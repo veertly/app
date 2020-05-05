@@ -60,13 +60,11 @@ export default function (props) {
   const dispatch = useDispatch();
 
   const handleJoinRoom = React.useCallback(() => dispatch(openJoinRoom(room)), [dispatch, room]);
-  if (!room) {
+
+  if (!room || !room.isRoom) {
     return null;
   }
 
-  if (!room.isRoom) {
-    return null;
-  }
   return (
     <React.Fragment>
       <div className={classes.roomContainer} onClick={handleJoinRoom}>
@@ -77,11 +75,20 @@ export default function (props) {
 
         <div className={classes.roomParticipants}>
           {room.participants.length > 0 && (
-            <AvatarGroup max={4} spacing="medium">
-              {room.participants.map((participant) => {
-                return <ParticipantAvatar participant={participant} style={{ marginLeft: 2, marginRight: 2 }} />;
-              })}
-            </AvatarGroup>
+            <>
+              <AvatarGroup max={4} spacing="medium">
+                {room.participants.map((participant) => {
+                  if (!participant) return null;
+                  return (
+                    <ParticipantAvatar
+                      key={participant.id}
+                      participant={participant}
+                      style={{ marginLeft: 2, marginRight: 2 }}
+                    />
+                  );
+                })}
+              </AvatarGroup>
+            </>
           )}
           {room.participants.length === 0 && <Typography color="textSecondary">This room is empty</Typography>}
         </div>

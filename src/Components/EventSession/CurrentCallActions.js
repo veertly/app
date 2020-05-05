@@ -115,7 +115,14 @@ export default function (props) {
           <>
             <AvatarGroup max={4} spacing="medium">
               {participants.map((participant) => {
-                return <ParticipantAvatar participant={participant} style={{ marginLeft: 2, marginRight: 2 }} />;
+                if (!participant) return null;
+                return (
+                  <ParticipantAvatar
+                    key={participant.id}
+                    participant={participant}
+                    style={{ marginLeft: 2, marginRight: 2 }}
+                  />
+                );
               })}
             </AvatarGroup>
           </>

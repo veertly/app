@@ -106,7 +106,7 @@ const leaveCall = async (sessionId, myUserId) => {
       transaction.update(myGroupRef, updateObj);
 
       //5. check if only one participant remaining
-      if (activeParticipants.length === 1) {
+      if (!myGroup.isRoom && activeParticipants.length === 1) {
         //5.1 set the remaining participant group to null
         let participant = activeParticipants[0];
         transaction.update(participantsRef[participant.userId], { groupId: null });
