@@ -418,7 +418,7 @@ function EditProfileForm(props) {
                 color="primary"
               />
             }
-            label={<span>Join our monthly newsletter and stay updated on new features</span>}
+            label={<span>Join Veertly's monthly newsletter and stay updated on new features</span>}
           />
         )}
         <FormControlLabel
