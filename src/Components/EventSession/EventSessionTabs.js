@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function (props) {
   const classes = useStyles();
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = React.useState(1);
   const { setIsInConferenceRoom } = props;
 
   const userGroup = useSelector(getUserGroup, shallowEqual);
@@ -65,7 +65,7 @@ export default function (props) {
         aria-label="Groups and Participants"
       >
         <Tab icon={<AvailableParticipantsIcon />} label="ATTENDEES" className={classes.tab} />
-        <Tab icon={<ConversationsIcon />} label="CONVERSATIONS" className={classes.tab} />
+        <Tab icon={<ConversationsIcon />} label="DISCUSSIONS" className={classes.tab} />
       </Tabs>
       <div className={classes.tabContent} style={{ bottom: userGroup ? CALL_SECTION_HEIGHT : 0 }}>
         {value === 0 && <AvailableTab setIsInConferenceRoom={setIsInConferenceRoom} />}
