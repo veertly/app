@@ -34,7 +34,7 @@ export default function ProfileChips(props) {
           <Chip
             size={smallChips ? "small" : "medium"}
             key={data.key}
-            label={data.label}
+            label={data.label.substring(0, 48)}
             onDelete={onDelete ? handleDelete(data) : undefined}
             className={classes.chip}
           />

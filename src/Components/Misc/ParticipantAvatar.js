@@ -51,7 +51,7 @@ export default function (props) {
   return (
     <HtmlTooltip
       title={
-        <div classeName={classes.tooltip}>
+        <div className={classes.tooltip}>
           <ParticipantCard participant={participant} />
         </div>
       }

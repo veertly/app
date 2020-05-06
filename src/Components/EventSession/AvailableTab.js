@@ -304,9 +304,9 @@ export default function (props) {
                 {participant.linkedinUrl && <LinkedinIcon className={classes.socialIcon} />}
               </div>
               <div className={classes.flagContainer} style={{ top: hasSocials ? null : hasSubtitle ? 0 : 10 }}>
-                <Typography>
-                  <Flag locationDetails={participant.locationDetails} />
-                </Typography>
+                {/* <Typography> */}
+                <Flag locationDetails={participant.locationDetails} />
+                {/* </Typography> */}
               </div>
             </div>
           </div>
