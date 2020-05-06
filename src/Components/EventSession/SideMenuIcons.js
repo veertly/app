@@ -25,9 +25,9 @@ import {
   isChatOpen,
 } from "../../Redux/dialogs";
 import routes from "../../Config/routes";
-import ExitToAppIcon from "@material-ui/icons/ExitToApp";
-import { logout } from "../../Modules/userOperations";
-import { useHistory } from "react-router-dom";
+// import ExitToAppIcon from "@material-ui/icons/ExitToApp";
+// import { logout } from "../../Modules/userOperations";
+// import { useHistory } from "react-router-dom";
 import FeedbackIcon from "@material-ui/icons/GraphicEq";
 import { getSessionId, getEventSessionDetails, getUserId } from "../../Redux/eventSession";
 import { hideNotificationDot, toShowNotificationDot } from "../../Redux/chatMessages";
@@ -84,7 +84,7 @@ export default function SideMenuIcons(props) {
     dispatch(openFeedback());
   }, [dispatch, sessionId]);
 
-  const history = useHistory();
+  // const history = useHistory();
 
   const toggleChatPane = React.useCallback(() => {
     if (chatOpen) {
@@ -204,7 +204,7 @@ export default function SideMenuIcons(props) {
       </List>
       <Divider />
       <div style={{ flexGrow: 1 }}></div>
-      <List>
+      {/* <List>
         <Tooltip title="Exit Event">
           <ListItem
             button
@@ -218,7 +218,7 @@ export default function SideMenuIcons(props) {
             </ListItemIcon>
           </ListItem>
         </Tooltip>
-      </List>
+      </List> */}
     </div>
   );
 }

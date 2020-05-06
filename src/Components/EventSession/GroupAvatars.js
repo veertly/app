@@ -1,10 +1,9 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import Avatar from "@material-ui/core/Avatar";
 import Typography from "@material-ui/core/Typography";
 import { openJoinParticipant } from "../../Redux/dialogs";
 import { useDispatch } from "react-redux";
-import { Tooltip } from "@material-ui/core";
+import ParticipantAvatar from "../Misc/ParticipantAvatar";
 
 const useStyles = makeStyles((theme) => ({
   participantContainer: {
@@ -45,9 +44,9 @@ export default function (props) {
       {group.map((participant) => {
         if (!participant) return null;
         return (
-          <Tooltip key={participant.id} title={`${participant.firstName} ${participant.lastName}`}>
-            <div className={classes.participantContainer} key={participant.id} onClick={handleAvatarClick(participant)}>
-              {participant.avatarUrl && (
+          // <Tooltip key={participant.id} title={`${participant.firstName} ${participant.lastName}`}>
+          <div key={participant.id} className={classes.participantContainer} onClick={handleAvatarClick(participant)}>
+            {/* {participant.avatarUrl && (
                 <Avatar alt={participant.firstName} src={participant.avatarUrl} className={classes.avatar} />
               )}
               {!participant.avatarUrl && (
@@ -55,16 +54,17 @@ export default function (props) {
                   {participant.firstName.charAt(0)}
                   {participant.lastName.charAt(0)}
                 </Avatar>
-              )}
-              <div className={classes.participantDetails}>
-                <Typography variant="caption" className={classes.name}>
-                  {`${participant.firstName} ${
-                    participant.lastName.trim() !== "" ? participant.lastName.charAt(0) + "." : ""
-                  }`}
-                </Typography>
-              </div>
+              )} */}
+            <ParticipantAvatar participant={participant} />
+            <div className={classes.participantDetails}>
+              <Typography variant="caption" className={classes.name}>
+                {`${participant.firstName} ${
+                  participant.lastName.trim() !== "" ? participant.lastName.charAt(0) + "." : ""
+                }`}
+              </Typography>
             </div>
-          </Tooltip>
+          </div>
+          //</Tooltip>
         );
       })}
     </React.Fragment>

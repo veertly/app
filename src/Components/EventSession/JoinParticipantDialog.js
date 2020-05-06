@@ -16,6 +16,7 @@ import {
   getLiveGroups,
   getUsers,
   getParticipantsJoined,
+  getLiveGroupsOriginal,
 } from "../../Redux/eventSession";
 import { isJoinParticipantOpen, closeJoinParticipant, getJoinParticipantEntity } from "../../Redux/dialogs";
 import { useSelector, shallowEqual, useDispatch } from "react-redux";
@@ -81,6 +82,7 @@ export default function (props) {
   const userSession = useSelector(getUserSession, shallowEqual);
   const availableParticipantsList = useSelector(getAvailableParticipantsList, shallowEqual);
   const liveGroups = useSelector(getLiveGroups, shallowEqual);
+  const liveGroupsOriginal = useSelector(getLiveGroupsOriginal, shallowEqual);
   const participantsJoined = useSelector(getParticipantsJoined, shallowEqual);
 
   const participantSession = React.useMemo(
@@ -163,7 +165,7 @@ export default function (props) {
       if (userInConferenceRoom) {
         setIsInConferenceRoom(false);
       }
-      joinConversation(sessionId, participantsJoined, liveGroups, userId, liveGroup.id, snackbar);
+      joinConversation(sessionId, participantsJoined, liveGroupsOriginal, userId, liveGroup.id, snackbar);
       handleClose();
     }
   };

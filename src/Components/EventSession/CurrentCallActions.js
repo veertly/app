@@ -4,8 +4,7 @@ import Typography from "@material-ui/core/Typography";
 import GroupAvatars from "./GroupAvatars";
 import * as moment from "moment";
 import momentDurationFormatSetup from "moment-duration-format";
-import { IconButton, Tooltip } from "@material-ui/core";
-import LeaveCallIcon from "../../Assets/Icons/LeaveCall";
+import { IconButton } from "@material-ui/core";
 import { leaveCall } from "../../Modules/eventSessionOperations";
 import LeaveCallDialog from "./LeaveCallDialog";
 
@@ -13,6 +12,9 @@ import { useSelector, shallowEqual } from "react-redux";
 import { getSessionId, getUsers, getUserGroup, getUserId, getUserLiveGroup } from "../../Redux/eventSession";
 import AvatarGroup from "@material-ui/lab/AvatarGroup";
 import ParticipantAvatar from "../Misc/ParticipantAvatar";
+import MenuItem from "@material-ui/core/MenuItem";
+import Menu from "@material-ui/core/Menu";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
 
 momentDurationFormatSetup(moment);
 
@@ -45,6 +47,9 @@ export default function (props) {
   const [elapsedTime, setElapsedTime] = useState(0);
   const [participants, setParticipants] = useState([]);
   const [leaveCallOpen, setLeaveCallOpen] = useState(false);
+
+  const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
+  const openMenu = Boolean(menuAnchorEl);
 
   const users = useSelector(getUsers, shallowEqual);
   const userId = useSelector(getUserId);
@@ -103,6 +108,14 @@ export default function (props) {
     leaveCall(sessionId, userGroup, userId);
   };
 
+  function handleMenuClose() {
+    setMenuAnchorEl(null);
+  }
+
+  function handleMenu(event) {
+    setMenuAnchorEl(event.currentTarget);
+  }
+
   return (
     <div className={classes.groupContainer}>
       <LeaveCallDialog open={leaveCallOpen} handleLeaveCall={handleLeaveCall} setOpen={setLeaveCallOpen} />
@@ -129,16 +142,28 @@ export default function (props) {
         )}
       </div>
       <div className={classes.leaveCallContainer}>
-        <Tooltip title="Leave conversation" placement="right">
-          <IconButton
-            color="primary"
-            className={classes.leaveCallButton}
-            aria-label="Leave conversation"
-            onClick={() => setLeaveCallOpen(true)}
-          >
-            <LeaveCallIcon />
-          </IconButton>
-        </Tooltip>
+        {/* <Tooltip title="Leave conversation" placement="right"> */}
+        <IconButton color="primary" className={classes.leaveCallButton} aria-label="Call menu" onClick={handleMenu}>
+          <MoreVertIcon />
+        </IconButton>
+        {/* </Tooltip> */}
+        <Menu
+          id="menu-appbar"
+          anchorEl={menuAnchorEl}
+          anchorOrigin={{
+            vertical: "center",
+            horizontal: "right",
+          }}
+          transformOrigin={{
+            vertical: "bottom",
+            horizontal: "center",
+          }}
+          keepMounted
+          open={openMenu}
+          onClose={handleMenuClose}
+        >
+          <MenuItem onClick={() => setLeaveCallOpen(true)}>Leave Call</MenuItem>
+        </Menu>
       </div>
     </div>
   );

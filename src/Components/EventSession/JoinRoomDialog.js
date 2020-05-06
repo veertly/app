@@ -8,10 +8,10 @@ import { useSnackbar } from "material-ui-snackbar-provider";
 import { useSelector, shallowEqual, useDispatch } from "react-redux";
 import {
   getParticipantsJoined,
-  getLiveGroups,
   getSessionId,
   getUserId,
   getUserSession,
+  getLiveGroupsOriginal,
 } from "../../Redux/eventSession";
 import Alert from "@material-ui/lab/Alert";
 import { isJoinRoomOpen, getJoinRoomEntity, closeJoinRoom } from "../../Redux/dialogs";
@@ -78,7 +78,7 @@ export default function (props) {
   const room = useSelector(getJoinRoomEntity, shallowEqual);
 
   const participantsJoined = useSelector(getParticipantsJoined, shallowEqual);
-  const liveGroups = useSelector(getLiveGroups, shallowEqual);
+  const liveGroups = useSelector(getLiveGroupsOriginal, shallowEqual);
   const userSession = useSelector(getUserSession, shallowEqual);
   const sessionId = useSelector(getSessionId);
   const userId = useSelector(getUserId);

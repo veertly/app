@@ -127,7 +127,7 @@ export default function (props) {
       let extendedGroup = { ...group };
       let participantsIds = Object.keys(group.participants);
       extendedGroup.participants = participantsIds.map((userId) => users[userId]);
-      extendedGroup.isMyGoup = user && participantsIds.includes(user.id);
+      extendedGroup.isMyGroup = user && participantsIds.includes(user.id);
 
       if (extendedGroup.isRoom) {
         rooms.push(extendedGroup);

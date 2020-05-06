@@ -7,7 +7,7 @@ import { joinConversation } from "../../Modules/eventSessionOperations";
 import { useSnackbar } from "material-ui-snackbar-provider";
 
 import { useSelector, shallowEqual } from "react-redux";
-import { getParticipantsJoined, getLiveGroups, getSessionId, getUserId } from "../../Redux/eventSession";
+import { getParticipantsJoined, getSessionId, getUserId, getLiveGroupsOriginal } from "../../Redux/eventSession";
 import Alert from "@material-ui/lab/Alert";
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -50,7 +50,7 @@ export default function (props) {
   const { open, setOpen, group, groupId } = props;
 
   const participantsJoined = useSelector(getParticipantsJoined, shallowEqual);
-  const liveGroups = useSelector(getLiveGroups, shallowEqual);
+  const liveGroups = useSelector(getLiveGroupsOriginal, shallowEqual);
   const sessionId = useSelector(getSessionId);
   const userId = useSelector(getUserId);
 

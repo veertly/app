@@ -243,6 +243,7 @@ export const getEventSession = (store) => store.eventSession.eventSession;
 export const getEventSessionDetails = (store) => store.eventSession.eventSessionDetails;
 export const getParticipantsJoined = (store) => store.eventSession.participantsJoined;
 export const getLiveGroups = (store) => store.eventSession.liveGroups;
+export const getLiveGroupsOriginal = (store) => store.eventSession.liveGroupsOriginal;
 export const getUsers = (store) => store.eventSession.users;
 export const getUserId = (store) => store.eventSession.userId;
 export const getUser = (store) => store.eventSession.user;

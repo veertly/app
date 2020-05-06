@@ -127,6 +127,7 @@ export default withRouter((props) => {
   const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
   const openMenu = Boolean(menuAnchorEl);
 
+  
   const user = useSelector(getUser, shallowEqual);
   const userGroup = useSelector(getUserGroup, shallowEqual);
   const sessionId = useSelector(getSessionId);
