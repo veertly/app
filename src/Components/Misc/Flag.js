@@ -5,7 +5,7 @@ import ReactCountryFlag from "react-country-flag";
 const emojiSupport = require("../../Helpers/detectEmojiSupport");
 
 const emojiSupported = emojiSupport();
-console.log({ emojiSupported });
+
 export default ({ locationDetails }) => {
   if (locationDetails && emojiSupported) {
     let { terms } = locationDetails;

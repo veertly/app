@@ -356,14 +356,16 @@ function EditEventSessionForm(props) {
 
   useEffect(() => {
     const verifySessionId = async (id) => {
-      let exists = await conferenceExists(id);
-      if (mounted) {
-        if (eventSession && eventSession.id === selectedSessionId) {
-          setSessionIdError(undefined);
-        } else if (exists && id === selectedSessionId) {
-          setSessionIdError("This URL is already in use, please select a new one");
-        } else if (!exists && id === selectedSessionId) {
-          setSessionIdError(undefined);
+      if (/^([a-zA-Z0-9-_])+$/.test(id)) {
+        let exists = await conferenceExists(id);
+        if (mounted) {
+          if (eventSession && eventSession.id === selectedSessionId) {
+            setSessionIdError(undefined);
+          } else if (exists && id === selectedSessionId) {
+            setSessionIdError("This URL is already in use, please select a new one");
+          } else if (!exists && id === selectedSessionId) {
+            setSessionIdError(undefined);
+          }
         }
       }
     };
