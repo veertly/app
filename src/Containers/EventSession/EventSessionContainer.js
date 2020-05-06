@@ -62,6 +62,7 @@ import SplashScreen from "../../Components/Misc/SplashScreen";
 import JitsiContext from "./JitsiContext";
 import SmallPlayerContainer from "./SmallPlayerContainer";
 import { SMALL_PLAYER_INITIAL_HEIGHT, SMALL_PLAYER_INITIAL_WIDTH } from "../../Utils";
+import { getFeatureDetails, FEATURES } from "../../Modules/features";
 
 export const SIDE_PANE_WIDTH = 53;
 const LEFT_PANE_WIDTH = 300;
@@ -154,8 +155,6 @@ export default withRouter((props) => {
 
   const [jitsiApi, setJitsiApi] = useState(null);
 
-  const [showSmallPlayer, setShowSmallPlayer] = useState(true);
-
   const classes = useStyles();
   const theme = useTheme();
   const isDesktop = !useMediaQuery(theme.breakpoints.down("xs"));
@@ -180,6 +179,24 @@ export default withRouter((props) => {
   const originalSessionId = props.match.params.sessionId;
   const sessionId = useMemo(() => (originalSessionId ? originalSessionId.toLowerCase() : null), [originalSessionId]);
   const userId = useMemo(() => (userAuth ? userAuth.uid : null), [userAuth]);
+
+  const [
+    eventSessionsEnabledFeatures,
+  ] = useDocumentData(firebase.firestore().collection("eventSessionsEnabledFeatures").doc(sessionId));
+  
+  const isMiniPlayerEnabledDB = React.useMemo(() => getFeatureDetails(eventSessionsEnabledFeatures, FEATURES.MINI_PLAYER), [
+    eventSessionsEnabledFeatures,
+  ]);
+
+  const [showSmallPlayer, setShowSmallPlayer] = useState(true);
+
+  const [miniPlayerEnabled, setMiniPlayerEnabled] = useState(false);
+
+  useEffect(() => {
+    if(isMiniPlayerEnabledDB) {
+      setMiniPlayerEnabled(isMiniPlayerEnabledDB.enabled);
+    }
+  }, [isMiniPlayerEnabledDB])
 
   const [lastEventSessionDBJson, setLastEventSessionDBJson] = useState("");
   const [lastEventSessionDetailsDBJson, setLastEventSessionDetailsDBJson] = useState("");
@@ -461,7 +478,7 @@ export default withRouter((props) => {
   }
 
   return (
-    <JitsiContext.Provider value={{ jitsiApi, setJitsiApi, showSmallPlayer, setShowSmallPlayer }}>
+    <JitsiContext.Provider value={{ jitsiApi, setJitsiApi, showSmallPlayer, setShowSmallPlayer, miniPlayerEnabled }}>
       <div
         className={clsx({
           [classes.root]: true,

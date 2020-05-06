@@ -5,6 +5,7 @@ const JitsiContext = React.createContext({
   setJitsiApi: () => {},
   showSmallPayer: true,
   setShowSmallPlayer: () => {},
+  miniPlayerEnabled: false,
 });
 
 export default JitsiContext;

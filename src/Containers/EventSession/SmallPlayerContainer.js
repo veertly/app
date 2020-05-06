@@ -132,13 +132,14 @@ export const SmallPlayerContainer =  ({bounds=""}) => {
 
   const [volume] = useState(50)
 
+
   // const userId = useSelector(getUserId);
   // const user = useSelector(getUser);
   // const userGroup = useSelector(getUserGroup, shallowEqual);
   const sessionId = useSelector(getSessionId);
   const eventSessionDetails = useSelector(getEventSessionDetails, shallowEqual);
   
-  const { showSmallPlayer, setShowSmallPlayer } = useContext(JitsiContext);
+  const { showSmallPlayer, setShowSmallPlayer, miniPlayerEnabled } = useContext(JitsiContext);
 
   useEffect(() => {
     window.analytics.page("ConferenceRoom/" + sessionId);
@@ -177,6 +178,11 @@ export const SmallPlayerContainer =  ({bounds=""}) => {
       default:
         return null;
     }
+  }
+
+
+  if (!miniPlayerEnabled) {
+    return null;
   }
 
   if (error) {
