@@ -11,13 +11,13 @@ import { useSelector, shallowEqual } from "react-redux";
 import { getUserGroup } from "../../Redux/eventSession";
 import Typography from "@material-ui/core/Typography";
 import JitsiContext from "../../Containers/EventSession/JitsiContext";
-import OpenInNewIcon from '@material-ui/icons/OpenInNew';
+import OpenInNewIcon from "@material-ui/icons/OpenInNew";
 
 const CALL_SECTION_HEIGHT = 110;
 
 // const PLAYER_HEIGHT = Math.floor(0.32 * window.innerHeight);
 // const MIN_PLAYER_HEIGHT = 200;
-const TOOLBAR_HEIGHT = 44;
+const TOOLBAR_HEIGHT = 32;
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -29,8 +29,9 @@ const useStyles = makeStyles((theme) => ({
   },
   tabContent: (props) => ({
     position: "absolute",
-    // bottom: PLAYER_HEIGHT > MIN_PLAYER_HEIGHT ? PLAYER_HEIGHT : MIN_PLAYER_HEIGHT,
-    bottom: props.showSmallPlayer ? 0 : TOOLBAR_HEIGHT,
+    bottom:
+      (props.showSmallPlayer ? 0 : TOOLBAR_HEIGHT) +
+      (props.showCallContainer ? CALL_SECTION_HEIGHT : 0),
     top: 72,
     left: 0,
     right: 0,
@@ -39,13 +40,11 @@ const useStyles = makeStyles((theme) => ({
   }),
   currentCallContainer: (props) => ({
     position: "absolute",
-    // bottom: PLAYER_HEIGHT > MIN_PLAYER_HEIGHT ? PLAYER_HEIGHT : MIN_PLAYER_HEIGHT,
     bottom: props.showSmallPlayer ? 0 : TOOLBAR_HEIGHT,
     left: 0,
     right: 0,
     height: CALL_SECTION_HEIGHT,
-    backgroundColor: theme.palette.background.default, //"rgba(28, 71, 98, 0.08)", //"#e0f3ff", //"#e4ffe4",
-    // backgroundColor: 'green',
+    backgroundColor: theme.palette.background.default,
     overflowY: "auto",
     padding: theme.spacing(1),
     borderTop: "1px solid rgba(0, 0, 0, 0.12)",
@@ -53,25 +52,22 @@ const useStyles = makeStyles((theme) => ({
   smallPlayerContainer: {
     position: "absolute",
     bottom: 0,
-    // left: 0,
     right: 0,
-    width: '100%',
+    width: "100%",
     height: TOOLBAR_HEIGHT,
-    // height: PLAYER_HEIGHT,
-    // minHeight: MIN_PLAYER_HEIGHT,
     overflowY: "auto",
     padding: theme.spacing(1),
-    // borderTop: "1px solid rgba(0, 0, 0, 0.12)",
   },
   toolbar: {
-    width: '100%',
+    width: "100%",
     flex: 1,
-    backgroundColor: theme.palette.primary.main,
-    color: 'white',
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    // backgroundColor: theme.palette.primary.main,
+    backgroundColor: "#486981",
+    color: "white",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingLeft: theme.spacing(1),
     paddingRight: theme.spacing(1),
     paddingTop: theme.spacing(0.4),
@@ -83,23 +79,23 @@ const useStyles = makeStyles((theme) => ({
     bottom: 0,
     right: 0,
     left: 0,
-    display: 'flex',
-    flexDirection: 'column'
+    display: "flex",
+    flexDirection: "column",
   },
   openInNewContainer: {
     flex: 0.5,
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    "& > * + *" : {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    "& > * + *": {
       marginLeft: theme.spacing(0.8),
-    }
+    },
   },
   icon: {
     "&:hover": {
       cursor: "pointer",
-    }
+    },
   },
 }));
 
@@ -107,31 +103,35 @@ const ToolbarClosed = ({ setShowSmallPlayer }) => {
   const classes = useStyles();
   return (
     <div className={classes.playerOuterContainer}>
-        <div className={classes.toolbar}>
-          <div className={classes.toolbarTitle}>
-            <Typography variant="subtitle1">
-              Main Stage
-            </Typography>
-          </div>
-          <div className={classes.openInNewContainer}>
-            <OpenInNewIcon className={classes.icon} onClick={() => setShowSmallPlayer(true)}></OpenInNewIcon>
-            {/* <VolumeDownIcon className={classes.icon} />
+      <div className={classes.toolbar}>
+        <div className={classes.toolbarTitle}>
+          <Typography variant="subtitle1">Main Stage</Typography>
+        </div>
+        <div className={classes.openInNewContainer}>
+          <OpenInNewIcon
+            className={classes.icon}
+            onClick={() => setShowSmallPlayer(true)}
+          ></OpenInNewIcon>
+          {/* <VolumeDownIcon className={classes.icon} />
               <Slider className={classes.slider} value={volume} onChange={handleVolumeChange} aria-labelledby="continuous-slider" />
             <VolumeUpIcon className={classes.icon} />
             <CloseIcon className={classes.icon} onClick={() => setClosePlayer(true)}></CloseIcon> */}
-          </div>
         </div>
       </div>
-  )
-}
+    </div>
+  );
+};
 
 export default function (props) {
   const { showSmallPlayer, setShowSmallPlayer } = useContext(JitsiContext);
-  const classes = useStyles({ showSmallPlayer });
   const [value, setValue] = React.useState(0);
   const { setIsInConferenceRoom } = props;
 
   const userGroup = useSelector(getUserGroup, shallowEqual);
+  const classes = useStyles({
+    showSmallPlayer,
+    showCallContainer: !!userGroup,
+  });
 
   function handleChange(event, newValue) {
     setValue(newValue);
@@ -147,13 +147,24 @@ export default function (props) {
         textColor="secondary"
         aria-label="Groups and Participants"
       >
-        <Tab icon={<AvailableParticipantsIcon />} label="ATTENDEES" className={classes.tab} />
-        <Tab icon={<ConversationsIcon />} label="DISCUSSIONS" className={classes.tab} />
+        <Tab
+          icon={<AvailableParticipantsIcon />}
+          label="ATTENDEES"
+          className={classes.tab}
+        />
+        <Tab
+          icon={<ConversationsIcon />}
+          label="DISCUSSIONS"
+          className={classes.tab}
+        />
       </Tabs>
-      <div className={classes.tabContent}
-      // style={{ bottom: userGroup ? CALL_SECTION_HEIGHT : 0 }}
+      <div
+        className={classes.tabContent}
+        // style={{ bottom: userGroup ? CALL_SECTION_HEIGHT : 0 }}
       >
-        {value === 0 && <AvailableTab setIsInConferenceRoom={setIsInConferenceRoom} />}
+        {value === 0 && (
+          <AvailableTab setIsInConferenceRoom={setIsInConferenceRoom} />
+        )}
         {value === 1 && <ConversationsTab />}
       </div>
       {userGroup && (
@@ -161,17 +172,11 @@ export default function (props) {
           <CurrentCallActions />
         </div>
       )}
-      {/* <div className={classes.currentCallContainer}>
-        <CurrentCallActions />
-      </div> */}
-     {!showSmallPlayer && 
-     (
+      {!showSmallPlayer && (
         <div className={classes.smallPlayerContainer}>
           <ToolbarClosed setShowSmallPlayer={setShowSmallPlayer} />
         </div>
-      )
-      }
-
+      )}
     </div>
   );
 }

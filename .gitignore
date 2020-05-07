@@ -45,3 +45,4 @@ functions/node_modules
 node_modules
 .env.testing
 firebase-debug.log
+public/.DS_Store

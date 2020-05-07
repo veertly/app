@@ -1,6 +1,6 @@
-import React from 'react';
+import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import ReactPlayer from 'react-player';
+import ReactPlayer from "react-player";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
 const useStyles = makeStyles(() => ({
@@ -14,7 +14,7 @@ const useStyles = makeStyles(() => ({
     position: "relative",
     // paddingTop: "56.25%" /* Player ratio: 100 / (1280 / 720) */,
     backgroundColor: "black",
-    overflow: 'hidden',
+    overflow: "hidden",
     // display: "flex",
     // alignItems: "center",
   },
@@ -27,7 +27,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const VideoPlayer = ({ url, showLoader, volume=50 }) => {
+const VideoPlayer = ({ url, showLoader, volume = 50 }) => {
   const classes = useStyles();
   const [loadingPlayer, setLoadingPlayer] = React.useState(showLoader);
 
@@ -43,15 +43,13 @@ const VideoPlayer = ({ url, showLoader, volume=50 }) => {
         onReady={() => setLoadingPlayer(false)}
         controls
       />
-       {loadingPlayer && (
+      {loadingPlayer && (
         <div className={classes.reactPlayer}>
           <CircularProgress color="secondary" />
         </div>
       )}
     </div>
   );
-
-
-}
+};
 
 export default VideoPlayer;

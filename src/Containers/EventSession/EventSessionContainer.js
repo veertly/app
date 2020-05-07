@@ -1,6 +1,9 @@
 import React, { useEffect, useState, useMemo } from "react";
 // import Layout from "../Layouts/EventSessionLayout";
-import { useCollectionData, useDocumentData } from "react-firebase-hooks/firestore";
+import {
+  useCollectionData,
+  useDocumentData,
+} from "react-firebase-hooks/firestore";
 import { withRouter, useHistory } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
 import Typography from "@material-ui/core/Typography";
@@ -13,7 +16,10 @@ import { useTheme } from "@material-ui/core/styles";
 import { useSelector, useDispatch, shallowEqual } from "react-redux";
 import NetworkingRoomContainer from "./NetworkingRoomContainer";
 import firebase from "../../Modules/firebaseApp";
-import { leaveCall, updateInNetworkingRoom } from "../../Modules/eventSessionOperations";
+import {
+  leaveCall,
+  updateInNetworkingRoom,
+} from "../../Modules/eventSessionOperations";
 // import { useBeforeunload } from "react-beforeunload";
 
 // import { useMediaQuery } from "@material-ui/core";
@@ -23,7 +29,10 @@ import ConferenceRoomContainer from "./ConferenceRoomContainer";
 import ConferenceSidebar from "./ConferenceSidebar";
 import Page from "../../Components/Core/Page";
 import routes from "../../Config/routes";
-import { initFirebasePresenceSync, keepAlive } from "../../Modules/userOperations";
+import {
+  initFirebasePresenceSync,
+  keepAlive,
+} from "../../Modules/userOperations";
 import Announcements from "../../Components/EventSession/Announcements";
 import {
   DEFAULT_EVENT_OPEN_MINUTES,
@@ -55,14 +64,20 @@ import {
   setStateLoaded,
   isStateLoaded,
   crossCheckKeepAlives,
+  setEnabledFeatures,
 } from "../../Redux/eventSession";
 import useInterval from "../../Hooks/useInterval";
 import JoinParticipantDialog from "../../Components/EventSession/JoinParticipantDialog";
 import SplashScreen from "../../Components/Misc/SplashScreen";
 import JitsiContext from "./JitsiContext";
 import SmallPlayerContainer from "./SmallPlayerContainer";
-import { SMALL_PLAYER_INITIAL_HEIGHT, SMALL_PLAYER_INITIAL_WIDTH } from "../../Utils";
+import {
+  SMALL_PLAYER_INITIAL_HEIGHT,
+  SMALL_PLAYER_INITIAL_WIDTH,
+} from "../../Utils";
 import { getFeatureDetails, FEATURES } from "../../Modules/features";
+import JoinRoomDialog from "../../Components/EventSession/JoinRoomDialog";
+import CreateRoomDialog from "../../Components/EventSession/CreateRoomDialog";
 
 export const SIDE_PANE_WIDTH = 53;
 const LEFT_PANE_WIDTH = 300;
@@ -75,6 +90,7 @@ const useStyles = makeStyles((theme) => ({
       paddingTop: 64,
     },
     position: "relative",
+    overflow: "hidden",
   },
   shiftContent: {
     paddingLeft: LEFT_PANE_WIDTH,
@@ -131,7 +147,7 @@ const useStyles = makeStyles((theme) => ({
     borderLeft: "1px solid rgba(0, 0, 0, 0.12)",
     [theme.breakpoints.down("xs")]: {
       display: "none",
-    }
+    },
   },
   smallPlayerContainer: {
     position: "absolute",
@@ -177,29 +193,44 @@ export default withRouter((props) => {
 
   // -----------------------------------------------------------------------------------------------------
   const originalSessionId = props.match.params.sessionId;
-  const sessionId = useMemo(() => (originalSessionId ? originalSessionId.toLowerCase() : null), [originalSessionId]);
+  const sessionId = useMemo(
+    () => (originalSessionId ? originalSessionId.toLowerCase() : null),
+    [originalSessionId]
+  );
   const userId = useMemo(() => (userAuth ? userAuth.uid : null), [userAuth]);
 
-  const [
-    eventSessionsEnabledFeatures,
-  ] = useDocumentData(firebase.firestore().collection("eventSessionsEnabledFeatures").doc(sessionId));
-  
-  const isMiniPlayerEnabledDB = React.useMemo(() => getFeatureDetails(eventSessionsEnabledFeatures, FEATURES.MINI_PLAYER), [
-    eventSessionsEnabledFeatures,
-  ]);
+  const [eventSessionsEnabledFeatures] = useDocumentData(
+    firebase
+      .firestore()
+      .collection("eventSessionsEnabledFeatures")
+      .doc(sessionId)
+  );
+
+  useEffect(() => {
+    dispatch(setEnabledFeatures(eventSessionsEnabledFeatures));
+  }, [eventSessionsEnabledFeatures, dispatch]);
+
+  const isMiniPlayerEnabledDB = React.useMemo(
+    () => getFeatureDetails(eventSessionsEnabledFeatures, FEATURES.MINI_PLAYER),
+    [eventSessionsEnabledFeatures]
+  );
 
   const [showSmallPlayer, setShowSmallPlayer] = useState(true);
 
   const [miniPlayerEnabled, setMiniPlayerEnabled] = useState(false);
 
   useEffect(() => {
-    if(isMiniPlayerEnabledDB) {
+    if (isMiniPlayerEnabledDB) {
       setMiniPlayerEnabled(isMiniPlayerEnabledDB.enabled);
     }
-  }, [isMiniPlayerEnabledDB])
+  }, [isMiniPlayerEnabledDB]);
 
   const [lastEventSessionDBJson, setLastEventSessionDBJson] = useState("");
-  const [lastEventSessionDetailsDBJson, setLastEventSessionDetailsDBJson] = useState("");
+  const [
+    lastEventSessionDetailsDBJson,
+    setLastEventSessionDetailsDBJson,
+  ] = useState("");
+
   const [lastParticipantsJoinedDB, setLastParticipantsJoinedDB] = useState("");
   const [lastLiveGroupsDB, setLastLiveGroupsDB] = useState("");
   const [lastUsersDB, setLastUsersDB] = useState("");
@@ -216,34 +247,65 @@ export default withRouter((props) => {
 
   const stateLoaded = useSelector(isStateLoaded);
 
-  const isInConferenceRoom = useMemo(() => userSession && !userSession.inNetworkingRoom, [userSession]);
+  const isInConferenceRoom = useMemo(
+    () => userSession && !userSession.inNetworkingRoom,
+    [userSession]
+  );
 
   const [eventSessionDB, loadingSessionDB, errorSessionDB] = useDocumentData(
-    firebase.firestore().collection("eventSessions").doc(sessionId),
+    firebase.firestore().collection("eventSessions").doc(sessionId)
   );
 
-  const [eventSessionDetailsDB, loadingSessionDetailsDB, errorSessionDetailsDB] = useDocumentData(
-    firebase.firestore().collection("eventSessionsDetails").doc(sessionId),
+  const [
+    eventSessionDetailsDB,
+    loadingSessionDetailsDB,
+    errorSessionDetailsDB,
+  ] = useDocumentData(
+    firebase.firestore().collection("eventSessionsDetails").doc(sessionId)
   );
 
-  const [participantsJoinedDB, loadingParticipantsJoinedDB, errorParticipantsJoinedDB] = useCollectionData(
-    firebase.firestore().collection("eventSessions").doc(sessionId).collection("participantsJoined"),
+  const [
+    participantsJoinedDB,
+    loadingParticipantsJoinedDB,
+    errorParticipantsJoinedDB,
+  ] = useCollectionData(
+    firebase
+      .firestore()
+      .collection("eventSessions")
+      .doc(sessionId)
+      .collection("participantsJoined"),
     // .where("isOnline", "==", true),
-    { idField: "id" },
+    { idField: "id" }
   );
 
   const [keepALivesDB] = useCollectionData(
-    firebase.firestore().collection("eventSessions").doc(sessionId).collection("keepAlive"),
-    { idField: "id" },
+    firebase
+      .firestore()
+      .collection("eventSessions")
+      .doc(sessionId)
+      .collection("keepAlive"),
+    { idField: "id" }
   );
 
-  const [liveGroupsDB, loadingLiveGroupsDB, errorLiveGroupsDB] = useCollectionData(
-    firebase.firestore().collection("eventSessions").doc(sessionId).collection("liveGroups"),
-    { idField: "id" },
+  const [
+    liveGroupsDB,
+    loadingLiveGroupsDB,
+    errorLiveGroupsDB,
+  ] = useCollectionData(
+    firebase
+      .firestore()
+      .collection("eventSessions")
+      .doc(sessionId)
+      .collection("liveGroups"),
+    { idField: "id" }
   );
 
   const [usersDB, loadingUsersDB, errorUsersDB] = useCollectionData(
-    firebase.firestore().collection("eventSessions").doc(sessionId).collection("participantsDetails"),
+    firebase
+      .firestore()
+      .collection("eventSessions")
+      .doc(sessionId)
+      .collection("participantsDetails")
   );
   // --- userId ---
   useEffect(() => {
@@ -262,7 +324,9 @@ export default withRouter((props) => {
 
   // --- eventSessionDetailsDB ---
   useEffect(() => {
-    const currentEventSessionDetailsDBJson = JSON.stringify(eventSessionDetailsDB);
+    const currentEventSessionDetailsDBJson = JSON.stringify(
+      eventSessionDetailsDB
+    );
 
     if (lastEventSessionDetailsDBJson !== currentEventSessionDetailsDBJson) {
       dispatch(updateEventSessionDetails(eventSessionDetailsDB));
@@ -329,12 +393,12 @@ export default withRouter((props) => {
 
   useEffect(() => {
     if (
-      !stateLoaded
-      && !loadingUsersDB
-      && !loadingSessionDB
-      && !loadingSessionDetailsDB
-      && !loadingParticipantsJoinedDB
-      && !loadingLiveGroupsDB
+      !stateLoaded &&
+      !loadingUsersDB &&
+      !loadingSessionDB &&
+      !loadingSessionDetailsDB &&
+      !loadingParticipantsJoinedDB &&
+      !loadingLiveGroupsDB
     ) {
       dispatch(setStateLoaded(true));
     }
@@ -369,27 +433,34 @@ export default withRouter((props) => {
 
   const isLive = React.useMemo(() => {
     if (
-      !eventSessionDetails
-      || !eventSessionDetails.eventBeginDate
-      || !eventSessionDetails.eventOpens
-      || !eventSessionDetails.eventEndDate
-      || !eventSessionDetails.eventCloses
+      !eventSessionDetails ||
+      !eventSessionDetails.eventBeginDate ||
+      !eventSessionDetails.eventOpens ||
+      !eventSessionDetails.eventEndDate ||
+      !eventSessionDetails.eventCloses
     ) {
       return true;
     }
     const {
-      eventBeginDate, eventOpens, eventEndDate, eventCloses,
+      eventBeginDate,
+      eventOpens,
+      eventEndDate,
+      eventCloses,
     } = eventSessionDetails;
 
-    const openMinutes = eventOpens ? Number(eventOpens) : DEFAULT_EVENT_OPEN_MINUTES;
+    const openMinutes = eventOpens
+      ? Number(eventOpens)
+      : DEFAULT_EVENT_OPEN_MINUTES;
     const beginDate = moment(eventBeginDate.toDate());
 
-    let closeMinutes = eventCloses ? Number(eventCloses) : DEFAULT_EVENT_CLOSES_MINUTES;
+    let closeMinutes = eventCloses
+      ? Number(eventCloses)
+      : DEFAULT_EVENT_CLOSES_MINUTES;
     let endDate = moment(eventEndDate.toDate());
 
     return (
-      beginDate.subtract(openMinutes, "minutes").isBefore(moment())
-      && endDate.add(closeMinutes, "minutes").isAfter(moment())
+      beginDate.subtract(openMinutes, "minutes").isBefore(moment()) &&
+      endDate.add(closeMinutes, "minutes").isAfter(moment())
     );
   }, [eventSessionDetails]);
 
@@ -400,15 +471,21 @@ export default withRouter((props) => {
   }, [isLive, history, sessionId]);
 
   if (
-    loadingUsersDB
-    || loadingSessionDB
-    || loadingSessionDetailsDB
-    || loadingParticipantsJoinedDB
-    || loadingLiveGroupsDB
+    loadingUsersDB ||
+    loadingSessionDB ||
+    loadingSessionDetailsDB ||
+    loadingParticipantsJoinedDB ||
+    loadingLiveGroupsDB
   ) {
     return <SplashScreen />;
   }
-  if (errorUsersDB || errorSessionDB || errorSessionDetailsDB || errorParticipantsJoinedDB || errorLiveGroupsDB) {
+  if (
+    errorUsersDB ||
+    errorSessionDB ||
+    errorSessionDetailsDB ||
+    errorParticipantsJoinedDB ||
+    errorLiveGroupsDB
+  ) {
     console.error(errorUsersDB);
     console.error(errorSessionDB);
     console.error(errorSessionDetailsDB);
@@ -462,12 +539,21 @@ export default withRouter((props) => {
             <br />
             <br />
             <br />
-            <Typography align="center" variant="overline" style={{ display: "block" }}>
+            <Typography
+              align="center"
+              variant="overline"
+              style={{ display: "block" }}
+            >
               Event not found!
             </Typography>
             {/* {user && !user.isAnonymous && ( */}
             <div style={{ width: "100%", textAlign: "center", marginTop: 16 }}>
-              <Button variant="contained" color="primary" className={classes.button} onClick={handleCreateConference}>
+              <Button
+                variant="contained"
+                color="primary"
+                className={classes.button}
+                onClick={handleCreateConference}
+              >
                 Create Event
               </Button>
             </div>
@@ -478,7 +564,15 @@ export default withRouter((props) => {
   }
 
   return (
-    <JitsiContext.Provider value={{ jitsiApi, setJitsiApi, showSmallPlayer, setShowSmallPlayer, miniPlayerEnabled }}>
+    <JitsiContext.Provider
+      value={{
+        jitsiApi,
+        setJitsiApi,
+        showSmallPlayer,
+        setShowSmallPlayer,
+        miniPlayerEnabled,
+      }}
+    >
       <div
         className={clsx({
           [classes.root]: true,
@@ -486,94 +580,114 @@ export default withRouter((props) => {
         })}
       >
         <Page title={`Veertly | ${eventSessionDetails.title}`}> </Page>
-        <EditProfileDialog /* user={user} eventSession={composedEventSession}  */ />
+        <EditProfileDialog /* user={user} eventSession={composedEventSession}  */
+        />
         <EventPageDialog /* eventSession={composedEventSession}  */ />
         <ShareEventDialog /*  eventSession={composedEventSession}  */ />
-        <FeedbackDialog /* eventSession={composedEventSession} myUser={myUser}  */ />
-        <JoinParticipantDialog setIsInConferenceRoom={handleSetIsInConferenceRoom} />
-        
+        <FeedbackDialog /* eventSession={composedEventSession} myUser={myUser}  */
+        />
+        <JoinParticipantDialog
+          setIsInConferenceRoom={handleSetIsInConferenceRoom}
+        />
+        <JoinRoomDialog setIsInConferenceRoom={handleSetIsInConferenceRoom} />
+        <CreateRoomDialog />
 
         <EventSessionTopbar
           isInConferenceRoom={isInConferenceRoom}
           setIsInConferenceRoom={handleSetIsInConferenceRoom}
         />
         {isLive && (
-        <>
-          {/* NETWORKING PANE */}
-          {!isInConferenceRoom && (
-            <>
-              <NetworkingSidebar
-                onClose={handleSidebarClose}
-                open={shouldOpenSidebar}
-                variant={isDesktop ? "persistent" : "temporary"}
-                setIsInConferenceRoom={handleSetIsInConferenceRoom}
-              />
-              <div className={classes.mainPane} style={chatOpen ? { right: SIDE_PANE_WIDTH + chatWidth } : null}>
-                {!userGroup && (
-                  <div className={classes.noCall}>
-                    <Typography variant="h6" className={clsx(classes.blueText, classes.emptyMessage)}>
-                      You are not in any
-                      {" "}
-                      <span className={classes.greenText}>conversation</span>
-                      {" "}
-                      yet,
-                      <br />
-                      don't be shy and
-                      {" "}
-                      <span className={classes.greenText}>select someone</span>
-                      {" "}
-                      to
-                      {" "}
-                      <span className={classes.greenText}>talk</span>
-                      {" "}
-                      to!
-                    </Typography>
-                  </div>
-                )}
-                {userGroup && <NetworkingRoomContainer jitsiApi={jitsiApi} setJitsiApi={setJitsiApi} />}
-              </div>
-              {/* <div className={classes.smallPlayerContainer}> */}
-                <SmallPlayerContainer bounds={`.${classes.root}`}/>
-              {/* </div> */}
-            </>
-          )}
-          {/* CONFERENCE PANE */}
-          {isInConferenceRoom && (
-            <>
-              <ConferenceSidebar
-                onClose={handleSidebarClose}
-                open={shouldOpenSidebar}
-                variant={isDesktop ? "persistent" : "temporary"}
-                setIsInConferenceRoom={handleSetIsInConferenceRoom}
-              />
+          <>
+            {/* NETWORKING PANE */}
+            {!isInConferenceRoom && (
+              <>
+                <NetworkingSidebar
+                  onClose={handleSidebarClose}
+                  open={shouldOpenSidebar}
+                  variant={isDesktop ? "persistent" : "temporary"}
+                  setIsInConferenceRoom={handleSetIsInConferenceRoom}
+                />
+                <div
+                  className={classes.mainPane}
+                  style={
+                    chatOpen ? { right: SIDE_PANE_WIDTH + chatWidth } : null
+                  }
+                >
+                  {!userGroup && (
+                    <div className={classes.noCall}>
+                      <Typography
+                        variant="h6"
+                        className={clsx(classes.blueText, classes.emptyMessage)}
+                      >
+                        You are not in any{" "}
+                        <span className={classes.greenText}>conversation</span>{" "}
+                        yet,
+                        <br />
+                        don't be shy and{" "}
+                        <span className={classes.greenText}>
+                          select someone
+                        </span>{" "}
+                        to <span className={classes.greenText}>talk</span> to!
+                      </Typography>
+                    </div>
+                  )}
+                  {userGroup && (
+                    <NetworkingRoomContainer
+                      jitsiApi={jitsiApi}
+                      setJitsiApi={setJitsiApi}
+                    />
+                  )}
+                </div>
+                {/* <div className={classes.smallPlayerContainer}> */}
+                <SmallPlayerContainer bounds={`.${classes.root}`} />
+                {/* </div> */}
+              </>
+            )}
+            {/* CONFERENCE PANE */}
+            {isInConferenceRoom && (
+              <>
+                <ConferenceSidebar
+                  onClose={handleSidebarClose}
+                  open={shouldOpenSidebar}
+                  variant={isDesktop ? "persistent" : "temporary"}
+                  setIsInConferenceRoom={handleSetIsInConferenceRoom}
+                />
 
-              <div className={classes.mainPane} style={chatOpen ? { right: SIDE_PANE_WIDTH + chatWidth } : null}>
-                <Announcements /* eventSession={composedEventSession} */ />
-                <ConferenceRoomContainer
+                <div
+                  className={classes.mainPane}
+                  style={
+                    chatOpen ? { right: SIDE_PANE_WIDTH + chatWidth } : null
+                  }
+                >
+                  <Announcements /* eventSession={composedEventSession} */ />
+                  <ConferenceRoomContainer
                   // user={user}
                   // eventSession={composedEventSession}
                   // participantsJoined={participantsJoined}
                   // liveGroups={liveGroups}
                   // jitsiApi={jitsiApi}
                   // setJitsiApi={setJitsiApi}
-                />
-              </div>
-            </>
-          )}
-          <div className={classes.sideMenu}>
-            <SideMenuIcons /* eventSession={composedEventSession} user={user}  */ />
-          </div>
-          {/* <div
+                  />
+                </div>
+              </>
+            )}
+            <div className={classes.sideMenu}>
+              <SideMenuIcons /* eventSession={composedEventSession} user={user}  */
+              />
+            </div>
+            {/* <div
             className={clsx(classes.chatPane, {
               [classes.hide]: !chatOpen,
             })}
           >
             {`chat open: ${chatOpen ? "true" : "false"}`} */}
-          <ChatPane
-            /* eventSession={composedEventSession} users={users} user={user} */ onResize={(w) => setChatWidth(w)}
-          />
-          {/* </div> */}
-        </>
+            <ChatPane
+              /* eventSession={composedEventSession} users={users} user={user} */ onResize={(
+                w
+              ) => setChatWidth(w)}
+            />
+            {/* </div> */}
+          </>
         )}
       </div>
     </JitsiContext.Provider>

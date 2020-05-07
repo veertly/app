@@ -14,7 +14,12 @@ import ConferenceIcon from "@material-ui/icons/DesktopMac";
 import FilterAttendeesDialog from "./FilterAttendeesDialog";
 
 import { useSelector, shallowEqual, useDispatch } from "react-redux";
-import { getUsers, isInNetworkingRoom, getAvailableParticipantsList, getFilters } from "../../Redux/eventSession";
+import {
+  getUsers,
+  isInNetworkingRoom,
+  getAvailableParticipantsList,
+  getFilters,
+} from "../../Redux/eventSession";
 
 // import JoinConversationDialog from "./JoinConversationDialog";
 import _ from "lodash";
@@ -81,7 +86,10 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
   },
   filterButton: ({ filters }) => ({
-    backgroundColor: filters && Object.keys(filters).length > 0 ? theme.palette.filtersSelected : "transparent",
+    backgroundColor:
+      filters && Object.keys(filters).length > 0
+        ? theme.palette.filtersSelected
+        : "transparent",
   }),
   title: {
     marginTop: theme.spacing(1),
@@ -129,7 +137,10 @@ export default function (props) {
 
   const users = useSelector(getUsers, shallowEqual);
   const onConferenceRoom = !useSelector(isInNetworkingRoom);
-  const availableParticipantsList = useSelector(getAvailableParticipantsList, shallowEqual);
+  const availableParticipantsList = useSelector(
+    getAvailableParticipantsList,
+    shallowEqual
+  );
 
   let participantsAvailable = React.useMemo(() => {
     let result = availableParticipantsList.filter((participantSession) => {
@@ -159,15 +170,18 @@ export default function (props) {
 
       return true;
     });
-
     return result;
   }, [availableParticipantsList, users, filters]);
 
   const feelingLucky = React.useCallback(() => {
     let selectedParticipantSession = _.sample(
-      participantsAvailable.filter(({ isMyUser, isAvailable }) => !isMyUser && isAvailable)
+      participantsAvailable.filter(
+        ({ isMyUser, isAvailable }) => !isMyUser && isAvailable
+      )
     );
-    let participant = selectedParticipantSession ? users[selectedParticipantSession.id] : null;
+    let participant = selectedParticipantSession
+      ? users[selectedParticipantSession.id]
+      : null;
 
     dispatch(openJoinParticipant(participant));
 
@@ -177,7 +191,11 @@ export default function (props) {
   return (
     <div className={classes.root}>
       <JoinParticipantDialog setIsInConferenceRoom={setIsInConferenceRoom} />
-      <FilterAttendeesDialog open={filterDialog} setOpen={setFilterDialog} filters={filters} />
+      <FilterAttendeesDialog
+        open={filterDialog}
+        setOpen={setFilterDialog}
+        filters={filters}
+      />
 
       {onConferenceRoom && (
         <Typography variant="overline" className={classes.title} align="center">
@@ -211,16 +229,28 @@ export default function (props) {
       </div>
 
       {participantsAvailable.map((participantSession, index) => {
-        let { isInConversation, isInConferenceRoom, isAvailable } = participantSession;
+        let {
+          isInConversation,
+          isInConferenceRoom,
+          isAvailable,
+        } = participantSession;
 
         let participant = users[participantSession.id];
         const { twitterUrl, linkedinUrl, locationDetails } = participant;
-        const hasSubtitle = participant.company.trim() !== "" || participant.companyTitle.trim() !== "";
-        const hasSocials = (twitterUrl && twitterUrl.trim() !== "") || (linkedinUrl && linkedinUrl.trim() !== "");
+        const hasSubtitle =
+          participant.company.trim() !== "" ||
+          participant.companyTitle.trim() !== "";
+        const hasSocials =
+          (twitterUrl && twitterUrl.trim() !== "") ||
+          (linkedinUrl && linkedinUrl.trim() !== "");
         const hasFlag = locationDetails !== null;
 
         const participantAvatar = participant.avatarUrl ? (
-          <Avatar alt={participant.firstName} src={participant.avatarUrl} className={classes.avatar} />
+          <Avatar
+            alt={participant.firstName}
+            src={participant.avatarUrl}
+            className={classes.avatar}
+          />
         ) : (
           <Avatar className={classes.avatar}>
             {participant.firstName.charAt(0).toUpperCase()}
@@ -258,7 +288,12 @@ export default function (props) {
                     vertical: "bottom",
                     horizontal: "right",
                   }}
-                  badgeContent={<ConversationsIcon style={{ heigth: "0.85em", width: "0.85em" }} color="primary" />}
+                  badgeContent={
+                    <ConversationsIcon
+                      style={{ heigth: "0.85em", width: "0.85em" }}
+                      color="primary"
+                    />
+                  }
                 >
                   {participantAvatar}
                 </Badge>
@@ -272,13 +307,24 @@ export default function (props) {
                     vertical: "bottom",
                     horizontal: "right",
                   }}
-                  badgeContent={<ConferenceIcon style={{ heigth: "0.85em", width: "0.85em", color: "#666" }} />}
+                  badgeContent={
+                    <ConferenceIcon
+                      style={{
+                        heigth: "0.85em",
+                        width: "0.85em",
+                        color: "#666",
+                      }}
+                    />
+                  }
                 >
                   {participantAvatar}
                 </Badge>
               </Tooltip>
             )}
-            <div className={classes.participantDetails} style={{ paddingTop: hasSubtitle ? 0 : 8 }}>
+            <div
+              className={classes.participantDetails}
+              style={{ paddingTop: hasSubtitle ? 0 : 8 }}
+            >
               <Typography
                 variant="subtitle1"
                 className={classes.name}
@@ -292,18 +338,28 @@ export default function (props) {
                   className={classes.topicsInterested}
                   style={{ width: hasFlag ? 155 : 190 }}
                 >
-                  {`${participant.companyTitle}${participant.companyTitle.trim() !== "" ? " @ " : ""}${
-                    participant.company
-                  }`}
+                  {`${participant.companyTitle}${
+                    participant.companyTitle.trim() !== "" ? " @ " : ""
+                  }${participant.company}`}
                 </Typography>
               )}
 
-              <div className={classes.socialContainer} style={{ top: hasSubtitle || hasFlag ? 0 : 8 }}>
+              <div
+                className={classes.socialContainer}
+                style={{ top: hasSubtitle || hasFlag ? 0 : 8 }}
+              >
                 {/* {participant.keybaseUrl && <KeybaseIcon className={classes.socialIcon} />} */}
-                {participant.twitterUrl && <TwitterIcon className={classes.socialIcon} />}
-                {participant.linkedinUrl && <LinkedinIcon className={classes.socialIcon} />}
+                {participant.twitterUrl && (
+                  <TwitterIcon className={classes.socialIcon} />
+                )}
+                {participant.linkedinUrl && (
+                  <LinkedinIcon className={classes.socialIcon} />
+                )}
               </div>
-              <div className={classes.flagContainer} style={{ top: hasSocials ? null : hasSubtitle ? 0 : 10 }}>
+              <div
+                className={classes.flagContainer}
+                style={{ top: hasSocials ? null : hasSubtitle ? 0 : 10 }}
+              >
                 {/* <Typography> */}
                 <Flag locationDetails={participant.locationDetails} />
                 {/* </Typography> */}
