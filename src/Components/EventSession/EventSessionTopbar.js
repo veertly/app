@@ -21,8 +21,15 @@ import routes from "../../Config/routes";
 // import DesktopMacIcon from "@material-ui/icons/DesktopMac";
 // import ConversationsIcon from "../../Assets/Icons/Conversations";
 import { useSelector, shallowEqual, useDispatch } from "react-redux";
-import { getSessionId, getUser, getUserGroup, getEventSessionDetails } from "../../Redux/eventSession";
+import {
+  getSessionId,
+  getUser,
+  getUserGroup,
+  getEventSessionDetails,
+  getFeatureDetails,
+} from "../../Redux/eventSession";
 import { openEditProfile } from "../../Redux/dialogs";
+import { FEATURES } from "../../Modules/features";
 
 // import routes from "../../Config/routes";
 const useStyles = makeStyles((theme) => ({
@@ -59,7 +66,8 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(0, 2, 0, 1),
     padding: theme.spacing(0, 1),
     border: "1px solid " + theme.palette.secondary.main,
-    boxShadow: "0px 1px 5px 0px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 3px 1px -2px rgba(0,0,0,0.12)",
+    boxShadow:
+      "0px 1px 5px 0px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 3px 1px -2px rgba(0,0,0,0.12)",
     width: 135,
     textAlign: "center",
   },
@@ -127,11 +135,21 @@ export default withRouter((props) => {
   const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
   const openMenu = Boolean(menuAnchorEl);
 
-  
   const user = useSelector(getUser, shallowEqual);
   const userGroup = useSelector(getUserGroup, shallowEqual);
   const sessionId = useSelector(getSessionId);
   const eventSessionDetails = useSelector(getEventSessionDetails, shallowEqual);
+
+  const miniPlayerProperties = useSelector(
+    getFeatureDetails(FEATURES.MINI_PLAYER),
+    shallowEqual
+  );
+
+  const isMiniPlayerEnabled = React.useMemo(
+    () =>
+      miniPlayerProperties ? miniPlayerProperties.enabled === true : false,
+    [miniPlayerProperties]
+  );
 
   // isInNetworkingCall,
   //   isNetworkingAvailable,
@@ -160,7 +178,14 @@ export default withRouter((props) => {
   };
 
   const handleNetworkingRoomClick = () => {
-    setGoToNetworkingDialog(true);
+    if (
+      isMiniPlayerEnabled &&
+      eventSessionDetails.conferenceVideoType !== "JITSI"
+    ) {
+      setIsInConferenceRoom(false);
+    } else {
+      setGoToNetworkingDialog(true);
+    }
   };
 
   const handleEditProfileClick = () => {
@@ -196,7 +221,12 @@ export default withRouter((props) => {
           <div className={classes.flexGrow}>
             {!isMobile && eventSessionDetails && (
               // <div className={classes.title}>
-              <Typography variant="h5" align="left" style={{ fontWeight: "lighter" }} className={classes.title}>
+              <Typography
+                variant="h5"
+                align="left"
+                style={{ fontWeight: "lighter" }}
+                className={classes.title}
+              >
                 {eventSessionDetails.title}
               </Typography>
             )}

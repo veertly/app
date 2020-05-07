@@ -59,7 +59,10 @@ export default function (props) {
   const { room } = props;
   const dispatch = useDispatch();
 
-  const handleJoinRoom = React.useCallback(() => dispatch(openJoinRoom(room)), [dispatch, room]);
+  const handleJoinRoom = React.useCallback(() => dispatch(openJoinRoom(room)), [
+    dispatch,
+    room,
+  ]);
 
   if (!room || !room.isRoom) {
     return null;
@@ -70,7 +73,13 @@ export default function (props) {
       <div className={classes.roomContainer} onClick={handleJoinRoom}>
         <Typography className={classes.roomName}>
           <RoomIcon style={{ marginRight: 8 }} />
-          <span>{room.roomName ? room.roomName.trim().substring(0, 90) : ""}</span>
+          {/* <img
+            src="/static/Room_icon_02.svg"
+            style={{ marginRight: 8, width: 16 }}
+          /> */}
+          <span>
+            {room.roomName ? room.roomName.trim().substring(0, 90) : ""}
+          </span>
         </Typography>
 
         <div className={classes.roomParticipants}>
@@ -90,7 +99,9 @@ export default function (props) {
               </AvatarGroup>
             </>
           )}
-          {room.participants.length === 0 && <Typography color="textSecondary">This room is empty</Typography>}
+          {room.participants.length === 0 && (
+            <Typography color="textSecondary">This room is empty</Typography>
+          )}
         </div>
       </div>
     </React.Fragment>

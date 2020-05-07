@@ -4,7 +4,7 @@ import { makeStyles } from "@material-ui/styles";
 import { Typography } from "@material-ui/core";
 import { isProd, isStage } from "../../Modules/environments";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   cornerRibbon: {
     width: "100px",
     background: "#e43",
@@ -18,20 +18,20 @@ const useStyles = makeStyles(theme => ({
     "-webkit-transform": "rotate(-45deg)",
     boxShadow: "0 0 3px rgba(0,0,0,.3)",
     position: "fixed",
-    zIndex: 10000
+    zIndex: 1101,
   },
   ribbonStage: {
-    background: theme.palette.secondary.main
+    background: theme.palette.secondary.main,
   },
   ribbonOrange: {
-    background: "#e82"
+    background: "#e82",
   },
   text: {
-    textTransform: "uppercase"
-  }
+    textTransform: "uppercase",
+  },
 }));
 
-const EnvironmentRibbon = props => {
+const EnvironmentRibbon = (props) => {
   const classes = useStyles();
 
   if (isProd()) return null;
