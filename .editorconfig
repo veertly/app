@@ -1,0 +1,11 @@
+root = true
+
+[*.js]
+charset = utf-8
+indent_style = space
+indent_size = 2
+
+
+[{.travis.yml,package.json,.eslintrc,.babelrc}]
+indent_style = space
+indent_size = 2

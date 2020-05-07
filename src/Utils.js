@@ -1,4 +1,4 @@
-import moment from 'moment';
+import moment from "moment";
 
 export const nearestMinutes = (interval, someMoment) => {
     const roundedMinutes = Math.round(someMoment.clone().minute() / interval) * interval;
@@ -6,3 +6,7 @@ export const nearestMinutes = (interval, someMoment) => {
 }
 
 export const nearest15min = () => nearestMinutes(15, moment.utc());
+
+
+export const SMALL_PLAYER_INITIAL_HEIGHT = Math.floor(0.35 * window.innerHeight);
+export const SMALL_PLAYER_INITIAL_WIDTH = SMALL_PLAYER_INITIAL_HEIGHT * 14 / 9;
