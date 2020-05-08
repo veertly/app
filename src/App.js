@@ -6,7 +6,8 @@ import { PersistGate } from "redux-persist/integration/react";
 
 import "./App.css";
 
-import EventSessionContainer from "./Containers/EventSession/EventSessionContainer";
+// import EventSessionContainer from "./Containers/EventSession/EventSessionContainer";
+import PasswordProtectedEventSessionContainer from "./Containers/EventSession/PasswordProtectedEventSessionContainer";
 import CreateSessionContainer from "./Containers/Organizer/CreateSessionContainer";
 
 import LoginContainer from "./Containers/LoginContainer";
@@ -64,7 +65,7 @@ const App = () => {
             <BrowserRouter>
               <Switch>
                 <Route exact={true} path={routes.HOME()} component={HomePage} />
-                <PrivateRoute exact={true} path={routes.EVENT_SESSION_LIVE()} component={EventSessionContainer} />
+                <PrivateRoute exact={true} path={routes.EVENT_SESSION_LIVE()} component={PasswordProtectedEventSessionContainer} />
                 <PrivateRoute exact={true} path={routes.EDIT_EVENT_SESSION()} component={EditSessionContainer} />
                 <Route exact={true} path={routes.EVENT_SESSION()} component={EventPageContainer} />
                 <Route exact={true} path={routes.LOGIN_PATH()} component={LoginContainer} />

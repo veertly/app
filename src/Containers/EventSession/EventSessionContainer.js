@@ -162,7 +162,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default withRouter((props) => {
+const EventSessionContainer = (props) => {
   const dispatch = useDispatch();
 
   const [userAuth] = useAuthState(firebase.auth());
@@ -692,4 +692,6 @@ export default withRouter((props) => {
       </div>
     </JitsiContext.Provider>
   );
-});
+}
+
+export default withRouter(EventSessionContainer);
