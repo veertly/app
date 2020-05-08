@@ -115,15 +115,11 @@ const CustomYoutubeFrame = ({ videoId, volume }) => {
   );
 };
 
-const CustomFacebookFrame = ({ videoId, volume }) => {
+const CustomFacebookFrame = ({ url, volume }) => {
   const classes = useStyles();
   return (
     <div className={classes.root}>
-      <VideoPlayer
-        volume={volume}
-        showLoader
-        url={`https://www.facebook.com/facebook/videos/${videoId}`}
-      />
+      <VideoPlayer volume={volume} showLoader url={url} />
     </div>
   );
 };
@@ -200,7 +196,11 @@ export const SmallPlayerContainer = ({ bounds = "" }) => {
         return <CustomYoutubeFrame volume={vol} videoId={youtubeVideoId} />;
       case "FACEBOOK":
         let facebookVideoId = eventSessionDetails.conferenceRoomFacebookVideoId;
-        return <CustomFacebookFrame volume={vol} videoId={facebookVideoId} />;
+        let facebookUrl = eventSessionDetails.conferenceRoomFacebookLink;
+        let url = facebookUrl
+          ? facebookUrl
+          : `https://www.facebook.com/facebook/videos/${facebookVideoId}`;
+        return <CustomFacebookFrame volume={vol} url={url} />;
       // case "JITSI":
       //   return <div id="conference-container" className={classes.root} />;
       default:

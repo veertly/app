@@ -6,7 +6,13 @@ import NoVideoImage from "../../Assets/illustrations/undraw_video_call_kxyp.svg"
 import { Typography } from "@material-ui/core";
 import { ANNOUNCEMENT_HEIGHT } from "../../Components/EventSession/Announcements";
 import { useSelector, shallowEqual } from "react-redux";
-import { getUser, getUserGroup, getSessionId, getUserId, getEventSessionDetails } from "../../Redux/eventSession";
+import {
+  getUser,
+  getUserGroup,
+  getSessionId,
+  getUserId,
+  getEventSessionDetails,
+} from "../../Redux/eventSession";
 import ReactPlayer from "react-player";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import JitsiContext from "./JitsiContext";
@@ -88,7 +94,11 @@ export default () => {
 
     const roomName = "veertly" + prefixStr + "-" + sessionId;
 
-    if (eventSessionDetails.conferenceVideoType === "JITSI" && loaded && lastRoomLoaded !== roomName) {
+    if (
+      eventSessionDetails.conferenceVideoType === "JITSI" &&
+      loaded &&
+      lastRoomLoaded !== roomName
+    ) {
       // dispose existing jitsi
       if (jitsiApi) {
         jitsiApi.executeCommand("hangup");
@@ -138,7 +148,16 @@ export default () => {
       //   jitsiApi.dispose();
       // }
     };
-  }, [loaded, eventSessionDetails, user, handleCallEnded, jitsiApi, lastRoomLoaded, setJitsiApi, sessionId]);
+  }, [
+    loaded,
+    eventSessionDetails,
+    user,
+    handleCallEnded,
+    jitsiApi,
+    lastRoomLoaded,
+    setJitsiApi,
+    sessionId,
+  ]);
 
   const hasAnnouncement = React.useMemo(
     () =>
@@ -154,9 +173,13 @@ export default () => {
   }
   if (!loaded) return <div id="conference-container">Loading...</div>;
   if (loaded) {
-    const getYoutubeFrame = (videoId) => {
+    const getYoutubeFrame = () => {
+      let videoId = eventSessionDetails.conferenceRoomYoutubeVideoId;
       return (
-        <div className={classes.root} style={{ top: hasAnnouncement ? ANNOUNCEMENT_HEIGHT : 0 }}>
+        <div
+          className={classes.root}
+          style={{ top: hasAnnouncement ? ANNOUNCEMENT_HEIGHT : 0 }}
+        >
           <iframe
             className={classes.videoContainer}
             src={`https://www.youtube.com/embed/${videoId}?autoplay=1&fs=0&modestbranding=0`}
@@ -169,12 +192,20 @@ export default () => {
       );
     };
 
-    const getFacebooFrame = (videoId) => {
+    const getFacebookFrame = () => {
+      let facebookVideoId = eventSessionDetails.conferenceRoomFacebookVideoId;
+      let facebookUrl = eventSessionDetails.conferenceRoomFacebookLink;
+      let url = facebookUrl
+        ? facebookUrl
+        : `https://www.facebook.com/facebook/videos/${facebookVideoId}`;
       return (
-        <div className={classes.root} style={{ top: hasAnnouncement ? ANNOUNCEMENT_HEIGHT : 0 }}>
+        <div
+          className={classes.root}
+          style={{ top: hasAnnouncement ? ANNOUNCEMENT_HEIGHT : 0 }}
+        >
           <div className={classes.reactPlayerContainer}>
             <ReactPlayer
-              url={`https://www.facebook.com/facebook/videos/${videoId}`}
+              url={url}
               width="100%"
               height="none"
               className={classes.reactPlayer}
@@ -190,14 +221,12 @@ export default () => {
         </div>
       );
     };
+
     switch (eventSessionDetails.conferenceVideoType) {
       case "YOUTUBE":
-        let youtubeVideoId = eventSessionDetails.conferenceRoomYoutubeVideoId;
-        return getYoutubeFrame(youtubeVideoId);
+        return getYoutubeFrame();
       case "FACEBOOK":
-        let facebookVideoId = eventSessionDetails.conferenceRoomFacebookVideoId;
-        return getFacebooFrame(facebookVideoId);
-
+        return getFacebookFrame();
       case "JITSI":
         return <div id="conference-container" className={classes.root} />;
       default:
@@ -209,7 +238,11 @@ export default () => {
             <Typography variant="caption" display="block" align="center">
               Please contact the event organizer or Veertly team
             </Typography>
-            <img alt="No Video available" src={NoVideoImage} className={classes.noVideoImage} />
+            <img
+              alt="No Video available"
+              src={NoVideoImage}
+              className={classes.noVideoImage}
+            />
           </div>
         );
     }
