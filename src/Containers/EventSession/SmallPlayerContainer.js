@@ -7,16 +7,18 @@ import { getEventSessionDetails } from "../../Redux/eventSession";
 import VideoPlayer from "../../Components/EventSession/VideoPlayer";
 // import VolumeDownIcon from '@material-ui/icons/VolumeDown';
 // import VolumeUpIcon from '@material-ui/icons/VolumeUp';
-import CloseIcon from "@material-ui/icons/Close";
+import CloseIcon from "@material-ui/icons/Remove";
 // import Slider from '@material-ui/core/Slider';
 import { Rnd } from "react-rnd";
 import {
   SMALL_PLAYER_INITIAL_HEIGHT,
   SMALL_PLAYER_INITIAL_WIDTH,
+  TOPBAR_HEIGHT,
 } from "../../Utils";
 import JitsiContext from "./JitsiContext";
 import { SIDE_PANE_WIDTH } from "./EventSessionContainer";
 import useWindowSize from "../../Hooks/useWindowSize";
+import { Tooltip } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   videoContainer: {
@@ -139,7 +141,7 @@ export const SmallPlayerContainer = ({ bounds = "" }) => {
 
   const [playerPosition, setPlayerPosition] = useState({
     x: window.innerWidth - SMALL_PLAYER_INITIAL_WIDTH - SIDE_PANE_WIDTH,
-    y: window.innerHeight - SMALL_PLAYER_INITIAL_HEIGHT,
+    y: TOPBAR_HEIGHT, // window.innerHeight - SMALL_PLAYER_INITIAL_HEIGHT,
   });
 
   const [playerSize, setPlayerSize] = useState({
@@ -256,10 +258,12 @@ export const SmallPlayerContainer = ({ bounds = "" }) => {
             {/* <VolumeDownIcon className={classes.icon} />
                 <Slider className={classes.slider} value={volume} onChange={handleVolumeChange} aria-labelledby="continuous-slider" />
               <VolumeUpIcon className={classes.icon} /> */}
-            <CloseIcon
-              className={classes.icon}
-              onClick={() => setShowSmallPlayer(false)}
-            ></CloseIcon>
+            <Tooltip title="Minimize player">
+              <CloseIcon
+                className={classes.icon}
+                onClick={() => setShowSmallPlayer(false)}
+              />
+            </Tooltip>
           </div>
         </div>
         <div className={classes.playerContainer}>{getPlayer()}</div>

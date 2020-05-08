@@ -12,6 +12,7 @@ import { getUserGroup } from "../../Redux/eventSession";
 import Typography from "@material-ui/core/Typography";
 import JitsiContext from "../../Containers/EventSession/JitsiContext";
 import OpenInNewIcon from "@material-ui/icons/OpenInNew";
+import { Tooltip } from "@material-ui/core";
 
 const CALL_SECTION_HEIGHT = 110;
 
@@ -108,10 +109,12 @@ const ToolbarClosed = ({ setShowSmallPlayer }) => {
           <Typography variant="subtitle1">Main Stage</Typography>
         </div>
         <div className={classes.openInNewContainer}>
-          <OpenInNewIcon
-            className={classes.icon}
-            onClick={() => setShowSmallPlayer(true)}
-          ></OpenInNewIcon>
+          <Tooltip title="Open main stage">
+            <OpenInNewIcon
+              className={classes.icon}
+              onClick={() => setShowSmallPlayer(true)}
+            />
+          </Tooltip>
           {/* <VolumeDownIcon className={classes.icon} />
               <Slider className={classes.slider} value={volume} onChange={handleVolumeChange} aria-labelledby="continuous-slider" />
             <VolumeUpIcon className={classes.icon} />
