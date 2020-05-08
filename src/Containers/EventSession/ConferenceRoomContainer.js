@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import useScript from "../../Hooks/useScript";
 import { makeStyles } from "@material-ui/core/styles";
 import { leaveCall } from "../../Modules/eventSessionOperations";
@@ -6,9 +6,16 @@ import NoVideoImage from "../../Assets/illustrations/undraw_video_call_kxyp.svg"
 import { Typography } from "@material-ui/core";
 import { ANNOUNCEMENT_HEIGHT } from "../../Components/EventSession/Announcements";
 import { useSelector, shallowEqual } from "react-redux";
-import { getUser, getUserGroup, getSessionId, getUserId, getEventSessionDetails } from "../../Redux/eventSession";
+import {
+  getUser,
+  getUserGroup,
+  getSessionId,
+  getUserId,
+  getEventSessionDetails,
+} from "../../Redux/eventSession";
 import ReactPlayer from "react-player";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import JitsiContext from "./JitsiContext";
 
 const useStyles = makeStyles((theme) => ({
   videoContainer: {
@@ -49,9 +56,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default (props) => {
+export default () => {
   const classes = useStyles();
-  const { jitsiApi, setJitsiApi } = props;
+
+  const { jitsiApi, setJitsiApi } = useContext(JitsiContext);
+
+  // const { jitsiApi, setJitsiApi } = props;
 
   const [loaded, error] = useScript("https://meet.jit.si/external_api.js");
   // const [loadedFacebookStream /* , errorFacebookStream */] = useScript(
@@ -84,7 +94,11 @@ export default (props) => {
 
     const roomName = "veertly" + prefixStr + "-" + sessionId;
 
-    if (eventSessionDetails.conferenceVideoType === "JITSI" && loaded && lastRoomLoaded !== roomName) {
+    if (
+      eventSessionDetails.conferenceVideoType === "JITSI" &&
+      loaded &&
+      lastRoomLoaded !== roomName
+    ) {
       // dispose existing jitsi
       if (jitsiApi) {
         jitsiApi.executeCommand("hangup");
@@ -134,7 +148,16 @@ export default (props) => {
       //   jitsiApi.dispose();
       // }
     };
-  }, [loaded, eventSessionDetails, user, handleCallEnded, jitsiApi, lastRoomLoaded, setJitsiApi, sessionId]);
+  }, [
+    loaded,
+    eventSessionDetails,
+    user,
+    handleCallEnded,
+    jitsiApi,
+    lastRoomLoaded,
+    setJitsiApi,
+    sessionId,
+  ]);
 
   const hasAnnouncement = React.useMemo(
     () =>
@@ -150,9 +173,13 @@ export default (props) => {
   }
   if (!loaded) return <div id="conference-container">Loading...</div>;
   if (loaded) {
-    const getYoutubeFrame = (videoId) => {
+    const getYoutubeFrame = () => {
+      let videoId = eventSessionDetails.conferenceRoomYoutubeVideoId;
       return (
-        <div className={classes.root} style={{ top: hasAnnouncement ? ANNOUNCEMENT_HEIGHT : 0 }}>
+        <div
+          className={classes.root}
+          style={{ top: hasAnnouncement ? ANNOUNCEMENT_HEIGHT : 0 }}
+        >
           <iframe
             className={classes.videoContainer}
             src={`https://www.youtube.com/embed/${videoId}?autoplay=1&fs=0&modestbranding=0`}
@@ -165,12 +192,20 @@ export default (props) => {
       );
     };
 
-    const getFacebooFrame = (videoId) => {
+    const getFacebookFrame = () => {
+      let facebookVideoId = eventSessionDetails.conferenceRoomFacebookVideoId;
+      let facebookUrl = eventSessionDetails.conferenceRoomFacebookLink;
+      let url = facebookUrl
+        ? facebookUrl
+        : `https://www.facebook.com/facebook/videos/${facebookVideoId}`;
       return (
-        <div className={classes.root} style={{ top: hasAnnouncement ? ANNOUNCEMENT_HEIGHT : 0 }}>
+        <div
+          className={classes.root}
+          style={{ top: hasAnnouncement ? ANNOUNCEMENT_HEIGHT : 0 }}
+        >
           <div className={classes.reactPlayerContainer}>
             <ReactPlayer
-              url={`https://www.facebook.com/facebook/videos/${videoId}`}
+              url={url}
               width="100%"
               height="none"
               className={classes.reactPlayer}
@@ -186,14 +221,12 @@ export default (props) => {
         </div>
       );
     };
+
     switch (eventSessionDetails.conferenceVideoType) {
       case "YOUTUBE":
-        let youtubeVideoId = eventSessionDetails.conferenceRoomYoutubeVideoId;
-        return getYoutubeFrame(youtubeVideoId);
+        return getYoutubeFrame();
       case "FACEBOOK":
-        let facebookVideoId = eventSessionDetails.conferenceRoomFacebookVideoId;
-        return getFacebooFrame(facebookVideoId);
-
+        return getFacebookFrame();
       case "JITSI":
         return <div id="conference-container" className={classes.root} />;
       default:
@@ -205,7 +238,11 @@ export default (props) => {
             <Typography variant="caption" display="block" align="center">
               Please contact the event organizer or Veertly team
             </Typography>
-            <img alt="No Video available" src={NoVideoImage} className={classes.noVideoImage} />
+            <img
+              alt="No Video available"
+              src={NoVideoImage}
+              className={classes.noVideoImage}
+            />
           </div>
         );
     }

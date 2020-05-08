@@ -14,7 +14,11 @@ import {
   getLiveGroupsOriginal,
 } from "../../Redux/eventSession";
 import Alert from "@material-ui/lab/Alert";
-import { isJoinRoomOpen, getJoinRoomEntity, closeJoinRoom } from "../../Redux/dialogs";
+import {
+  isJoinRoomOpen,
+  getJoinRoomEntity,
+  closeJoinRoom,
+} from "../../Redux/dialogs";
 import { Typography, Grid } from "@material-ui/core";
 import ParticipantAvatar from "../Misc/ParticipantAvatar";
 
@@ -76,7 +80,6 @@ export default function (props) {
 
   const open = useSelector(isJoinRoomOpen);
   const room = useSelector(getJoinRoomEntity, shallowEqual);
-
   const participantsJoined = useSelector(getParticipantsJoined, shallowEqual);
   const liveGroups = useSelector(getLiveGroupsOriginal, shallowEqual);
   const userSession = useSelector(getUserSession, shallowEqual);
@@ -93,17 +96,31 @@ export default function (props) {
 
   const handleJoinRoom = (e) => {
     e.preventDefault();
-    joinConversation(sessionId, participantsJoined, liveGroups, userId, room.id, snackbar, false);
+    joinConversation(
+      sessionId,
+      participantsJoined,
+      liveGroups,
+      userId,
+      room.id,
+      snackbar,
+      false
+    );
     handleClose();
   };
 
-  const isMyGroup = room.participants.find((participant) => participant.id === userId) !== undefined;
+  const isMyGroup =
+    room.participants.find((participant) => participant.id === userId) !==
+    undefined;
 
   let userInConversation = userSession && !!userSession.groupId;
 
   return (
     <div>
-      <Dialog open={open} onClose={handleClose} aria-labelledby="draggable-dialog-title">
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="draggable-dialog-title"
+      >
         <div className={classes.content}>
           <div style={{ marginBottom: isMyGroup ? -16 : 8 }}>
             <Typography color="primary" variant="h4" align="center">
@@ -120,13 +137,19 @@ export default function (props) {
               {room.participants.map((participant) => {
                 if (!participant) return null;
                 return (
-                  <div key={participant.id} style={{ bacgroundColor: "red" }} className={classes.avatar}>
+                  <div
+                    key={participant.id}
+                    style={{ bacgroundColor: "red" }}
+                    className={classes.avatar}
+                  >
                     <ParticipantAvatar participant={participant} />
                   </div>
                 );
               })}
               {room.participants.length === 0 && (
-                <Typography color="textSecondary">No one is currently on this room!</Typography>
+                <Typography color="textSecondary">
+                  No one is currently on this room!
+                </Typography>
               )}
             </Grid>
             {/* {room.participants.length > 0 && (
@@ -138,7 +161,12 @@ export default function (props) {
           {!isMyGroup && (
             <div>
               <div className={classes.buttonContainer}>
-                <Button variant="contained" color="primary" className={classes.button} onClick={handleJoinRoom}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  className={classes.button}
+                  onClick={handleJoinRoom}
+                >
                   Join Room
                 </Button>
               </div>

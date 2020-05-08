@@ -1,5 +1,11 @@
 import React, { useEffect } from "react";
-import { Button, TextField, Typography, Paper, Divider } from "@material-ui/core";
+import {
+  Button,
+  TextField,
+  Typography,
+  Paper,
+  Divider,
+} from "@material-ui/core";
 import { logout } from "../../Modules/userOperations";
 import { useHistory } from "react-router-dom";
 import Radio from "@material-ui/core/Radio";
@@ -12,7 +18,11 @@ import FormHelperText from "@material-ui/core/FormHelperText";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import * as moment from "moment";
 import MUIRichTextEditor from "mui-rte";
-import { MuiPickersUtilsProvider, KeyboardTimePicker, KeyboardDatePicker } from "@material-ui/pickers";
+import {
+  MuiPickersUtilsProvider,
+  KeyboardTimePicker,
+  KeyboardDatePicker,
+} from "@material-ui/pickers";
 import MomentUtils from "@date-io/moment";
 // import useScript from "../../Hooks/useScript";
 
@@ -37,7 +47,10 @@ import Tooltip from "@material-ui/core/Tooltip";
 import { parseURL } from "../../Utils/parser";
 import SuccessIcon from "@material-ui/icons/CheckCircleOutline";
 import FailIcon from "@material-ui/icons/Cancel";
-import { DEFAULT_EVENT_OPEN_MINUTES, DEFAULT_EVENT_CLOSES_MINUTES } from "../../Config/constants";
+import {
+  DEFAULT_EVENT_OPEN_MINUTES,
+  DEFAULT_EVENT_CLOSES_MINUTES,
+} from "../../Config/constants";
 import { getTimestampFromDate } from "../../Modules/firebaseApp";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import CopyIcon from "@material-ui/icons/FileCopy";
@@ -103,16 +116,26 @@ const sessionUrl = getUrl() + "/v/";
 
 const getYoutubeUrl = (eventSession) => {
   return eventSession
-    ? eventSession.conferenceRoomYoutubeVideoId && eventSession.conferenceRoomYoutubeVideoId.trim() !== ""
-      ? "https://www.youtube.com/watch?v=" + eventSession.conferenceRoomYoutubeVideoId
+    ? eventSession.conferenceRoomYoutubeVideoId &&
+      eventSession.conferenceRoomYoutubeVideoId.trim() !== ""
+      ? "https://www.youtube.com/watch?v=" +
+        eventSession.conferenceRoomYoutubeVideoId
       : null
     : null;
 };
 
 const getFacebookUrl = (eventSession) => {
+  if (!eventSession) {
+    return null;
+  }
+  if (eventSession.conferenceRoomFacebookLink) {
+    return eventSession.conferenceRoomFacebookLink;
+  }
   return eventSession
-    ? eventSession.conferenceRoomFacebookVideoId && eventSession.conferenceRoomFacebookVideoId.trim() !== ""
-      ? "https://www.facebook.com/facebook/videos/" + eventSession.conferenceRoomFacebookVideoId
+    ? eventSession.conferenceRoomFacebookVideoId &&
+      eventSession.conferenceRoomFacebookVideoId.trim() !== ""
+      ? "https://www.facebook.com/facebook/videos/" +
+        eventSession.conferenceRoomFacebookVideoId
       : null
     : null;
 };
@@ -120,13 +143,13 @@ const getVideoId = (link) => {
   let parsedUrl = parseURL(link);
   return parsedUrl.searchObject.v;
 };
-const getFacebookVideoId = (link) => {
-  let parsedUrl = parseURL(link);
-  let pathname = parsedUrl.pathname.split("/");
-  let videosIndex = pathname.findIndex((v) => v === "videos");
-  let videoId = pathname[videosIndex + 1];
-  return videoId;
-};
+// const getFacebookVideoId = (link) => {
+//   let parsedUrl = parseURL(link);
+//   let pathname = parsedUrl.pathname.split("/");
+//   let videosIndex = pathname.findIndex((v) => v === "videos");
+//   let videoId = pathname[videosIndex + 1];
+//   return videoId;
+// };
 
 function EditEventSessionForm(props) {
   const classes = useStyles();
@@ -141,17 +164,32 @@ function EditEventSessionForm(props) {
     title: !isNewEvent && eventSession.title ? eventSession.title : "",
     conferenceRoomYoutubeLink: !isNewEvent ? getYoutubeUrl(eventSession) : "",
     conferenceRoomYoutubeVideoId:
-      !isNewEvent && eventSession.conferenceRoomYoutubeVideoId ? eventSession.conferenceRoomYoutubeVideoId : "",
+      !isNewEvent && eventSession.conferenceRoomYoutubeVideoId
+        ? eventSession.conferenceRoomYoutubeVideoId
+        : "",
 
     conferenceRoomFacebookLink: !isNewEvent ? getFacebookUrl(eventSession) : "",
     conferenceRoomFacebookVideoId:
-      !isNewEvent && eventSession.conferenceRoomFacebookVideoId ? eventSession.conferenceRoomFacebookVideoId : "",
+      !isNewEvent && eventSession.conferenceRoomFacebookVideoId
+        ? eventSession.conferenceRoomFacebookVideoId
+        : "",
     website: !isNewEvent && eventSession.website ? eventSession.website : "",
     expectedAmountParticipants:
-      !isNewEvent && eventSession.expectedAmountParticipants ? eventSession.expectedAmountParticipants : "",
-    eventOpens: !isNewEvent && eventSession.eventOpens ? eventSession.eventOpens : DEFAULT_EVENT_OPEN_MINUTES,
-    eventCloses: !isNewEvent && eventSession.eventCloses ? eventSession.eventCloses : DEFAULT_EVENT_CLOSES_MINUTES,
-    visibility: !isNewEvent && eventSession.visibility ? eventSession.visibility : "LISTED",
+      !isNewEvent && eventSession.expectedAmountParticipants
+        ? eventSession.expectedAmountParticipants
+        : "",
+    eventOpens:
+      !isNewEvent && eventSession.eventOpens
+        ? eventSession.eventOpens
+        : DEFAULT_EVENT_OPEN_MINUTES,
+    eventCloses:
+      !isNewEvent && eventSession.eventCloses
+        ? eventSession.eventCloses
+        : DEFAULT_EVENT_CLOSES_MINUTES,
+    visibility:
+      !isNewEvent && eventSession.visibility
+        ? eventSession.visibility
+        : "LISTED",
   });
 
   const selectedSessionId = values.sessionId;
@@ -159,25 +197,40 @@ function EditEventSessionForm(props) {
     !isNewEvent ? eventSession.conferenceVideoType : "YOUTUBE"
   );
   const [selectedDate, setSelectedDate] = React.useState({
-    begin: !isNewEvent && eventSession.eventBeginDate ? moment(eventSession.eventBeginDate.toDate()) : moment(),
+    begin:
+      !isNewEvent && eventSession.eventBeginDate
+        ? moment(eventSession.eventBeginDate.toDate())
+        : moment(),
     end:
-      !isNewEvent && eventSession.eventEndDate ? moment(eventSession.eventEndDate.toDate()) : moment().add(2, "hours"),
+      !isNewEvent && eventSession.eventEndDate
+        ? moment(eventSession.eventEndDate.toDate())
+        : moment().add(2, "hours"),
   });
   const [creatingEvent, setCreatingEvent] = React.useState(false);
   const [eventCreated, setEventCreated] = React.useState(false);
   const [sessionIdError, setSessionIdError] = React.useState(undefined);
   const [activeStep, setActiveStep] = React.useState(0);
   const [bannerImagePreviewUrl, setBannerImagePreviewUrl] = React.useState(
-    !isNewEvent ? (eventSession.bannerUrl ? eventSession.bannerUrl : null) : null
+    !isNewEvent
+      ? eventSession.bannerUrl
+        ? eventSession.bannerUrl
+        : null
+      : null
   );
   const [bannerImageBlob, setBannerImageBlob] = React.useState(null);
   const [eventDescription, setEventDescription] = React.useState(
-    !isNewEvent ? (eventSession.description ? eventSession.description : null) : null
+    !isNewEvent
+      ? eventSession.description
+        ? eventSession.description
+        : null
+      : null
   );
   const [showPreview, setShowPreview] = React.useState(false);
   const [showYoutubePreview, setShowYoutubePreview] = React.useState(false);
   const [showFacebookPreview, setShowFacebookPreview] = React.useState(false);
-  const [showEventCreatedDialog, setShowEventCreatedDialog] = React.useState(false);
+  const [showEventCreatedDialog, setShowEventCreatedDialog] = React.useState(
+    false
+  );
   const [bannerChanged, setBannerChanged] = React.useState(false);
   const [errors, setErrors] = React.useState({});
   const snackbar = useSnackbar();
@@ -196,7 +249,10 @@ function EditEventSessionForm(props) {
   }, [bannerImageBlob, eventSession]);
 
   const shareText = React.useMemo(
-    () => `Join me in the virtual event ${values.title} at ${selectedDate.begin.format("lll")} on @veertly `,
+    () =>
+      `Join me in the virtual event ${
+        values.title
+      } at ${selectedDate.begin.format("lll")} on @veertly `,
     [values.title, selectedDate.begin]
   );
 
@@ -209,9 +265,9 @@ function EditEventSessionForm(props) {
       newValues.conferenceRoomYoutubeVideoId = getVideoId(value);
     }
 
-    if (name === "conferenceRoomFacebookLink" && value.trim() !== "") {
-      newValues.conferenceRoomFacebookVideoId = getFacebookVideoId(value);
-    }
+    // if (name === "conferenceRoomFacebookLink" && value.trim() !== "") {
+    //   newValues.conferenceRoomFacebookVideoId = getFacebookVideoId(value);
+    // }
     setValues(newValues);
 
     let newErrors = { ...errors };
@@ -221,17 +277,26 @@ function EditEventSessionForm(props) {
 
     if (name === "sessionId" && value.trim() !== "") {
       if (/^([a-zA-Z0-9-_])+$/.test(value) === false) {
-        newErrors.sessionId = "Event URL not valid (only letters, numbers or the characters '-' and '_' are allowed)";
+        newErrors.sessionId =
+          "Event URL not valid (only letters, numbers or the characters '-' and '_' are allowed)";
       } else {
         newErrors.sessionId = undefined;
       }
     }
 
-    if (name === "conferenceRoomYoutubeLink" && value.trim() !== "" && newValues.conferenceRoomYoutubeVideoId) {
+    if (
+      name === "conferenceRoomYoutubeLink" &&
+      value.trim() !== "" &&
+      newValues.conferenceRoomYoutubeVideoId
+    ) {
       newErrors.conferenceRoomYoutubeLink = undefined;
     }
 
-    if (name === "conferenceRoomFacebookLink" && value.trim() !== "" && newValues.conferenceRoomFacebookVideoId) {
+    if (
+      name === "conferenceRoomFacebookLink" &&
+      value.trim() !== "" &&
+      newValues.conferenceRoomFacebookVideoId
+    ) {
       newErrors.conferenceRoomFacebookLink = undefined;
     }
 
@@ -260,7 +325,9 @@ function EditEventSessionForm(props) {
   };
 
   const handleDescriptionUpdate = (editorState) => {
-    setEventDescription(JSON.stringify(convertToRaw(editorState.getCurrentContent())));
+    setEventDescription(
+      JSON.stringify(convertToRaw(editorState.getCurrentContent()))
+    );
   };
 
   const moveToConfigurationPage = () => {
@@ -271,13 +338,22 @@ function EditEventSessionForm(props) {
       foundErrors = true;
     }
 
-    if (isNewEvent && selectedDate.begin.isBefore(moment().subtract(60, "minutes"))) {
-      setErrors({ ...errors, beginDate: "Begin date of the event can't be in the past" });
+    if (
+      isNewEvent &&
+      selectedDate.begin.isBefore(moment().subtract(60, "minutes"))
+    ) {
+      setErrors({
+        ...errors,
+        beginDate: "Begin date of the event can't be in the past",
+      });
       foundErrors = true;
     }
 
     if (selectedDate.end.isBefore(selectedDate.begin)) {
-      setErrors({ ...errors, endDate: "End date of the event can't be before the begin" });
+      setErrors({
+        ...errors,
+        endDate: "End date of the event can't be before the begin",
+      });
       foundErrors = true;
     }
 
@@ -287,7 +363,10 @@ function EditEventSessionForm(props) {
   };
 
   const handleEventVisibility = (event) => {
-    setValues({ ...values, visibility: event.target.checked ? "LISTED" : "UNLISTED" });
+    setValues({
+      ...values,
+      visibility: event.target.checked ? "LISTED" : "UNLISTED",
+    });
   };
 
   const handleCreateConference = async () => {
@@ -298,20 +377,34 @@ function EditEventSessionForm(props) {
       foundErrors = true;
     }
 
-    if (selectedVideoType === "YOUTUBE" && !values.conferenceRoomYoutubeVideoId) {
-      newErrors.conferenceRoomYoutubeLink = "Couldn't retrieve the correct video id from your youtube link";
+    if (
+      selectedVideoType === "YOUTUBE" &&
+      !values.conferenceRoomYoutubeVideoId
+    ) {
+      newErrors.conferenceRoomYoutubeLink =
+        "Couldn't retrieve the correct video id from your youtube link";
       foundErrors = true;
     }
-    if (selectedVideoType === "YOUTUBE" && values.conferenceRoomYoutubeLink.trim() === "") {
+    if (
+      selectedVideoType === "YOUTUBE" &&
+      values.conferenceRoomYoutubeLink.trim() === ""
+    ) {
       newErrors.conferenceRoomYoutubeLink = "Youtube URL can't be empty";
       foundErrors = true;
     }
 
-    if (selectedVideoType === "FACEBOOK" && !values.conferenceRoomFacebookVideoId) {
-      newErrors.conferenceRoomYoutubeLink = "Couldn't retrieve the correct video id from your facebook link";
-      foundErrors = true;
-    }
-    if (selectedVideoType === "FACEBOOK" && values.conferenceRoomFacebookLink.trim() === "") {
+    // if (
+    //   selectedVideoType === "FACEBOOK" &&
+    //   !values.conferenceRoomFacebookVideoId
+    // ) {
+    //   newErrors.conferenceRoomYoutubeLink =
+    //     "Couldn't retrieve the correct video id from your facebook link";
+    //   foundErrors = true;
+    // }
+    if (
+      selectedVideoType === "FACEBOOK" &&
+      values.conferenceRoomFacebookLink.trim() === ""
+    ) {
       newErrors.conferenceRoomFacebookLink = "Facebook URL can't be empty";
       foundErrors = true;
     }
@@ -324,7 +417,9 @@ function EditEventSessionForm(props) {
 
     // upload image
     let uploadedBanner =
-      bannerImageBlob && bannerChanged ? await uploadEventBanner(values.sessionId, bannerImageBlob, userId) : null;
+      bannerImageBlob && bannerChanged
+        ? await uploadEventBanner(values.sessionId, bannerImageBlob, userId)
+        : null;
     try {
       await createConference(
         isNewEvent,
@@ -333,7 +428,7 @@ function EditEventSessionForm(props) {
         values.title,
         selectedVideoType,
         values.conferenceRoomYoutubeVideoId,
-        values.conferenceRoomFacebookVideoId,
+        values.conferenceRoomFacebookLink,
         values.website,
         values.expectedAmountParticipants,
         selectedDate.begin.toDate(),
@@ -362,7 +457,9 @@ function EditEventSessionForm(props) {
           if (eventSession && eventSession.id === selectedSessionId) {
             setSessionIdError(undefined);
           } else if (exists && id === selectedSessionId) {
-            setSessionIdError("This URL is already in use, please select a new one");
+            setSessionIdError(
+              "This URL is already in use, please select a new one"
+            );
           } else if (!exists && id === selectedSessionId) {
             setSessionIdError(undefined);
           }
@@ -385,16 +482,25 @@ function EditEventSessionForm(props) {
         {!isNewEvent && <span>Edit event</span>}
       </Typography>
       {isNewEvent && (
-        <Typography variant="body1" display="block" style={{ marginTop: 16, marginBottom: 8 }}>
+        <Typography
+          variant="body1"
+          display="block"
+          style={{ marginTop: 16, marginBottom: 8 }}
+        >
           Please complete this form to create your own virtual event. <br />
-          As soon as your event has been created, you can share the dial-in link with your audience.
+          As soon as your event has been created, you can share the dial-in link
+          with your audience.
         </Typography>
       )}
       {isAnonymous && (
         <React.Fragment>
-          <Typography variant="subtitle2" align="center" style={{ color: "#E74B54", marginTop: 16 }}>
-            You are connected as a guest, if you want to create an event, please login using your email or Google
-            account.
+          <Typography
+            variant="subtitle2"
+            align="center"
+            style={{ color: "#E74B54", marginTop: 16 }}
+          >
+            You are connected as a guest, if you want to create an event, please
+            login using your email or Google account.
           </Typography>
           <div style={{ width: "100%", textAlign: "center", marginTop: 16 }}>
             <Button
@@ -454,7 +560,11 @@ function EditEventSessionForm(props) {
               />
 
               <MuiPickersUtilsProvider utils={MomentUtils}>
-                <Grid container justify="space-between" className={classes.textField}>
+                <Grid
+                  container
+                  justify="space-between"
+                  className={classes.textField}
+                >
                   <KeyboardDatePicker
                     margin="normal"
                     id="date-picker-dialog"
@@ -471,7 +581,9 @@ function EditEventSessionForm(props) {
                     style={{ width: "48%" }}
                     disabled={isAnonymous}
                     error={errors.beginDate !== undefined}
-                    helperText={errors.beginDate !== undefined ? errors.beginDate : null}
+                    helperText={
+                      errors.beginDate !== undefined ? errors.beginDate : null
+                    }
                   />
                   <KeyboardTimePicker
                     margin="normal"
@@ -486,7 +598,9 @@ function EditEventSessionForm(props) {
                     style={{ width: "48%" }}
                     disabled={isAnonymous}
                     error={errors.beginDate !== undefined}
-                    helperText={errors.beginDate !== undefined ? errors.beginDate : null}
+                    helperText={
+                      errors.beginDate !== undefined ? errors.beginDate : null
+                    }
                   />
                   {/* <TextField
                     id="time"
@@ -508,7 +622,11 @@ function EditEventSessionForm(props) {
                   /> */}
                 </Grid>
 
-                <Grid container justify="space-between" className={classes.textField}>
+                <Grid
+                  container
+                  justify="space-between"
+                  className={classes.textField}
+                >
                   <KeyboardDatePicker
                     margin="normal"
                     id="date-picker-dialog"
@@ -525,7 +643,9 @@ function EditEventSessionForm(props) {
                     style={{ width: "48%" }}
                     disabled={isAnonymous}
                     error={errors.endDate !== undefined}
-                    helperText={errors.endDate !== undefined ? errors.endDate : null}
+                    helperText={
+                      errors.endDate !== undefined ? errors.endDate : null
+                    }
                   />
                   <KeyboardTimePicker
                     margin="normal"
@@ -540,7 +660,9 @@ function EditEventSessionForm(props) {
                     style={{ width: "48%" }}
                     disabled={isAnonymous}
                     error={errors.endDate !== undefined}
-                    helperText={errors.endDate !== undefined ? errors.endDate : null}
+                    helperText={
+                      errors.endDate !== undefined ? errors.endDate : null
+                    }
                   />
                 </Grid>
               </MuiPickersUtilsProvider>
@@ -550,7 +672,9 @@ function EditEventSessionForm(props) {
                 <FormLabel component="legend" className={classes.textField}>
                   Banner
                 </FormLabel>
-                <FormHelperText>Recommended size 600 x 337 pixels</FormHelperText>
+                <FormHelperText>
+                  Recommended size 600 x 337 pixels
+                </FormHelperText>
 
                 <ImageUploaderCrop
                   aspectRatio={600 / 337}
@@ -587,7 +711,11 @@ function EditEventSessionForm(props) {
                   onChange={handleDescriptionUpdate}
                   inlineToolbar={true}
                   maxLength={5000}
-                  value={!isNewEvent && eventSession ? eventSession.description : null}
+                  value={
+                    !isNewEvent && eventSession
+                      ? eventSession.description
+                      : null
+                  }
                   inlineToolbarControls={[
                     "title",
                     "bold",
@@ -606,7 +734,11 @@ function EditEventSessionForm(props) {
               </div>
             </div>
             <div style={{ display: activeStep === 1 ? "block" : "none" }}>
-              <Grid container justify="space-between" className={classes.textField}>
+              <Grid
+                container
+                justify="space-between"
+                className={classes.textField}
+              >
                 <div style={{ flexGrow: 1, marginRight: 16 }}>
                   <TextField
                     fullWidth
@@ -623,10 +755,17 @@ function EditEventSessionForm(props) {
                         ? sessionIdError
                         : "This will be the url to your live event, it should not contain any space and once created it cannot be changed"
                     }
-                    error={errors.sessionId !== undefined || sessionIdError !== undefined}
+                    error={
+                      errors.sessionId !== undefined ||
+                      sessionIdError !== undefined
+                    }
                     required
                     InputProps={{
-                      startAdornment: <InputAdornment position="start">{sessionUrl}</InputAdornment>,
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          {sessionUrl}
+                        </InputAdornment>
+                      ),
                     }}
                     disabled={!isNewEvent}
                   />
@@ -652,7 +791,9 @@ function EditEventSessionForm(props) {
                             color="primary"
                           />
                         }
-                        label={values.visibility === "LISTED" ? "Listed" : "Unlisted"}
+                        label={
+                          values.visibility === "LISTED" ? "Listed" : "Unlisted"
+                        }
                       />
                     </Tooltip>
                   </FormGroup>
@@ -671,18 +812,37 @@ function EditEventSessionForm(props) {
                   value={selectedVideoType}
                   onChange={handleVideoTypeChange}
                 >
-                  <FormControlLabel value="YOUTUBE" control={<Radio color="primary" />} label="Youtube live stream" />
+                  <FormControlLabel
+                    value="YOUTUBE"
+                    control={<Radio color="primary" />}
+                    label="Youtube live stream"
+                  />
 
-                  <FormControlLabel value="FACEBOOK" control={<Radio color="primary" />} label="Facebook live stream" />
-                  <FormControlLabel value="JITSI" control={<Radio color="primary" />} label="Jitsi video conference" />
+                  <FormControlLabel
+                    value="FACEBOOK"
+                    control={<Radio color="primary" />}
+                    label="Facebook live stream"
+                  />
+                  <FormControlLabel
+                    value="JITSI"
+                    control={<Radio color="primary" />}
+                    label="Jitsi video conference"
+                  />
                 </RadioGroup>
                 {selectedVideoType === "JITSI" && (
-                  <FormHelperText>We do not recommend Jitsi video conference for a big audience</FormHelperText>
+                  <FormHelperText>
+                    We do not recommend Jitsi video conference for a big
+                    audience
+                  </FormHelperText>
                 )}
               </FormControl>
 
               {selectedVideoType === "YOUTUBE" && (
-                <Grid container justify="space-between" className={classes.textField}>
+                <Grid
+                  container
+                  justify="space-between"
+                  className={classes.textField}
+                >
                   <div style={{ flexGrow: 1, marginRight: 16 }}>
                     <TextField
                       fullWidth
@@ -696,7 +856,9 @@ function EditEventSessionForm(props) {
                       disabled={isAnonymous}
                       error={errors.conferenceRoomYoutubeLink !== undefined}
                       helperText={
-                        errors.conferenceRoomYoutubeLink !== undefined ? errors.conferenceRoomYoutubeLink : null
+                        errors.conferenceRoomYoutubeLink !== undefined
+                          ? errors.conferenceRoomYoutubeLink
+                          : null
                       }
                     />
                   </div>
@@ -714,7 +876,11 @@ function EditEventSessionForm(props) {
               )}
 
               {selectedVideoType === "FACEBOOK" && (
-                <Grid container justify="space-between" className={classes.textField}>
+                <Grid
+                  container
+                  justify="space-between"
+                  className={classes.textField}
+                >
                   <div style={{ flexGrow: 1, marginRight: 16 }}>
                     <TextField
                       fullWidth
@@ -727,7 +893,9 @@ function EditEventSessionForm(props) {
                       disabled={isAnonymous}
                       error={errors.conferenceRoomFacebookLink !== undefined}
                       helperText={
-                        errors.conferenceRoomFacebookLink !== undefined ? errors.conferenceRoomFacebookLink : null
+                        errors.conferenceRoomFacebookLink !== undefined
+                          ? errors.conferenceRoomFacebookLink
+                          : null
                       }
                     />
                   </div>
@@ -756,7 +924,11 @@ function EditEventSessionForm(props) {
                 disabled={isAnonymous}
               />
 
-              <Grid container justify="space-between" className={classes.textField}>
+              <Grid
+                container
+                justify="space-between"
+                className={classes.textField}
+              >
                 <TextField
                   fullWidth
                   label="Event opens"
@@ -769,7 +941,11 @@ function EditEventSessionForm(props) {
                   disabled={isAnonymous}
                   style={{ width: "48%" }}
                   InputProps={{
-                    endAdornment: <InputAdornment position="start">minutes before</InputAdornment>,
+                    endAdornment: (
+                      <InputAdornment position="start">
+                        minutes before
+                      </InputAdornment>
+                    ),
                   }}
                 />
                 <TextField
@@ -784,7 +960,11 @@ function EditEventSessionForm(props) {
                   disabled={isAnonymous}
                   style={{ width: "48%" }}
                   InputProps={{
-                    endAdornment: <InputAdornment position="start">minutes after</InputAdornment>,
+                    endAdornment: (
+                      <InputAdornment position="start">
+                        minutes after
+                      </InputAdornment>
+                    ),
                   }}
                 />
               </Grid>
@@ -813,7 +993,9 @@ function EditEventSessionForm(props) {
               )}
               {activeStep === 1 && (
                 <div>
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
+                  <div
+                    style={{ display: "flex", justifyContent: "space-between" }}
+                  >
                     <Button
                       variant="outlined"
                       color="primary"
@@ -836,7 +1018,11 @@ function EditEventSessionForm(props) {
                     )}
                   </div>
                   {creatingEvent && (
-                    <Typography variant="caption" align="center" display="block">
+                    <Typography
+                      variant="caption"
+                      align="center"
+                      display="block"
+                    >
                       {isNewEvent ? "Creating" : "Updating"} event...
                     </Typography>
                   )}
@@ -848,7 +1034,11 @@ function EditEventSessionForm(props) {
       )}
       {/* </Paper> */}
 
-      <Dialog onClose={() => setShowPreview(false)} open={showPreview} scroll={"body"}>
+      <Dialog
+        onClose={() => setShowPreview(false)}
+        open={showPreview}
+        scroll={"body"}
+      >
         <EventPage
           event={{
             bannerUrl: bannerImagePreviewUrl,
@@ -861,7 +1051,11 @@ function EditEventSessionForm(props) {
           isPreview={true}
         />
       </Dialog>
-      <Dialog onClose={() => setShowYoutubePreview(false)} open={showYoutubePreview} maxWidth="sm">
+      <Dialog
+        onClose={() => setShowYoutubePreview(false)}
+        open={showYoutubePreview}
+        maxWidth="sm"
+      >
         <iframe
           // className={classes.videoContainer}
           style={{ width: 500, height: 300 }}
@@ -872,7 +1066,11 @@ function EditEventSessionForm(props) {
           title="livestream"
         />
       </Dialog>
-      <Dialog onClose={() => setShowFacebookPreview(false)} open={showFacebookPreview} maxWidth="sm">
+      <Dialog
+        onClose={() => setShowFacebookPreview(false)}
+        open={showFacebookPreview}
+        maxWidth="sm"
+      >
         <div
           style={{ width: 500, height: 300 }}
           className="fb-video"
@@ -909,14 +1107,21 @@ function EditEventSessionForm(props) {
               </Typography>
               <div style={{ display: "flex", justifyContent: "center" }}>
                 <Typography align="center">
-                  <a href={sessionUrl + values.sessionId}>{sessionUrl + values.sessionId}</a>
+                  <a href={sessionUrl + values.sessionId}>
+                    {sessionUrl + values.sessionId}
+                  </a>
                 </Typography>
                 <Tooltip title="Copy event link">
                   <CopyToClipboard
                     text={sessionUrl + values.sessionId}
                     onCopy={() => snackbar.showMessage("Event link copied")}
                   >
-                    <IconButton aria-label="copy" style={{ marginLeft: 8 }} size="small" color="primary">
+                    <IconButton
+                      aria-label="copy"
+                      style={{ marginLeft: 8 }}
+                      size="small"
+                      color="primary"
+                    >
                       <CopyIcon fontSize="inherit" />
                     </IconButton>
                   </CopyToClipboard>
@@ -926,12 +1131,17 @@ function EditEventSessionForm(props) {
                 <Button
                   variant="outlined"
                   color="primary"
-                  onClick={() => history.push(routes.EVENT_SESSION(values.sessionId))}
+                  onClick={() =>
+                    history.push(routes.EVENT_SESSION(values.sessionId))
+                  }
                 >
                   Open Event page
                 </Button>
               </div>
-              <EventShareIcons url={sessionUrl + values.sessionId} shareText={shareText} />
+              <EventShareIcons
+                url={sessionUrl + values.sessionId}
+                shareText={shareText}
+              />
             </React.Fragment>
           )}
           {eventCreated === "ERROR" && (

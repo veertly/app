@@ -2,9 +2,16 @@ import firebase from "./firebaseApp";
 import { v1 as uuidv1 } from "uuid";
 import { MAX_PARTICIPANTS_GROUP } from "../Config/constants";
 
-const getVideoConferenceAddress = (groupId) => `https://meet.jit.si/veertly-${groupId}`;
+const getVideoConferenceAddress = (groupId) =>
+  `https://meet.jit.si/veertly-${groupId}`;
 
-export const createNewConversation = (sessionId, myUserId, otherUserId, currentUserGroup, snackbar) => {
+export const createNewConversation = (
+  sessionId,
+  myUserId,
+  otherUserId,
+  currentUserGroup,
+  snackbar
+) => {
   let currentGroupId = currentUserGroup ? currentUserGroup.id : null;
   // participantsJoined[myUserId] && participantsJoined[myUserId].groupId
   //   ? participantsJoined[myUserId].groupId
@@ -16,11 +23,22 @@ export const createNewConversation = (sessionId, myUserId, otherUserId, currentU
 
   let eventSessionRef = db.collection("eventSessions").doc(sessionId);
 
-  let myUserRef = db.collection(`eventSessions`).doc(sessionId).collection("participantsJoined").doc(myUserId);
+  let myUserRef = db
+    .collection(`eventSessions`)
+    .doc(sessionId)
+    .collection("participantsJoined")
+    .doc(myUserId);
 
-  let otherUserRef = db.collection(`eventSessions`).doc(sessionId).collection("participantsJoined").doc(otherUserId);
+  let otherUserRef = db
+    .collection(`eventSessions`)
+    .doc(sessionId)
+    .collection("participantsJoined")
+    .doc(otherUserId);
 
-  var currentGroupRef = currentGroupId !== null ? eventSessionRef.collection("liveGroups").doc(currentGroupId) : null;
+  var currentGroupRef =
+    currentGroupId !== null
+      ? eventSessionRef.collection("liveGroups").doc(currentGroupId)
+      : null;
   var newGroupRef = eventSessionRef.collection("liveGroups").doc(groupId);
 
   let groupParticipantsObj = {};
@@ -46,7 +64,9 @@ export const createNewConversation = (sessionId, myUserId, otherUserId, currentU
   let participantsRefCurrentGroup = {};
 
   if (currentGroupId !== null) {
-    let participantsKeysCurrentGroup = Object.keys(currentUserGroup.participants);
+    let participantsKeysCurrentGroup = Object.keys(
+      currentUserGroup.participants
+    );
 
     for (let i = 0; i < participantsKeysCurrentGroup.length; i++) {
       let userId = participantsKeysCurrentGroup[i];
@@ -74,7 +94,9 @@ export const createNewConversation = (sessionId, myUserId, otherUserId, currentU
 
       let otherUser = otherUserSnapshot.data();
       if (otherUser.groupId !== null) {
-        throw new Error("Oops, the invited user has started another conversation");
+        throw new Error(
+          "Oops, the invited user has started another conversation"
+        );
       }
 
       let myUserSnapshot = await transaction.get(myUserRef);
@@ -104,8 +126,12 @@ export const createNewConversation = (sessionId, myUserId, otherUserId, currentU
 
         // list the active participants on the current group
         let activeParticipantsCurrentGroup = [];
-        let participantsIdsCurrentGroup = Object.keys(currentGroup.participants);
-        let participantsValuesCurrentGroup = Object.values(currentGroup.participants);
+        let participantsIdsCurrentGroup = Object.keys(
+          currentGroup.participants
+        );
+        let participantsValuesCurrentGroup = Object.values(
+          currentGroup.participants
+        );
         for (let i = 0; i < participantsValuesCurrentGroup.length; i++) {
           let userId = participantsIdsCurrentGroup[i];
           if (userId === myUserId) {
@@ -123,14 +149,21 @@ export const createNewConversation = (sessionId, myUserId, otherUserId, currentU
 
         // 2.3. set leftTimestamp on my participant of the current group
         let updateObj = {};
-        updateObj[`participants.${myUserId}.leftTimestamp`] = firebase.firestore.FieldValue.serverTimestamp();
+        updateObj[
+          `participants.${myUserId}.leftTimestamp`
+        ] = firebase.firestore.FieldValue.serverTimestamp();
         transaction.update(currentGroupRef, updateObj);
 
         // 2.4. check if only one participant remaining on the current group (if not a room)
-        if (!currentGroup.isRoom && activeParticipantsCurrentGroup.length === 1) {
+        if (
+          !currentGroup.isRoom &&
+          activeParticipantsCurrentGroup.length === 1
+        ) {
           //5.1 set the remaining participant group to null
           let participant = activeParticipantsCurrentGroup[0];
-          transaction.update(participantsRefCurrentGroup[participant.userId], { groupId: null });
+          transaction.update(participantsRefCurrentGroup[participant.userId], {
+            groupId: null,
+          });
 
           //5.2 set the leftTimestamp on the remaining participant in the current group
           updateObj = {};
@@ -160,23 +193,41 @@ export const createNewConversation = (sessionId, myUserId, otherUserId, currentU
     });
 };
 
-export const joinConversation = (sessionId, participantsJoined, liveGroups, myUserId, newGroupId, snackbar) => {
+export const joinConversation = (
+  sessionId,
+  participantsJoined,
+  liveGroups,
+  myUserId,
+  newGroupId,
+  snackbar
+) => {
   let currentGroupId =
-    participantsJoined[myUserId] && participantsJoined[myUserId].groupId ? participantsJoined[myUserId].groupId : null;
+    participantsJoined[myUserId] && participantsJoined[myUserId].groupId
+      ? participantsJoined[myUserId].groupId
+      : null;
 
   let db = firebase.firestore();
 
   let eventSessionRef = db.collection("eventSessions").doc(sessionId);
 
-  var currentGroupRef = currentGroupId !== null ? eventSessionRef.collection("liveGroups").doc(currentGroupId) : null;
+  var currentGroupRef =
+    currentGroupId !== null
+      ? eventSessionRef.collection("liveGroups").doc(currentGroupId)
+      : null;
   var newGroupRef = eventSessionRef.collection("liveGroups").doc(newGroupId);
 
-  let myUserRef = db.collection(`eventSessions`).doc(sessionId).collection("participantsJoined").doc(myUserId);
+  let myUserRef = db
+    .collection(`eventSessions`)
+    .doc(sessionId)
+    .collection("participantsJoined")
+    .doc(myUserId);
 
   let participantsRefCurrentGroup = {};
 
   if (currentGroupId !== null) {
-    let participantsKeysCurrentGroup = Object.keys(liveGroups[currentGroupId].participants);
+    let participantsKeysCurrentGroup = Object.keys(
+      liveGroups[currentGroupId].participants
+    );
 
     for (let i = 0; i < participantsKeysCurrentGroup.length; i++) {
       let userId = participantsKeysCurrentGroup[i];
@@ -223,7 +274,10 @@ export const joinConversation = (sessionId, participantsJoined, liveGroups, myUs
         }
       }
 
-      if (!isRoomNewGroup && numActiveParticipantsNewGroup >= MAX_PARTICIPANTS_GROUP) {
+      if (
+        !isRoomNewGroup &&
+        numActiveParticipantsNewGroup >= MAX_PARTICIPANTS_GROUP
+      ) {
         throw new Error("Oops, this conversation group is already full!");
       }
 
@@ -247,8 +301,12 @@ export const joinConversation = (sessionId, participantsJoined, liveGroups, myUs
 
         // list the active participants on the current group
         let activeParticipantsCurrentGroup = [];
-        let participantsIdsCurrentGroup = Object.keys(currentGroup.participants);
-        let participantsValuesCurrentGroup = Object.values(currentGroup.participants);
+        let participantsIdsCurrentGroup = Object.keys(
+          currentGroup.participants
+        );
+        let participantsValuesCurrentGroup = Object.values(
+          currentGroup.participants
+        );
         for (let i = 0; i < participantsValuesCurrentGroup.length; i++) {
           let userId = participantsIdsCurrentGroup[i];
           if (userId === myUserId) {
@@ -266,14 +324,21 @@ export const joinConversation = (sessionId, participantsJoined, liveGroups, myUs
 
         // 2.3. set leftTimestamp on my participant of the current group
         let updateObj = {};
-        updateObj[`participants.${myUserId}.leftTimestamp`] = firebase.firestore.FieldValue.serverTimestamp();
+        updateObj[
+          `participants.${myUserId}.leftTimestamp`
+        ] = firebase.firestore.FieldValue.serverTimestamp();
         transaction.update(currentGroupRef, updateObj);
 
         // 2.4. check if only one participant remaining on the current group (if not room)
-        if (!isRoomCurrentGroup && activeParticipantsCurrentGroup.length === 1) {
+        if (
+          !isRoomCurrentGroup &&
+          activeParticipantsCurrentGroup.length === 1
+        ) {
           //5.1 set the remaining participant group to null
           let participant = activeParticipantsCurrentGroup[0];
-          transaction.update(participantsRefCurrentGroup[participant.userId], { groupId: null });
+          transaction.update(participantsRefCurrentGroup[participant.userId], {
+            groupId: null,
+          });
 
           //5.2 set the leftTimestamp on the remaining participant in the current group
           updateObj = {};
@@ -289,7 +354,9 @@ export const joinConversation = (sessionId, participantsJoined, liveGroups, myUs
 
       // 4. add user to the participants of the new group
       let updateObj = {};
-      updateObj[`participants.${myUserId}.joinedTimestamp`] = firebase.firestore.FieldValue.serverTimestamp();
+      updateObj[
+        `participants.${myUserId}.joinedTimestamp`
+      ] = firebase.firestore.FieldValue.serverTimestamp();
       updateObj[`participants.${myUserId}.leftTimestamp`] = null;
       updateObj[`participants.${myUserId}.id`] = myUserId;
       transaction.update(newGroupRef, updateObj);
@@ -314,7 +381,11 @@ export const leaveCall = (sessionId, group, myUserId) => {
   let db = firebase.firestore();
 
   let eventSessionRef = db.collection("eventSessions").doc(sessionId);
-  let myUserRef = db.collection(`eventSessions`).doc(sessionId).collection("participantsJoined").doc(myUserId);
+  let myUserRef = db
+    .collection(`eventSessions`)
+    .doc(sessionId)
+    .collection("participantsJoined")
+    .doc(myUserId);
 
   var myGroupRef = eventSessionRef.collection("liveGroups").doc(myGroupId);
 
@@ -348,7 +419,10 @@ export const leaveCall = (sessionId, group, myUserId) => {
       }
 
       let myGroup = liveGroupSnapshot.data();
-      if (myGroup.participants[myUserId] === null || myGroup.participants[myUserId].leftTimestamp !== null) {
+      if (
+        myGroup.participants[myUserId] === null ||
+        myGroup.participants[myUserId].leftTimestamp !== null
+      ) {
         throw new Error("Oops, you are no longer part of this conversation");
       }
 
@@ -375,18 +449,24 @@ export const leaveCall = (sessionId, group, myUserId) => {
 
       //4. set leftTimestamp on my participant of the live group
       let updateObj = {};
-      updateObj[`participants.${myUserId}.leftTimestamp`] = firebase.firestore.FieldValue.serverTimestamp();
+      updateObj[
+        `participants.${myUserId}.leftTimestamp`
+      ] = firebase.firestore.FieldValue.serverTimestamp();
       transaction.update(myGroupRef, updateObj);
 
       //5. check if only one participant remaining (if not room)
       if (!myGroup.isRoom && activeParticipants.length === 1) {
         //5.1 set the remaining participant group to null
         let participant = activeParticipants[0];
-        transaction.update(participantsRef[participant.userId], { groupId: null });
+        transaction.update(participantsRef[participant.userId], {
+          groupId: null,
+        });
 
         //5.2 set the leftTimestamp on the remaining participant
         updateObj = {};
-        updateObj[`participants.${participant.userId}.leftTimestamp`] = firebase.firestore.FieldValue.serverTimestamp();
+        updateObj[
+          `participants.${participant.userId}.leftTimestamp`
+        ] = firebase.firestore.FieldValue.serverTimestamp();
         transaction.update(myGroupRef, updateObj);
       }
     })
@@ -399,7 +479,13 @@ export const leaveCall = (sessionId, group, myUserId) => {
     });
 };
 
-export const createNewRoom = (sessionId, roomName, myUserId, currentUserGroup, snackbar) => {
+export const createNewRoom = (
+  sessionId,
+  roomName,
+  myUserId,
+  currentUserGroup,
+  snackbar
+) => {
   let currentGroupId = currentUserGroup ? currentUserGroup.id : null;
   // participantsJoined[myUserId] && participantsJoined[myUserId].groupId
   //   ? participantsJoined[myUserId].groupId
@@ -411,11 +497,18 @@ export const createNewRoom = (sessionId, roomName, myUserId, currentUserGroup, s
 
   let eventSessionRef = db.collection("eventSessions").doc(sessionId);
 
-  let myUserRef = db.collection(`eventSessions`).doc(sessionId).collection("participantsJoined").doc(myUserId);
+  let myUserRef = db
+    .collection(`eventSessions`)
+    .doc(sessionId)
+    .collection("participantsJoined")
+    .doc(myUserId);
 
   // let otherUserRef = db.collection(`eventSessions`).doc(sessionId).collection("participantsJoined").doc(otherUserId);
 
-  var currentGroupRef = currentGroupId !== null ? eventSessionRef.collection("liveGroups").doc(currentGroupId) : null;
+  var currentGroupRef =
+    currentGroupId !== null
+      ? eventSessionRef.collection("liveGroups").doc(currentGroupId)
+      : null;
   var newGroupRef = eventSessionRef.collection("liveGroups").doc(groupId);
 
   let groupParticipantsObj = {};
@@ -440,7 +533,9 @@ export const createNewRoom = (sessionId, roomName, myUserId, currentUserGroup, s
   let participantsRefCurrentGroup = {};
 
   if (currentGroupId !== null) {
-    let participantsKeysCurrentGroup = Object.keys(currentUserGroup.participants);
+    let participantsKeysCurrentGroup = Object.keys(
+      currentUserGroup.participants
+    );
 
     for (let i = 0; i < participantsKeysCurrentGroup.length; i++) {
       let userId = participantsKeysCurrentGroup[i];
@@ -488,8 +583,12 @@ export const createNewRoom = (sessionId, roomName, myUserId, currentUserGroup, s
 
         // list the active participants on the current group
         let activeParticipantsCurrentGroup = [];
-        let participantsIdsCurrentGroup = Object.keys(currentGroup.participants);
-        let participantsValuesCurrentGroup = Object.values(currentGroup.participants);
+        let participantsIdsCurrentGroup = Object.keys(
+          currentGroup.participants
+        );
+        let participantsValuesCurrentGroup = Object.values(
+          currentGroup.participants
+        );
         for (let i = 0; i < participantsValuesCurrentGroup.length; i++) {
           let userId = participantsIdsCurrentGroup[i];
           if (userId === myUserId) {
@@ -507,14 +606,21 @@ export const createNewRoom = (sessionId, roomName, myUserId, currentUserGroup, s
 
         // 2.3. set leftTimestamp on my participant of the current group
         let updateObj = {};
-        updateObj[`participants.${myUserId}.leftTimestamp`] = firebase.firestore.FieldValue.serverTimestamp();
+        updateObj[
+          `participants.${myUserId}.leftTimestamp`
+        ] = firebase.firestore.FieldValue.serverTimestamp();
         transaction.update(currentGroupRef, updateObj);
 
         // 2.4. check if only one participant remaining on the current group (if not room)
-        if (!currentGroup.isRoom && activeParticipantsCurrentGroup.length === 1) {
+        if (
+          !currentGroup.isRoom &&
+          activeParticipantsCurrentGroup.length === 1
+        ) {
           //5.1 set the remaining participant group to null
           let participant = activeParticipantsCurrentGroup[0];
-          transaction.update(participantsRefCurrentGroup[participant.userId], { groupId: null });
+          transaction.update(participantsRefCurrentGroup[participant.userId], {
+            groupId: null,
+          });
 
           //5.2 set the leftTimestamp on the remaining participant in the current group
           updateObj = {};
@@ -541,7 +647,11 @@ export const createNewRoom = (sessionId, roomName, myUserId, currentUserGroup, s
     });
 };
 
-export const updateInNetworkingRoom = async (sessionId, myUserId, inNetworkingRoom) => {
+export const updateInNetworkingRoom = async (
+  sessionId,
+  myUserId,
+  inNetworkingRoom
+) => {
   await firebase
     .firestore()
     .collection("eventSessions")
@@ -560,7 +670,7 @@ export const createConference = async (
   title,
   conferenceVideoType,
   conferenceRoomYoutubeVideoId,
-  conferenceRoomFacebookVideoId,
+  conferenceRoomFacebookLink,
   website,
   expectedAmountParticipants,
   eventBeginDate,
@@ -575,7 +685,9 @@ export const createConference = async (
   let normedSessionId = sessionId.toLowerCase();
 
   let db = firebase.firestore();
-  let eventsSessionDetailsRef = db.collection("eventSessionsDetails").doc(normedSessionId);
+  let eventsSessionDetailsRef = db
+    .collection("eventSessionsDetails")
+    .doc(normedSessionId);
   let eventSessionRef = db.collection("eventSessions").doc(normedSessionId);
 
   let x = (str) => (str ? str : "");
@@ -586,7 +698,7 @@ export const createConference = async (
     title: x(title),
     conferenceVideoType: x(conferenceVideoType),
     conferenceRoomYoutubeVideoId: x(conferenceRoomYoutubeVideoId),
-    conferenceRoomFacebookVideoId: x(conferenceRoomFacebookVideoId),
+    conferenceRoomFacebookLink: x(conferenceRoomFacebookLink),
     website: x(website),
     expectedAmountParticipants: x(expectedAmountParticipants),
     eventBeginDate: firebase.firestore.Timestamp.fromDate(eventBeginDate),
@@ -618,7 +730,9 @@ export const createConference = async (
 
   return db
     .runTransaction(async function (transaction) {
-      let eventsSessionDetailsSnapshot = await transaction.get(eventsSessionDetailsRef);
+      let eventsSessionDetailsSnapshot = await transaction.get(
+        eventsSessionDetailsRef
+      );
       let sessionDetailsExists = eventsSessionDetailsSnapshot.exists;
       if (isCreate && sessionDetailsExists) {
         throw new Error("Event already exists");
