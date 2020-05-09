@@ -184,7 +184,7 @@ export default function EventPage(props) {
           disableElevation
           onClick={() => history.push(routes.EDIT_EVENT_SESSION(id))}
           className={classes.editButton}
-          style={{ backgroundColor: "rgba(92, 219, 148, 0.2)" }}
+          style={{ backgroundColor: "rgba(92, 219, 148, 0.5)", color: "#fff" }}
         >
           Edit Event
         </Button>
