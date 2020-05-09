@@ -13,7 +13,7 @@ import IconButton from "@material-ui/core/IconButton";
 import AddIcon from "@material-ui/icons/Add";
 import { v1 as uuidv1 } from "uuid";
 import { getUserDb, updateUser } from "../../Modules/userOperations";
-import Checkbox from "@material-ui/core/Checkbox";
+// import Checkbox from "@material-ui/core/Checkbox";
 import LinkedinIcon from "../../Assets/Icons/Linkedin";
 import TwitterIcon from "../../Assets/Icons/Twitter";
 import KeybaseIcon from "../../Assets/Icons/Keybase";
@@ -30,7 +30,7 @@ const styles = (theme) => ({
   },
   bottom: {
     textAlign: "center",
-    marginTop: 16,
+    marginTop: 8,
   },
   textField: {
     marginTop: 16,
@@ -87,7 +87,7 @@ function EditProfileForm(props) {
   const { classes, userAuth, sessionId, profileUpdatedCallback } = props;
 
   let [values, setValues] = React.useState(getUserDefaultValues(userAuth));
-  let [dbCheckNewsletter, setDbCheckNewsletter] = React.useState(null);
+  // let [dbCheckNewsletter, setDbCheckNewsletter] = React.useState(null);
   let [errors, setErrors] = React.useState({});
   const [interestsChips, setInterestsChips] = React.useState([]);
   const [updating, setUpdating] = React.useState(false);
@@ -146,7 +146,7 @@ function EditProfileForm(props) {
           }));
 
           setInterestsChips(interestsChips ? interestsChips : []);
-          setDbCheckNewsletter(checkedNewsletter === true);
+          // setDbCheckNewsletter(checkedNewsletter === true);
         }
       }
     };
@@ -425,7 +425,7 @@ function EditProfileForm(props) {
         />
       </div>
 
-      <div style={{ textAlign: "left", marginTop: 16 }}>
+      {/* <div style={{ textAlign: "left", marginTop: 16 }}>
         {dbCheckNewsletter !== true && (
           <FormControlLabel
             control={
@@ -486,23 +486,47 @@ function EditProfileForm(props) {
             </span>
           }
         />
-      </div>
+      </div> */}
       <div className={classes.bottom}>
-        {values.checkedTerms !== true && (
+        {/* {values.checkedTerms !== true && (
           <Typography align="center" color="textSecondary">
             You need to accept the Terms of Service and the Privacy Policy
           </Typography>
-        )}
+        )} */}
         <Button
           variant="contained"
           color="primary"
           type="submit"
           className={classes.button}
           onClick={handleUpdateProfile}
-          disabled={updating || values.checkedTerms !== true}
+          disabled={updating /* || values.checkedTerms !== true */}
         >
           Update Profile
         </Button>
+        <Typography
+          /* variant="caption" */ color="textSecondary"
+          display="block"
+          style={{ marginTop: 24 }}
+        >
+          <span>
+            By proceeding, you accept the{" "}
+            <a
+              href="https://veertly.com/terms-of-service/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Terms of Service
+            </a>{" "}
+            &amp;{" "}
+            <a
+              href="https://veertly.com/privacy-policy"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Privacy Policy
+            </a>
+          </span>
+        </Typography>
       </div>
     </React.Fragment>
   );
