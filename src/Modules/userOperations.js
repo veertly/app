@@ -2,7 +2,14 @@ import firebase from "./firebaseApp";
 
 export const registerNewUser = async (userAuth) => {
   // console.log("on: registerNewUser");
-  let { displayName, email, phoneNumber, uid, photoURL, isAnonymous } = userAuth;
+  let {
+    displayName,
+    email,
+    phoneNumber,
+    uid,
+    photoURL,
+    isAnonymous,
+  } = userAuth;
   let names = displayName.split(" ");
   let firstName = names[0];
   let lastName = names.length > 1 ? names[names.length - 1] : "";
@@ -26,7 +33,7 @@ export const registerNewUser = async (userAuth) => {
 export const updateUser = async (userId, sessionId, userDb) => {
   let db = firebase.firestore();
 
-  let userRef = db.collection(`users`).doc(userId);
+  let userRef = db.collection("users").doc(userId);
   let userSessionRef = null;
   let userAttendedEventsRef = null;
 
@@ -35,13 +42,13 @@ export const updateUser = async (userId, sessionId, userDb) => {
 
   if (sessionId) {
     userSessionRef = db
-      .collection(`eventSessions`)
+      .collection("eventSessions")
       .doc(sessionId.toLowerCase())
       .collection("participantsDetails")
       .doc(userId);
 
     userAttendedEventsRef = db
-      .collection(`userAttendedEvents`)
+      .collection("userAttendedEvents")
       .doc(userId)
       .collection("events")
       .doc(sessionId.toLowerCase());
@@ -70,8 +77,12 @@ export const updateUser = async (userId, sessionId, userDb) => {
 
   await db.runTransaction(async function (transaction) {
     let userSnapshot = await transaction.get(userRef);
-    let userSessionSnapshot = userSessionRef ? await transaction.get(userSessionRef) : null;
-    let userAttendedEventsSnapshot = userAttendedEventsRef ? await transaction.get(userAttendedEventsRef) : null;
+    let userSessionSnapshot = userSessionRef
+      ? await transaction.get(userSessionRef)
+      : null;
+    let userAttendedEventsSnapshot = userAttendedEventsRef
+      ? await transaction.get(userAttendedEventsRef)
+      : null;
 
     // console.log({ eventSession, minEventSession });
     if (!userSnapshot.exists) {
@@ -140,7 +151,9 @@ export const logout = async (sessionId) => {
   if (sessionId) {
     var userId = firebase.auth().currentUser.uid;
 
-    var userStatusDatabaseRef = firebase.database().ref("/sessionUsersStatus/" + sessionId + "/" + userId);
+    var userStatusDatabaseRef = firebase
+      .database()
+      .ref("/sessionUsersStatus/" + sessionId + "/" + userId);
     var userStatusFirestoreRef = firebase
       .firestore()
       .collection("eventSessions")
@@ -165,10 +178,16 @@ export const logout = async (sessionId) => {
   await firebase.auth().signOut();
 };
 
-export const initFirebasePresenceSync = async (sessionId, userId, participantsJoined) => {
+export const initFirebasePresenceSync = async (
+  sessionId,
+  userId,
+  participantsJoined
+) => {
   // https://firebase.google.com/docs/firestore/solutions/presence
 
-  var userStatusDatabaseRef = firebase.database().ref("/sessionUsersStatus/" + sessionId + "/" + userId);
+  var userStatusDatabaseRef = firebase
+    .database()
+    .ref("/sessionUsersStatus/" + sessionId + "/" + userId);
   var userStatusFirestoreRef = firebase
     .firestore()
     .collection("eventSessions")
@@ -210,13 +229,16 @@ export const initFirebasePresenceSync = async (sessionId, userId, participantsJo
           userStatusDatabaseRef.set(isOnlineForDatabase);
 
           if (!participantsJoined[userId]) {
-            userStatusFirestoreRef.set({
-              groupId: null,
-              isOnline: true,
-              joinedTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
-              leftTimestamp: null,
-              lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
-            });
+            userStatusFirestoreRef.set(
+              {
+                groupId: null,
+                isOnline: true,
+                joinedTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                leftTimestamp: null,
+                lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
+              },
+              { merge: true }
+            );
           } else {
             userStatusFirestoreRef.update({
               isOnline: true,
@@ -237,9 +259,12 @@ export const keepAlive = async (sessionId, userId, userSession) => {
     .collection("keepAlive")
     .doc(userId);
 
-  await keepAliveSessionRef.set({
-    lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
-  });
+  await keepAliveSessionRef.set(
+    {
+      lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
+    },
+    { merge: true }
+  );
 
   if (userSession && !userSession.isOnline) {
     var userSessionRef = firebase
