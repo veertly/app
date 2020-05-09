@@ -24,13 +24,13 @@ export const createNewConversation = (
   let eventSessionRef = db.collection("eventSessions").doc(sessionId);
 
   let myUserRef = db
-    .collection(`eventSessions`)
+    .collection("eventSessions")
     .doc(sessionId)
     .collection("participantsJoined")
     .doc(myUserId);
 
   let otherUserRef = db
-    .collection(`eventSessions`)
+    .collection("eventSessions")
     .doc(sessionId)
     .collection("participantsJoined")
     .doc(otherUserId);
@@ -71,7 +71,7 @@ export const createNewConversation = (
     for (let i = 0; i < participantsKeysCurrentGroup.length; i++) {
       let userId = participantsKeysCurrentGroup[i];
       participantsRefCurrentGroup[userId] = db
-        .collection(`eventSessions`)
+        .collection("eventSessions")
         .doc(sessionId)
         .collection("participantsJoined")
         .doc(userId);
@@ -217,7 +217,7 @@ export const joinConversation = (
   var newGroupRef = eventSessionRef.collection("liveGroups").doc(newGroupId);
 
   let myUserRef = db
-    .collection(`eventSessions`)
+    .collection("eventSessions")
     .doc(sessionId)
     .collection("participantsJoined")
     .doc(myUserId);
@@ -232,7 +232,7 @@ export const joinConversation = (
     for (let i = 0; i < participantsKeysCurrentGroup.length; i++) {
       let userId = participantsKeysCurrentGroup[i];
       participantsRefCurrentGroup[userId] = db
-        .collection(`eventSessions`)
+        .collection("eventSessions")
         .doc(sessionId)
         .collection("participantsJoined")
         .doc(userId);
@@ -382,7 +382,7 @@ export const leaveCall = (sessionId, group, myUserId) => {
 
   let eventSessionRef = db.collection("eventSessions").doc(sessionId);
   let myUserRef = db
-    .collection(`eventSessions`)
+    .collection("eventSessions")
     .doc(sessionId)
     .collection("participantsJoined")
     .doc(myUserId);
@@ -395,7 +395,7 @@ export const leaveCall = (sessionId, group, myUserId) => {
   for (let i = 0; i < participantsKeys.length; i++) {
     let userId = participantsKeys[i];
     participantsRef[userId] = db
-      .collection(`eventSessions`)
+      .collection("eventSessions")
       .doc(sessionId)
       .collection("participantsJoined")
       .doc(userId);
@@ -498,7 +498,7 @@ export const createNewRoom = (
   let eventSessionRef = db.collection("eventSessions").doc(sessionId);
 
   let myUserRef = db
-    .collection(`eventSessions`)
+    .collection("eventSessions")
     .doc(sessionId)
     .collection("participantsJoined")
     .doc(myUserId);
@@ -540,7 +540,7 @@ export const createNewRoom = (
     for (let i = 0; i < participantsKeysCurrentGroup.length; i++) {
       let userId = participantsKeysCurrentGroup[i];
       participantsRefCurrentGroup[userId] = db
-        .collection(`eventSessions`)
+        .collection("eventSessions")
         .doc(sessionId)
         .collection("participantsJoined")
         .doc(userId);

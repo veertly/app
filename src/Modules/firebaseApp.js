@@ -22,18 +22,18 @@ firebaseApp.initializeApp(firebaseConfig);
 export default firebaseApp;
 
 const functionsApp = functions();
+const loginInEvent = functionsApp.httpsCallable("loginInEvent");
 
-if (process.env.NODE_ENV === "development") {
-  console.log("in firebase")
-  functionsApp.useFunctionsEmulator("http://localhost:5001")
-}
+// if (process.env.NODE_ENV === "development") {
+//   functionsApp.useFunctionsEmulator("http://localhost:5001")
+// }
 
 const getTimestampFromDate = (date) => {
   return firebaseApp.firestore.Timestamp.fromDate(date);
 };
 
 export {
-  functionsApp,
+  loginInEvent,
   getTimestampFromDate,
 }
 

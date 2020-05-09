@@ -9,83 +9,94 @@ import Button from "@material-ui/core/Button";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import { makeStyles } from "@material-ui/core/styles";
-import Grid from "@material-ui/core/Grid";
-import {
-  useDocumentData,
-} from "react-firebase-hooks/firestore";
-import firebase, { functionsApp } from "../../Modules/firebaseApp";
-import {
-  useParams
-} from "react-router-dom";
+import { useDocumentData } from "react-firebase-hooks/firestore";
+import firebase, { loginInEvent } from "../../Modules/firebaseApp";
+import { useParams } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
 import SplashScreen from "../../Components/Misc/SplashScreen";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    "& > *": {
-      margin: theme.spacing(1.5),
-      // width: "25ch",
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    "& > * + *": {
+      marginTop: theme.spacing(4),
     },
   },
-  textField: {
-    width: 300
-  }
+  textField: {},
+  dialog: {
+    padding: theme.spacing(0),
+    // margin: 0,
+  },
+  dialogTitle: {
+    paddingTop: theme.spacing(4),
+    paddingLeft: theme.spacing(4),
+    paddingRight: theme.spacing(4),
+  },
+  dialogContent: {
+    paddingBottom: theme.spacing(4),
+    paddingLeft: theme.spacing(4),
+    paddingRight: theme.spacing(4),
+  },
+  button: ({ loading }) => ({
+    opacity: loading ? 0.5 : 1,
+    width: "30%",
+  }),
 }));
 
-
-const AuthDialog = ({ handleSubmit }) => {
-  const styles = useStyles();
-  const [password, setPassword] = React.useState("");
+const AuthDialog = ({ handleSubmit, error, loading, code }) => {
+  const styles = useStyles({ loading });
+  const [password, setPassword] = React.useState(code ? code : "");
 
   const handleChange = (event) => {
     setPassword(event.target.value);
   };
 
-  const handleClick = (event) => {
-    console.log(password)
+  const handleClick = (e) => {
     handleSubmit(password);
-  }
+    e.preventDefault();
+  };
 
   return (
-    <Dialog
-      open
-    >
-      <DialogTitle id="form-dialog-title">Enter password for event</DialogTitle>
-      <DialogContent
-      >
-        <Grid
-          className={styles.root}
-          container
-          direction="column"
-          justify="center"
-          alignItems="center"
-        >
+    <Dialog open className={styles.dialog} fullWidth maxWidth="xs">
+      <DialogTitle className={styles.dialogTitle} id="form-dialog-title">
+        Enter your access code
+      </DialogTitle>
+      <DialogContent className={styles.dialogContent}>
+        <form className={styles.root} onSubmit={handleClick}>
           <TextField
             className={styles.textField}
             id="event-password-input"
-            label="Password"
+            label="Access code"
             type="password"
             value={password}
+            fullWidth
+            helperText={error ? "Incorrect code" : ""}
             onChange={handleChange}
+            error={error}
           ></TextField>
-          <Button 
-          onClick={handleClick}
-          variant="contained" color="primary">
+          <Button
+            className={styles.button}
+            // onClick={handleClick}
+            type="submit"
+            variant="contained"
+            color="primary"
+          >
             Submit
           </Button>
-        </Grid>
-
+        </form>
       </DialogContent>
     </Dialog>
-  )
-}
+  );
+};
 
-  // check if the event is password protected. if not render the page, if yes:
-  // check if user has entered the password. if yes render the page, if no:
-  // show dialog to ask for password
-  
+// check if the event is password protected. if not render the page, if yes:
+// check if user has entered the password. if yes render the page, if no:
+// show dialog to ask for password
+
 const useAuth = () => {
-  
   const [showDialog, setShowDialog] = useState(false);
 
   const { sessionId } = useParams();
@@ -97,8 +108,13 @@ const useAuth = () => {
       .doc(sessionId)
   );
 
-  const passwordProtectedEvent = useMemo(() =>
-  eventSessionsEnabledFeatures ? eventSessionsEnabledFeatures[FEATURES.PASSWORD_PROTECTED] : null, [eventSessionsEnabledFeatures]);
+  const passwordProtectedEvent = useMemo(
+    () =>
+      eventSessionsEnabledFeatures
+        ? eventSessionsEnabledFeatures[FEATURES.PASSWORD_PROTECTED]
+        : null,
+    [eventSessionsEnabledFeatures]
+  );
 
   const [userAuth, loadingAuth] = useAuthState(firebase.auth());
 
@@ -106,17 +122,23 @@ const useAuth = () => {
 
   const [participantJoinedDetails, loadingPartcipants] = useDocumentData(
     firebase
-    .firestore()
-    .collection("eventSessions")
-    .doc(sessionId)
-    .collection("participantsJoined")
-    .doc(userId)
+      .firestore()
+      .collection("eventSessions")
+      .doc(sessionId)
+      .collection("participantsJoined")
+      .doc(userId)
   );
 
-  const isAuthenticated = participantJoinedDetails ? participantJoinedDetails.isAuthenticated : null;
+  const isAuthenticated = participantJoinedDetails
+    ? participantJoinedDetails.isAuthenticated
+    : null;
 
   useEffect(() => {
-    if (passwordProtectedEvent && passwordProtectedEvent.enabled && !isAuthenticated) {
+    if (
+      passwordProtectedEvent &&
+      passwordProtectedEvent.enabled &&
+      !isAuthenticated
+    ) {
       setShowDialog(true);
     } else {
       setShowDialog(false);
@@ -125,61 +147,98 @@ const useAuth = () => {
 
   return {
     showDialog,
-    loading: loadingAuth || loadingPartcipants || loadingFeatures
-  }
-}
+    loading: loadingAuth || loadingPartcipants || loadingFeatures,
+  };
+};
 
-const loginInEvent = functionsApp.httpsCallable("loginInEvent");
-console.log(loginInEvent)
-const ProtectedEventSessionContainer = () => {
-  // let loginInEvent = firebase.functions().httpsCallable("loginInEvent");
-  // console.log(functions)
-  const { sessionId } = useParams();
+const useLoginEvent = ({ eventSessionId }) => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
 
-  const {
-    showDialog,
-    loading
-  } = useAuth();
+  const [codeCheckedOnce, setCodeCheckedOnce] = useState(false);
 
-  // show dialog here
-
-  const handleSubmit = (password) => {
-    if(password) {
+  const loginInEventFn = React.useCallback(
+    (password) => {
+      setLoading(true);
+      setError(false);
       loginInEvent({
         password,
-        eventSessionId: sessionId,
-      }).then(function(result) {
-        // Read result of the Cloud Function.
-        // var sanitizedMessage = result.data.text;
-      }).catch(function(error) {
-        // Getting the Error details.
-        // var code = error.code;
-        // var message = error.message;
-        // var details = error.details;
-        // ...
-      });
+        eventSessionId,
+      })
+        .then(function (result) {
+          var success = result.data.success;
+          if (success) {
+            // setLoading(false);
+            setError(false);
+          } else {
+            setLoading(false);
+            setError(true);
+          }
+          setCodeCheckedOnce(true);
+          // Read result of the Cloud Function.
+        })
+        .catch(function (error) {
+          setLoading(false);
+          setError(true);
+        });
+    },
+    [eventSessionId]
+  );
+
+  return {
+    loading,
+    error,
+    loginInEventFn,
+    codeCheckedOnce,
+  };
+};
+
+const ProtectedEventSessionContainer = () => {
+  const { sessionId, code } = useParams();
+
+  const { showDialog, loading } = useAuth();
+
+  const {
+    error,
+    loading: loadingEvent,
+    loginInEventFn,
+    codeCheckedOnce,
+  } = useLoginEvent({
+    eventSessionId: sessionId,
+  });
+
+  const handleSubmit = (password) => {
+    if (password) {
+      loginInEventFn(password);
     }
+  };
+
+  useEffect(() => {
+    if (code && !codeCheckedOnce) {
+      loginInEventFn(code);
+    }
+  }, [code, codeCheckedOnce, loginInEventFn]);
+
+  if (loading || (code && !codeCheckedOnce)) {
+    return <SplashScreen />;
   }
 
-  if (loading) {
-    return(
-      <SplashScreen />
-    )
-  }
-
-  if (loading || showDialog) {
+  if (showDialog) {
     return (
-      <AuthDialog handleSubmit={handleSubmit} />
-    )
+      <AuthDialog
+        error={error}
+        loading={loadingEvent}
+        handleSubmit={handleSubmit}
+        code={code}
+      />
+    );
   } else {
     return (
       <>
         <EventSessionContainer></EventSessionContainer>
       </>
-    )
+    );
   }
-
-  
 };
 
 export default ProtectedEventSessionContainer;
