@@ -2,7 +2,7 @@ export const FEATURES = {
   RSVP: "rsvp",
   TICKETS: "tickets",
   MINI_PLAYER: "miniplayer",
-  PASSWORD_PROTECTED: "passwordprotected",
+  PASSWORD_PROTECTED: "passwordProtected",
 };
 
 export const getFeatureDetails = (enabledFeatures, feature) => {
