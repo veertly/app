@@ -322,11 +322,11 @@ export const getAvailableParticipantsList = (store) =>
 export const getFilters = (store) => store.eventSession.filters;
 
 export const getFeatureDetails = (feature) => (store) => {
-  return store.eventSession.enabledFeatures && store.eventSession.enabledFeatures[feature]
+  return store.eventSession.enabledFeatures &&
+    store.eventSession.enabledFeatures[feature]
     ? store.eventSession.enabledFeatures[feature]
     : null;
 };
-
 
 ////////////////// action creators
 
