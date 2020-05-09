@@ -9,11 +9,10 @@ import Button from "@material-ui/core/Button";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import { makeStyles } from "@material-ui/core/styles";
-import Grid from "@material-ui/core/Grid";
 import {
   useDocumentData,
 } from "react-firebase-hooks/firestore";
-import firebase, { functionsApp } from "../../Modules/firebaseApp";
+import firebase, { loginInEvent } from "../../Modules/firebaseApp";
 import {
   useParams
 } from "react-router-dom";
@@ -22,59 +21,80 @@ import SplashScreen from "../../Components/Misc/SplashScreen";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    "& > *": {
-      margin: theme.spacing(1.5),
-      // width: "25ch",
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    "& > * + *": {
+      marginTop: theme.spacing(4),
     },
   },
   textField: {
-    width: 300
-  }
+  }, 
+  dialog: {
+    padding: theme.spacing(4),
+  },
+  dialogTitle: {
+    paddingTop: theme.spacing(4),
+    paddingLeft: theme.spacing(4),
+    paddingRight: theme.spacing(4),
+  },
+  dialogContent: {
+    paddingBottom: theme.spacing(4),
+    paddingLeft: theme.spacing(4),
+    paddingRight: theme.spacing(4),
+  },
+  button: ({ loading }) => ({
+    opacity: loading ? 0.5 : 1,
+    width: "30%"
+  })
 }));
 
 
-const AuthDialog = ({ handleSubmit }) => {
-  const styles = useStyles();
+const AuthDialog = ({ handleSubmit, error, loading }) => {
+  const styles = useStyles({ loading });
   const [password, setPassword] = React.useState("");
 
   const handleChange = (event) => {
     setPassword(event.target.value);
   };
 
-  const handleClick = (event) => {
-    console.log(password)
+  const handleClick = () => {
     handleSubmit(password);
   }
 
   return (
     <Dialog
       open
+      className={styles.dialog}
+      fullWidth="xs"
+      maxWidth="xs"
     >
-      <DialogTitle id="form-dialog-title">Enter password for event</DialogTitle>
+      <DialogTitle
+      className={styles.dialogTitle}
+      id="form-dialog-title">Enter password for the event</DialogTitle>
       <DialogContent
+      className={styles.dialogContent}
       >
-        <Grid
-          className={styles.root}
-          container
-          direction="column"
-          justify="center"
-          alignItems="center"
-        >
-          <TextField
-            className={styles.textField}
-            id="event-password-input"
-            label="Password"
-            type="password"
-            value={password}
-            onChange={handleChange}
-          ></TextField>
-          <Button 
-          onClick={handleClick}
-          variant="contained" color="primary">
-            Submit
-          </Button>
-        </Grid>
-
+          <form className={styles.root}>
+            <TextField
+              className={styles.textField}
+              id="event-password-input"
+              label="Password"
+              type="password"
+              value={password}
+              fullWidth
+              helperText={error ? "Incorrect Password" : ""}
+              onChange={handleChange}
+              error={error}
+            ></TextField>
+            <Button 
+              className={styles.button}
+              onClick={handleClick}
+              variant="contained" color="primary">
+              Submit
+            </Button>
+          </form>
       </DialogContent>
     </Dialog>
   )
@@ -85,7 +105,6 @@ const AuthDialog = ({ handleSubmit }) => {
   // show dialog to ask for password
   
 const useAuth = () => {
-  
   const [showDialog, setShowDialog] = useState(false);
 
   const { sessionId } = useParams();
@@ -129,11 +148,42 @@ const useAuth = () => {
   }
 }
 
-const loginInEvent = functionsApp.httpsCallable("loginInEvent");
-console.log(loginInEvent)
+
+
+const useLoginEvent = ({ eventSessionId }) => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+
+  const loginInEventFn = (password) => {
+    setLoading(true);
+    setError(false);
+    loginInEvent({
+      password,
+      eventSessionId,
+    }).then(function(result) {
+      var success = result.data.success;
+      if (success) {
+        // setLoading(false);
+        setError(false);
+      } else {
+        setLoading(false);
+        setError(true);
+      }
+      // Read result of the Cloud Function.
+    }).catch(function(error) {
+      setLoading(false);
+      setError(true);
+    })
+  }
+
+  return {
+    loading,
+    error,
+    loginInEventFn
+  }
+}
+
 const ProtectedEventSessionContainer = () => {
-  // let loginInEvent = firebase.functions().httpsCallable("loginInEvent");
-  // console.log(functions)
   const { sessionId } = useParams();
 
   const {
@@ -141,23 +191,17 @@ const ProtectedEventSessionContainer = () => {
     loading
   } = useAuth();
 
-  // show dialog here
+  const {
+    error,
+    loading: loadingEvent,
+    loginInEventFn
+  } = useLoginEvent({
+    eventSessionId: sessionId,
+  });
 
   const handleSubmit = (password) => {
     if(password) {
-      loginInEvent({
-        password,
-        eventSessionId: sessionId,
-      }).then(function(result) {
-        // Read result of the Cloud Function.
-        // var sanitizedMessage = result.data.text;
-      }).catch(function(error) {
-        // Getting the Error details.
-        // var code = error.code;
-        // var message = error.message;
-        // var details = error.details;
-        // ...
-      });
+      loginInEventFn(password);
     }
   }
 
@@ -169,7 +213,11 @@ const ProtectedEventSessionContainer = () => {
 
   if (loading || showDialog) {
     return (
-      <AuthDialog handleSubmit={handleSubmit} />
+      <AuthDialog 
+        error={error}
+        loading={loadingEvent}
+        handleSubmit={handleSubmit}   
+      />
     )
   } else {
     return (
@@ -178,8 +226,6 @@ const ProtectedEventSessionContainer = () => {
       </>
     )
   }
-
-  
 };
 
 export default ProtectedEventSessionContainer;
