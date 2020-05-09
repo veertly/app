@@ -4,6 +4,8 @@ import "firebase/firestore";
 import "firebase/database";
 import "firebase/storage";
 import "firebase/functions";
+import "firebase/performance";
+
 import { functions } from "firebase";
 
 var firebaseApp = firebase;
@@ -19,7 +21,10 @@ const firebaseConfig = {
 };
 // Initialize Firebase
 firebaseApp.initializeApp(firebaseConfig);
+
 export default firebaseApp;
+
+const perf = firebase.performance();
 
 const functionsApp = functions();
 const loginInEvent = functionsApp.httpsCallable("loginInEvent");
@@ -32,9 +37,4 @@ const getTimestampFromDate = (date) => {
   return firebaseApp.firestore.Timestamp.fromDate(date);
 };
 
-export {
-  loginInEvent,
-  getTimestampFromDate,
-}
-
-
+export { loginInEvent, getTimestampFromDate, perf };
