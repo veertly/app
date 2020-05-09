@@ -65,12 +65,39 @@ const App = () => {
             <BrowserRouter>
               <Switch>
                 <Route exact={true} path={routes.HOME()} component={HomePage} />
-                <PrivateRoute exact={true} path={routes.EVENT_SESSION_LIVE()} component={PasswordProtectedEventSessionContainer} />
-                <PrivateRoute exact={true} path={routes.EDIT_EVENT_SESSION()} component={EditSessionContainer} />
-                <Route exact={true} path={routes.EVENT_SESSION()} component={EventPageContainer} />
-                <Route exact={true} path={routes.LOGIN_PATH()} component={LoginContainer} />
-                <PrivateRoute path={routes.EDIT_PROFILE_RAW()} component={EditProfileContainer} />
-                <PrivateRoute path={routes.CREATE_EVENT_SESSION()} component={CreateSessionContainer} />
+                <PrivateRoute
+                  exact={true}
+                  path={routes.EVENT_SESSION_LIVE()}
+                  component={PasswordProtectedEventSessionContainer}
+                />
+                <PrivateRoute
+                  exact={true}
+                  path={routes.EVENT_SESSION_LIVE_CODE()}
+                  component={PasswordProtectedEventSessionContainer}
+                />
+                <PrivateRoute
+                  exact={true}
+                  path={routes.EDIT_EVENT_SESSION()}
+                  component={EditSessionContainer}
+                />
+                <Route
+                  exact={true}
+                  path={routes.EVENT_SESSION()}
+                  component={EventPageContainer}
+                />
+                <Route
+                  exact={true}
+                  path={routes.LOGIN_PATH()}
+                  component={LoginContainer}
+                />
+                <PrivateRoute
+                  path={routes.EDIT_PROFILE_RAW()}
+                  component={EditProfileContainer}
+                />
+                <PrivateRoute
+                  path={routes.CREATE_EVENT_SESSION()}
+                  component={CreateSessionContainer}
+                />
                 <Route component={HomePage} />
               </Switch>
             </BrowserRouter>

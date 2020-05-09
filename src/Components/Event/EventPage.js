@@ -8,7 +8,10 @@ import { CardMedia, Button } from "@material-ui/core";
 import * as moment from "moment";
 import routes from "../../Config/routes";
 import { useHistory } from "react-router-dom";
-import { DEFAULT_EVENT_OPEN_MINUTES, DEFAULT_EVENT_CLOSES_MINUTES } from "../../Config/constants";
+import {
+  DEFAULT_EVENT_OPEN_MINUTES,
+  DEFAULT_EVENT_CLOSES_MINUTES,
+} from "../../Config/constants";
 import { useAuthState } from "react-firebase-hooks/auth";
 import firebase from "../../Modules/firebaseApp";
 import MUIAddToCalendar from "../MUIAddToCalendar";
@@ -77,7 +80,9 @@ export default function EventPage(props) {
   const history = useHistory();
 
   const [registerOpen, setRegisterOpen] = React.useState(false);
-  const [isRegistered, setIsRegistered] = React.useState(userRegisteredEvent(id));
+  const [isRegistered, setIsRegistered] = React.useState(
+    userRegisteredEvent(id)
+  );
 
   let beginDate = eventBeginDate ? moment(eventBeginDate.toDate()) : null;
   let endDate = eventEndDate ? moment(eventEndDate.toDate()) : null;
@@ -86,13 +91,17 @@ export default function EventPage(props) {
 
   const [user] = useAuthState(firebase.auth());
 
-  const websiteNormalized = website.includes("http") ? website : `https://${website}`;
+  const websiteNormalized = website.includes("http")
+    ? website
+    : `https://${website}`;
 
   const isLive = React.useMemo(() => {
     if (!eventBeginDate) {
       return true;
     }
-    let openMinutes = eventOpens ? Number(eventOpens) : DEFAULT_EVENT_OPEN_MINUTES;
+    let openMinutes = eventOpens
+      ? Number(eventOpens)
+      : DEFAULT_EVENT_OPEN_MINUTES;
     let beginDate = moment(eventBeginDate.toDate());
 
     return beginDate.subtract(openMinutes, "minutes").isBefore(moment());
@@ -102,7 +111,9 @@ export default function EventPage(props) {
     if (!eventEndDate) {
       return true;
     }
-    let closeMinutes = eventCloses ? Number(eventCloses) : DEFAULT_EVENT_CLOSES_MINUTES;
+    let closeMinutes = eventCloses
+      ? Number(eventCloses)
+      : DEFAULT_EVENT_CLOSES_MINUTES;
     let endDate = moment(eventEndDate.toDate());
 
     return endDate.add(closeMinutes, "minutes").isBefore(moment());
@@ -133,17 +144,37 @@ export default function EventPage(props) {
     };
   }, [id, description, title, beginDate, endDate]);
 
-  const hasRsvpEnabled = React.useMemo(() => getFeatureDetails(enabledFeatures, FEATURES.RSVP) !== null, [
-    enabledFeatures,
-  ]);
-  const rsvpProperties = React.useMemo(() => getFeatureDetails(enabledFeatures, FEATURES.RSVP), [enabledFeatures]);
+  const hasRsvpEnabled = React.useMemo(
+    () => getFeatureDetails(enabledFeatures, FEATURES.RSVP) !== null,
+    [enabledFeatures]
+  );
+  const rsvpProperties = React.useMemo(
+    () => getFeatureDetails(enabledFeatures, FEATURES.RSVP),
+    [enabledFeatures]
+  );
 
   const ticketsProperties = React.useMemo(() => {
     const ticketsDetails = getFeatureDetails(enabledFeatures, FEATURES.TICKETS);
-    return ticketsDetails && ticketsDetails.enabled === true ? ticketsDetails : null;
+    return ticketsDetails && ticketsDetails.enabled === true
+      ? ticketsDetails
+      : null;
   }, [enabledFeatures]);
-  const hasTicketsEnabled = React.useMemo(() => ticketsProperties !== null, [ticketsProperties]);
-  console.log({ hasTicketsEnabled, ticketsProperties });
+  const hasTicketsEnabled = React.useMemo(() => ticketsProperties !== null, [
+    ticketsProperties,
+  ]);
+
+  const isPrivateEvent = React.useMemo(() => {
+    const passwordProtected = getFeatureDetails(
+      enabledFeatures,
+      FEATURES.PASSWORD_PROTECTED
+    );
+    return (
+      passwordProtected &&
+      passwordProtected.enabled &&
+      passwordProtected.showOnEventPage === true
+    );
+  }, [enabledFeatures]);
+
   return (
     <Card className={classes.root}>
       {!isPreview && user && user.uid === owner && (
@@ -159,21 +190,40 @@ export default function EventPage(props) {
         </Button>
       )}
       {bannerUrl && bannerUrl.trim() !== "" && (
-        <CardMedia component="img" alt={title} image={bannerUrl} title={title} />
+        <CardMedia
+          component="img"
+          alt={title}
+          image={bannerUrl}
+          title={title}
+        />
       )}
       {(!bannerUrl || bannerUrl.trim() === "") && (
-        <CardMedia component="img" alt={title} image="/DefaultEventBanner.svg" title={title} />
+        <CardMedia
+          component="img"
+          alt={title}
+          image="/DefaultEventBanner.svg"
+          title={title}
+        />
       )}
       <div className={classes.contentContainer}>
-        <Typography variant="h4" color="primary" align="left" style={{ marginBottom: 24 }}>
+        <Typography
+          variant="h4"
+          color="primary"
+          align="left"
+          // style={{ marginBottom: 24 }}
+        >
           {title}
         </Typography>
 
         {/* <Grid container justify="space-between" className={classes.textField}> */}
-        <div style={{ marginRight: 8 }}>
+        <div style={{ marginRight: 8, marginTop: 24 }}>
           {beginDate && (
             <Typography color="textSecondary">
-              <span role="img" aria-label="calendar" style={{ marginRight: 16 }}>
+              <span
+                role="img"
+                aria-label="calendar"
+                style={{ marginRight: 16 }}
+              >
                 📅
               </span>
               {isSameDay
@@ -183,8 +233,16 @@ export default function EventPage(props) {
           )}
           {website && website.trim() !== "" && (
             <Typography color="textSecondary">
-              <a href={websiteNormalized} target="_blank" rel="noopener noreferrer">
-                <span role="img" aria-label="website" style={{ marginRight: 16 }}>
+              <a
+                href={websiteNormalized}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span
+                  role="img"
+                  aria-label="website"
+                  style={{ marginRight: 16 }}
+                >
                   🔗
                 </span>
                 {website}
@@ -198,6 +256,14 @@ export default function EventPage(props) {
                 💰
               </span>
               {ticketsProperties.label}
+            </Typography>
+          )}
+          {isPrivateEvent && (
+            <Typography color="textSecondary">
+              <span role="img" aria-label="price" style={{ marginRight: 16 }}>
+                🔒
+              </span>
+              This is a private event
             </Typography>
           )}
         </div>
@@ -232,10 +298,15 @@ export default function EventPage(props) {
                     <span style={{ paddingRight: 8, paddingTop: 4 }}>
                       <SuccessIcon />
                     </span>
-                    <Typography>You have already registered to this event </Typography>
+                    <Typography>
+                      You have already registered to this event
+                    </Typography>
                   </div>
                 )}
-                <MUIAddToCalendar event={calendarEvent} isPrimaryButton={!hasRsvpEnabled} />
+                <MUIAddToCalendar
+                  event={calendarEvent}
+                  isPrimaryButton={!hasRsvpEnabled}
+                />
               </div>
             )}
             {isLive && !isOver && (

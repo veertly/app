@@ -5,11 +5,11 @@ import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
 import firebase from "../Modules/firebaseApp";
 import CenteredLayout from "./Layouts/CenteredLayout";
 import { makeStyles } from "@material-ui/styles";
-import { registerNewUser, hasUserSession } from "../Modules/userOperations";
+import { registerNewUser } from "../Modules/userOperations";
 import { useAuthState } from "react-firebase-hooks/auth";
 import Typography from "@material-ui/core/Typography";
 import { Button } from "@material-ui/core";
-import routes from "../Config/routes";
+// import routes from "../Config/routes";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -25,36 +25,37 @@ export default withRouter((props) => {
   // const callbackUrl = queryValues.callback ? queryValues.callback : "/";
   let callbackUrl = props.location.search.replace("?callback=", ""); // queryValues.callback ? queryValues.callback : "/";
 
-  let { sessionId, isInSessionPage } = React.useMemo(() => {
-    let sessionId = undefined;
-    let splits = callbackUrl.split("/");
-    if (splits[1] === "v") {
-      sessionId = splits[2];
-    }
-    if (sessionId) {
-      sessionId = sessionId.replace("/live", "");
-    }
-    return {
-      sessionId: sessionId ? sessionId.toLowerCase() : null,
-      isInSessionPage: sessionId !== undefined,
-    };
-  }, [callbackUrl]);
+  // let { sessionId, isInSessionPage } = React.useMemo(() => {
+  //   let sessionId = undefined;
+  //   let splits = callbackUrl.split("/");
+  //   if (splits[1] === "v") {
+  //     sessionId = splits[2];
+  //   }
+  //   if (sessionId) {
+  //     sessionId = sessionId.replace("/live", "");
+  //   }
+  //   return {
+  //     sessionId: sessionId ? sessionId.toLowerCase() : null,
+  //     isInSessionPage: sessionId !== undefined,
+  //   };
+  // }, [callbackUrl]);
 
   useEffect(() => {
     window.analytics.page("LoginPage");
   }, []);
 
   const checkAndRedirect = async (uid) => {
-    if (isInSessionPage) {
-      let hasSession = await hasUserSession(sessionId, uid);
-      if (hasSession) {
-        props.history.push(callbackUrl);
-      } else {
-        props.history.push(routes.EDIT_PROFILE(callbackUrl));
-      }
-    } else {
-      props.history.push(callbackUrl);
-    }
+    // if (isInSessionPage) {
+    //   let hasSession = await hasUserSession(sessionId, uid);
+    //   if (hasSession) {
+    //     props.history.push(callbackUrl);
+    //   } else {
+    //     props.history.push(routes.EDIT_PROFILE(callbackUrl));
+    //   }
+    // } else {
+    //   props.history.push(callbackUrl);
+    // }
+    props.history.push(callbackUrl);
   };
   const uiConfig = {
     signInFlow: "popup",
@@ -138,13 +139,24 @@ export default withRouter((props) => {
         Login
       </Typography> */}
       <div className={classes.root}>
-        <Typography align="center" variant="overline" style={{ display: "block" }}>
+        <Typography
+          align="center"
+          variant="overline"
+          style={{ display: "block" }}
+        >
           Please sign-in in order to enter in the veertly platform
         </Typography>
         <br />
-        <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
+        <StyledFirebaseAuth
+          uiConfig={uiConfig}
+          firebaseAuth={firebase.auth()}
+        />
         <div style={{ textAlign: "center" }}>
-          <Button variant="contained" style={{ width: 220 }} onClick={loginAnonymously}>
+          <Button
+            variant="contained"
+            style={{ width: 220 }}
+            onClick={loginAnonymously}
+          >
             Enter as a guest
           </Button>
         </div>
