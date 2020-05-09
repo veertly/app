@@ -40,7 +40,7 @@ const leaveCall = async (sessionId, myUserId) => {
     liveGroups[doc.id] = doc.data();
   });
 
-  let myUserRef = firestore.collection(`eventSessions`).doc(sessionId).collection("participantsJoined").doc(myUserId);
+  let myUserRef = firestore.collection("eventSessions").doc(sessionId).collection("participantsJoined").doc(myUserId);
 
   var myGroupRef = eventSessionRef.collection("liveGroups").doc(myGroupId);
 
@@ -50,7 +50,7 @@ const leaveCall = async (sessionId, myUserId) => {
   for (let i = 0; i < participantsKeys.length; i++) {
     let userId = participantsKeys[i];
     participantsRef[userId] = firestore
-      .collection(`eventSessions`)
+      .collection("eventSessions")
       .doc(sessionId)
       .collection("participantsJoined")
       .doc(userId);
@@ -217,3 +217,31 @@ exports.onUserRegisteredEvent = functions.firestore
       }
     }
   });
+
+// This is a callable function. We can directly call it from app.
+// It will check the eventSessionsPrivateDetails and verify the password
+// If password matches => set loggedIn to true in userSession Object.
+exports.loginInEvent = functions.https.onCall(async (data, context) => {
+  const { password, eventSessionId } = data;
+  const { uid } = context.auth;
+  console.log(`password=${password}, eventSessionId=${eventSessionId}, uid=${uid}`)
+  const eventSessionPrivateRef = firestore.collection("eventSessionsPrivateDetails").doc(eventSessionId);
+  const eventSessionDataSnapshot = await eventSessionPrivateRef.get();
+  
+  const passwordEvent = eventSessionDataSnapshot.exists ? eventSessionDataSnapshot.data().password : "";
+  console.log("password in db", passwordEvent);
+  if (passwordEvent && password === passwordEvent) {
+    // set logged in parameter to event session object
+    const userRef = firestore.collection("eventSessions").doc(eventSessionId).collection("participantsJoined").doc(uid);
+    userRef.set({
+      isAuthenticated: true,
+    }, { merge: true });    
+    return {
+      success: true,
+    }
+  } else {
+    return {
+      success: false,
+    }
+  }
+})
