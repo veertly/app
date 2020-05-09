@@ -4,7 +4,7 @@
     // "airbnb"
   ],
   "rules": {
-    // "quotes": ["error", "double", { "avoidEscape": true }],
+    "quotes": ["error", "double", { "avoidEscape": true }]
     // "react/prop-types": 0,
     // "max-len": ["off", { "code": 80 }],
     // "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],

@@ -3,6 +3,8 @@ import "firebase/auth";
 import "firebase/firestore";
 import "firebase/database";
 import "firebase/storage";
+import "firebase/functions";
+import { functions } from "firebase";
 
 var firebaseApp = firebase;
 
@@ -19,6 +21,20 @@ const firebaseConfig = {
 firebaseApp.initializeApp(firebaseConfig);
 export default firebaseApp;
 
-export const getTimestampFromDate = (date) => {
+const functionsApp = functions();
+
+if (process.env.NODE_ENV === "development") {
+  console.log("in firebase")
+  functionsApp.useFunctionsEmulator("http://localhost:5001")
+}
+
+const getTimestampFromDate = (date) => {
   return firebaseApp.firestore.Timestamp.fromDate(date);
 };
+
+export {
+  functionsApp,
+  getTimestampFromDate,
+}
+
+
