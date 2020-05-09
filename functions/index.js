@@ -228,7 +228,7 @@ exports.loginInEvent = functions.https.onCall(async (data, context) => {
   const eventSessionPrivateRef = firestore.collection("eventSessionsPrivateDetails").doc(eventSessionId);
   const eventSessionData = await eventSessionPrivateRef.get();
   const passwordEvent = eventSessionData.password;
-
+  console.log("password in db", passwordEvent);
   if (password === passwordEvent) {
     // set logged in parameter to event session object
     const userRef = firestore.collection("eventSessions").doc(eventSessionId).collection("participantsJoined").doc(uid);
