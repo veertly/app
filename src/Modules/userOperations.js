@@ -1,4 +1,5 @@
 import firebase from "./firebaseApp";
+import { trackEvent } from "./analytics";
 
 export const registerNewUser = async (userAuth) => {
   // console.log("on: registerNewUser");
@@ -147,7 +148,7 @@ export const hasUserSession = async (sessionId, userId) => {
 };
 
 export const logout = async (sessionId) => {
-  window.analytics.track("Logged out");
+  trackEvent("Logged out");
   if (sessionId) {
     var userId = firebase.auth().currentUser.uid;
 

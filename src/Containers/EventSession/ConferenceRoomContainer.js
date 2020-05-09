@@ -16,6 +16,7 @@ import {
 import ReactPlayer from "react-player";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import JitsiContext from "./JitsiContext";
+import { trackPage } from "../../Modules/analytics";
 
 const useStyles = makeStyles((theme) => ({
   videoContainer: {
@@ -78,7 +79,7 @@ export default () => {
   const eventSessionDetails = useSelector(getEventSessionDetails, shallowEqual);
 
   useEffect(() => {
-    window.analytics.page("ConferenceRoom/" + sessionId);
+    trackPage("ConferenceRoom/" + sessionId);
   }, [sessionId]);
 
   const handleCallEnded = React.useCallback(() => {

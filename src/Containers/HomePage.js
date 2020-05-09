@@ -11,6 +11,7 @@ import GithubIcon from "../Assets/Icons/Github";
 import MediumIcon from "../Assets/Icons/Medium";
 import FacebookIcon from "@material-ui/icons/Facebook";
 import InstagramIcon from "@material-ui/icons/Instagram";
+import { trackPage } from "../Modules/analytics";
 
 const useStyles = makeStyles((theme) => ({
   icon: {
@@ -73,7 +74,7 @@ export default () => {
   // const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
-    window.analytics.page("Home");
+    trackPage("Home");
   }, []);
 
   // const handleSubscribeNewsletter = () => {
@@ -122,25 +123,53 @@ export default () => {
             )}
           </Grid>
         </Container> */}
-        <a href="https://twitter.com/veertly" target="_blank" rel="noopener noreferrer">
+        <a
+          href="https://twitter.com/veertly"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <TwitterIcon className={classes.socialNetworkIcon} />
         </a>
-        <a href="https://www.linkedin.com/company/veertly" target="_blank" rel="noopener noreferrer">
+        <a
+          href="https://www.linkedin.com/company/veertly"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <LinkedinIcon className={classes.socialNetworkIcon} />
         </a>
-        <a href="https://t.me/Veertly" target="_blank" rel="noopener noreferrer">
+        <a
+          href="https://t.me/Veertly"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <TelegramIcon className={classes.socialNetworkIcon} />
         </a>
-        <a href="https://fb.me/Veertly" target="_blank" rel="noopener noreferrer">
+        <a
+          href="https://fb.me/Veertly"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <FacebookIcon className={classes.socialNetworkIcon} />
         </a>
-        <a href="https://instagram.com/veert.ly" target="_blank" rel="noopener noreferrer">
+        <a
+          href="https://instagram.com/veert.ly"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <InstagramIcon className={classes.socialNetworkIcon} />
         </a>
-        <a href="https://medium.com/veertly" target="_blank" rel="noopener noreferrer">
+        <a
+          href="https://medium.com/veertly"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <MediumIcon className={classes.socialNetworkIcon} />
         </a>
-        <a href="https://github.com/veertly/app" target="_blank" rel="noopener noreferrer">
+        <a
+          href="https://github.com/veertly/app"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <GithubIcon className={classes.socialNetworkIcon} />
         </a>
 

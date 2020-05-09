@@ -9,6 +9,7 @@ import { registerNewUser } from "../Modules/userOperations";
 import { useAuthState } from "react-firebase-hooks/auth";
 import Typography from "@material-ui/core/Typography";
 import { Button } from "@material-ui/core";
+import { trackPage, trackIdentify, trackEvent } from "../Modules/analytics";
 // import routes from "../Config/routes";
 
 const useStyles = makeStyles((theme) => ({
@@ -41,7 +42,7 @@ export default withRouter((props) => {
   // }, [callbackUrl]);
 
   useEffect(() => {
-    window.analytics.page("LoginPage");
+    trackPage("LoginPage");
   }, []);
 
   const checkAndRedirect = async (uid) => {
@@ -71,8 +72,8 @@ export default withRouter((props) => {
         // Return type determines whether we continue the redirect automatically
         // or whether we leave that to developer to handle.
 
-        window.analytics.identify(loggedInUserAuth.uid, {});
-        window.analytics.track("Logged In");
+        trackIdentify(loggedInUserAuth.uid, {});
+        trackEvent("Logged In");
 
         if (isNewUser) {
           registerNewUser(loggedInUserAuth);

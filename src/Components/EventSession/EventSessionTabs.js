@@ -13,6 +13,7 @@ import Typography from "@material-ui/core/Typography";
 import JitsiContext from "../../Containers/EventSession/JitsiContext";
 import OpenInNewIcon from "@material-ui/icons/OpenInNew";
 import { Tooltip } from "@material-ui/core";
+import { trackEvent } from "../../Modules/analytics";
 
 const CALL_SECTION_HEIGHT = 110;
 
@@ -112,7 +113,10 @@ const ToolbarClosed = ({ setShowSmallPlayer }) => {
           <Tooltip title="Open main stage">
             <OpenInNewIcon
               className={classes.icon}
-              onClick={() => setShowSmallPlayer(true)}
+              onClick={() => {
+                setShowSmallPlayer(true);
+                trackEvent("Mini player opened", {});
+              }}
             />
           </Tooltip>
           {/* <VolumeDownIcon className={classes.icon} />

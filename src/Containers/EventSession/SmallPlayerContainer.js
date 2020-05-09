@@ -19,6 +19,7 @@ import JitsiContext from "./JitsiContext";
 import { SIDE_PANE_WIDTH } from "./EventSessionContainer";
 import useWindowSize from "../../Hooks/useWindowSize";
 import { Tooltip } from "@material-ui/core";
+import { trackEvent } from "../../Modules/analytics";
 
 const useStyles = makeStyles((theme) => ({
   videoContainer: {
@@ -261,7 +262,10 @@ export const SmallPlayerContainer = ({ bounds = "" }) => {
             <Tooltip title="Minimize player">
               <CloseIcon
                 className={classes.icon}
-                onClick={() => setShowSmallPlayer(false)}
+                onClick={() => {
+                  setShowSmallPlayer(false);
+                  trackEvent("Mini player minimized", {});
+                }}
               />
             </Tooltip>
           </div>
