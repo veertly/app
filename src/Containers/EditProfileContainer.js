@@ -6,11 +6,14 @@ import EditProfileForm from "../Components/EditProfile/EditProfileForm";
 import SplashScreen from "../Components/Misc/SplashScreen";
 import { useHistory, useLocation } from "react-router-dom";
 
-export default () => {
+const EditProfileContainer = () => {
   const [userAuth, initialising, error] = useAuthState(firebase.auth());
   const history = useHistory();
   const location = useLocation();
-  let callbackUrl = location.search.replace("?callback=", ""); // queryValues.callback ? queryValues.callback : "/";
+  let callbackUrl = React.useMemo(
+    () => location.search.replace("?callback=", ""),
+    [location]
+  ); // queryValues.callback ? queryValues.callback : "/";
 
   let { sessionId, isInSessionPage } = React.useMemo(() => {
     let sessionId = undefined;
@@ -25,9 +28,9 @@ export default () => {
     };
   }, [callbackUrl]);
 
-  const redirectUser = () => {
+  const redirectUser = React.useCallback(() => {
     history.push(callbackUrl);
-  };
+  }, [history, callbackUrl]);
 
   if (initialising) {
     return <SplashScreen />;
@@ -51,3 +54,5 @@ export default () => {
     </Layout>
   );
 };
+// EditProfileContainer.whyDidYouRender = true;
+export default EditProfileContainer;

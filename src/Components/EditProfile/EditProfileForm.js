@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { withStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import { Button, TextField, Typography } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import InputAdornment from "@material-ui/core/InputAdornment";
@@ -18,10 +18,10 @@ import LinkedinIcon from "../../Assets/Icons/Linkedin";
 import TwitterIcon from "../../Assets/Icons/Twitter";
 import KeybaseIcon from "../../Assets/Icons/Keybase";
 import LocationAutoComplete from "../Misc/LocationAutoComplete";
-import useIsMounted from "react-is-mounted-hook";
+import useIsMounted from "../../Hooks/useIsMounted";
 // import LocationAutoComplete from "../Misc/LocationAutoComplete";
 
-const styles = (theme) => ({
+const useStyles = makeStyles((theme) => ({
   row: {
     flexDirection: "row",
   },
@@ -45,7 +45,7 @@ const styles = (theme) => ({
     flexDirection: "row",
     alignItems: "center",
   },
-});
+}));
 
 const getUserDefaultValues = (userAuth) => {
   let { displayName, isAnonymous } = userAuth;
@@ -84,12 +84,14 @@ const twitterUrlStatic = "https://twitter.com/";
 const keybaseUrlStatic = "https://keybase.io/";
 
 function EditProfileForm(props) {
-  const { classes, userAuth, sessionId, profileUpdatedCallback } = props;
+  const { userAuth, sessionId, profileUpdatedCallback } = props;
+  const classes = useStyles();
 
   let [values, setValues] = React.useState(getUserDefaultValues(userAuth));
   // let [dbCheckNewsletter, setDbCheckNewsletter] = React.useState(null);
   let [errors, setErrors] = React.useState({});
   const [interestsChips, setInterestsChips] = React.useState([]);
+
   const [updating, setUpdating] = React.useState(false);
   const mounted = useIsMounted();
   useEffect(() => {
@@ -532,4 +534,5 @@ function EditProfileForm(props) {
   );
 }
 
-export default withStyles(styles)(EditProfileForm);
+// EditProfileForm.whyDidYouRender = true;
+export default EditProfileForm;

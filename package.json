@@ -49,7 +49,6 @@
     "react-hook-form": "^5.1.1",
     "react-image-crop": "^8.6.1",
     "react-images-upload": "^1.2.8",
-    "react-is-mounted-hook": "^1.0.3",
     "react-linkify": "^1.0.0-alpha",
     "react-markdown": "^4.2.2",
     "react-player": "^1.15.3",
@@ -95,6 +94,7 @@
     ]
   },
   "devDependencies": {
+    "@welldone-software/why-did-you-render": "^4.2.0",
     "eslint": "^6.8.0",
     "eslint-config-airbnb": "^18.1.0",
     "eslint-plugin-import": "^2.20.1",
