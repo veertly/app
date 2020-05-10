@@ -4,7 +4,7 @@ import {
   useCollectionData,
   useDocumentData,
 } from "react-firebase-hooks/firestore";
-import { withRouter, useHistory } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
 import Typography from "@material-ui/core/Typography";
 import clsx from "clsx";
@@ -20,9 +20,7 @@ import {
   leaveCall,
   updateInNetworkingRoom,
 } from "../../Modules/eventSessionOperations";
-// import { useBeforeunload } from "react-beforeunload";
 
-// import { useMediaQuery } from "@material-ui/core";
 import NetworkingSidebar from "./NetworkingSidebar";
 import EventSessionTopbar from "../../Components/EventSession/EventSessionTopbar";
 import ConferenceRoomContainer from "./ConferenceRoomContainer";
@@ -192,7 +190,9 @@ const EventSessionContainer = (props) => {
   // });
 
   // -----------------------------------------------------------------------------------------------------
-  const originalSessionId = props.match.params.sessionId;
+  // const originalSessionId = props.match.params.sessionId;
+  const { sessionId: originalSessionId } = useParams();
+
   const sessionId = useMemo(
     () => (originalSessionId ? originalSessionId.toLowerCase() : null),
     [originalSessionId]
@@ -470,6 +470,10 @@ const EventSessionContainer = (props) => {
     }
   }, [isLive, history, sessionId]);
 
+  const smallPlayerBounds = React.useMemo(() => `.${classes.root}`, [
+    classes.root,
+  ]);
+
   if (
     loadingUsersDB ||
     loadingSessionDB ||
@@ -639,7 +643,7 @@ const EventSessionContainer = (props) => {
                   )}
                 </div>
                 {/* <div className={classes.smallPlayerContainer}> */}
-                <SmallPlayerContainer bounds={`.${classes.root}`} />
+                <SmallPlayerContainer bounds={smallPlayerBounds} />
                 {/* </div> */}
               </>
             )}
@@ -692,6 +696,8 @@ const EventSessionContainer = (props) => {
       </div>
     </JitsiContext.Provider>
   );
-}
+};
 
-export default withRouter(EventSessionContainer);
+EventSessionContainer.whyDidYouRender = true;
+
+export default EventSessionContainer;

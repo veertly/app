@@ -189,8 +189,11 @@ export const SmallPlayerContainer = ({ bounds = "" }) => {
   //   setVolume(newValue);
   // };
 
-  const getPlayer = () => {
-    const vol = Math.floor((volume * 10) / 100) / 10;
+  const vol = React.useMemo(() => Math.floor((volume * 10) / 100) / 10, [
+    volume,
+  ]);
+
+  const player = React.useMemo(() => {
     switch (eventSessionDetails.conferenceVideoType) {
       case "YOUTUBE":
         let youtubeVideoId = eventSessionDetails.conferenceRoomYoutubeVideoId;
@@ -207,17 +210,27 @@ export const SmallPlayerContainer = ({ bounds = "" }) => {
       default:
         return null;
     }
-  };
+  }, [eventSessionDetails, vol]);
+
+  const handleDragStop = React.useCallback((e, d) => {
+    setPlayerPosition({ x: d.x, y: d.y });
+  }, []);
+
+  const handleResizeStop = React.useCallback(
+    (e, direction, ref, delta, position) => {
+      setPlayerPosition(position);
+
+      setPlayerSize({
+        width: ref.style.width,
+        height: ref.style.height,
+      });
+    },
+    []
+  );
 
   if (!miniPlayerEnabled) {
     return null;
   }
-
-  // if (error) {
-  //   console.log(error);
-  //   return <p>Error :(</p>;
-  // }
-  // if (!loaded) return null;
 
   if (!showSmallPlayer) return null;
 
@@ -238,17 +251,8 @@ export const SmallPlayerContainer = ({ bounds = "" }) => {
       bounds={bounds}
       lockAspectRatio={false}
       className={classes.playerOuterContainer}
-      onDragStop={(e, d) => {
-        setPlayerPosition({ x: d.x, y: d.y });
-      }}
-      onResizeStop={(e, direction, ref, delta, position) => {
-        setPlayerPosition(position);
-
-        setPlayerSize({
-          width: ref.style.width,
-          height: ref.style.height,
-        });
-      }}
+      onDragStop={handleDragStop}
+      onResizeStop={handleResizeStop}
     >
       <div className={classes.playerOuterContainer}>
         <div className={classes.toolbar}>
@@ -270,10 +274,10 @@ export const SmallPlayerContainer = ({ bounds = "" }) => {
             </Tooltip>
           </div>
         </div>
-        <div className={classes.playerContainer}>{getPlayer()}</div>
+        <div className={classes.playerContainer}>{player}</div>
       </div>
     </Rnd>
   );
 };
-
+// SmallPlayerContainer.whyDidYouRender = true;
 export default SmallPlayerContainer;
