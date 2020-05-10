@@ -353,25 +353,27 @@ export default function EventPage(props) {
           </div>
         )}
       </div>
-      <Dialog
-        onClose={() => {
-          setRegisterOpen(false);
-          setIsRegistered(userRegisteredEvent(id));
-        }}
-        open={registerOpen}
-        scroll={"body"}
-      >
-        <div className={classes.dialogContent}>
-          <EventRegistrationForm
-            eventSession={props.event}
-            rsvpProperties={rsvpProperties}
-            onClose={() => {
-              setRegisterOpen(false);
-              setIsRegistered(userRegisteredEvent(id));
-            }}
-          />
-        </div>
-      </Dialog>
+      {hasRsvpEnabled && (
+        <Dialog
+          onClose={() => {
+            setRegisterOpen(false);
+            setIsRegistered(userRegisteredEvent(id));
+          }}
+          open={registerOpen}
+          scroll={"body"}
+        >
+          <div className={classes.dialogContent}>
+            <EventRegistrationForm
+              eventSession={props.event}
+              rsvpProperties={rsvpProperties}
+              onClose={() => {
+                setRegisterOpen(false);
+                setIsRegistered(userRegisteredEvent(id));
+              }}
+            />
+          </div>
+        </Dialog>
+      )}
     </Card>
   );
 }
