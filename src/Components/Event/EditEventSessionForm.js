@@ -56,7 +56,7 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import CopyIcon from "@material-ui/icons/FileCopy";
 import IconButton from "@material-ui/core/IconButton";
 import { useSnackbar } from "material-ui-snackbar-provider";
-import useIsMounted from "react-is-mounted-hook";
+import useIsMounted from "../../Hooks/useIsMounted";
 import EventShareIcons from "./EventShareIcons";
 
 const useStyles = makeStyles((theme) => ({

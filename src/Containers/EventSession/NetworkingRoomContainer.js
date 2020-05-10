@@ -4,8 +4,14 @@ import { makeStyles } from "@material-ui/core/styles";
 import { leaveCall } from "../../Modules/eventSessionOperations";
 
 import { useSelector, shallowEqual } from "react-redux";
-import { getUser, getUserGroup, getSessionId, getUserId } from "../../Redux/eventSession";
+import {
+  getUser,
+  getUserGroup,
+  getSessionId,
+  getUserId,
+} from "../../Redux/eventSession";
 import JitsiContext from "./JitsiContext";
+import { trackPage, trackEvent } from "../../Modules/analytics";
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
@@ -25,8 +31,8 @@ export default () => {
   const sessionId = useSelector(getSessionId);
 
   useEffect(() => {
-    window.analytics.page("NetworkingRoom/" + sessionId);
-    window.analytics.track("Entered Networking Room", {
+    trackPage("NetworkingRoom/" + sessionId);
+    trackEvent("Entered Networking Room", {
       eventSessionId: sessionId,
     });
   }, [sessionId]);
@@ -39,7 +45,9 @@ export default () => {
     let prefix = process.env.REACT_APP_JITSI_ROOM_PREFIX;
     let prefixStr = prefix !== undefined ? `${prefix}-` : "";
 
-    const roomName = prefixStr + currentGroup.videoConferenceAddress.replace("https://meet.jit.si/", "");
+    const roomName =
+      prefixStr +
+      currentGroup.videoConferenceAddress.replace("https://meet.jit.si/", "");
 
     if (loaded && lastRoomLoaded !== roomName) {
       // dispose existing jitsi
@@ -74,7 +82,7 @@ export default () => {
       }
       api.addEventListener("videoConferenceLeft", (event) => {
         // console.log("videoConferenceLeft: ", event);
-        window.analytics.track("[Jitsi] Left Call (videoConferenceLeft)", {
+        trackEvent("[Jitsi] Left Call (videoConferenceLeft)", {
           eventSessionId: sessionId,
           roomName,
         });
@@ -82,13 +90,13 @@ export default () => {
       });
       api.addEventListener("readyToClose", (event) => {
         // console.log("readyToClose: ", event);
-        window.analytics.track("[Jitsi] Left Call (readyToClose)", {
+        trackEvent("[Jitsi] Left Call (readyToClose)", {
           eventSessionId: sessionId,
           roomName,
         });
         handleCallEnded();
       });
-      window.analytics.track("[Jitsi] Joined Call", {
+      trackEvent("[Jitsi] Joined Call", {
         eventSessionId: sessionId,
         roomName,
       });
@@ -103,7 +111,16 @@ export default () => {
       //   jitsiApi.dispose();
       // }
     };
-  }, [loaded, currentGroup, sessionId, handleCallEnded, jitsiApi, lastRoomLoaded, setJitsiApi, user]);
+  }, [
+    loaded,
+    currentGroup,
+    sessionId,
+    handleCallEnded,
+    jitsiApi,
+    lastRoomLoaded,
+    setJitsiApi,
+    user,
+  ]);
 
   if (error) {
     console.log(error);

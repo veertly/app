@@ -4,6 +4,8 @@ export default {
   TEST_JITSI: () => "/test-jitsi",
   EVENT_SESSION_OLD: (sessionId = ":sessionId") => `/session/${sessionId}`,
   EVENT_SESSION: (sessionId = ":sessionId") => `/v/${sessionId}`,
+  EVENT_SESSION_LIVE_CODE: (sessionId = ":sessionId", code = ":code") =>
+    `/v/${sessionId}/live/${code}`,
   EVENT_SESSION_LIVE: (sessionId = ":sessionId") => `/v/${sessionId}/live`,
   EDIT_EVENT_SESSION: (sessionId = ":sessionId") => `/v/${sessionId}/edit`,
   CREATE_EVENT_SESSION: () => "/new-event",

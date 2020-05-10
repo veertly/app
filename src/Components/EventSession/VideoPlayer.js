@@ -30,7 +30,10 @@ const useStyles = makeStyles(() => ({
 const VideoPlayer = ({ url, showLoader, volume = 50 }) => {
   const classes = useStyles();
   const [loadingPlayer, setLoadingPlayer] = React.useState(showLoader);
-
+  const handlePlayerReady = React.useCallback(
+    () => setLoadingPlayer(false),
+    []
+  );
   return (
     <div className={classes.reactPlayerContainer}>
       <ReactPlayer
@@ -40,7 +43,7 @@ const VideoPlayer = ({ url, showLoader, volume = 50 }) => {
         className={classes.reactPlayer}
         playing
         volume={volume}
-        onReady={() => setLoadingPlayer(false)}
+        onReady={handlePlayerReady}
         controls
       />
       {loadingPlayer && (

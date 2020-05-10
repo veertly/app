@@ -4,6 +4,8 @@ import "firebase/firestore";
 import "firebase/database";
 import "firebase/storage";
 import "firebase/functions";
+import "firebase/performance";
+
 import { functions } from "firebase";
 
 var firebaseApp = firebase;
@@ -19,22 +21,20 @@ const firebaseConfig = {
 };
 // Initialize Firebase
 firebaseApp.initializeApp(firebaseConfig);
+
 export default firebaseApp;
 
-const functionsApp = functions();
+const perf = firebase.performance();
 
-if (process.env.NODE_ENV === "development") {
-  console.log("in firebase")
-  functionsApp.useFunctionsEmulator("http://localhost:5001")
-}
+const functionsApp = functions();
+const loginInEvent = functionsApp.httpsCallable("loginInEvent");
+
+// if (process.env.NODE_ENV === "development") {
+//   functionsApp.useFunctionsEmulator("http://localhost:5001")
+// }
 
 const getTimestampFromDate = (date) => {
   return firebaseApp.firestore.Timestamp.fromDate(date);
 };
 
-export {
-  functionsApp,
-  getTimestampFromDate,
-}
-
-
+export { loginInEvent, getTimestampFromDate, perf };

@@ -25,6 +25,7 @@ import {
 import _ from "lodash";
 import { openJoinParticipant } from "../../Redux/dialogs";
 import Flag from "../Misc/Flag";
+import { trackEvent } from "../../Modules/analytics";
 const useStyles = makeStyles((theme) => ({
   root: {},
   participantContainer: {
@@ -185,7 +186,7 @@ export default function (props) {
 
     dispatch(openJoinParticipant(participant));
 
-    window.analytics.track("Feeling lucky clicked", {});
+    trackEvent("Feeling lucky clicked", {});
   }, [participantsAvailable, users, dispatch]);
 
   return (
@@ -221,7 +222,7 @@ export default function (props) {
           className={`${classes.button} ${classes.filterButton}`}
           onClick={() => {
             setFilterDialog(true);
-            window.analytics.track("Filter clicked", {});
+            trackEvent("Filter clicked", {});
           }}
         >
           Filter
