@@ -291,7 +291,6 @@ export const SmallPlayerContainer = ({ bounds = "" }) => {
   }
   // if (loaded) {
 
-  console.log("--> Rendered small player");
   return miniPlayer;
 };
 // SmallPlayerContainer.whyDidYouRender = true;
