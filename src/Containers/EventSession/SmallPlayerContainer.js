@@ -227,6 +227,58 @@ export const SmallPlayerContainer = ({ bounds = "" }) => {
     },
     []
   );
+  const miniPlayer = React.useMemo(
+    () => (
+      <Rnd
+        // default={{
+        //   // x: window.innerWidth - SMALL_PLAYER_INITIAL_WIDTH - SIDE_PANE_WIDTH,
+        //   // y: window.innerHeight - SMALL_PLAYER_INITIAL_HEIGHT,
+        //   width: SMALL_PLAYER_INITIAL_WIDTH,
+        //   height: SMALL_PLAYER_INITIAL_HEIGHT,
+        // }}
+        size={playerSize}
+        position={playerPosition}
+        bounds={bounds}
+        lockAspectRatio={false}
+        className={classes.playerOuterContainer}
+        onDragStop={handleDragStop}
+        onResizeStop={handleResizeStop}
+      >
+        <div className={classes.playerOuterContainer}>
+          <div className={classes.toolbar}>
+            <div className={classes.toolbarTitle}>
+              <Typography variant="subtitle1">Main Stage</Typography>
+            </div>
+            <div className={classes.volumeControlContainer}>
+              {/* <VolumeDownIcon className={classes.icon} />
+              <Slider className={classes.slider} value={volume} onChange={handleVolumeChange} aria-labelledby="continuous-slider" />
+            <VolumeUpIcon className={classes.icon} /> */}
+              <Tooltip title="Minimize player">
+                <CloseIcon
+                  className={classes.icon}
+                  onClick={() => {
+                    setShowSmallPlayer(false);
+                    trackEvent("Mini player minimized", {});
+                  }}
+                />
+              </Tooltip>
+            </div>
+          </div>
+          <div className={classes.playerContainer}>{player}</div>
+        </div>
+      </Rnd>
+    ),
+    [
+      playerSize,
+      playerPosition,
+      bounds,
+      classes,
+      handleDragStop,
+      handleResizeStop,
+      player,
+      setShowSmallPlayer
+    ]
+  );
 
   if (!miniPlayerEnabled) {
     return null;
@@ -238,46 +290,9 @@ export const SmallPlayerContainer = ({ bounds = "" }) => {
     return null;
   }
   // if (loaded) {
-  return (
-    <Rnd
-      // default={{
-      //   // x: window.innerWidth - SMALL_PLAYER_INITIAL_WIDTH - SIDE_PANE_WIDTH,
-      //   // y: window.innerHeight - SMALL_PLAYER_INITIAL_HEIGHT,
-      //   width: SMALL_PLAYER_INITIAL_WIDTH,
-      //   height: SMALL_PLAYER_INITIAL_HEIGHT,
-      // }}
-      size={playerSize}
-      position={playerPosition}
-      bounds={bounds}
-      lockAspectRatio={false}
-      className={classes.playerOuterContainer}
-      onDragStop={handleDragStop}
-      onResizeStop={handleResizeStop}
-    >
-      <div className={classes.playerOuterContainer}>
-        <div className={classes.toolbar}>
-          <div className={classes.toolbarTitle}>
-            <Typography variant="subtitle1">Main Stage</Typography>
-          </div>
-          <div className={classes.volumeControlContainer}>
-            {/* <VolumeDownIcon className={classes.icon} />
-                <Slider className={classes.slider} value={volume} onChange={handleVolumeChange} aria-labelledby="continuous-slider" />
-              <VolumeUpIcon className={classes.icon} /> */}
-            <Tooltip title="Minimize player">
-              <CloseIcon
-                className={classes.icon}
-                onClick={() => {
-                  setShowSmallPlayer(false);
-                  trackEvent("Mini player minimized", {});
-                }}
-              />
-            </Tooltip>
-          </div>
-        </div>
-        <div className={classes.playerContainer}>{player}</div>
-      </div>
-    </Rnd>
-  );
+
+  console.log("--> Rendered small player");
+  return miniPlayer;
 };
 // SmallPlayerContainer.whyDidYouRender = true;
 export default SmallPlayerContainer;

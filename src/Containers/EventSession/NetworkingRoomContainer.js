@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default () => {
+const NetworkingRoomContainer = () => {
   const classes = useStyles();
   const { jitsiApi, setJitsiApi } = useContext(JitsiContext);
   const [lastRoomLoaded, setLastRoomLoaded] = useState(null);
@@ -151,3 +151,5 @@ export default () => {
     return <div id="conference-container" className={classes.root} />;
   }
 };
+// NetworkingRoomContainer.whyDidYouRender = true;
+export default NetworkingRoomContainer;
