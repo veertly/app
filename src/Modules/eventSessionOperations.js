@@ -2,8 +2,7 @@ import firebase from "./firebaseApp";
 import { v1 as uuidv1 } from "uuid";
 import { MAX_PARTICIPANTS_GROUP } from "../Config/constants";
 
-const getVideoConferenceAddress = (groupId) =>
-  `https://meet.jit.si/veertly-${groupId}`;
+const getVideoConferenceAddress = (groupId) => `veertly-${groupId}`;
 
 export const createNewConversation = (
   sessionId,
@@ -45,12 +44,12 @@ export const createNewConversation = (
   groupParticipantsObj[myUserId] = {
     joinedTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
     leftTimestamp: null,
-    id: myUserId,
+    id: myUserId
   };
   groupParticipantsObj[otherUserId] = {
     joinedTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
     leftTimestamp: null,
-    id: otherUserId,
+    id: otherUserId
   };
 
   let groupObj = {
@@ -58,7 +57,7 @@ export const createNewConversation = (
     startTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
     videoConferenceAddress: getVideoConferenceAddress(groupId),
     participants: groupParticipantsObj,
-    isLive: true,
+    isLive: true
   };
 
   let participantsRefCurrentGroup = {};
@@ -142,7 +141,7 @@ export const createNewConversation = (
           if (value.leftTimestamp === null) {
             activeParticipantsCurrentGroup.push({
               userId,
-              ...value,
+              ...value
             });
           }
         }
@@ -162,7 +161,7 @@ export const createNewConversation = (
           //5.1 set the remaining participant group to null
           let participant = activeParticipantsCurrentGroup[0];
           transaction.update(participantsRefCurrentGroup[participant.userId], {
-            groupId: null,
+            groupId: null
           });
 
           //5.2 set the leftTimestamp on the remaining participant in the current group
@@ -317,7 +316,7 @@ export const joinConversation = (
           if (value.leftTimestamp === null) {
             activeParticipantsCurrentGroup.push({
               userId,
-              ...value,
+              ...value
             });
           }
         }
@@ -337,7 +336,7 @@ export const joinConversation = (
           //5.1 set the remaining participant group to null
           let participant = activeParticipantsCurrentGroup[0];
           transaction.update(participantsRefCurrentGroup[participant.userId], {
-            groupId: null,
+            groupId: null
           });
 
           //5.2 set the leftTimestamp on the remaining participant in the current group
@@ -439,7 +438,7 @@ export const leaveCall = (sessionId, group, myUserId) => {
         if (value.leftTimestamp === null) {
           activeParticipants.push({
             userId,
-            ...value,
+            ...value
           });
         }
       }
@@ -459,7 +458,7 @@ export const leaveCall = (sessionId, group, myUserId) => {
         //5.1 set the remaining participant group to null
         let participant = activeParticipants[0];
         transaction.update(participantsRef[participant.userId], {
-          groupId: null,
+          groupId: null
         });
 
         //5.2 set the leftTimestamp on the remaining participant
@@ -515,7 +514,7 @@ export const createNewRoom = (
   groupParticipantsObj[myUserId] = {
     joinedTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
     leftTimestamp: null,
-    id: myUserId,
+    id: myUserId
   };
 
   let groupObj = {
@@ -527,7 +526,7 @@ export const createNewRoom = (
     isRoom: true,
     roomName,
     roomCreatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-    roomOwner: myUserId,
+    roomOwner: myUserId
   };
 
   let participantsRefCurrentGroup = {};
@@ -599,7 +598,7 @@ export const createNewRoom = (
           if (value.leftTimestamp === null) {
             activeParticipantsCurrentGroup.push({
               userId,
-              ...value,
+              ...value
             });
           }
         }
@@ -619,7 +618,7 @@ export const createNewRoom = (
           //5.1 set the remaining participant group to null
           let participant = activeParticipantsCurrentGroup[0];
           transaction.update(participantsRefCurrentGroup[participant.userId], {
-            groupId: null,
+            groupId: null
           });
 
           //5.2 set the leftTimestamp on the remaining participant in the current group
@@ -659,7 +658,7 @@ export const updateInNetworkingRoom = async (
     .collection("participantsJoined")
     .doc(myUserId)
     .update({
-      inNetworkingRoom,
+      inNetworkingRoom
     });
 };
 
@@ -671,6 +670,7 @@ export const createConference = async (
   conferenceVideoType,
   conferenceRoomYoutubeVideoId,
   conferenceRoomFacebookLink,
+  customJitsiServer,
   website,
   expectedAmountParticipants,
   eventBeginDate,
@@ -699,6 +699,7 @@ export const createConference = async (
     conferenceVideoType: x(conferenceVideoType),
     conferenceRoomYoutubeVideoId: x(conferenceRoomYoutubeVideoId),
     conferenceRoomFacebookLink: x(conferenceRoomFacebookLink),
+    customJitsiServer: x(customJitsiServer),
     website: x(website),
     expectedAmountParticipants: x(expectedAmountParticipants),
     eventBeginDate: firebase.firestore.Timestamp.fromDate(eventBeginDate),
@@ -708,7 +709,7 @@ export const createConference = async (
     description: x(description),
     visibility: x(visibility),
     eventOpens: x(eventOpens),
-    eventCloses: x(eventCloses),
+    eventCloses: x(eventCloses)
   };
 
   if (isCreate || bannerUrl !== null) {
@@ -725,7 +726,7 @@ export const createConference = async (
   const eventSession = {
     id: sessionId,
     originalSessionId: sessionId,
-    owner: userId,
+    owner: userId
   };
 
   return db

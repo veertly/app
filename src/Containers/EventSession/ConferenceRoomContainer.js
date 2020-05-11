@@ -11,24 +11,29 @@ import {
   getUserGroup,
   getSessionId,
   getUserId,
-  getEventSessionDetails,
+  getEventSessionDetails
 } from "../../Redux/eventSession";
 import ReactPlayer from "react-player";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import JitsiContext from "./JitsiContext";
 import { trackPage } from "../../Modules/analytics";
+import {
+  getJistiServer,
+  getJitsiOptions,
+  getJistiDomain
+} from "../../Modules/jitsi";
 
 const useStyles = makeStyles((theme) => ({
   videoContainer: {
     width: "100%",
-    height: "100%",
+    height: "100%"
   },
   root: {
     position: "absolute",
     top: 0,
     bottom: 0,
     right: 0,
-    left: 0,
+    left: 0
   },
   noVideoImage: {
     maxWidth: "100%",
@@ -37,14 +42,14 @@ const useStyles = makeStyles((theme) => ({
     bottom: 0,
     margin: "auto",
     width: "100%",
-    height: "60%",
+    height: "60%"
   },
   reactPlayerContainer: {
     width: "100%",
     height: "100%",
     position: "relative",
     paddingTop: "56.25%" /* Player ratio: 100 / (1280 / 720) */,
-    backgroundColor: "black",
+    backgroundColor: "black"
     // display: "flex",
     // alignItems: "center",
   },
@@ -53,21 +58,14 @@ const useStyles = makeStyles((theme) => ({
     margin: 0,
     top: "50%",
     left: "50%",
-    transform: "translate(-50%, -50%)",
-  },
+    transform: "translate(-50%, -50%)"
+  }
 }));
 
 export default () => {
   const classes = useStyles();
 
   const { jitsiApi, setJitsiApi } = useContext(JitsiContext);
-
-  // const { jitsiApi, setJitsiApi } = props;
-
-  const [loaded, error] = useScript("https://meet.jit.si/external_api.js");
-  // const [loadedFacebookStream /* , errorFacebookStream */] = useScript(
-  //   "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.2"
-  // );
 
   const [lastRoomLoaded, setLastRoomLoaded] = useState(null);
   const [loadingPlayer, setLoadingPlayer] = useState(true);
@@ -77,6 +75,10 @@ export default () => {
   const userGroup = useSelector(getUserGroup, shallowEqual);
   const sessionId = useSelector(getSessionId);
   const eventSessionDetails = useSelector(getEventSessionDetails, shallowEqual);
+
+  const [loaded, error] = useScript(
+    getJistiServer(eventSessionDetails) + "external_api.js"
+  );
 
   useEffect(() => {
     trackPage("ConferenceRoom/" + sessionId);
@@ -91,7 +93,7 @@ export default () => {
       return;
     }
     let prefix = process.env.REACT_APP_JITSI_ROOM_PREFIX;
-    let prefixStr = prefix !== undefined ? `-${prefix}-` : "";
+    let prefixStr = prefix !== undefined ? `-${prefix}` : "";
 
     const roomName = "veertly" + prefixStr + "-" + sessionId;
 
@@ -106,22 +108,16 @@ export default () => {
         jitsiApi.dispose();
       }
 
-      const domain = "meet.jit.si";
-      const options = {
-        roomName: roomName,
-        parentNode: document.querySelector("#conference-container"),
-        interfaceConfigOverwrite: {
-          // filmStripOnly: true,
-          DEFAULT_REMOTE_DISPLAY_NAME: "Veertlier",
+      const domain = getJistiDomain(eventSessionDetails);
 
-          // SHOW_JITSI_WATERMARK: false,
-          // SUPPORT_URL: 'https://github.com/jitsi/jitsi-meet/issues/new',
-        },
-      };
+      const options = getJitsiOptions(
+        roomName,
+        document.querySelector("#conference-container"),
+        false,
+        false
+      );
+
       /*eslint-disable no-undef*/
-
-      // TRY: You can disable it as follows: use a URL like so https://meet.jit.si/test123#config.p2p.enabled=false
-
       const api = new JitsiMeetExternalAPI(domain, options);
       /*eslint-enable no-undef*/
       api.executeCommand("displayName", user.firstName + " " + user.lastName);
@@ -157,7 +153,7 @@ export default () => {
     jitsiApi,
     lastRoomLoaded,
     setJitsiApi,
-    sessionId,
+    sessionId
   ]);
 
   const hasAnnouncement = React.useMemo(
