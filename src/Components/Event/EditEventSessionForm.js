@@ -255,9 +255,9 @@ function EditEventSessionForm(props) {
 
   const shareText = React.useMemo(
     () =>
-      `Join me in the virtual event ${
-        values.title
-      } at ${selectedDate.begin.format("lll")} on @veertly `,
+      `Join me in the virtual event ${values.title} at ${
+        selectedDate.begin ? selectedDate.begin.format("lll") : ""
+      } on @veertly `,
     [values.title, selectedDate.begin]
   );
 
@@ -316,14 +316,14 @@ function EditEventSessionForm(props) {
     let begin = name === "begin" ? date : selectedDate.begin;
     let end = name === "end" ? date : selectedDate.end;
 
-    if (!begin.isBefore(moment().subtract(60, "minutes"))) {
+    if (begin && !begin.isBefore(moment().subtract(60, "minutes"))) {
       setErrors({ ...errors, beginDate: undefined });
     }
 
-    if (!end.isBefore(begin)) {
+    if (end && !end.isBefore(begin)) {
       setErrors({ ...errors, endDate: undefined });
     }
-    if (end.isBefore(begin)) {
+    if (end && end.isBefore(begin)) {
       newDates.end = moment(begin).add(2, "hours");
     }
     setSelectedDate(newDates);
@@ -345,6 +345,7 @@ function EditEventSessionForm(props) {
 
     if (
       isNewEvent &&
+      selectedDate.begin &&
       selectedDate.begin.isBefore(moment().subtract(60, "minutes"))
     ) {
       setErrors({
@@ -354,10 +355,26 @@ function EditEventSessionForm(props) {
       foundErrors = true;
     }
 
-    if (selectedDate.end.isBefore(selectedDate.begin)) {
+    if (!selectedDate.begin) {
+      setErrors({
+        ...errors,
+        beginDate: "Begin date is not valid"
+      });
+      foundErrors = true;
+    }
+
+    if (selectedDate.end && selectedDate.end.isBefore(selectedDate.begin)) {
       setErrors({
         ...errors,
         endDate: "End date of the event can't be before the begin"
+      });
+      foundErrors = true;
+    }
+
+    if (!selectedDate.end) {
+      setErrors({
+        ...errors,
+        endDate: "End date is not valid"
       });
       foundErrors = true;
     }
@@ -1058,8 +1075,12 @@ function EditEventSessionForm(props) {
             bannerUrl: bannerImagePreviewUrl,
             title: values.title,
             description: eventDescription,
-            eventBeginDate: getTimestampFromDate(selectedDate.begin.toDate()),
-            eventEndDate: getTimestampFromDate(selectedDate.end.toDate()),
+            eventBeginDate: getTimestampFromDate(
+              selectedDate.begin ? selectedDate.begin.toDate() : new Date()
+            ),
+            eventEndDate: getTimestampFromDate(
+              selectedDate.end ? selectedDate.end.toDate() : new Date()
+            ),
             website: values.website
           }}
           isPreview={true}
