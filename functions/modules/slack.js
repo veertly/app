@@ -9,9 +9,7 @@ const webhook = functions.config().slack.webhook;
 let baseUrl = functions.config().global.base_url;
 
 const newEventNotification = async (eventDetails) => {
-  console.log(eventDetails);
   const message = {
-    username: "Error notifier",
     text: ":rocket: A new event has been created!",
     icon_emoji: ":rocket:",
     attachments: [
@@ -49,6 +47,39 @@ const newEventNotification = async (eventDetails) => {
   });
 };
 
+const newPersonOnDemo = async (user) => {
+  console.log({ user });
+  const message = {
+    text: ":boom: Someone joined the demo event!!!",
+    icon_emoji: ":boom:",
+    attachments: [
+      {
+        color: "#5cdb94",
+        fields: [
+          {
+            title: "User",
+            value: user.firstName,
+            short: true
+          }
+        ],
+        actions: [
+          {
+            type: "button",
+            text: "Join them",
+            url: baseUrl + "/v/demo/live"
+          }
+        ]
+      }
+    ]
+  };
+  await fetch(webhook, {
+    method: "post",
+    body: JSON.stringify(message),
+    headers: { "Content-Type": "application/json" }
+  });
+};
+
 module.exports = {
-  newEventNotification
+  newEventNotification,
+  newPersonOnDemo
 };

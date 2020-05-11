@@ -188,7 +188,21 @@ exports.onUserStatusChanged = functions.database
     }
 
     // ... and write it to Firestore.
-    return userStatusFirestoreRef.update(eventStatus);
+    let result = await userStatusFirestoreRef.update(eventStatus);
+
+    if (
+      eventStatus.joinedTimestamp &&
+      !eventStatus.leftTimestamp &&
+      sessionId === "demo"
+    ) {
+      var userRef = await firestore.collection("users").doc(userId);
+      let userSnap = await userRef.get();
+      let user = userSnap.data();
+
+      await slack.newPersonOnDemo(user);
+    }
+
+    return result;
   });
 
 exports.onEventCreated = functions.firestore
