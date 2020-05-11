@@ -1,13 +1,26 @@
+export const DEFAULT_JITSI_SERVER = "https://meet.jit.si/";
+
 export const getJistiServer = (eventSessionDetails) => {
-  if (eventSessionDetails && eventSessionDetails.customJitsiServer) {
+  if (
+    eventSessionDetails &&
+    eventSessionDetails.customJitsiServer &&
+    eventSessionDetails.customJitsiServer.trim() !== ""
+  ) {
     let server = eventSessionDetails.customJitsiServer;
+    if (!server.includes("http")) {
+      server = "https://" + server;
+    }
     return server + (server.slice(-1) === "/" ? "" : "/");
   }
-  return "https://meet.jit.si/";
+  return DEFAULT_JITSI_SERVER;
 };
 
 export const getJistiDomain = (eventSessionDetails) => {
-  if (eventSessionDetails && eventSessionDetails.customJitsiServer) {
+  if (
+    eventSessionDetails &&
+    eventSessionDetails.customJitsiServer &&
+    eventSessionDetails.customJitsiServer.trim() !== ""
+  ) {
     let domain = eventSessionDetails.customJitsiServer;
     domain = domain.replace("https://", "");
     domain = domain.replace("http://", "");
@@ -20,7 +33,12 @@ export const getJistiDomain = (eventSessionDetails) => {
   return "meet.jit.si";
 };
 
-export const getJitsiOptions = (roomName, parentNode, showHangup = true) => {
+export const getJitsiOptions = (
+  roomName,
+  parentNode,
+  showHangup = true,
+  showChat = true
+) => {
   return {
     roomName,
     parentNode,
@@ -43,6 +61,8 @@ export const getJitsiOptions = (roomName, parentNode, showHangup = true) => {
         "fullscreen",
         "fodeviceselection",
         showHangup ? "hangup" : "",
+        showChat ? "chat" : "",
+
         // "profile",
         "info",
         "recording",

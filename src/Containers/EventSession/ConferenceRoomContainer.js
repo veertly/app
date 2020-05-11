@@ -113,6 +113,7 @@ export default () => {
       const options = getJitsiOptions(
         roomName,
         document.querySelector("#conference-container"),
+        false,
         false
       );
 

@@ -13,7 +13,7 @@ import { Rnd } from "react-rnd";
 import {
   SMALL_PLAYER_INITIAL_HEIGHT,
   SMALL_PLAYER_INITIAL_WIDTH,
-  TOPBAR_HEIGHT,
+  TOPBAR_HEIGHT
 } from "../../Utils";
 import JitsiContext from "./JitsiContext";
 import { SIDE_PANE_WIDTH } from "./EventSessionContainer";
@@ -24,14 +24,14 @@ import { trackEvent } from "../../Modules/analytics";
 const useStyles = makeStyles((theme) => ({
   videoContainer: {
     width: "100%",
-    height: "100%",
+    height: "100%"
   },
   root: {
     position: "absolute",
     top: 0,
     bottom: 0,
     right: 0,
-    left: 0,
+    left: 0
   },
   noVideoImage: {
     maxWidth: "100%",
@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
     bottom: 0,
     margin: "auto",
     width: "100%",
-    height: "60%",
+    height: "60%"
   },
   playerOuterContainer: {
     position: "absolute",
@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
     zIndex: 1300,
     "-webkit-box-shadow": "0px 0px 64px -20px rgba(0,0,0,0.75)",
     "-moz-box-shadow": "0px 0px 64px -20px rgba(0,0,0,0.75)",
-    "box-shadow": "0px 0px 64px -20px rgba(0,0,0,0.75)",
+    "box-shadow": "0px 0px 64px -20px rgba(0,0,0,0.75)"
   },
   toolbar: {
     width: "100%",
@@ -68,12 +68,12 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: theme.spacing(1),
     paddingRight: theme.spacing(1),
     paddingTop: theme.spacing(0.4),
-    paddingBottom: theme.spacing(0.4),
+    paddingBottom: theme.spacing(0.4)
   },
   playerContainer: {
     width: "100%",
     flex: 1,
-    position: "relative",
+    position: "relative"
   },
   volumeControlContainer: {
     flex: 1,
@@ -82,26 +82,26 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     justifyContent: "flex-end",
     "& > * + *": {
-      marginLeft: theme.spacing(0.8),
-    },
+      marginLeft: theme.spacing(0.8)
+    }
   },
   icon: {
     "&:hover": {
-      cursor: "pointer",
-    },
+      cursor: "pointer"
+    }
   },
   toolbarTitle: {
     // flex: 0.4,
-    fontWeight: 600,
+    fontWeight: 600
   },
   slider: {
-    color: "white",
+    color: "white"
   },
   toolbarClosed: {
     position: "absolute",
     left: 0,
-    bottom: 0,
-  },
+    bottom: 0
+  }
 }));
 
 const CustomYoutubeFrame = ({ videoId, volume }) => {
@@ -138,12 +138,12 @@ export const SmallPlayerContainer = ({ bounds = "" }) => {
 
   const [playerPosition, setPlayerPosition] = useState({
     x: window.innerWidth - SMALL_PLAYER_INITIAL_WIDTH - SIDE_PANE_WIDTH,
-    y: TOPBAR_HEIGHT, // window.innerHeight - SMALL_PLAYER_INITIAL_HEIGHT,
+    y: TOPBAR_HEIGHT // window.innerHeight - SMALL_PLAYER_INITIAL_HEIGHT,
   });
 
   const [playerSize, setPlayerSize] = useState({
     width: SMALL_PLAYER_INITIAL_WIDTH,
-    height: SMALL_PLAYER_INITIAL_HEIGHT,
+    height: SMALL_PLAYER_INITIAL_HEIGHT
   });
 
   const windowSize = useWindowSize();
@@ -190,7 +190,7 @@ export const SmallPlayerContainer = ({ bounds = "" }) => {
   // };
 
   const vol = React.useMemo(() => Math.floor((volume * 10) / 100) / 10, [
-    volume,
+    volume
   ]);
 
   const player = React.useMemo(() => {
@@ -222,7 +222,7 @@ export const SmallPlayerContainer = ({ bounds = "" }) => {
 
       setPlayerSize({
         width: ref.style.width,
-        height: ref.style.height,
+        height: ref.style.height
       });
     },
     []

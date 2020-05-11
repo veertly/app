@@ -13,7 +13,11 @@ import {
 } from "../../Redux/eventSession";
 import JitsiContext from "./JitsiContext";
 import { trackPage, trackEvent } from "../../Modules/analytics";
-import { getJistiServer, getJitsiOptions } from "../../Modules/jitsi";
+import {
+  getJistiServer,
+  getJitsiOptions,
+  getJistiDomain
+} from "../../Modules/jitsi";
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
@@ -54,9 +58,7 @@ export default () => {
     let prefix = process.env.REACT_APP_JITSI_ROOM_PREFIX;
     let prefixStr = prefix !== undefined ? `${prefix}-` : "";
 
-    const roomName =
-      prefixStr +
-      currentGroup.videoConferenceAddress.replace("https://meet.jit.si/", "");
+    const roomName = prefixStr + currentGroup.videoConferenceAddress;
 
     if (loaded && lastRoomLoaded !== roomName) {
       // dispose existing jitsi
@@ -67,8 +69,8 @@ export default () => {
 
       const domain =
         currentGroup && currentGroup.customJitsiServer
-          ? getJistiServer(currentGroup)
-          : getJistiServer(eventSessionDetails);
+          ? getJistiDomain(currentGroup)
+          : getJistiDomain(eventSessionDetails);
 
       const options = getJitsiOptions(
         roomName,
