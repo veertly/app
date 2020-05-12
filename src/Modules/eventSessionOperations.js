@@ -5,7 +5,7 @@ import { MAX_PARTICIPANTS_GROUP } from "../Config/constants";
 const getVideoConferenceAddress = (groupId) => `veertly-${groupId}`;
 
 export const createNewConversation = (
-  sessionId,
+  originalSessionId,
   myUserId,
   otherUserId,
   currentUserGroup,
@@ -15,7 +15,7 @@ export const createNewConversation = (
   // participantsJoined[myUserId] && participantsJoined[myUserId].groupId
   //   ? participantsJoined[myUserId].groupId
   //   : null;
-
+  const sessionId = originalSessionId.toLowerCase();
   const groupId = uuidv1();
 
   let db = firebase.firestore();
@@ -193,13 +193,15 @@ export const createNewConversation = (
 };
 
 export const joinConversation = (
-  sessionId,
+  originalSessionId,
   participantsJoined,
   liveGroups,
   myUserId,
   newGroupId,
   snackbar
 ) => {
+  const sessionId = originalSessionId.toLowerCase();
+
   let currentGroupId =
     participantsJoined[myUserId] && participantsJoined[myUserId].groupId
       ? participantsJoined[myUserId].groupId
@@ -370,11 +372,13 @@ export const joinConversation = (
     });
 };
 
-export const leaveCall = (sessionId, group, myUserId) => {
+export const leaveCall = (originalSessionId, group, myUserId) => {
   if (!group) {
     console.log("User is not on a call...");
     return;
   }
+  const sessionId = originalSessionId.toLowerCase();
+
   let myGroupId = group.id;
 
   let db = firebase.firestore();
@@ -479,7 +483,7 @@ export const leaveCall = (sessionId, group, myUserId) => {
 };
 
 export const createNewRoom = (
-  sessionId,
+  originalSessionId,
   roomName,
   myUserId,
   currentUserGroup,
@@ -493,7 +497,7 @@ export const createNewRoom = (
   const groupId = `r_${uuidv1()}`;
 
   let db = firebase.firestore();
-
+  const sessionId = originalSessionId.toLowerCase();
   let eventSessionRef = db.collection("eventSessions").doc(sessionId);
 
   let myUserRef = db
@@ -501,7 +505,6 @@ export const createNewRoom = (
     .doc(sessionId)
     .collection("participantsJoined")
     .doc(myUserId);
-
   // let otherUserRef = db.collection(`eventSessions`).doc(sessionId).collection("participantsJoined").doc(otherUserId);
 
   var currentGroupRef =
@@ -647,10 +650,12 @@ export const createNewRoom = (
 };
 
 export const updateInNetworkingRoom = async (
-  sessionId,
+  originalSessionId,
   myUserId,
   inNetworkingRoom
 ) => {
+  const sessionId = originalSessionId.toLowerCase();
+
   await firebase
     .firestore()
     .collection("eventSessions")
