@@ -11,22 +11,22 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: 56,
     height: "100%",
     [theme.breakpoints.up("sm")]: {
-      paddingTop: 64,
+      paddingTop: 64
     },
-    position: "relative",
+    position: "relative"
   },
   shiftContent: {
-    paddingLeft: 300,
+    paddingLeft: 300
   },
   content: {
     height: "100%",
-    backgroundColor: theme.palette.background.default,
+    backgroundColor: theme.palette.background.default
     // position: "absolute",
     // left: 0,
     // right: 0,
     // top: 0,
     // bottom: 0
-  },
+  }
 }));
 const CenteredLayout = (props) => {
   const { children, maxWidth } = props;
@@ -41,7 +41,7 @@ const CenteredLayout = (props) => {
   return (
     <div
       className={clsx({
-        [classes.root]: true,
+        [classes.root]: true
       })}
     >
       <CenteredTopbar />

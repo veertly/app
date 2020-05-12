@@ -4,7 +4,7 @@ import {
   TextField,
   Typography,
   Paper,
-  Divider,
+  Divider
 } from "@material-ui/core";
 import { logout } from "../../Modules/userOperations";
 import { useHistory } from "react-router-dom";
@@ -21,7 +21,7 @@ import MUIRichTextEditor from "mui-rte";
 import {
   MuiPickersUtilsProvider,
   KeyboardTimePicker,
-  KeyboardDatePicker,
+  KeyboardDatePicker
 } from "@material-ui/pickers";
 import MomentUtils from "@date-io/moment";
 // import useScript from "../../Hooks/useScript";
@@ -49,7 +49,7 @@ import SuccessIcon from "@material-ui/icons/CheckCircleOutline";
 import FailIcon from "@material-ui/icons/Cancel";
 import {
   DEFAULT_EVENT_OPEN_MINUTES,
-  DEFAULT_EVENT_CLOSES_MINUTES,
+  DEFAULT_EVENT_CLOSES_MINUTES
 } from "../../Config/constants";
 import { getTimestampFromDate } from "../../Modules/firebaseApp";
 import { CopyToClipboard } from "react-copy-to-clipboard";
@@ -58,45 +58,46 @@ import IconButton from "@material-ui/core/IconButton";
 import { useSnackbar } from "material-ui-snackbar-provider";
 import useIsMounted from "../../Hooks/useIsMounted";
 import EventShareIcons from "./EventShareIcons";
+import { DEFAULT_JITSI_SERVER } from "../../Modules/jitsi";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     margin: theme.spacing(2, 0, 3, 0),
     [theme.breakpoints.up("sm")]: {
-      margin: theme.spacing(6, 0),
+      margin: theme.spacing(6, 0)
     },
-    padding: theme.spacing(3),
+    padding: theme.spacing(3)
   },
   formControl: {
     margin: theme.spacing(1),
-    minWidth: 120,
+    minWidth: 120
   },
   selectEmpty: {
-    marginTop: theme.spacing(2),
+    marginTop: theme.spacing(2)
   },
   textField: {
-    marginTop: 16,
+    marginTop: 16
     // marginBottom: 16
   },
   button: {
-    marginTop: theme.spacing(4),
+    marginTop: theme.spacing(4)
   },
   bottom: {
-    textAlign: "center",
+    textAlign: "center"
   },
   stepperContainer: {
-    width: "100%",
+    width: "100%"
   },
   bannerContainer: {
     maxWidth: theme.breakpoints.values.sm,
     width: "100%",
-    margin: "auto",
+    margin: "auto"
   },
   previewText: {
     maxWidth: theme.breakpoints.values.sm,
     width: "100%",
     margin: "auto",
-    display: "block",
+    display: "block"
   },
   videoContainer: {
     width: "100%",
@@ -105,11 +106,11 @@ const useStyles = makeStyles((theme) => ({
     top: 0,
     bottom: 0,
     right: 0,
-    left: 0,
+    left: 0
   },
   shareButton: {
-    margin: theme.spacing(1),
-  },
+    margin: theme.spacing(1)
+  }
 }));
 
 const sessionUrl = getUrl() + "/v/";
@@ -173,6 +174,10 @@ function EditEventSessionForm(props) {
       !isNewEvent && eventSession.conferenceRoomFacebookVideoId
         ? eventSession.conferenceRoomFacebookVideoId
         : "",
+    customJitsiServer:
+      eventSession && eventSession.customJitsiServer
+        ? eventSession.customJitsiServer
+        : DEFAULT_JITSI_SERVER,
     website: !isNewEvent && eventSession.website ? eventSession.website : "",
     expectedAmountParticipants:
       !isNewEvent && eventSession.expectedAmountParticipants
@@ -189,7 +194,7 @@ function EditEventSessionForm(props) {
     visibility:
       !isNewEvent && eventSession.visibility
         ? eventSession.visibility
-        : "LISTED",
+        : "LISTED"
   });
 
   const selectedSessionId = values.sessionId;
@@ -204,7 +209,7 @@ function EditEventSessionForm(props) {
     end:
       !isNewEvent && eventSession.eventEndDate
         ? moment(eventSession.eventEndDate.toDate())
-        : moment().add(2, "hours"),
+        : moment().add(2, "hours")
   });
   const [creatingEvent, setCreatingEvent] = React.useState(false);
   const [eventCreated, setEventCreated] = React.useState(false);
@@ -250,9 +255,9 @@ function EditEventSessionForm(props) {
 
   const shareText = React.useMemo(
     () =>
-      `Join me in the virtual event ${
-        values.title
-      } at ${selectedDate.begin.format("lll")} on @veertly `,
+      `Join me in the virtual event ${values.title} at ${
+        selectedDate.begin ? selectedDate.begin.format("lll") : ""
+      } on @veertly `,
     [values.title, selectedDate.begin]
   );
 
@@ -311,14 +316,14 @@ function EditEventSessionForm(props) {
     let begin = name === "begin" ? date : selectedDate.begin;
     let end = name === "end" ? date : selectedDate.end;
 
-    if (!begin.isBefore(moment().subtract(60, "minutes"))) {
+    if (begin && !begin.isBefore(moment().subtract(60, "minutes"))) {
       setErrors({ ...errors, beginDate: undefined });
     }
 
-    if (!end.isBefore(begin)) {
+    if (end && !end.isBefore(begin)) {
       setErrors({ ...errors, endDate: undefined });
     }
-    if (end.isBefore(begin)) {
+    if (end && end.isBefore(begin)) {
       newDates.end = moment(begin).add(2, "hours");
     }
     setSelectedDate(newDates);
@@ -340,19 +345,36 @@ function EditEventSessionForm(props) {
 
     if (
       isNewEvent &&
+      selectedDate.begin &&
       selectedDate.begin.isBefore(moment().subtract(60, "minutes"))
     ) {
       setErrors({
         ...errors,
-        beginDate: "Begin date of the event can't be in the past",
+        beginDate: "Begin date of the event can't be in the past"
       });
       foundErrors = true;
     }
 
-    if (selectedDate.end.isBefore(selectedDate.begin)) {
+    if (!selectedDate.begin) {
       setErrors({
         ...errors,
-        endDate: "End date of the event can't be before the begin",
+        beginDate: "Begin date is not valid"
+      });
+      foundErrors = true;
+    }
+
+    if (selectedDate.end && selectedDate.end.isBefore(selectedDate.begin)) {
+      setErrors({
+        ...errors,
+        endDate: "End date of the event can't be before the begin"
+      });
+      foundErrors = true;
+    }
+
+    if (!selectedDate.end) {
+      setErrors({
+        ...errors,
+        endDate: "End date is not valid"
       });
       foundErrors = true;
     }
@@ -365,7 +387,7 @@ function EditEventSessionForm(props) {
   const handleEventVisibility = (event) => {
     setValues({
       ...values,
-      visibility: event.target.checked ? "LISTED" : "UNLISTED",
+      visibility: event.target.checked ? "LISTED" : "UNLISTED"
     });
   };
 
@@ -429,6 +451,7 @@ function EditEventSessionForm(props) {
         selectedVideoType,
         values.conferenceRoomYoutubeVideoId,
         values.conferenceRoomFacebookLink,
+        values.customJitsiServer,
         values.website,
         values.expectedAmountParticipants,
         selectedDate.begin.toDate(),
@@ -573,7 +596,7 @@ function EditEventSessionForm(props) {
                     value={selectedDate.begin}
                     onChange={handleDateChange("begin")}
                     KeyboardButtonProps={{
-                      "aria-label": "change date",
+                      "aria-label": "change date"
                     }}
                     autoOk
                     disablePast
@@ -592,7 +615,7 @@ function EditEventSessionForm(props) {
                     value={selectedDate.begin}
                     onChange={handleDateChange("begin")}
                     KeyboardButtonProps={{
-                      "aria-label": "change time",
+                      "aria-label": "change time"
                     }}
                     inputVariant="outlined"
                     style={{ width: "48%" }}
@@ -602,24 +625,6 @@ function EditEventSessionForm(props) {
                       errors.beginDate !== undefined ? errors.beginDate : null
                     }
                   />
-                  {/* <TextField
-                    id="time"
-                    label="Alarm clock"
-                    type="time"
-                    defaultValue="07:30"
-                    className={classes.textField}
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                    inputProps={{
-                      step: 300, // 5 min
-                    }}
-                    onChange={(time) => {
-                      console.log(time);
-                      debugger;
-                    }}
-                    value={selectedDate.begin.format()}
-                  /> */}
                 </Grid>
 
                 <Grid
@@ -635,7 +640,7 @@ function EditEventSessionForm(props) {
                     value={selectedDate.end}
                     onChange={handleDateChange("end")}
                     KeyboardButtonProps={{
-                      "aria-label": "change date",
+                      "aria-label": "change date"
                     }}
                     autoOk
                     disablePast
@@ -654,7 +659,7 @@ function EditEventSessionForm(props) {
                     value={selectedDate.end}
                     onChange={handleDateChange("end")}
                     KeyboardButtonProps={{
-                      "aria-label": "change time",
+                      "aria-label": "change time"
                     }}
                     inputVariant="outlined"
                     style={{ width: "48%" }}
@@ -704,7 +709,7 @@ function EditEventSessionForm(props) {
                     "bulletList",
                     "quote",
                     "code",
-                    "clear",
+                    "clear"
                     // "undo",
                     // "redo",
                   ]}
@@ -728,7 +733,7 @@ function EditEventSessionForm(props) {
                     "bulletList",
                     "quote",
                     "code",
-                    "clear",
+                    "clear"
                   ]}
                 />
               </div>
@@ -765,7 +770,7 @@ function EditEventSessionForm(props) {
                         <InputAdornment position="start">
                           {sessionUrl}
                         </InputAdornment>
-                      ),
+                      )
                     }}
                     disabled={!isNewEvent}
                   />
@@ -829,12 +834,12 @@ function EditEventSessionForm(props) {
                     label="Jitsi video conference"
                   />
                 </RadioGroup>
-                {selectedVideoType === "JITSI" && (
+                {/* {selectedVideoType === "JITSI" && (
                   <FormHelperText>
                     We do not recommend Jitsi video conference for a big
                     audience
                   </FormHelperText>
-                )}
+                )} */}
               </FormControl>
 
               {selectedVideoType === "YOUTUBE" && (
@@ -911,6 +916,32 @@ function EditEventSessionForm(props) {
                   </div> */}
                 </Grid>
               )}
+              {selectedVideoType === "JITSI" && (
+                <Grid
+                  container
+                  justify="space-between"
+                  className={classes.textField}
+                >
+                  <div style={{ flexGrow: 1, marginRight: 16 }}>
+                    <TextField
+                      fullWidth
+                      label="JITSI server address"
+                      name="customJitsiServer"
+                      variant="outlined"
+                      onChange={handleUpdateField("customJitsiServer")}
+                      required={selectedVideoType === "JITSI"}
+                      value={values.customJitsiServer}
+                      disabled={isAnonymous}
+                      error={errors.customJitsiServer !== undefined}
+                      helperText={
+                        errors.customJitsiServer !== undefined
+                          ? errors.customJitsiServer
+                          : null
+                      }
+                    />
+                  </div>
+                </Grid>
+              )}
               <TextField
                 fullWidth
                 label="Expected amount of participants"
@@ -945,7 +976,7 @@ function EditEventSessionForm(props) {
                       <InputAdornment position="start">
                         minutes before
                       </InputAdornment>
-                    ),
+                    )
                   }}
                 />
                 <TextField
@@ -964,7 +995,7 @@ function EditEventSessionForm(props) {
                       <InputAdornment position="start">
                         minutes after
                       </InputAdornment>
-                    ),
+                    )
                   }}
                 />
               </Grid>
@@ -1044,9 +1075,13 @@ function EditEventSessionForm(props) {
             bannerUrl: bannerImagePreviewUrl,
             title: values.title,
             description: eventDescription,
-            eventBeginDate: getTimestampFromDate(selectedDate.begin.toDate()),
-            eventEndDate: getTimestampFromDate(selectedDate.end.toDate()),
-            website: values.website,
+            eventBeginDate: getTimestampFromDate(
+              selectedDate.begin ? selectedDate.begin.toDate() : new Date()
+            ),
+            eventEndDate: getTimestampFromDate(
+              selectedDate.end ? selectedDate.end.toDate() : new Date()
+            ),
+            website: values.website
           }}
           isPreview={true}
         />

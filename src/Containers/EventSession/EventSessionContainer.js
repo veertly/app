@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from "react";
 // import Layout from "../Layouts/EventSessionLayout";
 import {
   useCollectionData,
-  useDocumentData,
+  useDocumentData
 } from "react-firebase-hooks/firestore";
 import { useParams, useHistory } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -18,7 +18,7 @@ import NetworkingRoomContainer from "./NetworkingRoomContainer";
 import firebase from "../../Modules/firebaseApp";
 import {
   leaveCall,
-  updateInNetworkingRoom,
+  updateInNetworkingRoom
 } from "../../Modules/eventSessionOperations";
 
 import NetworkingSidebar from "./NetworkingSidebar";
@@ -29,14 +29,14 @@ import Page from "../../Components/Core/Page";
 import routes from "../../Config/routes";
 import {
   initFirebasePresenceSync,
-  keepAlive,
+  keepAlive
 } from "../../Modules/userOperations";
 import Announcements from "../../Components/EventSession/Announcements";
 import {
   DEFAULT_EVENT_OPEN_MINUTES,
   DEFAULT_KEEP_ALIVE_INTERVAL,
   DEFAULT_KEEP_ALIVE_CHECK_INTERVAL,
-  DEFAULT_EVENT_CLOSES_MINUTES,
+  DEFAULT_EVENT_CLOSES_MINUTES
 } from "../../Config/constants";
 import SideMenuIcons from "../../Components/EventSession/SideMenuIcons";
 import ChatPane, { CHAT_DEFAULT_WIDTH } from "../../Components/Chat/ChatPane";
@@ -62,7 +62,7 @@ import {
   setStateLoaded,
   isStateLoaded,
   crossCheckKeepAlives,
-  setEnabledFeatures,
+  setEnabledFeatures
 } from "../../Redux/eventSession";
 import useInterval from "../../Hooks/useInterval";
 import JoinParticipantDialog from "../../Components/EventSession/JoinParticipantDialog";
@@ -71,7 +71,7 @@ import JitsiContext from "./JitsiContext";
 import SmallPlayerContainer from "./SmallPlayerContainer";
 import {
   SMALL_PLAYER_INITIAL_HEIGHT,
-  SMALL_PLAYER_INITIAL_WIDTH,
+  SMALL_PLAYER_INITIAL_WIDTH
 } from "../../Utils";
 import { getFeatureDetails, FEATURES } from "../../Modules/features";
 import JoinRoomDialog from "../../Components/EventSession/JoinRoomDialog";
@@ -85,13 +85,13 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: 56,
     height: "100%",
     [theme.breakpoints.up("sm")]: {
-      paddingTop: 64,
+      paddingTop: 64
     },
     position: "relative",
-    overflow: "hidden",
+    overflow: "hidden"
   },
   shiftContent: {
-    paddingLeft: LEFT_PANE_WIDTH,
+    paddingLeft: LEFT_PANE_WIDTH
   },
 
   mainPane: {
@@ -109,21 +109,21 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down("xs")]: {
       right: 0,
       left: 0,
-      top: 56,
-    },
+      top: 56
+    }
   },
   noCall: {
     width: "100%",
     textAlign: "center",
     position: "absolute",
     // paddingLeft: "20%",
-    top: "45%",
+    top: "45%"
   },
   blueText: {
-    color: "#274760",
+    color: "#274760"
   },
   greenText: {
-    color: "#37C470",
+    color: "#37C470"
   },
   emptyMessage: {
     // fontWeight: 500,
@@ -132,8 +132,8 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "left",
     maxWidth: "100%",
     [theme.breakpoints.down("xs")]: {
-      margin: theme.spacing(0, 1),
-    },
+      margin: theme.spacing(0, 1)
+    }
   },
   sideMenu: {
     width: SIDE_PANE_WIDTH,
@@ -144,8 +144,8 @@ const useStyles = makeStyles((theme) => ({
     bottom: 0,
     borderLeft: "1px solid rgba(0, 0, 0, 0.12)",
     [theme.breakpoints.down("xs")]: {
-      display: "none",
-    },
+      display: "none"
+    }
   },
   smallPlayerContainer: {
     position: "absolute",
@@ -155,9 +155,9 @@ const useStyles = makeStyles((theme) => ({
     zIndex: 1201,
     height: SMALL_PLAYER_INITIAL_HEIGHT,
     width: SMALL_PLAYER_INITIAL_WIDTH,
-    padding: theme.spacing(1),
+    padding: theme.spacing(1)
     // borderTop: "1px solid rgba(0, 0, 0, 0.12)",
-  },
+  }
 }));
 
 const EventSessionContainer = (props) => {
@@ -228,7 +228,7 @@ const EventSessionContainer = (props) => {
   const [lastEventSessionDBJson, setLastEventSessionDBJson] = useState("");
   const [
     lastEventSessionDetailsDBJson,
-    setLastEventSessionDetailsDBJson,
+    setLastEventSessionDetailsDBJson
   ] = useState("");
 
   const [lastParticipantsJoinedDB, setLastParticipantsJoinedDB] = useState("");
@@ -259,7 +259,7 @@ const EventSessionContainer = (props) => {
   const [
     eventSessionDetailsDB,
     loadingSessionDetailsDB,
-    errorSessionDetailsDB,
+    errorSessionDetailsDB
   ] = useDocumentData(
     firebase.firestore().collection("eventSessionsDetails").doc(sessionId)
   );
@@ -267,7 +267,7 @@ const EventSessionContainer = (props) => {
   const [
     participantsJoinedDB,
     loadingParticipantsJoinedDB,
-    errorParticipantsJoinedDB,
+    errorParticipantsJoinedDB
   ] = useCollectionData(
     firebase
       .firestore()
@@ -290,7 +290,7 @@ const EventSessionContainer = (props) => {
   const [
     liveGroupsDB,
     loadingLiveGroupsDB,
-    errorLiveGroupsDB,
+    errorLiveGroupsDB
   ] = useCollectionData(
     firebase
       .firestore()
@@ -388,7 +388,7 @@ const EventSessionContainer = (props) => {
     stateLoaded,
     userSession,
     keepALivesDB,
-    dispatch,
+    dispatch
   ]);
 
   useEffect(() => {
@@ -410,7 +410,7 @@ const EventSessionContainer = (props) => {
     loadingParticipantsJoinedDB,
     loadingLiveGroupsDB,
     userId,
-    dispatch,
+    dispatch
   ]);
 
   // --- send keep alive ---
@@ -445,7 +445,7 @@ const EventSessionContainer = (props) => {
       eventBeginDate,
       eventOpens,
       eventEndDate,
-      eventCloses,
+      eventCloses
     } = eventSessionDetails;
 
     const openMinutes = eventOpens
@@ -471,7 +471,7 @@ const EventSessionContainer = (props) => {
   }, [isLive, history, sessionId]);
 
   const smallPlayerBounds = React.useMemo(() => `.${classes.root}`, [
-    classes.root,
+    classes.root
   ]);
 
   if (
@@ -525,7 +525,7 @@ const EventSessionContainer = (props) => {
         <div
           className={clsx({
             [classes.root]: true,
-            [classes.shiftContent]: false,
+            [classes.shiftContent]: false
           })}
         >
           <EventSessionTopbar
@@ -574,13 +574,13 @@ const EventSessionContainer = (props) => {
         setJitsiApi,
         showSmallPlayer,
         setShowSmallPlayer,
-        miniPlayerEnabled,
+        miniPlayerEnabled
       }}
     >
       <div
         className={clsx({
           [classes.root]: true,
-          [classes.shiftContent]: isDesktop,
+          [classes.shiftContent]: isDesktop
         })}
       >
         <Page title={`Veertly | ${eventSessionDetails.title}`}> </Page>
@@ -698,6 +698,6 @@ const EventSessionContainer = (props) => {
   );
 };
 
-EventSessionContainer.whyDidYouRender = true;
+// EventSessionContainer.whyDidYouRender = true;
 
 export default EventSessionContainer;
