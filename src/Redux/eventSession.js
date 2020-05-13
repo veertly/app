@@ -1,7 +1,7 @@
 import _ from "lodash";
 import {
   MAX_PARTICIPANTS_GROUP,
-  DEFAULT_OFFLINE_INTERVAL,
+  DEFAULT_OFFLINE_INTERVAL
 } from "../Config/constants";
 import * as moment from "moment";
 
@@ -36,7 +36,7 @@ const initialState = {
   availableParticipantsList: [],
   keepAlives: {},
   filters: {},
-  enabledFeatures: {},
+  enabledFeatures: {}
 };
 
 const isStillLive = (keepAlive) =>
@@ -156,14 +156,14 @@ export const eventSessionReducer = (state = initialState, action) => {
     case UPDATE_EVENT_SESSION: {
       return {
         ...state,
-        eventSession: action.eventSession,
+        eventSession: action.eventSession
       };
     }
 
     case UPDATE_EVENT_SESSION_DETAILS: {
       return {
         ...state,
-        eventSessionDetails: action.eventSessionDetails,
+        eventSessionDetails: action.eventSessionDetails
       };
     }
 
@@ -186,7 +186,7 @@ export const eventSessionReducer = (state = initialState, action) => {
         ...state,
         participantsJoined: newParticipantsJoined,
         availableParticipantsList,
-        liveGroups,
+        liveGroups
       };
     }
 
@@ -207,7 +207,7 @@ export const eventSessionReducer = (state = initialState, action) => {
         ...state,
         liveGroups,
         liveGroupsOriginal,
-        availableParticipantsList,
+        availableParticipantsList
       };
     }
 
@@ -231,7 +231,7 @@ export const eventSessionReducer = (state = initialState, action) => {
         ...state,
         keepAlives: newKeepAlives,
         liveGroups,
-        availableParticipantsList,
+        availableParticipantsList
       };
     }
 
@@ -240,7 +240,7 @@ export const eventSessionReducer = (state = initialState, action) => {
       return {
         ...state,
         users: newUsers,
-        user: state.userId && newUsers ? newUsers[state.userId] : null,
+        user: state.userId && newUsers ? newUsers[state.userId] : null
       };
     }
 
@@ -248,27 +248,27 @@ export const eventSessionReducer = (state = initialState, action) => {
       return {
         ...state,
         userId: action.userId,
-        user: state.users ? state.users[action.userId] : null,
+        user: state.users ? state.users[action.userId] : null
       };
     }
 
     case STATE_LOADED: {
       return {
         ...state,
-        stateLoaded: action.stateLoaded,
+        stateLoaded: action.stateLoaded
       };
     }
 
     case SET_FILTERS: {
       return {
         ...state,
-        filters: action.filters,
+        filters: action.filters
       };
     }
     case SET_ENABLED_FEATURES: {
       return {
         ...state,
-        enabledFeatures: action.enabledFeatures,
+        enabledFeatures: action.enabledFeatures
       };
     }
 
@@ -277,7 +277,9 @@ export const eventSessionReducer = (state = initialState, action) => {
   }
 };
 export const getSessionId = (store) =>
-  store.eventSession.eventSession ? store.eventSession.eventSession.id : null;
+  store.eventSession.eventSession
+    ? store.eventSession.eventSession.id.toLowerCase()
+    : null;
 export const getEventSession = (store) => store.eventSession.eventSession;
 export const getEventSessionDetails = (store) =>
   store.eventSession.eventSessionDetails;
@@ -322,57 +324,57 @@ export const getAvailableParticipantsList = (store) =>
 export const getFilters = (store) => store.eventSession.filters;
 
 export const getFeatureDetails = (feature) => (store) => {
-  return store.eventSession.enabledFeatures && store.eventSession.enabledFeatures[feature]
+  return store.eventSession.enabledFeatures &&
+    store.eventSession.enabledFeatures[feature]
     ? store.eventSession.enabledFeatures[feature]
     : null;
 };
-
 
 ////////////////// action creators
 
 export const updateEventSession = (eventSession) => ({
   type: UPDATE_EVENT_SESSION,
-  eventSession,
+  eventSession
 });
 
 export const updateEventSessionDetails = (eventSessionDetails) => ({
   type: UPDATE_EVENT_SESSION_DETAILS,
-  eventSessionDetails,
+  eventSessionDetails
 });
 
 export const updateParticipantsJoined = (participantsJoined) => ({
   type: UPDATE_PARTICIPANTS_JOINED,
-  participantsJoined,
+  participantsJoined
 });
 
 export const updateLiveGroups = (liveGroups) => ({
   type: UPDATE_LIVE_GROUPS,
-  liveGroups,
+  liveGroups
 });
 export const updateUsers = (users) => ({
   type: UPDATE_USERS,
-  users,
+  users
 });
 export const updateUserId = (userId) => ({
   type: UPDATE_USER_ID,
-  userId,
+  userId
 });
 export const setStateLoaded = (stateLoaded) => ({
   type: STATE_LOADED,
-  stateLoaded,
+  stateLoaded
 });
 
 export const crossCheckKeepAlives = (keepAlives) => ({
   type: CROSS_CHECK_KEEP_ALIVES,
-  keepAlives,
+  keepAlives
 });
 
 export const setFilters = (filters) => ({
   type: SET_FILTERS,
-  filters,
+  filters
 });
 
 export const setEnabledFeatures = (enabledFeatures) => ({
   type: SET_ENABLED_FEATURES,
-  enabledFeatures,
+  enabledFeatures
 });
