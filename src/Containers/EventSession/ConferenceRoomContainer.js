@@ -135,7 +135,7 @@ export default () => {
       }
       api.addEventListener("videoConferenceLeft", (event) => {
         // console.log("videoConferenceLeft: ", event);
-        handleCallEnded();
+        // handleCallEnded();
       });
       api.addEventListener("readyToClose", (event) => {
         // console.log("readyToClose: ", event);
