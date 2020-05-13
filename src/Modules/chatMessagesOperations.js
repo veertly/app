@@ -1,19 +1,33 @@
 import firebase from "./firebaseApp";
 
-export const sendChatMessage = async (sessionId, userId, namespace, messageId, message) => {
+export const sendChatMessage = async (
+  sessionId,
+  userId,
+  namespace,
+  messageId,
+  message
+) => {
   let db = firebase.firestore();
   let messageDb = {
     userId,
     sentDate: firebase.firestore.FieldValue.serverTimestamp(),
     messageId,
-    message,
+    message
   };
   // console.log({ messageDb });
-  await db.collection("eventSessionsChatMessages").doc(sessionId).collection(namespace).doc(messageId).set(messageDb);
+  await db
+    .collection("eventSessionsChatMessages")
+    .doc(sessionId.toLowerCase())
+    .collection(namespace)
+    .doc(messageId)
+    .set(messageDb);
 };
 
 export const conferenceExists = async (sessionId) => {
-  let docRef = firebase.firestore().collection("eventSessionsDetails").doc(sessionId.toLowerCase());
+  let docRef = firebase
+    .firestore()
+    .collection("eventSessionsDetails")
+    .doc(sessionId.toLowerCase());
 
   let docSnapshot = await docRef.get();
   return docSnapshot.exists;
@@ -106,7 +120,7 @@ export const registerToEvent = async (eventSession, userId, userDetails) => {
       registrationDate: firebase.firestore.FieldValue.serverTimestamp(),
       title,
       originalSessionId,
-      eventBeginDate: eventBeginDate ? eventBeginDate : null,
+      eventBeginDate: eventBeginDate ? eventBeginDate : null
     });
   localStorage.setItem("/veertly/" + sessionId, true);
 };
@@ -115,7 +129,7 @@ export const isUserRegisteredToEvent = async (sessionId, userId) => {
   let docRef = firebase
     .firestore()
     .collection("eventSessionsRegistrations")
-    .doc(sessionId)
+    .doc(sessionId.toLowerCase())
     .collection("registrations")
     .doc(userId);
 

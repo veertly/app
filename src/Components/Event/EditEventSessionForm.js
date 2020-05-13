@@ -826,8 +826,12 @@ function EditEventSessionForm(props) {
                   <FormControlLabel
                     value="FACEBOOK"
                     control={<Radio color="primary" />}
-                    label="Facebook live stream"
+                    label="Universal live stream"
                   />
+                  <FormHelperText>
+                    Facebook, Twitch, SoundCloud, Streamable, Vimeo, Wistia,
+                    DailyMotion and Custom LiveStream (HLS)
+                  </FormHelperText>
                   <FormControlLabel
                     value="JITSI"
                     control={<Radio color="primary" />}

@@ -204,9 +204,11 @@ export default () => {
             <ReactPlayer
               url={url}
               width="100%"
-              height="none"
+              height="100%"
+              // height="none"
               className={classes.reactPlayer}
               // playing
+              controls={true}
               onReady={() => setLoadingPlayer(false)}
             />
             {loadingPlayer && (
