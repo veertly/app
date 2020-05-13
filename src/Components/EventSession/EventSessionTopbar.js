@@ -26,7 +26,7 @@ import {
   getUser,
   getUserGroup,
   getEventSessionDetails,
-  getFeatureDetails,
+  getFeatureDetails
 } from "../../Redux/eventSession";
 import { openEditProfile } from "../../Redux/dialogs";
 import { FEATURES } from "../../Modules/features";
@@ -34,16 +34,16 @@ import { FEATURES } from "../../Modules/features";
 // import routes from "../../Config/routes";
 const useStyles = makeStyles((theme) => ({
   root: {
-    boxShadow: "none",
+    boxShadow: "none"
   },
   flexGrow: {
-    flexGrow: 1,
+    flexGrow: 1
   },
   signOutButton: {
-    marginLeft: theme.spacing(1),
+    marginLeft: theme.spacing(1)
   },
   logo: {
-    width: 180,
+    width: 180
     // marginTop: theme.spacing(1)
   },
   button: {
@@ -51,11 +51,11 @@ const useStyles = makeStyles((theme) => ({
     float: "left",
     width: 135,
     textAlign: "center",
-    whiteSpace: "nowrap",
+    whiteSpace: "nowrap"
   },
   roomButtonsContainer: {
     margin: theme.spacing(0, 4, 0, 4),
-    minWidth: 318,
+    minWidth: 318
   },
   currentRoomContainer: {
     backgroundColor: theme.palette.secondary.main,
@@ -69,18 +69,18 @@ const useStyles = makeStyles((theme) => ({
     boxShadow:
       "0px 1px 5px 0px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 3px 1px -2px rgba(0,0,0,0.12)",
     width: 135,
-    textAlign: "center",
+    textAlign: "center"
   },
   title: {
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
     overflow: "hidden",
-    display: "block",
+    display: "block"
   },
   avatarContainer: {
     position: "absolute",
-    right: theme.spacing(2),
-  },
+    right: theme.spacing(2)
+  }
 }));
 
 const RoomButton = ({ onClick, disabled, isCurrentRoom, children, icon }) => {
@@ -162,7 +162,7 @@ export default withRouter((props) => {
   }
 
   const handleLogoutClick = () => {
-    logout(sessionId);
+    logout(sessionId, userGroup);
     handleMenuClose();
     if (sessionId) {
       history.push(routes.EVENT_SESSION(sessionId));
@@ -239,11 +239,11 @@ export default withRouter((props) => {
               anchorEl={menuAnchorEl}
               anchorOrigin={{
                 vertical: "top",
-                horizontal: "center",
+                horizontal: "center"
               }}
               transformOrigin={{
                 vertical: "bottom",
-                horizontal: "center",
+                horizontal: "center"
               }}
               keepMounted
               open={openMenu}
