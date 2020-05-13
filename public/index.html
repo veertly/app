@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
     <meta name="theme-color" content="#000000" />
     <!--
       manifest.json provides metadata used when your web app is added to the
@@ -20,19 +23,75 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>Veertly | Virtual events, virtual networking!</title>
-    <link rel="apple-touch-icon" sizes="57x57" href="/icons/apple-icon-57x57.png" />
-    <link rel="apple-touch-icon" sizes="60x60" href="/icons/apple-icon-60x60.png" />
-    <link rel="apple-touch-icon" sizes="72x72" href="/icons/apple-icon-72x72.png" />
-    <link rel="apple-touch-icon" sizes="76x76" href="/icons/apple-icon-76x76.png" />
-    <link rel="apple-touch-icon" sizes="114x114" href="/icons/apple-icon-114x114.png" />
-    <link rel="apple-touch-icon" sizes="120x120" href="/icons/apple-icon-120x120.png" />
-    <link rel="apple-touch-icon" sizes="144x144" href="/icons/apple-icon-144x144.png" />
-    <link rel="apple-touch-icon" sizes="152x152" href="/icons/apple-icon-152x152.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-icon-180x180.png" />
-    <link rel="icon" type="image/png" sizes="192x192" href="/icons/android-icon-192x192.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="96x96" href="/icons/favicon-96x96.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png" />
+    <link
+      rel="apple-touch-icon"
+      sizes="57x57"
+      href="/icons/apple-icon-57x57.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="60x60"
+      href="/icons/apple-icon-60x60.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="72x72"
+      href="/icons/apple-icon-72x72.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="76x76"
+      href="/icons/apple-icon-76x76.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="114x114"
+      href="/icons/apple-icon-114x114.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="120x120"
+      href="/icons/apple-icon-120x120.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="144x144"
+      href="/icons/apple-icon-144x144.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="152x152"
+      href="/icons/apple-icon-152x152.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/icons/apple-icon-180x180.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="192x192"
+      href="/icons/android-icon-192x192.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/icons/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="96x96"
+      href="/icons/favicon-96x96.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/icons/favicon-16x16.png"
+    />
     <link rel="manifest" href="/manifest.json" />
     <meta name="msapplication-TileColor" content="#ffffff" />
     <meta name="msapplication-TileImage" content="/ms-icon-144x144.png" />
@@ -52,15 +111,17 @@
           captureUncaught: true,
           captureUnhandledRejections: true,
           payload: {
-            environment: "production",
-          },
+            environment: "production"
+          }
         };
         // Rollbar Snippet
         !(function (r) {
           function e(n) {
             if (o[n]) return o[n].exports;
             var t = (o[n] = { exports: {}, id: n, loaded: !1 });
-            return r[n].call(t.exports, t, t.exports, e), (t.loaded = !0), t.exports;
+            return (
+              r[n].call(t.exports, t, t.exports, e), (t.loaded = !0), t.exports
+            );
           }
           var o = {};
           return (e.m = r), (e.c = o), (e.p = ""), e(0);
@@ -73,10 +134,18 @@
               (_rollbarConfig.rollbarJsUrl =
                 _rollbarConfig.rollbarJsUrl ||
                 "https://cdnjs.cloudflare.com/ajax/libs/rollbar.js/2.4.6/rollbar.min.js"),
-              (_rollbarConfig.async = void 0 === _rollbarConfig.async || _rollbarConfig.async);
+              (_rollbarConfig.async =
+                void 0 === _rollbarConfig.async || _rollbarConfig.async);
             var a = n.setupShim(window, _rollbarConfig),
               l = t(_rollbarConfig);
-            (window.rollbar = n.Rollbar), a.loadFull(window, document, !_rollbarConfig.async, _rollbarConfig, l);
+            (window.rollbar = n.Rollbar),
+              a.loadFull(
+                window,
+                document,
+                !_rollbarConfig.async,
+                _rollbarConfig,
+                l
+              );
           },
           function (r, e, o) {
             "use strict";
@@ -112,14 +181,20 @@
                     ((t._rollbarOldOnError = r.onerror),
                     i.captureUncaughtExceptions(r, t, !0),
                     i.wrapGlobals(r, t, !0)),
-                    e.captureUnhandledRejections && i.captureUnhandledRejections(r, t, !0);
+                    e.captureUnhandledRejections &&
+                      i.captureUnhandledRejections(r, t, !0);
                   var n = e.autoInstrument;
                   return (
                     e.enabled !== !1 &&
-                      (void 0 === n || n === !0 || ("object" == typeof n && n.network)) &&
+                      (void 0 === n ||
+                        n === !0 ||
+                        ("object" == typeof n && n.network)) &&
                       r.addEventListener &&
                       (r.addEventListener("load", t.captureLoad.bind(t)),
-                      r.addEventListener("DOMContentLoaded", t.captureDomContentLoaded.bind(t))),
+                      r.addEventListener(
+                        "DOMContentLoaded",
+                        t.captureDomContentLoaded.bind(t)
+                      )),
                     (r[o] = t),
                     t
                   );
@@ -164,7 +239,14 @@
                 (s.src = t.rollbarJsUrl),
                 o || (s.async = !0),
                 (s.onload = s.onreadystatechange = n(function () {
-                  if (!(i || (this.readyState && "loaded" !== this.readyState && "complete" !== this.readyState))) {
+                  if (
+                    !(
+                      i ||
+                      (this.readyState &&
+                        "loaded" !== this.readyState &&
+                        "complete" !== this.readyState)
+                    )
+                  ) {
                     s.onload = s.onreadystatechange = null;
                     try {
                       c.removeChild(s);
@@ -209,7 +291,8 @@
                     (r._rollbar_wrapped._isWrap = !0),
                     r.hasOwnProperty)
                   )
-                    for (var t in r) r.hasOwnProperty(t) && (r._rollbar_wrapped[t] = r[t]);
+                    for (var t in r)
+                      r.hasOwnProperty(t) && (r._rollbar_wrapped[t] = r[t]);
                   return r._rollbar_wrapped;
                 } catch (e) {
                   return r;
@@ -233,7 +316,9 @@
                 var t;
                 "function" == typeof e._rollbarOldOnError
                   ? (t = e._rollbarOldOnError)
-                  : r.onerror && !r.onerror.belongsToShim && ((t = r.onerror), (e._rollbarOldOnError = t));
+                  : r.onerror &&
+                    !r.onerror.belongsToShim &&
+                    ((t = r.onerror), (e._rollbarOldOnError = t));
                 var a = function () {
                   var o = Array.prototype.slice.call(arguments, 0);
                   n(r, e, t, o);
@@ -264,17 +349,26 @@
                   try {
                     n = r.promise;
                   } catch (r) {
-                    n = "[unhandledrejection] error getting `promise` from event";
+                    n =
+                      "[unhandledrejection] error getting `promise` from event";
                   }
                   try {
-                    (t = r.detail), !o && t && ((o = t.reason), (n = t.promise));
+                    (t = r.detail),
+                      !o && t && ((o = t.reason), (n = t.promise));
                   } catch (r) {
-                    t = "[unhandledrejection] error getting `detail` from event";
+                    t =
+                      "[unhandledrejection] error getting `detail` from event";
                   }
-                  o || (o = "[unhandledrejection] error getting `reason` from event"),
-                    e && e.handleUnhandledRejection && e.handleUnhandledRejection(o, n);
+                  o ||
+                    (o =
+                      "[unhandledrejection] error getting `reason` from event"),
+                    e &&
+                      e.handleUnhandledRejection &&
+                      e.handleUnhandledRejection(o, n);
                 };
-                (n.belongsToShim = o), (r._rollbarURH = n), r.addEventListener("unhandledrejection", n);
+                (n.belongsToShim = o),
+                  (r._rollbarURH = n),
+                  r.addEventListener("unhandledrejection", n);
               }
             }
             function a(r, e, o) {
@@ -284,24 +378,43 @@
                   a = "EventTarget,Window,Node,ApplicationCache,AudioTrackList,ChannelMergerNode,CryptoOperation,EventSource,FileReader,HTMLUnknownElement,IDBDatabase,IDBRequest,IDBTransaction,KeyOperation,MediaController,MessagePort,ModalWindow,Notification,SVGElementInstance,Screen,TextTrack,TextTrackCue,TextTrackList,WebSocket,WebSocketWorker,Worker,XMLHttpRequest,XMLHttpRequestEventTarget,XMLHttpRequestUpload".split(
                     ","
                   );
-                for (n = 0; n < a.length; ++n) (t = a[n]), r[t] && r[t].prototype && l(e, r[t].prototype, o);
+                for (n = 0; n < a.length; ++n)
+                  (t = a[n]), r[t] && r[t].prototype && l(e, r[t].prototype, o);
               }
             }
             function l(r, e, o) {
               if (e.hasOwnProperty && e.hasOwnProperty("addEventListener")) {
-                for (var n = e.addEventListener; n._rollbarOldAdd && n.belongsToShim; ) n = n._rollbarOldAdd;
+                for (
+                  var n = e.addEventListener;
+                  n._rollbarOldAdd && n.belongsToShim;
+
+                )
+                  n = n._rollbarOldAdd;
                 var t = function (e, o, t) {
                   n.call(this, e, r.wrap(o), t);
                 };
-                (t._rollbarOldAdd = n), (t.belongsToShim = o), (e.addEventListener = t);
-                for (var a = e.removeEventListener; a._rollbarOldRemove && a.belongsToShim; ) a = a._rollbarOldRemove;
+                (t._rollbarOldAdd = n),
+                  (t.belongsToShim = o),
+                  (e.addEventListener = t);
+                for (
+                  var a = e.removeEventListener;
+                  a._rollbarOldRemove && a.belongsToShim;
+
+                )
+                  a = a._rollbarOldRemove;
                 var l = function (r, e, o) {
                   a.call(this, r, (e && e._rollbar_wrapped) || e, o);
                 };
-                (l._rollbarOldRemove = a), (l.belongsToShim = o), (e.removeEventListener = l);
+                (l._rollbarOldRemove = a),
+                  (l.belongsToShim = o),
+                  (e.removeEventListener = l);
               }
             }
-            r.exports = { captureUncaughtExceptions: o, captureUnhandledRejections: t, wrapGlobals: a };
+            r.exports = {
+              captureUncaughtExceptions: o,
+              captureUnhandledRejections: t,
+              wrapGlobals: a
+            };
           },
           function (r, e) {
             "use strict";
@@ -357,25 +470,67 @@
                     (o = window._rollbarShims[i++]);
 
                   )
-                    n || (n = o.handler), o.handler._swapAndProcessMessages(l, o.messages);
+                    n || (n = o.handler),
+                      o.handler._swapAndProcessMessages(l, o.messages);
                   (window[t] = n), (window._rollbarInitialized = !0);
                 }
               };
             };
-          },
+          }
         ]);
         // End Rollbar Snippet
       }
     </script>
+
+    <script type="text/javascript">
+      const isProduction = Boolean(
+        !window.location.hostname.includes("app.veertly.com")
+      );
+      if (isProduction) {
+        window.$crisp = [];
+        window.CRISP_WEBSITE_ID = "e2d77fef-388b-4609-a944-238bdcc2fc70";
+        (function () {
+          d = document;
+          s = d.createElement("script");
+          s.src = "https://client.crisp.chat/l.js";
+          s.async = 1;
+          d.getElementsByTagName("head")[0].appendChild(s);
+        })();
+
+        setInterval(() => {
+          try {
+            if (window.location.href.includes("/live")) {
+              let elem = document.querySelectorAll("a[data-maximized]")[0];
+              if (!elem) {
+                elem = document.querySelectorAll("a[data-cshid]")[0];
+              }
+              console.log(elem);
+              if (elem) {
+                elem.setAttribute(
+                  "style",
+                  "right: -4px!important; bottom: 0px!important"
+                );
+              }
+            }
+          } catch (e) {}
+        }, 5000);
+      }
+    </script>
+
     <script src="https://meet.jit.si/external_api.js"></script>
     <script src="https://www.gstatic.com/firebasejs/6.6.0/firebase-app.js"></script>
     <script>
       !(function () {
-        const isProduction = Boolean(window.location.hostname.includes("app.veertly.com"));
+        const isProduction = Boolean(
+          window.location.hostname.includes("app.veertly.com")
+        );
         if (isProduction) {
           var analytics = (window.analytics = window.analytics || []);
           if (!analytics.initialize)
-            if (analytics.invoked) window.console && console.error && console.error("Segment snippet included twice.");
+            if (analytics.invoked)
+              window.console &&
+                console.error &&
+                console.error("Segment snippet included twice.");
             else {
               analytics.invoked = !0;
               analytics.methods = [
@@ -394,7 +549,7 @@
                 "page",
                 "once",
                 "off",
-                "on",
+                "on"
               ];
               analytics.factory = function (t) {
                 return function () {
@@ -412,7 +567,10 @@
                 var n = document.createElement("script");
                 n.type = "text/javascript";
                 n.async = !0;
-                n.src = "https://cdn.segment.com/analytics.js/v1/" + t + "/analytics.min.js";
+                n.src =
+                  "https://cdn.segment.com/analytics.js/v1/" +
+                  t +
+                  "/analytics.min.js";
                 var a = document.getElementsByTagName("script")[0];
                 a.parentNode.insertBefore(n, a);
                 analytics._loadOptions = e;
