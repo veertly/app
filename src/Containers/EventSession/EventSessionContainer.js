@@ -324,6 +324,9 @@ const EventSessionContainer = (props) => {
 
   // --- eventSessionDetailsDB ---
   useEffect(() => {
+    if (!eventSessionDetailsDB && !loadingSessionDetailsDB) {
+      history.push(routes.EVENT_SESSION(sessionId));
+    }
     const currentEventSessionDetailsDBJson = JSON.stringify(
       eventSessionDetailsDB
     );
@@ -332,7 +335,14 @@ const EventSessionContainer = (props) => {
       dispatch(updateEventSessionDetails(eventSessionDetailsDB));
       setLastEventSessionDetailsDBJson(currentEventSessionDetailsDBJson);
     }
-  }, [eventSessionDetailsDB, lastEventSessionDetailsDBJson, dispatch]);
+  }, [
+    eventSessionDetailsDB,
+    lastEventSessionDetailsDBJson,
+    dispatch,
+    loadingSessionDetailsDB,
+    history,
+    sessionId
+  ]);
 
   // --- participantsJoinedDB ---
   useEffect(() => {

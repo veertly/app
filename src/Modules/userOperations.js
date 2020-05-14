@@ -1,5 +1,6 @@
 import firebase from "./firebaseApp";
 import { trackEvent } from "./analytics";
+import { leaveCall } from "./eventSessionOperations";
 
 export const registerNewUser = async (userAuth) => {
   // console.log("on: registerNewUser");
@@ -9,7 +10,7 @@ export const registerNewUser = async (userAuth) => {
     phoneNumber,
     uid,
     photoURL,
-    isAnonymous,
+    isAnonymous
   } = userAuth;
   let names = displayName.split(" ");
   let firstName = names[0];
@@ -22,12 +23,12 @@ export const registerNewUser = async (userAuth) => {
     phoneNumber,
     firstName,
     lastName,
-    isAnonymous: isAnonymous,
+    isAnonymous: isAnonymous
   });
 
   var userAuth2 = firebase.auth().currentUser;
   await userAuth2.updateProfile({
-    displayName,
+    displayName
   });
 };
 
@@ -66,7 +67,7 @@ export const updateUser = async (userId, sessionId, userDb) => {
       joinedTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
       title,
       originalSessionId,
-      eventBeginDate: eventBeginDate ? eventBeginDate : null,
+      eventBeginDate: eventBeginDate ? eventBeginDate : null
     };
     updateUserAttendedEvents = { originalSessionId };
   }
@@ -108,7 +109,7 @@ export const updateUser = async (userId, sessionId, userDb) => {
 
   var userAuth = firebase.auth().currentUser;
   await userAuth.updateProfile({
-    displayName: userDb.firstName + " " + userDb.lastName,
+    displayName: userDb.firstName + " " + userDb.lastName
   });
   // .then(function() {
   //   // console.log("Transaction successfully committed!");
@@ -147,8 +148,7 @@ export const hasUserSession = async (sessionId, userId) => {
   return docSnapshot.exists;
 };
 
-export const logout = async (sessionId) => {
-  trackEvent("Logged out");
+export const setOffline = async (sessionId, userGroup) => {
   if (sessionId) {
     var userId = firebase.auth().currentUser.uid;
 
@@ -162,20 +162,28 @@ export const logout = async (sessionId) => {
       .collection("participantsJoined")
       .doc(userId);
 
+    if (userGroup) {
+      await leaveCall(sessionId, userGroup, userId);
+    }
+
     var isOfflineForDatabase = {
       isOnline: false,
       leftTimestamp: firebase.database.ServerValue.TIMESTAMP,
-      lastChanged: firebase.database.ServerValue.TIMESTAMP,
+      lastChanged: firebase.database.ServerValue.TIMESTAMP
     };
 
     var isOfflineForFirestore = {
       isOnline: false,
-      leftTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      leftTimestamp: firebase.firestore.FieldValue.serverTimestamp()
     };
 
     await userStatusDatabaseRef.update(isOfflineForDatabase);
     await userStatusFirestoreRef.update(isOfflineForFirestore);
   }
+};
+export const logout = async (sessionId, userGroup) => {
+  trackEvent("Logged out");
+  await setOffline(sessionId, userGroup);
   await firebase.auth().signOut();
 };
 
@@ -199,19 +207,19 @@ export const initFirebasePresenceSync = async (
   var isOfflineForDatabase = {
     isOnline: false,
     leftTimestamp: firebase.database.ServerValue.TIMESTAMP,
-    lastChanged: firebase.database.ServerValue.TIMESTAMP,
+    lastChanged: firebase.database.ServerValue.TIMESTAMP
   };
 
   var isOnlineForDatabase = {
     isOnline: true,
     joinedTimestamp: firebase.database.ServerValue.TIMESTAMP,
     leftTimestamp: null,
-    lastChanged: firebase.database.ServerValue.TIMESTAMP,
+    lastChanged: firebase.database.ServerValue.TIMESTAMP
   };
 
   var isOfflineForFirestore = {
     isOnline: false,
-    leftTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
+    leftTimestamp: firebase.firestore.FieldValue.serverTimestamp()
   };
 
   firebase
@@ -236,7 +244,7 @@ export const initFirebasePresenceSync = async (
                 isOnline: true,
                 joinedTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
                 leftTimestamp: null,
-                lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
+                lastSeen: firebase.firestore.FieldValue.serverTimestamp()
               },
               { merge: true }
             );
@@ -244,7 +252,7 @@ export const initFirebasePresenceSync = async (
             userStatusFirestoreRef.update({
               isOnline: true,
               leftTimestamp: null,
-              lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
+              lastSeen: firebase.firestore.FieldValue.serverTimestamp()
             });
           }
         });
@@ -262,7 +270,7 @@ export const keepAlive = async (sessionId, userId, userSession) => {
 
   await keepAliveSessionRef.set(
     {
-      lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
+      lastSeen: firebase.firestore.FieldValue.serverTimestamp()
     },
     { merge: true }
   );
@@ -279,7 +287,7 @@ export const keepAlive = async (sessionId, userId, userSession) => {
       {
         isOnline: true,
         leftTimestamp: null,
-        lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
+        lastSeen: firebase.firestore.FieldValue.serverTimestamp()
       },
       { merge: true }
     );

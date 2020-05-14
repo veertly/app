@@ -22,6 +22,9 @@ import {
   getJitsiOptions,
   getJistiDomain
 } from "../../Modules/jitsi";
+import { setOffline } from "../../Modules/userOperations";
+import { useHistory } from "react-router-dom";
+import routes from "../../Config/routes";
 
 const useStyles = makeStyles((theme) => ({
   videoContainer: {
@@ -76,6 +79,8 @@ export default () => {
   const sessionId = useSelector(getSessionId);
   const eventSessionDetails = useSelector(getEventSessionDetails, shallowEqual);
 
+  const history = useHistory();
+
   const [loaded, error] = useScript(
     getJistiServer(eventSessionDetails) + "external_api.js"
   );
@@ -84,9 +89,11 @@ export default () => {
     trackPage("ConferenceRoom/" + sessionId);
   }, [sessionId]);
 
-  const handleCallEnded = React.useCallback(() => {
-    leaveCall(sessionId, userGroup, userId);
-  }, [sessionId, userGroup, userId]);
+  const handleCallEnded = React.useCallback(async () => {
+    await leaveCall(sessionId, userGroup, userId);
+    await setOffline(sessionId, userGroup);
+    history.push(routes.EVENT_SESSION(sessionId));
+  }, [sessionId, userGroup, userId, history]);
 
   useEffect(() => {
     if (!user) {
@@ -113,7 +120,7 @@ export default () => {
       const options = getJitsiOptions(
         roomName,
         document.querySelector("#conference-container"),
-        false,
+        true,
         false
       );
 
@@ -128,7 +135,7 @@ export default () => {
       }
       api.addEventListener("videoConferenceLeft", (event) => {
         // console.log("videoConferenceLeft: ", event);
-        handleCallEnded();
+        // handleCallEnded();
       });
       api.addEventListener("readyToClose", (event) => {
         // console.log("readyToClose: ", event);
