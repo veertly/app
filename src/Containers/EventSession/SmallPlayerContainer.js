@@ -62,18 +62,33 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#486981",
     color: "white",
     display: "flex",
-    flexDirection: "row",
+    flexDirection: "column",
     justifyContent: "space-between",
     alignItems: "center",
     paddingLeft: theme.spacing(1),
     paddingRight: theme.spacing(1),
-    paddingTop: theme.spacing(0.4),
-    paddingBottom: theme.spacing(0.4)
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2)
+  },
+  dragInitiater: {
+    height: "100%",
+    width:"100%",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    cursor: "move",
+  },
+  divider: {
+    width: "100%",
   },
   playerContainer: {
     width: "100%",
     flex: 1,
-    position: "relative"
+    position: "relative",
+    borderStyle: "solid",
+    borderWidth: theme.spacing(0.5),
+    borderColor: "#486981",
   },
   volumeControlContainer: {
     flex: 1,
@@ -148,6 +163,10 @@ export const SmallPlayerContainer = ({ bounds = "" }) => {
 
   const windowSize = useWindowSize();
 
+  const [disableDragging, setDisableDragging] = useState(false);
+
+  const [isDragging, setIsDragging] = useState(false);
+
   useEffect(() => {
     let { width, height } = playerSize;
     let { x, y } = playerPosition;
@@ -212,10 +231,6 @@ export const SmallPlayerContainer = ({ bounds = "" }) => {
     }
   }, [eventSessionDetails, vol]);
 
-  const handleDragStop = React.useCallback((e, d) => {
-    setPlayerPosition({ x: d.x, y: d.y });
-  }, []);
-
   const handleResizeStop = React.useCallback(
     (e, direction, ref, delta, position) => {
       setPlayerPosition(position);
@@ -227,6 +242,40 @@ export const SmallPlayerContainer = ({ bounds = "" }) => {
     },
     []
   );
+
+  const handleDragStop = React.useCallback((e, d) => {
+    // if (!d) {
+    //   return;
+    // }
+    // console.log("drag stop", d)
+
+    // if(d.x > 0 && d.y > 0) {
+      setPlayerPosition({ x: d.x, y: d.y });
+      // console.log("drag stop", d)
+    // }
+    setIsDragging(false);
+  }, []);
+
+  const handleDragStart = React.useCallback(
+    () => {
+      setIsDragging(true);
+        // console.log("drag start")
+    }, 
+    []
+  )
+
+  const handleMouseDown = React.useCallback(
+    () => {
+      if (disableDragging) {
+        setDisableDragging(false)
+      }
+      // console.log("mouse down rnd")
+    },
+    [disableDragging, setDisableDragging]
+  )
+
+  // console.log("disable dragging => ", disableDragging)
+  // console.log(classes.toolbar);
   const miniPlayer = React.useMemo(
     () => (
       <Rnd
@@ -236,47 +285,105 @@ export const SmallPlayerContainer = ({ bounds = "" }) => {
         //   width: SMALL_PLAYER_INITIAL_WIDTH,
         //   height: SMALL_PLAYER_INITIAL_HEIGHT,
         // }}
+        onDragStart={handleDragStart}
+        onMouseDown={handleMouseDown}
         size={playerSize}
         position={playerPosition}
         bounds={bounds}
         lockAspectRatio={false}
         className={classes.playerOuterContainer}
+        // onDrag={(e, d) => {
+        //   // console.log("drag rnd", e, d);
+        //   // setPlayerPosition({ x: d.x, y: d.y });
+        //   if(disableDragging) {
+        //     e.stopPropagation();
+        //     e.preventDefault();
+        //     return false;
+        //   }
+        // }}
         onDragStop={handleDragStop}
+        // disableDragging={disableDragging}
         onResizeStop={handleResizeStop}
+        dragHandleClassName={classes.dragInitiater}
+        cancel={`.${classes.playerContainer}, .body, ${bounds}, .${classes.divider}`}
       >
-        <div className={classes.playerOuterContainer}>
+        <div 
+          // onMouseDown={() => {
+          //   console.log("touch start parent")
+          // }}
+          // onMouseDownCapture={() => console.log("touch start capture parent")}
+          // onMouseMove={() => console.log("touch move parent")}
+          // onMouseMoveCapture={() => console.log("touch move capture parent")}
+        className={classes.playerOuterContainer}>
           <div className={classes.toolbar}>
-            <div className={classes.toolbarTitle}>
-              <Typography variant="subtitle1">Main Stage</Typography>
+            <div className={classes.dragInitiater}>   
+              <div className={classes.toolbarTitle}>
+                <Typography variant="subtitle1">Main Stage</Typography>
+              </div>
+              <div className={classes.volumeControlContainer}>
+                {/* <VolumeDownIcon className={classes.icon} />
+                <Slider className={classes.slider} value={volume} onChange={handleVolumeChange} aria-labelledby="continuous-slider" />
+              <VolumeUpIcon className={classes.icon} /> */}
+                <Tooltip title="Minimize player">
+                  <CloseIcon
+                    className={classes.icon}
+                    onClick={() => {
+                      setShowSmallPlayer(false);
+                      trackEvent("Mini player minimized", {});
+                    }}
+                  />
+                </Tooltip>
+              </div>
             </div>
-            <div className={classes.volumeControlContainer}>
-              {/* <VolumeDownIcon className={classes.icon} />
-              <Slider className={classes.slider} value={volume} onChange={handleVolumeChange} aria-labelledby="continuous-slider" />
-            <VolumeUpIcon className={classes.icon} /> */}
-              <Tooltip title="Minimize player">
-                <CloseIcon
-                  className={classes.icon}
-                  onClick={() => {
-                    setShowSmallPlayer(false);
-                    trackEvent("Mini player minimized", {});
-                  }}
-                />
-              </Tooltip>
-            </div>
+            {/* <hr className={classes.divider}></hr> */}
           </div>
-          <div className={classes.playerContainer}>{player}</div>
+          <div
+          // onMouseDown={() => console.log("touch start")}
+          // onMouseDownCapture={(e) => { console.log("touch start capture")}}
+          // onMouseMove={(e) => {
+          //   // if (isDragging) {
+          //   //   e.stopPropagation();
+          //   //   e.preventDefault();
+          //   //   setDisableDragging(true);
+          //   //   return false;
+          //   // }
+          //   // if (!disableDragging) {
+          //   //   setDisableDragging(true)
+          //   // }
+          //   console.log("touch move")}}
+          onMouseMoveCapture={(e) => {
+            if (isDragging) {
+              e.stopPropagation();
+              // e.preventDefault();
+              setDisableDragging(true);
+              // return false;
+            }
+            // console.log("touch move Capture")
+          }}
+          className={classes.playerContainer}>{player}</div>
         </div>
       </Rnd>
     ),
     [
+      handleDragStart,
+      handleMouseDown,
       playerSize,
       playerPosition,
       bounds,
-      classes,
+      classes.playerOuterContainer,
+      classes.dragInitiater,
+      classes.playerContainer,
+      classes.divider,
+      classes.toolbar,
+      classes.toolbarTitle,
+      classes.volumeControlContainer,
+      classes.icon,
       handleDragStop,
       handleResizeStop,
       player,
-      setShowSmallPlayer
+      setShowSmallPlayer,
+      setDisableDragging,
+      isDragging
     ]
   );
 
