@@ -10,7 +10,6 @@ function AuthGuard({ children }) {
   if (!account.user) {
     return <Redirect to={routes.LOGIN()} />;
   }
-
   return children;
 }
 

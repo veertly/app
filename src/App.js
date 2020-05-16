@@ -4,30 +4,30 @@ import React from "react";
 import { Router } from "react-router-dom";
 import { createBrowserHistory } from "history";
 
-import { BrowserRouter, Route, Switch } from "react-router-dom";
+// import { BrowserRouter, Route, Switch } from "react-router-dom";
 import "semantic-ui-css/semantic.min.css";
-import routes from "./Config/routes";
+// import routes from "./Config/routes";
 import { PersistGate } from "redux-persist/integration/react";
 
 import "./App.css";
 
 // import EventSessionContainer from "./Containers/EventSession/EventSessionContainer";
-import PasswordProtectedEventSessionContainer from "./Containers/EventSession/PasswordProtectedEventSessionContainer";
-import CreateSessionContainer from "./Containers/Organizer/CreateSessionContainer";
+// import PasswordProtectedEventSessionContainer from "./Containers/EventSession/PasswordProtectedEventSessionContainer";
+// import CreateSessionContainer from "./Containers/Organizer/CreateSessionContainer";
 
-import LoginContainer from "./Containers/LoginContainer";
-import HomePage from "./Containers/HomePage";
+// import LoginContainer from "./Containers/LoginContainer";
+// import HomePage from "./Containers/HomePage";
 
-import PrivateRoute from "./Components/PrivateRoute";
+// import PrivateRoute from "./Components/PrivateRoute";
 import { createMuiTheme } from "@material-ui/core/styles";
 import { ThemeProvider } from "@material-ui/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 
-import EditProfileContainer from "./Containers/EditProfileContainer";
+// import EditProfileContainer from "./Containers/EditProfileContainer";
 
 import { SnackbarProvider } from "material-ui-snackbar-provider";
-import EventPageContainer from "./Containers/EventSession/EventPageContainer";
-import EditSessionContainer from "./Containers/Organizer/EditSessionContainer";
+// import EventPageContainer from "./Containers/EventSession/EventPageContainer";
+// import EditSessionContainer from "./Containers/Organizer/EditSessionContainer";
 
 import { Provider } from "react-redux";
 import store, { persistor } from "./Redux/store";

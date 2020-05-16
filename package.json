@@ -34,6 +34,7 @@
     "moment-duration-format": "^2.3.2",
     "moment-timezone": "^0.5.28",
     "mui-rte": "^1.15.1",
+    "nprogress": "^0.2.0",
     "react": "^16.8.0",
     "react-add-to-calendar": "^0.1.5",
     "react-apollo": "3.1.4",
@@ -59,12 +60,18 @@
     "react-share": "^4.1.0",
     "redux-devtools-extension": "^2.13.8",
     "redux-persist": "^6.0.0",
+    "redux-thunk": "^2.3.0",
     "semantic-ui-css": "^2.2.12",
     "use-combined-reducers": "^1.0.4",
     "uuid": "^7.0.3"
   },
   "resolutions": {
     "apollo-client": "2.6.3"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged --debug"
+    }
   },
   "lint-staged": {
     "*.js": "eslint --max-warnings=0"

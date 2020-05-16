@@ -1,6 +1,5 @@
-import axios from "src/utils/axios";
-import firebase from "src/modules/firebaseApp";
-import { getUserDb } from "src/modules/users";
+import firebase from "../Modules/firebaseApp";
+import { getUserDb } from "../Modules/userOperations";
 /* eslint-disable no-param-reassign */
 import produce from "immer";
 
@@ -104,25 +103,25 @@ export function register() {
   return true;
 }
 
-export function updateProfile(update) {
-  const request = axios.post("/api/account/profile", { update });
+// export function updateProfile(update) {
+//   const request = axios.post("/api/account/profile", { update });
 
-  return (dispatch) => {
-    request.then((response) =>
-      dispatch({
-        type: UPDATE_PROFILE,
-        payload: response.data
-      })
-    );
-  };
-}
+//   return (dispatch) => {
+//     request.then((response) =>
+//       dispatch({
+//         type: UPDATE_PROFILE,
+//         payload: response.data
+//       })
+//     );
+//   };
+// }
 
 const initialState = {
   user: null,
   error: null
 };
 
-const accountReducer = (state = initialState, action) => {
+export const accountReducer = (state = initialState, action) => {
   switch (action.type) {
     case LOGIN_REQUEST: {
       return produce(state, (draft) => {
@@ -179,5 +178,3 @@ const accountReducer = (state = initialState, action) => {
     }
   }
 };
-
-export default accountReducer;

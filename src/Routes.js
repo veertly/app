@@ -1,14 +1,16 @@
 /* eslint-disable react/no-array-index-key */
 import React, { lazy, Suspense, Fragment } from "react";
-import { Switch, Redirect, Route } from "react-router-dom";
-import DashboardLayout from "src/layouts/DashboardLayout";
-// import DocsLayout from 'src/layouts/DocsLayout';
-import MainLayout from "src/layouts/MainLayout";
-import HomeView from "src/views/pages/HomeView";
-import LoadingScreen from "src/components/LoadingScreen";
+import { Switch, /*Redirect, */ Route } from "react-router-dom";
+// import DashboardLayout from "src/layouts/DashboardLayout";
+// // import DocsLayout from 'src/layouts/DocsLayout';
+// import MainLayout from "src/layouts/MainLayout";
+// import HomeView from "src/views/pages/HomeView";
+import LoadingScreen from "./Components/Misc/LoadingScreen";
 import AuthGuard from "./Components/Guards/AuthGuard";
-import GuestGuard from "./Components/Guards/GuestGuard";
+// import GuestGuard from "./Components/Guards/GuestGuard";
 import routes from "./Config/routes";
+
+// import PasswordProtectedEventSessionContainer from "./Containers/EventSession/PasswordProtectedEventSessionContainer";
 
 // const EventsListView = lazy(() => import("src/views/events/EventsListView"));
 const routesConfig = [
@@ -16,7 +18,7 @@ const routesConfig = [
     exact: true,
     path: routes.HOME(),
     component: lazy(() => import("./Containers/HomePage"))
-  }
+  },
   // {
   //   exact: true,
   //   path: "/404",
@@ -29,40 +31,40 @@ const routesConfig = [
   //   component: lazy(() => import("./views/auth/LoginView"))
   // }
 
-  // {
-  //   path: "/v",
-  //   guard: AuthGuard,
-  //   routes: [
-  //     {
-  //       exact: true,
-  //       path: routes.EVENT_SESSION_LIVE(),
-  //       component: lazy(() =>
-  //         import(
-  //           "src/Containers/EventSession/PasswordProtectedEventSessionContainer"
-  //         )
-  //       )
-  //     },
-  //     {
-  //       exact: true,
-  //       path: routes.EVENT_SESSION_LIVE_CODE(),
-  //       component: lazy(() =>
-  //         import(
-  //           "src/Containers/EventSession/PasswordProtectedEventSessionContainer"
-  //         )
-  //       )
-  //     },
-  //     {
-  //       exact: true,
-  //       path: routes.EDIT_EVENT_SESSION(),
-  //       component: lazy(() =>
-  //         import("src/Containers/EventSession/EditSessionContainer")
-  //       )
-  //     },
-  //     {
-  //       component: () => <Redirect to="/404" />
-  //     }
-  //   ]
-  // },
+  {
+    path: "/v",
+    guard: AuthGuard,
+    routes: [
+      {
+        exact: true,
+        path: routes.EVENT_SESSION_LIVE(),
+        component: lazy(() =>
+          import(
+            "./Containers/EventSession/PasswordProtectedEventSessionContainer"
+          )
+        )
+      }
+      // {
+      //   exact: true,
+      //   path: routes.EVENT_SESSION_LIVE_CODE(),
+      //   component: lazy(() =>
+      //     import(
+      //       "src/Containers/EventSession/PasswordProtectedEventSessionContainer"
+      //     )
+      //   )
+      // },
+      // {
+      //   exact: true,
+      //   path: routes.EDIT_EVENT_SESSION(),
+      //   component: lazy(() =>
+      //     import("src/Containers/EventSession/EditSessionContainer")
+      //   )
+      // },
+      // {
+      //   component: () => <Redirect to="/404" />
+      // }
+    ]
+  }
   // {
   //   path: "/event",
   //   guard: AuthGuard,
