@@ -67,8 +67,8 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     paddingLeft: theme.spacing(1),
     paddingRight: theme.spacing(1),
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2)
+    paddingTop: theme.spacing(1.5),
+    paddingBottom: theme.spacing(1.5)
   },
   dragInitiater: {
     height: "100%",
@@ -163,9 +163,21 @@ export const SmallPlayerContainer = ({ bounds = "" }) => {
 
   const windowSize = useWindowSize();
 
+  // HACK: Controlling position from dragCallback Coordinates
+  // As YTPlayer was intercepts all the events it was causing issues because cancel 
+  // event was not being passed to react-draggable.
+  // This is a hack: which set disableDragging to false when player wrapper receives 
+  // move event.
+  // At this point we keep the previous value in dragCallCoordinates and
+  // set these values in onDragEnd.
+  // Related issue in react-draggable. (Workaround)
+  // https://github.com/STRML/react-draggable/issues/486
+
   const [disableDragging, setDisableDragging] = useState(false);
 
   const [isDragging, setIsDragging] = useState(false);
+
+  const [dragCallbackCoordinates, setDragCallbackCoordinates] = useState({ x: -1, y: -1 });
 
   useEffect(() => {
     let { width, height } = playerSize;
@@ -188,25 +200,6 @@ export const SmallPlayerContainer = ({ bounds = "" }) => {
   const { showSmallPlayer, setShowSmallPlayer, miniPlayerEnabled } = useContext(
     JitsiContext
   );
-
-  // const handleCallEnded = React.useCallback(() => {
-  //   leaveCall(sessionId, userGroup, userId);
-  // }, [sessionId, userGroup, userId]);
-
-  // useJitsi({
-  //   avatarUrl: user ? user.avatarUrl : "",
-  //   displayName: user ? user.firstName + " " + user.lastName : "",
-  //   sessionId,
-  //   conferenceVideoType: eventSessionDetails.conferenceVideoType,
-  //   containerId: '#conference-container',
-  //   jitsiApi,
-  //   setJitsiApi,
-  //   callEndedCb: () => handleCallEnded()
-  // })
-
-  // const handleVolumeChange = (event, newValue) => {
-  //   setVolume(newValue);
-  // };
 
   const vol = React.useMemo(() => Math.floor((volume * 10) / 100) / 10, [
     volume
@@ -244,24 +237,35 @@ export const SmallPlayerContainer = ({ bounds = "" }) => {
   );
 
   const handleDragStop = React.useCallback((e, d) => {
-    // if (!d) {
-    //   return;
-    // }
-    // console.log("drag stop", d)
-
-    // if(d.x > 0 && d.y > 0) {
-      setPlayerPosition({ x: d.x, y: d.y });
-      // console.log("drag stop", d)
-    // }
+    // console.log("drag stop");
+    if (dragCallbackCoordinates.x > 0 && dragCallbackCoordinates.y > 0) {
+      setPlayerPosition({ x: dragCallbackCoordinates.x, y: dragCallbackCoordinates.y });
+    }
     setIsDragging(false);
-  }, []);
+    setDisableDragging(false);
+  }, [setIsDragging, dragCallbackCoordinates]);
+
+
+  const handleDrag = React.useCallback((e, d) => {
+    if (d.x > 0 && d.y > 0) {
+      // setPlayerPosition({ x: d.x, y: d.y });
+      setDragCallbackCoordinates({
+        x: d.x,
+        y: d.y
+      })
+    }
+    // console.log(disableDragging, isDragging);
+    if (disableDragging) {
+      return false;
+    }
+  }, [setDragCallbackCoordinates, disableDragging])
 
   const handleDragStart = React.useCallback(
     () => {
       setIsDragging(true);
         // console.log("drag start")
     }, 
-    []
+    [setIsDragging]
   )
 
   const handleMouseDown = React.useCallback(
@@ -292,15 +296,7 @@ export const SmallPlayerContainer = ({ bounds = "" }) => {
         bounds={bounds}
         lockAspectRatio={false}
         className={classes.playerOuterContainer}
-        // onDrag={(e, d) => {
-        //   // console.log("drag rnd", e, d);
-        //   // setPlayerPosition({ x: d.x, y: d.y });
-        //   if(disableDragging) {
-        //     e.stopPropagation();
-        //     e.preventDefault();
-        //     return false;
-        //   }
-        // }}
+        onDrag={handleDrag}
         onDragStop={handleDragStop}
         // disableDragging={disableDragging}
         onResizeStop={handleResizeStop}
@@ -308,12 +304,6 @@ export const SmallPlayerContainer = ({ bounds = "" }) => {
         cancel={`.${classes.playerContainer}, .body, ${bounds}, .${classes.divider}`}
       >
         <div 
-          // onMouseDown={() => {
-          //   console.log("touch start parent")
-          // }}
-          // onMouseDownCapture={() => console.log("touch start capture parent")}
-          // onMouseMove={() => console.log("touch move parent")}
-          // onMouseMoveCapture={() => console.log("touch move capture parent")}
         className={classes.playerOuterContainer}>
           <div className={classes.toolbar}>
             <div className={classes.dragInitiater}>   
@@ -338,27 +328,10 @@ export const SmallPlayerContainer = ({ bounds = "" }) => {
             {/* <hr className={classes.divider}></hr> */}
           </div>
           <div
-          // onMouseDown={() => console.log("touch start")}
-          // onMouseDownCapture={(e) => { console.log("touch start capture")}}
-          // onMouseMove={(e) => {
-          //   // if (isDragging) {
-          //   //   e.stopPropagation();
-          //   //   e.preventDefault();
-          //   //   setDisableDragging(true);
-          //   //   return false;
-          //   // }
-          //   // if (!disableDragging) {
-          //   //   setDisableDragging(true)
-          //   // }
-          //   console.log("touch move")}}
           onMouseMoveCapture={(e) => {
             if (isDragging) {
-              e.stopPropagation();
-              // e.preventDefault();
               setDisableDragging(true);
-              // return false;
             }
-            // console.log("touch move Capture")
           }}
           className={classes.playerContainer}>{player}</div>
         </div>
@@ -383,7 +356,8 @@ export const SmallPlayerContainer = ({ bounds = "" }) => {
       player,
       setShowSmallPlayer,
       setDisableDragging,
-      isDragging
+      isDragging,
+      handleDrag,
     ]
   );
 
