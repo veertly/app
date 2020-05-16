@@ -66,11 +66,6 @@
   "resolutions": {
     "apollo-client": "2.6.3"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged --debug"
-    }
-  },
   "lint-staged": {
     "*.js": "eslint --max-warnings=0"
   },

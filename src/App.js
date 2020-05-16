@@ -1,6 +1,9 @@
 import "./Helpers/wdyr";
 
 import React from "react";
+import { Router } from "react-router-dom";
+import { createBrowserHistory } from "history";
+
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import "semantic-ui-css/semantic.min.css";
 import routes from "./Config/routes";
@@ -28,6 +31,8 @@ import EditSessionContainer from "./Containers/Organizer/EditSessionContainer";
 
 import { Provider } from "react-redux";
 import store, { persistor } from "./Redux/store";
+import Routes from "./Routes";
+import Auth from "./Components/Guards/Auth";
 
 const theme = createMuiTheme({
   palette: {
@@ -35,9 +40,9 @@ const theme = createMuiTheme({
     secondary: { main: "#5cdb94" },
     background: {
       default: "#F4F6F8",
-      paper: "#FFF",
+      paper: "#FFF"
     },
-    filtersSelected: "#c1d4e3",
+    filtersSelected: "#c1d4e3"
   },
   overrides: {
     // Name of the component ⚛️ / style shee
@@ -45,17 +50,18 @@ const theme = createMuiTheme({
       // Name of the rule
       root: {
         // Some CSS
-        borderRadius: 0,
-      },
+        borderRadius: 0
+      }
     },
 
     MuiPaper: {
       rounded: {
-        borderRadius: 0,
-      },
-    },
-  },
+        borderRadius: 0
+      }
+    }
+  }
 });
+const history = createBrowserHistory();
 
 const App = () => {
   return (
@@ -64,7 +70,16 @@ const App = () => {
         <ThemeProvider theme={theme}>
           <SnackbarProvider SnackbarProps={{ autoHideDuration: 10000 }}>
             <CssBaseline />
-            <BrowserRouter>
+            <Router history={history}>
+              <Auth>
+                {/* <ScrollReset /> */}
+                {/* <GoogleAnalytics /> */}
+                {/* <CookiesNotification /> */}
+                {/* <SettingsNotification /> */}
+                <Routes />
+              </Auth>
+            </Router>
+            {/* <BrowserRouter>
               <Switch>
                 <Route exact={true} path={routes.HOME()} component={HomePage} />
                 <PrivateRoute
@@ -102,7 +117,7 @@ const App = () => {
                 />
                 <Route component={HomePage} />
               </Switch>
-            </BrowserRouter>
+            </BrowserRouter> */}
           </SnackbarProvider>
         </ThemeProvider>
       </PersistGate>
