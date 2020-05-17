@@ -65,10 +65,10 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingLeft: theme.spacing(1),
-    paddingRight: theme.spacing(1),
-    paddingTop: theme.spacing(1.5),
-    paddingBottom: theme.spacing(1.5)
+    // paddingLeft: theme.spacing(1),
+    // paddingRight: theme.spacing(1),
+    // paddingTop: theme.spacing(1.5),
+    // paddingBottom: theme.spacing(1.5)
   },
   dragInitiater: {
     height: "100%",
@@ -78,6 +78,10 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-between",
     alignItems: "center",
     cursor: "move",
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1),
+    paddingTop: theme.spacing(1.5),
+    paddingBottom: theme.spacing(1.5)
   },
   divider: {
     width: "100%",
