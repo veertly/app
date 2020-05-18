@@ -24,6 +24,7 @@
     "firebase-admin": "^8.10.0",
     "firebase-functions": "^3.5.0",
     "firebaseui": "^4.2.0",
+    "formik": "^2.1.4",
     "graphql": "15.0.0",
     "graphql-tag": "^2.5.0",
     "husky": "^4.2.5",
@@ -46,6 +47,7 @@
     "react-firebase-file-uploader": "^2.4.3",
     "react-firebase-hooks": "^2.1.0",
     "react-firebaseui": "^4.0.0",
+    "react-google-button": "^0.7.1",
     "react-helmet": "^6.0.0",
     "react-hook-form": "^5.1.1",
     "react-image-crop": "^8.6.1",
@@ -63,7 +65,8 @@
     "redux-thunk": "^2.3.0",
     "semantic-ui-css": "^2.2.12",
     "use-combined-reducers": "^1.0.4",
-    "uuid": "^7.0.3"
+    "uuid": "^7.0.3",
+    "yup": "^0.28.5"
   },
   "resolutions": {
     "apollo-client": "2.6.3"

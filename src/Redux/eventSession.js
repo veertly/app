@@ -20,6 +20,7 @@ const CROSS_CHECK_KEEP_ALIVES = "eventSession.CROSS_CHECK_KEEP_ALIVES";
 const SET_FILTERS = "eventSessions.SET_FILTERS";
 
 const SET_ENABLED_FEATURES = "eventSessions.SET_ENABLED_FEATURES";
+const CLEAR_EVENT_SESSION = "eventSessions.CLEAR_EVENT_SESSION";
 
 const initialState = {
   eventSession: null,
@@ -271,7 +272,9 @@ export const eventSessionReducer = (state = initialState, action) => {
         enabledFeatures: action.enabledFeatures
       };
     }
-
+    case CLEAR_EVENT_SESSION: {
+      return { ...state, ...initialState };
+    }
     default:
       return state;
   }
@@ -377,4 +380,8 @@ export const setFilters = (filters) => ({
 export const setEnabledFeatures = (enabledFeatures) => ({
   type: SET_ENABLED_FEATURES,
   enabledFeatures
+});
+
+export const clearEventSession = () => ({
+  type: CLEAR_EVENT_SESSION
 });

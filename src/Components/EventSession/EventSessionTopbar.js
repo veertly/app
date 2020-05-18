@@ -16,7 +16,6 @@ import GoToConferenceRoomDialog from "./GoToConferenceRoomDialog";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme } from "@material-ui/core/styles";
 import UserAvatar from "../Misc/UserAvatar";
-import { logout } from "../../Modules/userOperations";
 import routes from "../../Config/routes";
 // import DesktopMacIcon from "@material-ui/icons/DesktopMac";
 // import ConversationsIcon from "../../Assets/Icons/Conversations";
@@ -30,6 +29,7 @@ import {
 } from "../../Redux/eventSession";
 import { openEditProfile } from "../../Redux/dialogs";
 import { FEATURES } from "../../Modules/features";
+import { logout } from "../../Redux/account";
 
 // import routes from "../../Config/routes";
 const useStyles = makeStyles((theme) => ({
@@ -162,7 +162,8 @@ export default withRouter((props) => {
   }
 
   const handleLogoutClick = () => {
-    logout(sessionId, userGroup);
+    // logoutDb(sessionId, userGroup);
+    dispatch(logout(sessionId, userGroup));
     handleMenuClose();
     if (sessionId) {
       history.push(routes.EVENT_SESSION(sessionId));

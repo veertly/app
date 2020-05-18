@@ -197,7 +197,6 @@ const ProtectedEventSessionContainer = () => {
   const { sessionId, code } = useParams();
 
   const { showDialog, loading } = useAuth();
-  console.log("AAAAAAA");
   const {
     error,
     loading: loadingEvent,

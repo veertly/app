@@ -7,7 +7,6 @@ export default {
   EDIT_EVENT_SESSION: (sessionId = ":sessionId") => `/v/${sessionId}/edit`,
   CREATE_EVENT_SESSION: () => "/new-event",
   LOGIN: () => "/login",
-  GO_TO_LOGIN: (callback = "/") => `/login?callback=${callback}`,
-  EDIT_PROFILE_RAW: () => "/profile/edit",
-  EDIT_PROFILE: (callback = "/") => `/profile/edit?callback=${callback}`
+  EDIT_PROFILE: () => "/profile/edit",
+  PAGE_NOT_FOUND: () => "/404"
 };

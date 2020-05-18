@@ -6,25 +6,25 @@ import Menu from "@material-ui/core/Menu";
 import Avatar from "@material-ui/core/Avatar";
 import { useAuthState } from "react-firebase-hooks/auth";
 import firebase from "../../Modules/firebaseApp";
-import { logout } from "../../Modules/userOperations";
 import routes from "../../Config/routes";
 import { useDispatch } from "react-redux";
 import { openEditProfile } from "../../Redux/dialogs";
+import { logout } from "../../Redux/account";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    boxShadow: "none",
+    boxShadow: "none"
   },
   flexGrow: {
-    flexGrow: 1,
+    flexGrow: 1
   },
   signOutButton: {
-    marginLeft: theme.spacing(1),
+    marginLeft: theme.spacing(1)
   },
   logo: {
     width: 180,
-    marginTop: theme.spacing(1),
-  },
+    marginTop: theme.spacing(1)
+  }
 }));
 
 export default (props) => {
@@ -38,7 +38,8 @@ export default (props) => {
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
-  const isOwner = eventSession && userAuth && eventSession.owner === userAuth.uid;
+  const isOwner =
+    eventSession && userAuth && eventSession.owner === userAuth.uid;
 
   function handleClose() {
     setAnchorEl(null);
@@ -50,7 +51,7 @@ export default (props) => {
 
   const handleLogout = () => {
     let sessionId = eventSession ? eventSession.id : null;
-    logout(sessionId);
+    dispatch(logout(sessionId));
   };
 
   const getAvatarLetters = () => {
@@ -60,14 +61,21 @@ export default (props) => {
     return firstName.charAt(0).toUpperCase() + lastName.charAt(0).toUpperCase();
   };
 
-  const openProfile = React.useCallback(() => dispatch(openEditProfile()), [dispatch]);
+  const openProfile = React.useCallback(() => dispatch(openEditProfile()), [
+    dispatch
+  ]);
 
   return (
     <React.Fragment>
       {userAuth && (
         <div>
           {userAuth && userAuth.photoURL && (
-            <Avatar alt="" src={userAuth.photoURL} className={classes.avatar} onClick={handleMenu} />
+            <Avatar
+              alt=""
+              src={userAuth.photoURL}
+              className={classes.avatar}
+              onClick={handleMenu}
+            />
           )}
           {userAuth && !userAuth.photoURL && (
             <Avatar className={classes.avatar} onClick={handleMenu}>
@@ -80,11 +88,11 @@ export default (props) => {
             anchorEl={anchorEl}
             anchorOrigin={{
               vertical: "top",
-              horizontal: "center",
+              horizontal: "center"
             }}
             transformOrigin={{
               vertical: "bottom",
-              horizontal: "center",
+              horizontal: "center"
             }}
             keepMounted
             open={open}
@@ -103,7 +111,10 @@ export default (props) => {
             {isOwner && (
               <MenuItem
                 onClick={() => {
-                  window.open(routes.EDIT_EVENT_SESSION(eventSession.id), "_blank");
+                  window.open(
+                    routes.EDIT_EVENT_SESSION(eventSession.id),
+                    "_blank"
+                  );
                   handleClose();
                 }}
               >

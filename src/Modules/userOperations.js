@@ -12,10 +12,10 @@ export const registerNewUser = async (userAuth) => {
     photoURL,
     isAnonymous
   } = userAuth;
-  let names = displayName.split(" ");
+  let names = displayName ? displayName.split(" ") : [""];
   let firstName = names[0];
   let lastName = names.length > 1 ? names[names.length - 1] : "";
-  firebase.firestore().collection("users").doc(uid).set({
+  const userDb = {
     id: uid,
     displayName,
     avatarUrl: photoURL,
@@ -24,12 +24,19 @@ export const registerNewUser = async (userAuth) => {
     firstName,
     lastName,
     isAnonymous: isAnonymous
-  });
+  };
+  console.log(userDb);
+  firebase
+    .firestore()
+    .collection("users")
+    .doc(uid)
+    .set(userDb, { merge: true });
 
   var userAuth2 = firebase.auth().currentUser;
   await userAuth2.updateProfile({
     displayName
   });
+  return userDb;
 };
 
 export const updateUser = async (userId, sessionId, userDb) => {
@@ -181,10 +188,10 @@ export const setOffline = async (sessionId, userGroup) => {
     await userStatusFirestoreRef.update(isOfflineForFirestore);
   }
 };
-export const logout = async (sessionId, userGroup) => {
+export const logoutDb = async (sessionId, userGroup) => {
   trackEvent("Logged out");
   await setOffline(sessionId, userGroup);
-  await firebase.auth().signOut();
+  // await firebase.auth().signOut();
 };
 
 export const initFirebasePresenceSync = async (

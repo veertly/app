@@ -1,7 +1,13 @@
 import firebase from "../Modules/firebaseApp";
-import { getUserDb } from "../Modules/userOperations";
+import {
+  getUserDb,
+  logoutDb,
+  registerNewUser
+} from "../Modules/userOperations";
+
 /* eslint-disable no-param-reassign */
 import produce from "immer";
+import { clearEventSession } from "./eventSession";
 
 export const LOGIN_REQUEST = "@account/login-request";
 export const LOGIN_SUCCESS = "@account/login-success";
@@ -36,7 +42,7 @@ export function login(email, password) {
           user: userDb
         }
       });
-      return true;
+      return userDb;
     } catch (error) {
       dispatch({
         type: LOGIN_FAILURE,
@@ -55,8 +61,13 @@ export function loginWithGoogle() {
       const provider = new firebase.auth.GoogleAuthProvider();
 
       const result = await firebase.auth().signInWithPopup(provider);
+      console.log({ result });
       const { user } = result;
-      const userDb = await getUserDb(user.uid);
+      const isNewUser = result.additionalUserInfo.isNewUser;
+
+      const userDb = isNewUser
+        ? await registerNewUser(result.user)
+        : await getUserDb(user.uid);
       if (!userDb) {
         await firebase.auth().signOut();
         dispatch({
@@ -71,7 +82,42 @@ export function loginWithGoogle() {
           user: userDb
         }
       });
-      return true;
+      return userDb;
+    } catch (error) {
+      dispatch({ type: LOGIN_FAILURE });
+      return false;
+    }
+  };
+}
+
+export function loginAnonymously() {
+  return async (dispatch) => {
+    try {
+      dispatch({ type: LOGIN_REQUEST });
+
+      const result = await firebase.auth().signInAnonymously();
+
+      const { user } = result;
+      const isNewUser = result.additionalUserInfo.isNewUser;
+
+      const userDb = isNewUser
+        ? await registerNewUser(result.user)
+        : await getUserDb(user.uid);
+      if (!userDb) {
+        await firebase.auth().signOut();
+        dispatch({
+          type: LOGIN_FAILURE,
+          error: "We couldn't recognize yourself"
+        });
+        return false;
+      }
+      dispatch({
+        type: LOGIN_SUCCESS,
+        payload: {
+          user: userDb
+        }
+      });
+      return userDb;
     } catch (error) {
       dispatch({ type: LOGIN_FAILURE });
       return false;
@@ -89,13 +135,23 @@ export function setUserData(user) {
     });
 }
 
-export function logout() {
+export function logout(sessionId = null, userGroup = null) {
   return async (dispatch) => {
-    await firebase.auth().signOut();
+    try {
+      if (sessionId) {
+        await logoutDb(sessionId, userGroup);
+      }
 
-    dispatch({
-      type: LOGOUT
-    });
+      await firebase.auth().signOut();
+
+      dispatch({
+        type: LOGOUT
+      });
+      dispatch(clearEventSession());
+    } catch (error) {
+      console.log(error);
+      debugger;
+    }
   };
 }
 
