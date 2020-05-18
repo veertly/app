@@ -251,7 +251,7 @@ export const SmallPlayerContainer = ({ bounds = "" }) => {
 
 
   const handleDrag = React.useCallback((e, d) => {
-    if (d.x > 0 && d.y > 0) {
+    if (d.x >= 0 && d.y >= 0) {
       // setPlayerPosition({ x: d.x, y: d.y });
       setDragCallbackCoordinates({
         x: d.x,
