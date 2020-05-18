@@ -242,9 +242,9 @@ export const SmallPlayerContainer = ({ bounds = "" }) => {
 
   const handleDragStop = React.useCallback((e, d) => {
     // console.log("drag stop");
-    if (dragCallbackCoordinates.x > 0 && dragCallbackCoordinates.y > 0) {
-      setPlayerPosition({ x: dragCallbackCoordinates.x, y: dragCallbackCoordinates.y });
-    }
+    // if (dragCallbackCoordinates.x > 0 && dragCallbackCoordinates.y > 0) {
+    setPlayerPosition({ x: dragCallbackCoordinates.x, y: dragCallbackCoordinates.y });
+    // }
     setIsDragging(false);
     setDisableDragging(false);
   }, [setIsDragging, dragCallbackCoordinates]);
@@ -257,7 +257,8 @@ export const SmallPlayerContainer = ({ bounds = "" }) => {
         x: d.x,
         y: d.y
       })
-    }
+    } 
+    
     // console.log(disableDragging, isDragging);
     if (disableDragging) {
       return false;
