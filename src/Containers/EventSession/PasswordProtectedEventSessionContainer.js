@@ -22,28 +22,28 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     alignItems: "center",
     "& > * + *": {
-      marginTop: theme.spacing(4),
-    },
+      marginTop: theme.spacing(4)
+    }
   },
   textField: {},
   dialog: {
-    padding: theme.spacing(0),
+    padding: theme.spacing(0)
     // margin: 0,
   },
   dialogTitle: {
     paddingTop: theme.spacing(4),
     paddingLeft: theme.spacing(4),
-    paddingRight: theme.spacing(4),
+    paddingRight: theme.spacing(4)
   },
   dialogContent: {
     paddingBottom: theme.spacing(4),
     paddingLeft: theme.spacing(4),
-    paddingRight: theme.spacing(4),
+    paddingRight: theme.spacing(4)
   },
   button: ({ loading }) => ({
     opacity: loading ? 0.5 : 1,
-    width: "30%",
-  }),
+    width: "30%"
+  })
 }));
 
 const AuthDialog = ({ handleSubmit, error, loading, code }) => {
@@ -147,7 +147,7 @@ const useAuth = () => {
 
   return {
     showDialog,
-    loading: loadingAuth || loadingPartcipants || loadingFeatures,
+    loading: loadingAuth || loadingPartcipants || loadingFeatures
   };
 };
 
@@ -163,7 +163,7 @@ const useLoginEvent = ({ eventSessionId }) => {
       setError(false);
       loginInEvent({
         password,
-        eventSessionId,
+        eventSessionId
       })
         .then(function (result) {
           var success = result.data.success;
@@ -189,7 +189,7 @@ const useLoginEvent = ({ eventSessionId }) => {
     loading,
     error,
     loginInEventFn,
-    codeCheckedOnce,
+    codeCheckedOnce
   };
 };
 
@@ -197,14 +197,13 @@ const ProtectedEventSessionContainer = () => {
   const { sessionId, code } = useParams();
 
   const { showDialog, loading } = useAuth();
-
   const {
     error,
     loading: loadingEvent,
     loginInEventFn,
-    codeCheckedOnce,
+    codeCheckedOnce
   } = useLoginEvent({
-    eventSessionId: sessionId,
+    eventSessionId: sessionId
   });
 
   const handleSubmit = (password) => {

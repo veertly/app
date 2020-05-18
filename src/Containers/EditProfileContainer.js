@@ -5,32 +5,26 @@ import firebase from "../Modules/firebaseApp";
 import EditProfileForm from "../Components/EditProfile/EditProfileForm";
 import SplashScreen from "../Components/Misc/SplashScreen";
 import { useHistory, useLocation } from "react-router-dom";
+import routes from "../Config/routes";
 
 const EditProfileContainer = () => {
   const [userAuth, initialising, error] = useAuthState(firebase.auth());
   const history = useHistory();
   const location = useLocation();
-  let callbackUrl = React.useMemo(
-    () => location.search.replace("?callback=", ""),
-    [location]
-  ); // queryValues.callback ? queryValues.callback : "/";
 
-  let { sessionId, isInSessionPage } = React.useMemo(() => {
-    let sessionId = undefined;
-    let splits = callbackUrl.split("/");
-    if (splits[1] === "v") {
-      sessionId = splits[2];
-    }
-    sessionId = sessionId.replace("/live", "");
-    return {
-      sessionId: sessionId ? sessionId.toLowerCase() : null,
-      isInSessionPage: sessionId !== undefined,
-    };
-  }, [callbackUrl]);
+  let sessionId = React.useMemo(() => {
+    return location.state && location.state.sessionId
+      ? location.state.sessionId.toLowerCase()
+      : null;
+  }, [location]);
 
   const redirectUser = React.useCallback(() => {
-    history.push(callbackUrl);
-  }, [history, callbackUrl]);
+    history.push(
+      location.state && location.state.from
+        ? location.state.from.pathname
+        : routes.HOME()
+    );
+  }, [history, location]);
 
   if (initialising) {
     return <SplashScreen />;
@@ -46,7 +40,7 @@ const EditProfileContainer = () => {
         {userAuth && (
           <EditProfileForm
             userAuth={userAuth}
-            sessionId={isInSessionPage ? sessionId.toLowerCase() : null}
+            sessionId={sessionId ? sessionId.toLowerCase() : null}
             profileUpdatedCallback={redirectUser}
           />
         )}

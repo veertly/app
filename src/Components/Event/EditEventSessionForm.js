@@ -6,7 +6,7 @@ import {
   Paper,
   Divider
 } from "@material-ui/core";
-import { logout } from "../../Modules/userOperations";
+// import { logout } from "../../Modules/userOperations";
 import { useHistory } from "react-router-dom";
 import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
@@ -515,7 +515,7 @@ function EditEventSessionForm(props) {
           with your audience.
         </Typography>
       )}
-      {isAnonymous && (
+      {/* {isAnonymous && (
         <React.Fragment>
           <Typography
             variant="subtitle2"
@@ -531,7 +531,7 @@ function EditEventSessionForm(props) {
               color="primary"
               // className={classes.button}
               onClick={async () => {
-                await logout();
+                // await logout();
                 history.push(routes.GO_TO_LOGIN(routes.CREATE_EVENT_SESSION()));
               }}
             >
@@ -539,7 +539,7 @@ function EditEventSessionForm(props) {
             </Button>
           </div>
         </React.Fragment>
-      )}
+      )} */}
       {!isAnonymous && (
         <React.Fragment>
           <div className={classes.stepperContainer}>
