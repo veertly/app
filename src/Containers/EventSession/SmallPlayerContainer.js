@@ -80,8 +80,8 @@ const useStyles = makeStyles((theme) => ({
     cursor: "move",
     paddingLeft: theme.spacing(1),
     paddingRight: theme.spacing(1),
-    paddingTop: theme.spacing(1.5),
-    paddingBottom: theme.spacing(1.5)
+    paddingTop: theme.spacing(0.7),
+    paddingBottom: theme.spacing(0.7)
   },
   divider: {
     width: "100%",
