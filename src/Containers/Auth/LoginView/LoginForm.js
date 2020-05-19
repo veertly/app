@@ -14,7 +14,8 @@ import {
 import {
   login,
   loginWithGoogle,
-  loginAnonymously
+  loginAnonymously,
+  resetAccountState
 } from "../../../Redux/account";
 import { Alert } from "@material-ui/lab";
 import LoginButton from "../../../Components/Misc/LoginButton";
@@ -103,15 +104,16 @@ function LoginForm({ className, onSubmitSuccess, loginWithEmail, ...rest }) {
   const handleMailClick = React.useCallback(async () => {
     try {
       setLoginFailed(false);
+      dispatch(resetAccountState());
       history.push(routes.LOGIN_EMAIL(), { ...location.state });
     } catch (error) {
       setLoginFailed(true);
     }
-  }, [history, location.state]);
+  }, [history, location.state, dispatch]);
   return (
     <>
       {loginFailed && (
-        <Box mt={2} ml={2} mr={2} mb={2}>
+        <Box mt={2} mb={2}>
           <Alert severity="error">We couldn't recognize yourself</Alert>
         </Box>
       )}

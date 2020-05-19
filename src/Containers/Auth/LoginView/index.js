@@ -1,5 +1,7 @@
 import React from "react";
 import { useHistory, useLocation } from "react-router";
+import { useDispatch } from "react-redux";
+
 import {
   Avatar,
   Box,
@@ -12,10 +14,6 @@ import {
   Link
 } from "@material-ui/core";
 import { Link as RouterLink } from "react-router-dom";
-// import { Alert } from '@material-ui/lab';
-// import LockIcon from '@material-ui/icons/Lock';
-// import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
-// import { useAuthState } from 'react-firebase-hooks/auth';
 import {
   trackPage,
   trackIdentify,
@@ -27,6 +25,7 @@ import Page from "../../../Components/Core/Page";
 import LogoIcon from "../../../Components/Misc/LogoIcon";
 import LoginForm from "./LoginForm";
 import routes from "../../../Config/routes";
+import { resetAccountState } from "../../../Redux/account";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -85,7 +84,7 @@ function LoginView({ loginWithEmail }) {
   const history = useHistory();
   // const [userAuth, initialising /* error */] = useAuthState(firebase.auth());
   const location = useLocation();
-
+  const dispatch = useDispatch();
   React.useEffect(() => {
     trackPage("LoginPage");
   }, []);
@@ -99,7 +98,9 @@ function LoginView({ loginWithEmail }) {
         : routes.HOME()
     );
   };
-
+  const handleResetForm = () => {
+    dispatch(resetAccountState());
+  };
   return (
     <Page className={classes.root} title="Veertly | Login">
       <Container maxWidth="xs">
@@ -132,6 +133,7 @@ function LoginView({ loginWithEmail }) {
                 }}
                 variant="body2"
                 color="textSecondary"
+                onClick={handleResetForm}
               >
                 Create new account
               </Link>
