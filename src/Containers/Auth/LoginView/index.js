@@ -80,7 +80,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function LoginView() {
+function LoginView({ loginWithEmail }) {
   const classes = useStyles();
   const history = useHistory();
   // const [userAuth, initialising /* error */] = useAuthState(firebase.auth());
@@ -112,10 +112,13 @@ function LoginView() {
               Sign in
             </Typography>
             <Typography variant="subtitle1" color="textSecondary">
-              Sign in on Veertly platform
+              Sign in on the Veertly platform
             </Typography>
             <Box mt={3}>
-              <LoginForm onSubmitSuccess={handleSubmitSuccess} />
+              <LoginForm
+                onSubmitSuccess={handleSubmitSuccess}
+                loginWithEmail={loginWithEmail}
+              />
             </Box>
             <Box my={2}>
               <Divider />
@@ -123,7 +126,10 @@ function LoginView() {
             <Box align="center">
               <Link
                 component={RouterLink}
-                to="/register"
+                to={{
+                  pathname: routes.LOGIN_REGISTER(),
+                  state: location.state
+                }}
                 variant="body2"
                 color="textSecondary"
               >

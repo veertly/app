@@ -7,6 +7,8 @@ export default {
   EDIT_EVENT_SESSION: (sessionId = ":sessionId") => `/v/${sessionId}/edit`,
   CREATE_EVENT_SESSION: () => "/new-event",
   LOGIN: () => "/login",
+  LOGIN_EMAIL: () => "/login/email",
+  LOGIN_REGISTER: () => "/login/register",
   EDIT_PROFILE: () => "/profile/edit",
   PAGE_NOT_FOUND: () => "/404"
 };
