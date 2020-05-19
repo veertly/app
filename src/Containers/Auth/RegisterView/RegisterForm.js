@@ -1,5 +1,5 @@
 import React from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import clsx from "clsx";
 import * as Yup from "yup";
 import PropTypes from "prop-types";
@@ -11,10 +11,11 @@ import {
   FormHelperText,
   TextField,
   Typography,
-  Link,
   makeStyles
 } from "@material-ui/core";
-import { register } from "src/actions/accountActions";
+import { register } from "../../../Redux/account";
+import { Alert } from "@material-ui/lab";
+// import { register } from "src/actions/accountActions";
 
 const useStyles = makeStyles(() => ({
   root: {}
@@ -23,6 +24,7 @@ const useStyles = makeStyles(() => ({
 function RegisterForm({ className, onSubmitSuccess, ...rest }) {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const error = useSelector((state) => state.account.error);
 
   return (
     <Formik
@@ -35,7 +37,7 @@ function RegisterForm({ className, onSubmitSuccess, ...rest }) {
       }}
       validationSchema={Yup.object().shape({
         firstName: Yup.string().max(255).required("First name is required"),
-        lastName: Yup.string().max(255).required("Last name is required"),
+        // lastName: Yup.string().max(255).required("Last name is required"),
         email: Yup.string()
           .email("Must be a valid email")
           .max(255)
@@ -45,8 +47,18 @@ function RegisterForm({ className, onSubmitSuccess, ...rest }) {
       })}
       onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
         try {
-          await dispatch(register(values));
-          onSubmitSuccess();
+          console.log("--> onSubmit");
+          const user = await dispatch(
+            register(
+              values.firstName,
+              values.lastName,
+              values.email,
+              values.password
+            )
+          );
+          console.log("--> onSubmit with user");
+
+          onSubmitSuccess(user);
         } catch (error) {
           setStatus({ success: false });
           setErrors({ submit: error.message });
@@ -68,6 +80,11 @@ function RegisterForm({ className, onSubmitSuccess, ...rest }) {
           onSubmit={handleSubmit}
           {...rest}
         >
+          {error && (
+            <Box mt={2} mb={2}>
+              <Alert severity="error">{error}</Alert>
+            </Box>
+          )}
           <TextField
             error={Boolean(touched.firstName && errors.firstName)}
             fullWidth
@@ -80,6 +97,7 @@ function RegisterForm({ className, onSubmitSuccess, ...rest }) {
             type="firstName"
             value={values.firstName}
             variant="outlined"
+            required
           />
           <TextField
             error={Boolean(touched.lastName && errors.lastName)}
@@ -106,6 +124,7 @@ function RegisterForm({ className, onSubmitSuccess, ...rest }) {
             type="email"
             value={values.email}
             variant="outlined"
+            required
           />
           <TextField
             error={Boolean(touched.password && errors.password)}
@@ -119,18 +138,35 @@ function RegisterForm({ className, onSubmitSuccess, ...rest }) {
             type="password"
             value={values.password}
             variant="outlined"
+            required
           />
           <Box alignItems="center" display="flex" mt={2} ml={-1}>
             <Checkbox
               checked={values.policy}
               name="policy"
               onChange={handleChange}
+              color="primary"
             />
             <Typography variant="body2" color="textSecondary">
               I have read the{" "}
-              <Link component="a" href="#" color="secondary">
+              {/* <Link component="a" href="#" color="secondary">
                 Terms and Conditions
-              </Link>
+              </Link> */}
+              <a
+                href="https://veertly.com/terms-of-service/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Terms of Service
+              </a>{" "}
+              &amp;{" "}
+              <a
+                href="https://veertly.com/privacy-policy"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Privacy Policy
+              </a>
             </Typography>
           </Box>
           {Boolean(touched.policy && errors.policy) && (
@@ -138,7 +174,7 @@ function RegisterForm({ className, onSubmitSuccess, ...rest }) {
           )}
           <Box mt={2}>
             <Button
-              color="secondary"
+              color="primary"
               disabled={isSubmitting}
               fullWidth
               size="large"

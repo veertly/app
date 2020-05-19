@@ -13,7 +13,7 @@ import routes from "./Config/routes";
 
 // import PasswordProtectedEventSessionContainer from "./Containers/EventSession/PasswordProtectedEventSessionContainer";
 
-// const EventsListView = lazy(() => import("src/views/events/EventsListView"));
+const LoginView = lazy(() => import("./Containers/Auth/LoginView"));
 const routesConfig = [
   {
     exact: true,
@@ -29,7 +29,19 @@ const routesConfig = [
     exact: true,
     guard: GuestGuard,
     path: routes.LOGIN(),
-    component: lazy(() => import("./Containers/Auth/LoginView"))
+    component: () => <LoginView loginWithEmail={false} />
+  },
+  {
+    exact: true,
+    guard: GuestGuard,
+    path: routes.LOGIN_EMAIL(),
+    component: () => <LoginView loginWithEmail={true} />
+  },
+  {
+    exact: true,
+    guard: GuestGuard,
+    path: routes.LOGIN_REGISTER(),
+    component: lazy(() => import("./Containers/Auth/RegisterView"))
   },
   {
     exact: true,

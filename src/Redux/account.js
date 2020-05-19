@@ -150,13 +150,33 @@ export function logout(sessionId = null, userGroup = null) {
       dispatch(clearEventSession());
     } catch (error) {
       console.log(error);
-      debugger;
     }
   };
 }
 
-export function register() {
-  return true;
+export function register(firstName, lastName, email, password) {
+  return async (dispatch) => {
+    try {
+      dispatch({ type: LOGIN_REQUEST });
+      const auth = await firebase.auth();
+      const result = await auth.createUserWithEmailAndPassword(email, password);
+      const { user } = result;
+      console.log(user);
+      await user.updateProfile({ displayName: `${firstName} ${lastName}` });
+      let userDb = await registerNewUser(auth.currentUser);
+
+      dispatch({
+        type: LOGIN_SUCCESS,
+        payload: {
+          user: userDb
+        }
+      });
+      return userDb;
+    } catch (error) {
+      dispatch({ type: LOGIN_FAILURE, payload: { error: error.message } });
+      return false;
+    }
+  };
 }
 
 // export function updateProfile(update) {
@@ -198,7 +218,6 @@ export const accountReducer = (state = initialState, action) => {
 
     case LOGIN_FAILURE: {
       const { error } = action.payload;
-
       return produce(state, (draft) => {
         draft.user = null;
         draft.error = error;

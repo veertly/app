@@ -19,7 +19,8 @@ import {
 import { Alert } from "@material-ui/lab";
 import LoginButton from "../../../Components/Misc/LoginButton";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
-import { useLocation } from "react-router-dom";
+import { useLocation, useHistory } from "react-router-dom";
+import routes from "../../../Config/routes";
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -37,13 +38,13 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function LoginForm({ className, onSubmitSuccess, ...rest }) {
+function LoginForm({ className, onSubmitSuccess, loginWithEmail, ...rest }) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const location = useLocation();
+  const history = useHistory();
 
   const [loginFailed, setLoginFailed] = React.useState(false);
-  const [isLoginWithEmail, setIsLoginWithEmail] = React.useState(false);
 
   const denyAnonymous = React.useMemo(
     () => location.state && location.state.denyAnonymous,
@@ -102,11 +103,11 @@ function LoginForm({ className, onSubmitSuccess, ...rest }) {
   const handleMailClick = React.useCallback(async () => {
     try {
       setLoginFailed(false);
-      setIsLoginWithEmail(true);
+      history.push(routes.LOGIN_EMAIL(), { ...location.state });
     } catch (error) {
       setLoginFailed(true);
     }
-  }, []);
+  }, [history, location.state]);
   return (
     <>
       {loginFailed && (
@@ -114,7 +115,7 @@ function LoginForm({ className, onSubmitSuccess, ...rest }) {
           <Alert severity="error">We couldn't recognize yourself</Alert>
         </Box>
       )}
-      {!isLoginWithEmail && (
+      {!loginWithEmail && (
         <>
           <Box className={classes.googleContainer}>
             <LoginButton
@@ -124,7 +125,6 @@ function LoginForm({ className, onSubmitSuccess, ...rest }) {
               onClick={handleGoogleClick}
             />
           </Box>
-
           <Box className={classes.googleContainer}>
             <LoginButton
               variant="mail"
@@ -133,7 +133,6 @@ function LoginForm({ className, onSubmitSuccess, ...rest }) {
               onClick={handleMailClick}
             />
           </Box>
-
           {!denyAnonymous && (
             <Box className={classes.googleContainer}>
               <LoginButton
@@ -146,8 +145,7 @@ function LoginForm({ className, onSubmitSuccess, ...rest }) {
           )}
         </>
       )}
-
-      {isLoginWithEmail && (
+      {loginWithEmail && (
         <>
           <Typography
             className={classes.link}
@@ -155,13 +153,16 @@ function LoginForm({ className, onSubmitSuccess, ...rest }) {
             color="textSecondary"
             onClick={() => {
               setLoginFailed(false);
-              setIsLoginWithEmail(false);
+              history.push(routes.LOGIN(), { ...location.state });
             }}
           >
-            <ArrowBackIosIcon style={{ fontSize: "0.7em" }} />
+            <ArrowBackIosIcon
+              style={{
+                fontSize: "0.7em"
+              }}
+            />
             Different login method
           </Typography>
-
           <Formik
             initialValues={{
               email: "",
@@ -218,7 +219,6 @@ function LoginForm({ className, onSubmitSuccess, ...rest }) {
                   value={values.password}
                   variant="outlined"
                 />
-
                 <Box mt={3} mb={1}>
                   <Button
                     color="primary"
