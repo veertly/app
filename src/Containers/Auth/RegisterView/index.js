@@ -1,5 +1,6 @@
 import React from "react";
 import { useHistory, useLocation } from "react-router";
+import { useDispatch } from "react-redux";
 import {
   Avatar,
   Box,
@@ -24,6 +25,7 @@ import Page from "../../../Components/Core/Page";
 import LogoIcon from "../../../Components/Misc/LogoIcon";
 import routes from "../../../Config/routes";
 import RegisterForm from "./RegisterForm";
+import { resetAccountState } from "../../../Redux/account";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -81,13 +83,13 @@ function RegisterView() {
   const classes = useStyles();
   const history = useHistory();
   const location = useLocation();
+  const dispatch = useDispatch();
 
   React.useEffect(() => {
     trackPage("RegisterPage");
   }, []);
   console.log(location);
   const handleSubmitSuccess = (user) => {
-    console.log("--> handleSubmitSuccess");
     trackIdentify(user.id, {});
     trackEvent("Registered");
 
@@ -124,6 +126,7 @@ function RegisterView() {
                 to={{ pathname: routes.LOGIN(), state: { ...location.state } }}
                 variant="body2"
                 color="textSecondary"
+                onClick={() => dispatch(resetAccountState())}
               >
                 Have an account?
               </Link>

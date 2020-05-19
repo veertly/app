@@ -47,7 +47,6 @@ function RegisterForm({ className, onSubmitSuccess, ...rest }) {
       })}
       onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
         try {
-          console.log("--> onSubmit");
           const user = await dispatch(
             register(
               values.firstName,
@@ -56,9 +55,12 @@ function RegisterForm({ className, onSubmitSuccess, ...rest }) {
               values.password
             )
           );
-          console.log("--> onSubmit with user");
 
-          onSubmitSuccess(user);
+          if (user) {
+            onSubmitSuccess(user);
+            setStatus({ success: false });
+            setSubmitting(false);
+          }
         } catch (error) {
           setStatus({ success: false });
           setErrors({ submit: error.message });

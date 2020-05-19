@@ -14,6 +14,7 @@ export const LOGIN_SUCCESS = "@account/login-success";
 export const LOGIN_FAILURE = "@account/login-failure";
 export const SILENT_LOGIN = "@account/silent-login";
 export const LOGOUT = "@account/logout";
+export const RESET_STATE = "@account/reset-state";
 export const REGISTER = "@account/register";
 export const UPDATE_PROFILE = "@account/update-profile";
 
@@ -179,6 +180,16 @@ export function register(firstName, lastName, email, password) {
   };
 }
 
+export function resetAccountState() {
+  return async (dispatch) => {
+    try {
+      dispatch({ type: RESET_STATE });
+    } catch (error) {
+      dispatch({ type: LOGIN_FAILURE, payload: { error: error.message } });
+      return false;
+    }
+  };
+}
 // export function updateProfile(update) {
 //   const request = axios.post("/api/account/profile", { update });
 
@@ -246,6 +257,10 @@ export const accountReducer = (state = initialState, action) => {
       return produce(state, (draft) => {
         draft.user = user;
       });
+    }
+
+    case RESET_STATE: {
+      return { ...state, ...initialState };
     }
 
     default: {
