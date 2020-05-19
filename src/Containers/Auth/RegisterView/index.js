@@ -88,7 +88,7 @@ function RegisterView() {
   React.useEffect(() => {
     trackPage("RegisterPage");
   }, []);
-  console.log(location);
+
   const handleSubmitSuccess = (user) => {
     trackIdentify(user.id, {});
     trackEvent("Registered");

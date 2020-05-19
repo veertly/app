@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/styles";
 
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
+// import Button from "@material-ui/core/Button";
 import Avatar from "@material-ui/core/Avatar";
 import { useAuthState } from "react-firebase-hooks/auth";
 import firebase from "../../Modules/firebaseApp";
@@ -10,6 +11,7 @@ import routes from "../../Config/routes";
 import { useDispatch } from "react-redux";
 import { openEditProfile } from "../../Redux/dialogs";
 import { logout } from "../../Redux/account";
+// import { Link as RouterLink, useLocation } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -35,6 +37,7 @@ export default (props) => {
   const classes = useStyles();
   const [userAuth] = useAuthState(firebase.auth());
   const dispatch = useDispatch();
+  // const location = useLocation();
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
@@ -125,6 +128,20 @@ export default (props) => {
           </Menu>
         </div>
       )}
+      {/* {!userAuth && (
+        <div>
+          <Button
+            variant="outlined"
+            color="secondary"
+            component={RouterLink}
+            to={{ pathname: routes.LOGIN(), state: { from: location } }}
+            className={classes.buttonLink}
+            // style={{ marginTop: user ? 4 : 0 }}
+          >
+            Login
+          </Button>
+        </div>
+      )} */}
     </React.Fragment>
   );
 };

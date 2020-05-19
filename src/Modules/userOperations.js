@@ -25,7 +25,6 @@ export const registerNewUser = async (userAuth) => {
     lastName,
     isAnonymous: isAnonymous
   };
-  console.log(userDb);
   firebase
     .firestore()
     .collection("users")
