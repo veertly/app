@@ -4,7 +4,7 @@ import {
   useCollectionData,
   useDocumentData
 } from "react-firebase-hooks/firestore";
-import { useParams, useHistory } from "react-router-dom";
+import { useParams, useHistory, useLocation } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
 import Typography from "@material-ui/core/Typography";
 import clsx from "clsx";
@@ -180,17 +180,14 @@ const EventSessionContainer = (props) => {
 
   const chatOpen = useSelector(isChatOpen);
 
+  const location = useLocation();
+
   const handleSidebarClose = () => {
     setOpenSidebar(false);
   };
 
   const shouldOpenSidebar = isDesktop ? true : openSidebar;
-  // useBeforeunload((e) => {
-  //   // setAsOffline(composedEventSession, userId);
-  // });
 
-  // -----------------------------------------------------------------------------------------------------
-  // const originalSessionId = props.match.params.sessionId;
   const { sessionId: originalSessionId } = useParams();
 
   const sessionId = useMemo(
@@ -379,7 +376,7 @@ const EventSessionContainer = (props) => {
     if (!initCompleted && stateLoaded && participantsJoined && liveGroups) {
       if (!user) {
         dispatch(setStateLoaded(false));
-        history.push(routes.EDIT_PROFILE(routes.EVENT_SESSION_LIVE(sessionId)));
+        history.push(routes.EDIT_PROFILE(), { from: location, sessionId });
       }
       initFirebasePresenceSync(sessionId, userId, participantsJoined);
       setInitCompleted(true);
@@ -398,7 +395,8 @@ const EventSessionContainer = (props) => {
     stateLoaded,
     userSession,
     keepALivesDB,
-    dispatch
+    dispatch,
+    location
   ]);
 
   useEffect(() => {

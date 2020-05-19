@@ -2,34 +2,30 @@ import React from "react";
 import { useDocumentData } from "react-firebase-hooks/firestore";
 import firebase from "../../Modules/firebaseApp";
 import { withRouter } from "react-router-dom";
-import Typography from "@material-ui/core/Typography";
-
 import { makeStyles } from "@material-ui/styles";
-import Button from "@material-ui/core/Button";
 import Page from "../../Components/Core/Page";
-import { useHistory } from "react-router-dom";
-import routes from "../../Config/routes";
 import EventPage from "../../Components/Event/EventPage";
 import CenteredTopbar from "../Layouts/CenteredTopbar";
 import SplashScreen from "../../Components/Misc/SplashScreen";
+import Error404View from "../Error404View";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     paddingTop: 56,
     height: "100%",
     [theme.breakpoints.up("sm")]: {
-      paddingTop: 64,
+      paddingTop: 64
     },
-    position: "relative",
+    position: "relative"
   },
 
   pageContainer: {
     paddingTop: theme.spacing(6),
     paddingBottom: theme.spacing(6),
     [theme.breakpoints.down("xs")]: {
-      padding: 0,
-    },
-  },
+      padding: 0
+    }
+  }
 }));
 
 export default withRouter((props) => {
@@ -39,15 +35,23 @@ export default withRouter((props) => {
 
   let sessionId = originalSessionId ? originalSessionId.toLowerCase() : null;
 
-  const [eventSessionDetails, loadingSessionDetails, errorSessionDetails] = useDocumentData(
+  const [
+    eventSessionDetails,
+    loadingSessionDetails,
+    errorSessionDetails
+  ] = useDocumentData(
     firebase.firestore().collection("eventSessionsDetails").doc(sessionId)
   );
   const [
     eventSessionsEnabledFeatures,
     loadingEventSessionsEnabledFeatures,
-    errorEventSessionsEnabledFeatures,
-  ] = useDocumentData(firebase.firestore().collection("eventSessionsEnabledFeatures").doc(sessionId));
-  const history = useHistory();
+    errorEventSessionsEnabledFeatures
+  ] = useDocumentData(
+    firebase
+      .firestore()
+      .collection("eventSessionsEnabledFeatures")
+      .doc(sessionId)
+  );
 
   if (loadingSessionDetails || loadingEventSessionsEnabledFeatures) {
     return <SplashScreen />;
@@ -58,34 +62,35 @@ export default withRouter((props) => {
   }
 
   if (!eventSessionDetails) {
-    return (
-      <Page title={"Veertly | Event not found"}>
-        <div className={classes.root}>
-          <CenteredTopbar />
-          <div>
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <Typography align="center" variant="overline" style={{ display: "block" }}>
-              Event not found!
-            </Typography>
-            <div style={{ width: "100%", textAlign: "center", marginTop: 16 }}>
-              <Button
-                variant="contained"
-                color="primary"
-                className={classes.button}
-                onClick={() => history.push(routes.CREATE_EVENT_SESSION())}
-              >
-                Create Event
-              </Button>
-            </div>
-          </div>
-        </div>
-      </Page>
-    );
+    return <Error404View />;
+    // return (
+    //   <Page title={"Veertly | Event not found"}>
+    //     <div className={classes.root}>
+    //       <CenteredTopbar />
+    //       <div>
+    //         <br />
+    //         <br />
+    //         <br />
+    //         <br />
+    //         <br />
+    //         <br />
+    //         <Typography align="center" variant="overline" style={{ display: "block" }}>
+    //           Event not found!
+    //         </Typography>
+    //         <div style={{ width: "100%", textAlign: "center", marginTop: 16 }}>
+    //           <Button
+    //             variant="contained"
+    //             color="primary"
+    //             className={classes.button}
+    //             onClick={() => history.push(routes.CREATE_EVENT_SESSION())}
+    //           >
+    //             Create Event
+    //           </Button>
+    //         </div>
+    //       </div>
+    //     </div>
+    //   </Page>
+    // );
   }
 
   return (
@@ -94,7 +99,10 @@ export default withRouter((props) => {
 
       <CenteredTopbar showCreate={true} />
       <div className={classes.pageContainer}>
-        <EventPage event={eventSessionDetails} enabledFeatures={eventSessionsEnabledFeatures} />
+        <EventPage
+          event={eventSessionDetails}
+          enabledFeatures={eventSessionsEnabledFeatures}
+        />
       </div>
     </div>
   );
