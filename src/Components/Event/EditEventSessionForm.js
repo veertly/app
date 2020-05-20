@@ -60,6 +60,8 @@ import useIsMounted from "../../Hooks/useIsMounted";
 import EventShareIcons from "./EventShareIcons";
 import { DEFAULT_JITSI_SERVER } from "../../Modules/jitsi";
 import EditIcon from "@material-ui/icons/Edit";
+import _ from "lodash";
+
 const useStyles = makeStyles((theme) => ({
   root: {
     margin: theme.spacing(2, 0, 3, 0),
@@ -437,7 +439,12 @@ function EditEventSessionForm(props) {
   };
 
   const handleCreateConference = async () => {
-    let foundErrors = false;
+    let foundErrors =
+      sessionIdError ||
+      _.findIndex(
+        Object.values(errors),
+        (v) => v !== null && v !== undefined
+      ) !== -1;
     let newErrors = { ...errors };
     if (values.sessionId.trim() === "") {
       newErrors.sessionId = "Event URL can't be empty";
