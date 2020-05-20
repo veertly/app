@@ -867,7 +867,15 @@ function EditEventSessionForm(props) {
                     control={<Radio color="primary" />}
                     label="Youtube live stream"
                   /> */}
-
+                  <FormControlLabel
+                    value="JITSI"
+                    control={<Radio color="primary" />}
+                    label="Video conference"
+                  />
+                  <FormHelperText>
+                    This option will create a JITSI video conferencing call for
+                    all attendees connected on the main stage
+                  </FormHelperText>
                   <FormControlLabel
                     value="FACEBOOK"
                     control={<Radio color="primary" />}
@@ -876,18 +884,13 @@ function EditEventSessionForm(props) {
                   <FormHelperText>
                     This option will embed a livestream player. Supporting
                     Youtube, Facebook, Twitch, SoundCloud, Streamable, Vimeo,
-                    Wistia, DailyMotion and Custom LiveStream (HLS)
+                    Wistia, DailyMotion and Custom LiveStream (HLS).
                   </FormHelperText>
-                  <FormControlLabel
-                    value="JITSI"
-                    control={<Radio color="primary" />}
-                    label="Video conference"
-                  />
+                  <FormHelperText>
+                    Recommended for events with more than 30 attendees
+                  </FormHelperText>
                 </RadioGroup>
-                <FormHelperText>
-                  This option will create a JITSI video conferencing call for
-                  all attendees connected on the main stage
-                </FormHelperText>
+
                 {/* {selectedVideoType === "JITSI" && (
                   <FormHelperText>
                     We do not recommend Jitsi video conference for a big
