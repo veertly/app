@@ -59,7 +59,7 @@ import { useSnackbar } from "material-ui-snackbar-provider";
 import useIsMounted from "../../Hooks/useIsMounted";
 import EventShareIcons from "./EventShareIcons";
 import { DEFAULT_JITSI_SERVER } from "../../Modules/jitsi";
-
+import EditIcon from "@material-ui/icons/Edit";
 const useStyles = makeStyles((theme) => ({
   root: {
     margin: theme.spacing(2, 0, 3, 0),
@@ -199,7 +199,7 @@ function EditEventSessionForm(props) {
 
   const selectedSessionId = values.sessionId;
   const [selectedVideoType, setSelectedVideoType] = React.useState(
-    !isNewEvent ? eventSession.conferenceVideoType : "YOUTUBE"
+    !isNewEvent ? eventSession.conferenceVideoType : "JITSI"
   );
   const [selectedDate, setSelectedDate] = React.useState({
     begin:
@@ -240,9 +240,12 @@ function EditEventSessionForm(props) {
   const [errors, setErrors] = React.useState({});
   const snackbar = useSnackbar();
   const mounted = useIsMounted();
+
+  const [editingJitsiServer, setEditingJitsiServer] = React.useState(false);
   // useScript(
   //   "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.2"
   // );
+
   useEffect(() => {
     let fetchBlob = async () => {
       if (bannerImageBlob === null && eventSession && eventSession.bannerUrl) {
@@ -260,6 +263,15 @@ function EditEventSessionForm(props) {
       } on @veertly `,
     [values.title, selectedDate.begin]
   );
+
+  const canMoveToConfiguration = React.useMemo(() => {
+    return (
+      (values.title &&
+        values.title.trim() !== "" &&
+        !errors.beginDate &&
+        !errors.endDate) === true
+    );
+  }, [values.title, errors.beginDate, errors.endDate]);
 
   const handleUpdateField = (name) => (e) => {
     let value = e.target.value;
@@ -308,24 +320,57 @@ function EditEventSessionForm(props) {
     setErrors(newErrors);
   };
   const handleVideoTypeChange = (event) => {
-    setSelectedVideoType(event.target.value);
+    let value = event.target.value;
+    setSelectedVideoType(value);
+    if (value === "FACEBOOK") {
+      setValues((v) => ({ ...v, customJitsiServer: DEFAULT_JITSI_SERVER }));
+      setEditingJitsiServer(false);
+    }
   };
   const handleDateChange = (name) => (date) => {
     let newDates = { ...selectedDate };
     newDates[name] = date;
     let begin = name === "begin" ? date : selectedDate.begin;
     let end = name === "end" ? date : selectedDate.end;
-
+    let newErrors = { ...errors, beginDate: undefined, endDate: undefined };
     if (begin && !begin.isBefore(moment().subtract(60, "minutes"))) {
-      setErrors({ ...errors, beginDate: undefined });
+      newErrors = { ...newErrors, beginDate: undefined };
     }
 
     if (end && !end.isBefore(begin)) {
-      setErrors({ ...errors, endDate: undefined });
+      newErrors = { ...newErrors, endDate: undefined };
     }
     if (end && end.isBefore(begin)) {
       newDates.end = moment(begin).add(2, "hours");
     }
+
+    if (begin && !begin.isValid()) {
+      newErrors = {
+        ...newErrors,
+        beginDate:
+          "Invalid format, please click on the field to select the correct value"
+      };
+    } else if (!newErrors.beginDate) {
+      newErrors = {
+        ...newErrors,
+        beginDate: undefined
+      };
+    }
+
+    if (end && !end.isValid()) {
+      newErrors = {
+        ...newErrors,
+        endDate:
+          "Invalid format, please click on the field to select the correct value"
+      };
+    } else if (!newErrors.endDate) {
+      newErrors = {
+        ...newErrors,
+        endDate: undefined
+      };
+    }
+
+    setErrors(newErrors);
     setSelectedDate(newDates);
   };
 
@@ -817,27 +862,35 @@ function EditEventSessionForm(props) {
                   value={selectedVideoType}
                   onChange={handleVideoTypeChange}
                 >
-                  <FormControlLabel
+                  {/* <FormControlLabel
                     value="YOUTUBE"
                     control={<Radio color="primary" />}
                     label="Youtube live stream"
-                  />
-
-                  <FormControlLabel
-                    value="FACEBOOK"
-                    control={<Radio color="primary" />}
-                    label="Universal live stream"
-                  />
-                  <FormHelperText>
-                    Facebook, Twitch, SoundCloud, Streamable, Vimeo, Wistia,
-                    DailyMotion and Custom LiveStream (HLS)
-                  </FormHelperText>
+                  /> */}
                   <FormControlLabel
                     value="JITSI"
                     control={<Radio color="primary" />}
-                    label="Jitsi video conference"
+                    label="Video conference"
                   />
+                  <FormHelperText>
+                    This option will create a JITSI video conferencing call for
+                    all attendees connected on the main stage
+                  </FormHelperText>
+                  <FormControlLabel
+                    value="FACEBOOK"
+                    control={<Radio color="primary" />}
+                    label="Live stream"
+                  />
+                  <FormHelperText>
+                    This option will embed a livestream player. Supporting
+                    Youtube, Facebook, Twitch, SoundCloud, Streamable, Vimeo,
+                    Wistia, DailyMotion and Custom LiveStream (HLS).
+                  </FormHelperText>
+                  <FormHelperText>
+                    Recommended for events with more than 30 attendees
+                  </FormHelperText>
                 </RadioGroup>
+
                 {/* {selectedVideoType === "JITSI" && (
                   <FormHelperText>
                     We do not recommend Jitsi video conference for a big
@@ -893,7 +946,7 @@ function EditEventSessionForm(props) {
                   <div style={{ flexGrow: 1, marginRight: 16 }}>
                     <TextField
                       fullWidth
-                      label="Facebook livestream video URL"
+                      label="Livestream video URL"
                       name="conferenceRoomFacebookLink"
                       variant="outlined"
                       onChange={handleUpdateField("conferenceRoomFacebookLink")}
@@ -926,23 +979,42 @@ function EditEventSessionForm(props) {
                   justify="space-between"
                   className={classes.textField}
                 >
-                  <div style={{ flexGrow: 1, marginRight: 16 }}>
-                    <TextField
-                      fullWidth
-                      label="JITSI server address"
-                      name="customJitsiServer"
-                      variant="outlined"
-                      onChange={handleUpdateField("customJitsiServer")}
-                      required={selectedVideoType === "JITSI"}
-                      value={values.customJitsiServer}
-                      disabled={isAnonymous}
-                      error={errors.customJitsiServer !== undefined}
-                      helperText={
-                        errors.customJitsiServer !== undefined
-                          ? errors.customJitsiServer
-                          : null
-                      }
-                    />
+                  <div style={{ flexGrow: 1 }}>
+                    {editingJitsiServer && (
+                      <TextField
+                        fullWidth
+                        label="JITSI server address"
+                        name="customJitsiServer"
+                        variant="outlined"
+                        onChange={handleUpdateField("customJitsiServer")}
+                        required={selectedVideoType === "JITSI"}
+                        value={values.customJitsiServer}
+                        disabled={isAnonymous}
+                        error={errors.customJitsiServer !== undefined}
+                        helperText={
+                          errors.customJitsiServer !== undefined
+                            ? errors.customJitsiServer
+                            : null
+                        }
+                      />
+                    )}
+                    {!editingJitsiServer && (
+                      <div style={{ display: "flex", aligItems: "center" }}>
+                        <Typography color="textSecondary">
+                          Jitisi server: {values.customJitsiServer}
+                        </Typography>
+                        <Tooltip title="Customize Jitsi server">
+                          <IconButton
+                            aria-label="delete"
+                            style={{ marginLeft: 16 }}
+                            size="small"
+                            onClick={() => setEditingJitsiServer(true)}
+                          >
+                            <EditIcon fontSize="inherit" />
+                          </IconButton>
+                        </Tooltip>
+                      </div>
+                    )}
                   </div>
                 </Grid>
               )}
@@ -1021,6 +1093,7 @@ function EditEventSessionForm(props) {
                     color="primary"
                     className={classes.button}
                     onClick={moveToConfigurationPage}
+                    disabled={!canMoveToConfiguration}
                   >
                     Next
                   </Button>
