@@ -1,4 +1,4 @@
-import firebase from "../Modules/firebaseApp";
+import firebase, { firebaseConfig } from "../Modules/firebaseApp";
 import {
   getUserDb,
   logoutDb,
@@ -66,6 +66,11 @@ export function loginWithGoogle() {
       const { user } = result;
       const isNewUser = result.additionalUserInfo.isNewUser;
 
+      // try out for the bug
+      if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig)
+      }
+      
       const userDb = isNewUser
         ? await registerNewUser(result.user)
         : await getUserDb(user.uid);
