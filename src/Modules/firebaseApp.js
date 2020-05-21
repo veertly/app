@@ -6,7 +6,7 @@ import "firebase/storage";
 import "firebase/functions";
 import "firebase/performance";
 
-import { functions } from "firebase";
+import { functions } from "firebase/app";
 
 var firebaseApp = firebase;
 
@@ -17,11 +17,12 @@ const firebaseConfig = {
   projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
   storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.REACT_APP_FIREBASE_APP_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID
 };
 // Initialize Firebase
-firebaseApp.initializeApp(firebaseConfig);
-
+if (firebase.apps.length === 0) {
+  firebaseApp.initializeApp(firebaseConfig);
+}
 export default firebaseApp;
 
 const perf = firebase.performance();
