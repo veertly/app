@@ -8,7 +8,7 @@ import {
   Button,
 } from "@material-ui/core";
 // import { Alert } from "@material-ui/lab";
-import { isMobileFromRdd, isChromeLike } from "../Utils/device";
+import { isMobileFromRdd, isChromeFromRRd } from "../Utils/device";
 
 const MOBILE_MSG = "Veertly is best experienced on desktop or laptop. Some features may not be available on mobile";
 const CHROME_APP = "Veertly is best experienced on Google Chrome";
@@ -21,7 +21,7 @@ const DeviceDetectView = ({ children }) => {
     if (isMobileFromRdd()) {
       setOpen(true);
       setMessage(MOBILE_MSG);
-    } else if (!isChromeLike()) {
+    } else if (!isChromeFromRRd()) {
       setOpen(true);
       setMessage(CHROME_APP);
     }

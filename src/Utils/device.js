@@ -25,3 +25,5 @@ export const isMobileFromRdd = () => isMobileRdd;
 export const isChromeLike = () => {
   return isChrome || isChromium;
 }
+
+export const isChromeFromRRd = () => isChrome;
