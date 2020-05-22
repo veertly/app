@@ -1,3 +1,5 @@
+import { isChrome, isChromium, isMobile as isMobileRdd } from "react-device-detect";
+
 // determine if a mobile browser is being used
 export const isMobile = () => {
   let mobile = false;
@@ -17,3 +19,11 @@ export const isMobile = () => {
 
   return mobile;
 };
+
+export const isMobileFromRdd = () => isMobileRdd;
+
+export const isChromeLike = () => {
+  return isChrome || isChromium;
+}
+
+export const isChromeFromRRd = () => isChrome;

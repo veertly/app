@@ -33,6 +33,7 @@ import { Provider } from "react-redux";
 import store, { persistor } from "./Redux/store";
 import Routes from "./Routes";
 import Auth from "./Components/Guards/Auth";
+import DeviceDetectView from "./Components/DeviceDetectView";
 
 const theme = createMuiTheme({
   palette: {
@@ -70,15 +71,18 @@ const App = () => {
         <ThemeProvider theme={theme}>
           <SnackbarProvider SnackbarProps={{ autoHideDuration: 10000 }}>
             <CssBaseline />
-            <Router history={history}>
-              <Auth>
-                {/* <ScrollReset /> */}
-                {/* <GoogleAnalytics /> */}
-                {/* <CookiesNotification /> */}
-                {/* <SettingsNotification /> */}
-                <Routes />
-              </Auth>
-            </Router>
+              <DeviceDetectView>
+                <Router history={history}>
+                  <Auth>
+                    {/* <ScrollReset /> */}
+                    {/* <GoogleAnalytics /> */}
+                    {/* <CookiesNotification /> */}
+                    {/* <SettingsNotification /> */}
+                    <Routes />
+                  </Auth>
+                </Router>
+              </DeviceDetectView>
+            
             {/* <BrowserRouter>
               <Switch>
                 <Route exact={true} path={routes.HOME()} component={HomePage} />
