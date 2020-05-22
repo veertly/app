@@ -8,6 +8,8 @@ import Container from "@material-ui/core/Container";
 import { withRouter } from "react-router-dom";
 import routes from "../Config/routes";
 import Page from "./Core/Page";
+import MarginProvider from "./Shared/MarginProvider";
+import CompatibilityInfoAlert from "./Shared/CompatibilityInfo";
 
 const useStyles = makeStyles(theme => ({
   icon: {
@@ -49,6 +51,13 @@ const useStyles = makeStyles(theme => ({
   button: {
     margin: 16,
     width: 250
+  }, 
+  alertDialog: {
+    textAlign: "center",
+    justifyContent: "center",
+    // width: "100%",
+    // maxWidth: 600,
+    // alignSelf: "center"
   }
 }));
 
@@ -85,6 +94,9 @@ export default withRouter(props => {
                 </Button>
               </Grid>
             </Grid>
+            <MarginProvider top={16}>
+              <CompatibilityInfoAlert className={classes.alertDialog}/>
+            </MarginProvider>
           </div>
         </Container>
       </div>

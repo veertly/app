@@ -25,6 +25,8 @@ import EventRegistrationForm from "./EventRegistrationForm";
 import { userRegisteredEvent } from "../../Modules/eventsOperations";
 import SuccessIcon from "@material-ui/icons/CheckCircleOutline";
 import Alert from "@material-ui/lab/Alert";
+import CompatibilityInfoAlert from "../Shared/CompatibilityInfo";
+import MarginProvider from "../Shared/MarginProvider";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -322,6 +324,11 @@ export default function EventPage(props) {
                 Join event now
               </Button>
             )}
+
+            <MarginProvider top={16} >
+              <CompatibilityInfoAlert />
+            </MarginProvider>
+
             {isOver && (
               <div
                 style={{

@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default withRouter((props) => {
+const EventPageContainer = (props) => {
   const classes = useStyles();
 
   let originalSessionId = props.match.params.sessionId;
@@ -106,4 +106,6 @@ export default withRouter((props) => {
       </div>
     </div>
   );
-});
+};
+
+export default withRouter(EventPageContainer);

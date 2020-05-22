@@ -68,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default () => {
+const HomePage = () => {
   const classes = useStyles();
   // const [newsletterEmail, setNewsletterEmail] = useState("");
   // const [submitted, setSubmitted] = useState(false);
@@ -183,3 +183,5 @@ export default () => {
     </React.Fragment>
   );
 };
+
+export default HomePage;
