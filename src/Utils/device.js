@@ -1,4 +1,8 @@
-import { isChrome, isChromium, isMobile as isMobileRdd } from "react-device-detect";
+import {
+  isChrome,
+  isChromium,
+  isMobile as isMobileRdd
+} from "react-device-detect";
 
 // determine if a mobile browser is being used
 export const isMobile = () => {
@@ -24,6 +28,8 @@ export const isMobileFromRdd = () => isMobileRdd;
 
 export const isChromeLike = () => {
   return isChrome || isChromium;
-}
+};
 
-export const isChromeFromRRd = () => isChrome;
+export const isChromeFromRRd = async () =>
+  isChrome &&
+  !((navigator.brave && (await navigator.brave.isBrave())) || false);

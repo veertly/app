@@ -17,13 +17,18 @@ const useDeviceDetect = () => {
   const [showDialog, setShowDialog] = useState(savedShowDialog);
 
   useEffect(() => {
-    if (isMobileFromRdd()) {
-      // setOpen(true);
-      setMessage(MOBILE_MSG);
-    } else if (!isChromeFromRRd()) {
-      // setOpen(true);
-      setMessage(CHROME_APP);
-    }
+    const check = async () => {
+      if (isMobileFromRdd()) {
+        // setOpen(true);
+        setMessage(MOBILE_MSG);
+      } else if (!(await isChromeFromRRd())) {
+        // setOpen(true);
+        setMessage(CHROME_APP);
+      } else {
+        setShowDialog(false);
+      }
+    };
+    check();
   }, []);
 
   const hideDialog = (permanent = false) => {
