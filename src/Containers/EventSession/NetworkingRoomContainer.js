@@ -9,15 +9,18 @@ import {
   getUserGroup,
   getSessionId,
   getUserId,
-  getEventSessionDetails
+  getEventSessionDetails,
+  getFeatureDetails
 } from "../../Redux/eventSession";
 import JitsiContext from "./JitsiContext";
 import { trackPage, trackEvent } from "../../Modules/analytics";
 import {
   getJistiServer,
   getJitsiOptions,
-  getJistiDomain
+  getJistiDomain,
+  isMeetJitsi
 } from "../../Modules/jitsi";
+import { FEATURES } from "../../Modules/features";
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
@@ -36,6 +39,11 @@ const NetworkingRoomContainer = () => {
   const sessionId = useSelector(getSessionId);
 
   const eventSessionDetails = useSelector(getEventSessionDetails, shallowEqual);
+
+  const removeJitsiLogoFeature = useSelector(
+    getFeatureDetails(FEATURES.REMOVE_JITSI_LOGO),
+    shallowEqual
+  );
 
   const [loaded, error] = useScript(
     (currentGroup && currentGroup.customJitsiServer
@@ -72,9 +80,16 @@ const NetworkingRoomContainer = () => {
           ? getJistiDomain(currentGroup)
           : getJistiDomain(eventSessionDetails);
 
+      const showJitsiLogo =
+        isMeetJitsi(domain) &&
+        (!removeJitsiLogoFeature || !removeJitsiLogoFeature.enabled);
+
       const options = getJitsiOptions(
         roomName,
-        document.querySelector("#conference-container")
+        document.querySelector("#conference-container"),
+        true,
+        true,
+        showJitsiLogo
       );
 
       /*eslint-disable no-undef*/
@@ -130,7 +145,8 @@ const NetworkingRoomContainer = () => {
     lastRoomLoaded,
     setJitsiApi,
     user,
-    eventSessionDetails
+    eventSessionDetails,
+    removeJitsiLogoFeature
   ]);
 
   if (error) {

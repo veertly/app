@@ -11,7 +11,8 @@ import {
   getUserGroup,
   getSessionId,
   getUserId,
-  getEventSessionDetails
+  getEventSessionDetails,
+  getFeatureDetails
 } from "../../Redux/eventSession";
 import ReactPlayer from "react-player";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -20,11 +21,13 @@ import { trackPage } from "../../Modules/analytics";
 import {
   getJistiServer,
   getJitsiOptions,
-  getJistiDomain
+  getJistiDomain,
+  isMeetJitsi
 } from "../../Modules/jitsi";
 import { setOffline } from "../../Modules/userOperations";
 import { useHistory } from "react-router-dom";
 import routes from "../../Config/routes";
+import { FEATURES } from "../../Modules/features";
 
 const useStyles = makeStyles((theme) => ({
   videoContainer: {
@@ -95,6 +98,11 @@ export default () => {
     history.push(routes.EVENT_SESSION(sessionId));
   }, [sessionId, userGroup, userId, history]);
 
+  const removeJitsiLogoFeature = useSelector(
+    getFeatureDetails(FEATURES.REMOVE_JITSI_LOGO),
+    shallowEqual
+  );
+
   useEffect(() => {
     if (!user) {
       return;
@@ -117,11 +125,16 @@ export default () => {
 
       const domain = getJistiDomain(eventSessionDetails);
 
+      const showJitsiLogo =
+        isMeetJitsi(domain) &&
+        (!removeJitsiLogoFeature || !removeJitsiLogoFeature.enabled);
+
       const options = getJitsiOptions(
         roomName,
         document.querySelector("#conference-container"),
         true,
-        false
+        false,
+        showJitsiLogo
       );
 
       /*eslint-disable no-undef*/
@@ -160,7 +173,8 @@ export default () => {
     jitsiApi,
     lastRoomLoaded,
     setJitsiApi,
-    sessionId
+    sessionId,
+    removeJitsiLogoFeature
   ]);
 
   const hasAnnouncement = React.useMemo(

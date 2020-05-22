@@ -33,11 +33,14 @@ export const getJistiDomain = (eventSessionDetails) => {
   return "meet.jit.si";
 };
 
+export const isMeetJitsi = (domain) => domain && domain.includes("meet.jit.si");
+
 export const getJitsiOptions = (
   roomName,
   parentNode,
   showHangup = true,
-  showChat = true
+  showChat = true,
+  showJitsiLogo = false
 ) => {
   return {
     roomName,
@@ -46,11 +49,11 @@ export const getJitsiOptions = (
       // filmStripOnly: true,
       DEFAULT_REMOTE_DISPLAY_NAME: "Veertlier",
       enableWelcomePage: false,
-      SHOW_JITSI_WATERMARK: false,
-      JITSI_WATERMARK_LINK: "https://veertly.com",
+      SHOW_JITSI_WATERMARK: showJitsiLogo,
+      // JITSI_WATERMARK_LINK: "https://veertly.com",
       TOOLBAR_ALWAYS_VISIBLE: true,
-      SHOW_WATERMARK_FOR_GUESTS: false,
-      SHOW_BRAND_WATERMARK: false,
+      SHOW_WATERMARK_FOR_GUESTS: showJitsiLogo,
+      SHOW_BRAND_WATERMARK: showJitsiLogo,
       SHOW_POWERED_BY: false,
       GENERATE_ROOMNAMES_ON_WELCOME_PAGE: false,
       TOOLBAR_BUTTONS: [

@@ -350,7 +350,7 @@ function EditEventSessionForm(props) {
       newErrors = {
         ...newErrors,
         beginDate:
-          "Invalid format, please click on the field to select the correct value"
+          "Invalid Format. Please click on the icon to select correct date."
       };
     } else if (!newErrors.beginDate) {
       newErrors = {
@@ -363,7 +363,7 @@ function EditEventSessionForm(props) {
       newErrors = {
         ...newErrors,
         endDate:
-          "Invalid format, please click on the field to select the correct value"
+          "Invalid Format. Please click on the icon to select correct date."
       };
     } else if (!newErrors.endDate) {
       newErrors = {
