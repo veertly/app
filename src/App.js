@@ -70,15 +70,16 @@ const App = () => {
         <ThemeProvider theme={theme}>
           <SnackbarProvider SnackbarProps={{ autoHideDuration: 10000 }}>
             <CssBaseline />
-            <Router history={history}>
-              <Auth>
-                {/* <ScrollReset /> */}
-                {/* <GoogleAnalytics /> */}
-                {/* <CookiesNotification /> */}
-                {/* <SettingsNotification /> */}
-                <Routes />
-              </Auth>
-            </Router>
+              <Router history={history}>
+                <Auth>
+                  {/* <ScrollReset /> */}
+                  {/* <GoogleAnalytics /> */}
+                  {/* <CookiesNotification /> */}
+                  {/* <SettingsNotification /> */}
+                  <Routes />
+                </Auth>
+              </Router>
+            
             {/* <BrowserRouter>
               <Switch>
                 <Route exact={true} path={routes.HOME()} component={HomePage} />

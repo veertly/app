@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(1)
   },
   logo: {
-    width: 180
+    width: 150
     // marginTop: theme.spacing(1)
   },
   button: {
@@ -251,6 +251,7 @@ export default withRouter((props) => {
               onClose={handleMenuClose}
             >
               <MenuItem onClick={handleEditProfileClick}>Edit profile</MenuItem>
+              {/* <MenuItem onClick={handleLeaveEventClick}>Leave event</MenuItem> */}
               <MenuItem onClick={handleLogoutClick}>Log out</MenuItem>
             </Menu>
           </div>

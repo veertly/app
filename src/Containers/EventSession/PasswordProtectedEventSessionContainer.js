@@ -14,6 +14,7 @@ import firebase, { loginInEvent } from "../../Modules/firebaseApp";
 import { useParams } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
 import SplashScreen from "../../Components/Misc/SplashScreen";
+import CompatibilityDialog from "../../Components/Shared/CompatibilityDialog";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -197,6 +198,7 @@ const ProtectedEventSessionContainer = () => {
   const { sessionId, code } = useParams();
 
   const { showDialog, loading } = useAuth();
+  
   const {
     error,
     loading: loadingEvent,
@@ -235,6 +237,7 @@ const ProtectedEventSessionContainer = () => {
     return (
       <>
         <EventSessionContainer></EventSessionContainer>
+        <CompatibilityDialog />
       </>
     );
   }

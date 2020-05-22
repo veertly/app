@@ -18,37 +18,37 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(4),
     marginRight: theme.spacing(4),
     padding: theme.spacing(1),
-    display: "flex",
+    display: "flex"
   },
   headlineContainerNoMargins: {
-    display: "flex",
+    display: "flex"
   },
   participantDetails: {
     flexGrow: 1,
-    marginLeft: theme.spacing(2),
+    marginLeft: theme.spacing(2)
   },
   topicsInterested: {
     // textOverflow: "ellipsis",
     // whiteSpace: "nowrap",
     // overflow: "hidden",
     display: "block",
-    maxWidth: 400,
+    maxWidth: 400
     // width: 185
   },
   avatar: {
     marginTop: 1,
     width: 80,
     height: 80,
-    fontSize: "2.5rem",
+    fontSize: "2.5rem"
   },
   avatarEditable: {
     "&:hover": {
       backgroundColor: theme.palette.primary.main,
-      cursor: "pointer",
-    },
+      cursor: "pointer"
+    }
   },
   participantName: {
-    display: "flex",
+    display: "flex"
   },
   socialNetworkIcon: {
     marginTop: 3,
@@ -56,11 +56,11 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.primary.main,
     "&:hover": {
       color: theme.palette.secondary.main,
-      cursor: "pointer",
-    },
+      cursor: "pointer"
+    }
   },
   companyTitle: {
-    margin: theme.spacing(0.5, 2),
+    margin: theme.spacing(0.5, 2)
   },
   loading: {
     position: "absolute",
@@ -68,8 +68,8 @@ const useStyles = makeStyles((theme) => ({
     left: "50%",
     marginTop: -12,
     marginLeft: -12,
-    zIndex: 2,
-  },
+    zIndex: 2
+  }
 }));
 
 export default function (props) {
@@ -86,8 +86,17 @@ export default function (props) {
       }
       return (
         <Tooltip title={title}>
-          <div onClick={onClick ? onClick : () => {}} style={{ position: "relative" }}>
-            {uploadingPicture && <CircularProgress size={24} color="secondary" className={classes.loading} />}
+          <div
+            onClick={onClick ? onClick : () => {}}
+            style={{ position: "relative" }}
+          >
+            {uploadingPicture && (
+              <CircularProgress
+                size={24}
+                color="secondary"
+                className={classes.loading}
+              />
+            )}
             {props.children}
           </div>
         </Tooltip>
@@ -100,7 +109,8 @@ export default function (props) {
     return null;
   }
 
-  const hasSubtitle = participant.company.trim() !== "" || participant.companyTitle.trim() !== "";
+  const hasSubtitle =
+    participant.company.trim() !== "" || participant.companyTitle.trim() !== "";
   const hasChips = participant.interestsChips.length > 0;
 
   const onSelectFile = async (e) => {
@@ -122,7 +132,13 @@ export default function (props) {
   };
 
   return (
-    <div className={noMargins === false ? classes.headlineContainer : classes.headlineContainerNoMargins}>
+    <div
+      className={
+        noMargins === false
+          ? classes.headlineContainer
+          : classes.headlineContainerNoMargins
+      }
+    >
       {editPicture && (
         <input
           accept="image/*"
@@ -133,74 +149,136 @@ export default function (props) {
         />
       )}
       {(participant.avatarUrl || newPicture) && (
-        <CustomTooltip show={editPicture} title="Change picture" onClick={handleAvatarClick}>
+        <CustomTooltip
+          show={editPicture}
+          title="Change picture"
+          onClick={handleAvatarClick}
+        >
           <Avatar
             alt={participant.firstName}
             src={newPicture ? newPicture : participant.avatarUrl}
-            className={clsx(classes.avatar, editPicture && classes.avatarEditable)}
+            className={clsx(
+              classes.avatar,
+              editPicture && classes.avatarEditable
+            )}
           />
         </CustomTooltip>
       )}
       {!participant.avatarUrl && participant.firstName.trim() !== "" && (
-        <CustomTooltip show={editPicture} title="Change picture" onClick={handleAvatarClick}>
-          <Avatar className={clsx(classes.avatar, editPicture && classes.avatarEditable)}>
+        <CustomTooltip
+          show={editPicture}
+          title="Change picture"
+          onClick={handleAvatarClick}
+        >
+          <Avatar
+            className={clsx(
+              classes.avatar,
+              editPicture && classes.avatarEditable
+            )}
+          >
             {participant.firstName.charAt(0).toUpperCase()}
             {participant.lastName.charAt(0).toUpperCase()}
           </Avatar>
         </CustomTooltip>
       )}
       {!participant.avatarUrl && participant.firstName.trim() === "" && (
-        <CustomTooltip show={editPicture} title="Change picture" onClick={handleAvatarClick}>
-          <Avatar className={clsx(classes.avatar, editPicture && classes.avatarEditable)}>G</Avatar>
+        <CustomTooltip
+          show={editPicture}
+          title="Change picture"
+          onClick={handleAvatarClick}
+        >
+          <Avatar
+            className={clsx(
+              classes.avatar,
+              editPicture && classes.avatarEditable
+            )}
+          ></Avatar>
         </CustomTooltip>
       )}
       <div
         className={classes.participantDetails}
         style={{
-          paddingTop: !hasSubtitle && !hasChips ? 26 : !hasChips || !hasSubtitle ? 16 : 0,
+          paddingTop:
+            !hasSubtitle && !hasChips ? 26 : !hasChips || !hasSubtitle ? 16 : 0
         }}
       >
         <div className={classes.participantName}>
           <Typography variant="h6">
-            {participant.firstName.trim() === "" ? "Guest User" : `${participant.firstName} ${participant.lastName}`}
+            {participant.firstName.trim() === ""
+              ? "Guest User"
+              : `${participant.firstName} ${participant.lastName}`}
           </Typography>
 
           {participant.linkedinUrl && (
-            <a href={participant.linkedinUrl} target="_blank" rel="noopener noreferrer">
+            <a
+              href={participant.linkedinUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <LinkedinIcon className={classes.socialNetworkIcon} />
             </a>
           )}
           {participant.twitterUrl && (
-            <a href={participant.twitterUrl} target="_blank" rel="noopener noreferrer">
+            <a
+              href={participant.twitterUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <TwitterIcon className={classes.socialNetworkIcon} />
             </a>
           )}
 
           {participant.keybaseUrl && (
-            <a href={participant.keybaseUrl} target="_blank" rel="noopener noreferrer">
+            <a
+              href={participant.keybaseUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <KeybaseIcon className={classes.socialNetworkIcon} />
             </a>
           )}
           {participant.emailPublic && participant.email.trim() !== "" && (
-            <a href={`mailto:${participant.email}`} target="_blank" rel="noopener noreferrer">
+            <a
+              href={`mailto:${participant.email}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <MailOutlineIcon className={classes.socialNetworkIcon} />
             </a>
           )}
         </div>
 
         {(participant.company || participant.companyTitle) && (
-          <Typography color="textSecondary" /* className={classes.companyTitle} */ className={classes.topicsInterested}>
+          <Typography
+            color="textSecondary"
+            /* className={classes.companyTitle} */ className={
+              classes.topicsInterested
+            }
+          >
             {`${participant.companyTitle}${
-              participant.company.trim() !== "" && participant.companyTitle.trim() !== "" ? " @ " : ""
+              participant.company.trim() !== "" &&
+              participant.companyTitle.trim() !== ""
+                ? " @ "
+                : ""
             }${participant.company}`}
           </Typography>
         )}
         {participant.location && (
-          <Typography color="textSecondary" /* className={classes.companyTitle} */ className={classes.topicsInterested}>
-            {participant.location} <Flag locationDetails={participant.locationDetails} />
+          <Typography
+            color="textSecondary"
+            /* className={classes.companyTitle} */ className={
+              classes.topicsInterested
+            }
+          >
+            {participant.location}{" "}
+            <Flag locationDetails={participant.locationDetails} />
           </Typography>
         )}
-        <ProfileChips chips={participant.interestsChips} showDelete={false} smallChips={true} />
+        <ProfileChips
+          chips={participant.interestsChips}
+          showDelete={false}
+          smallChips={true}
+        />
       </div>
     </div>
   );
