@@ -3,15 +3,15 @@ import { makeStyles } from "@material-ui/styles";
 
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
-// import Button from "@material-ui/core/Button";
+import Button from "@material-ui/core/Button";
 import Avatar from "@material-ui/core/Avatar";
 import { useAuthState } from "react-firebase-hooks/auth";
 import firebase from "../../Modules/firebaseApp";
 import routes from "../../Config/routes";
 import { useDispatch } from "react-redux";
-import { openEditProfile } from "../../Redux/dialogs";
 import { logout } from "../../Redux/account";
-// import { Link as RouterLink, useLocation } from "react-router-dom";
+import { Link as RouterLink, useLocation, useHistory } from "react-router-dom";
+import { useCollectionDataOnce } from "react-firebase-hooks/firestore";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -26,23 +26,33 @@ const useStyles = makeStyles((theme) => ({
   logo: {
     width: 180,
     marginTop: theme.spacing(1)
+  },
+  buttonLink: {
+    "&:hover": {
+      color: theme.palette.secondary.main
+    }
   }
 }));
 
 export default (props) => {
-  const { eventSession } = props;
-
-  // const [openEditProfile, setOpenEditProfile] = useState(false);
+  // const [openEditProfile, setOpenEditProfile] = React.useState(false);
 
   const classes = useStyles();
   const [userAuth] = useAuthState(firebase.auth());
   const dispatch = useDispatch();
-  // const location = useLocation();
+  const location = useLocation();
+  const history = useHistory();
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
-  const isOwner =
-    eventSession && userAuth && eventSession.owner === userAuth.uid;
+
+  const [myEvents] = useCollectionDataOnce(
+    firebase
+      .firestore()
+      .collection("eventSessionsDetails")
+      .where("owner", "==", userAuth ? userAuth.uid : "0x00")
+      .limit(1)
+  );
 
   function handleClose() {
     setAnchorEl(null);
@@ -53,8 +63,7 @@ export default (props) => {
   }
 
   const handleLogout = () => {
-    let sessionId = eventSession ? eventSession.id : null;
-    dispatch(logout(sessionId));
+    dispatch(logout());
   };
 
   const getAvatarLetters = () => {
@@ -63,10 +72,6 @@ export default (props) => {
     let lastName = names.length > 1 ? names[names.length - 1] : "";
     return firstName.charAt(0).toUpperCase() + lastName.charAt(0).toUpperCase();
   };
-
-  const openProfile = React.useCallback(() => dispatch(openEditProfile()), [
-    dispatch
-  ]);
 
   return (
     <React.Fragment>
@@ -83,7 +88,7 @@ export default (props) => {
           {userAuth && !userAuth.photoURL && (
             <Avatar className={classes.avatar} onClick={handleMenu}>
               {userAuth.displayName && <span>{getAvatarLetters()}</span>}
-              {!userAuth.displayName && <span>G</span>}
+              {/* {!userAuth.displayName && <span>G</span>} */}
             </Avatar>
           )}
           <Menu
@@ -101,16 +106,25 @@ export default (props) => {
             open={open}
             onClose={handleClose}
           >
-            {eventSession && (
+            <MenuItem
+              onClick={() => {
+                history.push(routes.EDIT_PROFILE(), { from: location });
+                handleClose();
+              }}
+            >
+              My Profile
+            </MenuItem>
+            {myEvents && myEvents.length > 0 && (
               <MenuItem
                 onClick={() => {
-                  openProfile();
+                  window.open("https://cockpit.veertly.com", "_blank");
                   handleClose();
                 }}
               >
-                Profile
+                My Events
               </MenuItem>
             )}
+            {/* Open on a dialog (shown only on the event session)
             {isOwner && (
               <MenuItem
                 onClick={() => {
@@ -123,25 +137,29 @@ export default (props) => {
               >
                 Edit Event
               </MenuItem>
-            )}
+            )} */}
+
             <MenuItem onClick={handleLogout}>Log out</MenuItem>
           </Menu>
         </div>
       )}
-      {/* {!userAuth && (
+      {!userAuth && (
         <div>
           <Button
             variant="outlined"
             color="secondary"
             component={RouterLink}
-            to={{ pathname: routes.LOGIN(), state: { from: location } }}
+            to={{
+              pathname: routes.LOGIN(),
+              state: { from: location }
+            }}
             className={classes.buttonLink}
             // style={{ marginTop: user ? 4 : 0 }}
           >
             Login
           </Button>
         </div>
-      )} */}
+      )}
     </React.Fragment>
   );
 };

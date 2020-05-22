@@ -3,47 +3,39 @@ import { withRouter } from "react-router-dom";
 import clsx from "clsx";
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/styles";
-import { AppBar, Toolbar, Button } from "@material-ui/core";
+import { AppBar, Toolbar } from "@material-ui/core";
 import VeertlyLogo from "../../Assets/Veertly_white.svg";
-import firebase from "../../Modules/firebaseApp";
 
 import AvatarLogin from "../../Components/Topbar/AvatarLogin";
 import Container from "@material-ui/core/Container";
-import routes from "../../Config/routes";
-import { useAuthState } from "react-firebase-hooks/auth";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import { useTheme } from "@material-ui/core/styles";
+// import useMediaQuery from "@material-ui/core/useMediaQuery";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    boxShadow: "none",
+    boxShadow: "none"
   },
   flexGrow: {
-    flexGrow: 1,
+    flexGrow: 1
   },
   signOutButton: {
-    marginLeft: theme.spacing(1),
+    marginLeft: theme.spacing(1)
   },
   logo: {
-    width: 180,
+    width: 150
     // marginTop: theme.spacing(1)
   },
   buttonLink: {
     "&:hover": {
-      color: theme.palette.secondary.main,
+      color: theme.palette.secondary.main
     },
-    marginRight: 32,
-  },
+    marginRight: 32
+  }
 }));
 
-const FullTopbar = (props) => {
-  const { className, showCreate } = props;
-  const [user] = useAuthState(firebase.auth());
+const CenteredTopBar = (props) => {
+  const { className } = props;
 
   const classes = useStyles();
-  const theme = useTheme();
-
-  const isMobile = useMediaQuery(theme.breakpoints.down("xs"));
 
   return (
     <AppBar className={clsx(classes.root, className)}>
@@ -54,7 +46,7 @@ const FullTopbar = (props) => {
           </a>
           <div className={classes.flexGrow} />
           <div style={{ display: "flex" }}>
-            {showCreate && !isMobile && (
+            {/* {showCreate && !isMobile && (
               <div>
                 <Button
                   variant="outlined"
@@ -66,7 +58,7 @@ const FullTopbar = (props) => {
                   Create your event
                 </Button>
               </div>
-            )}
+            )} */}
             <AvatarLogin />
           </div>
         </Toolbar>
@@ -75,8 +67,8 @@ const FullTopbar = (props) => {
   );
 };
 
-FullTopbar.propTypes = {
-  className: PropTypes.string,
+CenteredTopBar.propTypes = {
+  className: PropTypes.string
 };
 
-export default withRouter(FullTopbar);
+export default withRouter(CenteredTopBar);
