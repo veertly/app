@@ -482,6 +482,29 @@ export const leaveCall = (originalSessionId, group, myUserId) => {
     });
 };
 
+export const editRoom = async (
+  originalSessionId,
+  roomId,
+  roomName,
+  snackbar
+) => {
+  const sessionId = originalSessionId.toLowerCase();
+  let db = firebase.firestore();
+  let roomRef = db
+    .collection("eventSessions")
+    .doc(sessionId)
+    .collection("liveGroups")
+    .doc(roomId);
+
+  let roomSnapshot = await roomRef.get();
+  if (!roomSnapshot.exists) {
+    if (snackbar) snackbar.showMessage("This room no longer exists");
+    return false;
+  }
+  await roomRef.update({ roomName });
+  snackbar.showMessage("Room edited successfully");
+};
+
 export const createNewRoom = (
   originalSessionId,
   roomName,

@@ -11,13 +11,13 @@ import {
   getSessionId,
   getUserId,
   getUserSession,
-  getLiveGroupsOriginal,
+  getLiveGroupsOriginal
 } from "../../Redux/eventSession";
 import Alert from "@material-ui/lab/Alert";
 import {
   isJoinRoomOpen,
   getJoinRoomEntity,
-  closeJoinRoom,
+  closeJoinRoom
 } from "../../Redux/dialogs";
 import { Typography, Grid } from "@material-ui/core";
 import ParticipantAvatar from "../Misc/ParticipantAvatar";
@@ -26,15 +26,15 @@ const useStyles = makeStyles((theme) => ({
   content: {
     position: "relative",
     width: theme.breakpoints.values.sm,
-    padding: theme.spacing(6),
+    padding: theme.spacing(6)
   },
   closeContainer: {
-    position: "absolute",
+    position: "absolute"
   },
   buttonContainer: {
     width: "100%",
     textAlign: "center",
-    paddingTop: theme.spacing(2),
+    paddingTop: theme.spacing(2)
   },
   hintText: {
     marginBottom: theme.spacing(4),
@@ -43,35 +43,24 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     marginLeft: "auto",
     marginRight: "auto",
-    marginTop: theme.spacing(2),
+    marginTop: theme.spacing(2)
   },
   emptySpaceBottom: {
-    marginBottom: theme.spacing(4),
+    marginBottom: theme.spacing(4)
   },
   participantContainer: {
-    marginBottom: theme.spacing(3),
+    marginBottom: theme.spacing(3)
   },
   alert: {
-    marginTop: theme.spacing(2),
+    marginTop: theme.spacing(2)
   },
   avatarsContainer: {
-    padding: theme.spacing(3),
+    padding: theme.spacing(3)
   },
   avatar: {
-    margin: theme.spacing(0.5),
-  },
-  // hoverContainer: display,
+    margin: theme.spacing(0.5)
+  }
 }));
-
-// const HtmlTooltip = withStyles((theme) => ({
-//   tooltip: {
-//     backgroundColor: "#f5f5f9",
-//     color: "rgba(0, 0, 0, 0.87)",
-//     maxWidth: 220,
-//     fontSize: theme.typography.pxToRem(12),
-//     border: "1px solid #dadde9",
-//   },
-// }))(Tooltip);
 
 export default function (props) {
   const classes = useStyles();
