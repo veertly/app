@@ -23,8 +23,23 @@ export const registerNewUser = async (userAuth) => {
     phoneNumber,
     firstName,
     lastName,
-    isAnonymous: isAnonymous
+    isAnonymous,
+    linkedin: "",
+    twitter: "",
+    keybase: "",
+    emailPublic: false,
+    interest: "",
+    twitterUrl: null,
+    linkedinUrl: null,
+    interestsChips: [],
+    company: "",
+    companyTitle: "",
+    checkedTerms: false,
+    checkedNewsletter: false,
+    location: "",
+    locationDetails: null
   };
+
   firebase
     .firestore()
     .collection("users")

@@ -482,6 +482,61 @@ export const leaveCall = (originalSessionId, group, myUserId) => {
     });
 };
 
+export const editRoom = async (
+  originalSessionId,
+  roomId,
+  roomName,
+  userId,
+  snackbar
+) => {
+  const sessionId = originalSessionId.toLowerCase();
+  let db = firebase.firestore();
+  let roomRef = db
+    .collection("eventSessions")
+    .doc(sessionId)
+    .collection("liveGroups")
+    .doc(roomId);
+
+  let roomSnapshot = await roomRef.get();
+  if (!roomSnapshot.exists) {
+    if (snackbar) snackbar.showMessage("This room no longer exists");
+    return false;
+  }
+  await roomRef.update({
+    roomName,
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    updatedBy: userId
+  });
+  snackbar.showMessage("Room edited successfully");
+};
+
+export const archiveRoom = async (
+  originalSessionId,
+  roomId,
+  userId,
+  snackbar
+) => {
+  const sessionId = originalSessionId.toLowerCase();
+  let db = firebase.firestore();
+  let roomRef = db
+    .collection("eventSessions")
+    .doc(sessionId)
+    .collection("liveGroups")
+    .doc(roomId);
+
+  let roomSnapshot = await roomRef.get();
+  if (!roomSnapshot.exists) {
+    if (snackbar) snackbar.showMessage("This room no longer exists");
+    return false;
+  }
+  await roomRef.update({
+    isLive: false,
+    archivedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    archivedBy: userId
+  });
+  snackbar.showMessage("Room archived successfully");
+};
+
 export const createNewRoom = (
   originalSessionId,
   roomName,

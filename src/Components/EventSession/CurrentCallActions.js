@@ -9,7 +9,13 @@ import { leaveCall } from "../../Modules/eventSessionOperations";
 import LeaveCallDialog from "./LeaveCallDialog";
 
 import { useSelector, shallowEqual } from "react-redux";
-import { getSessionId, getUsers, getUserGroup, getUserId, getUserLiveGroup } from "../../Redux/eventSession";
+import {
+  getSessionId,
+  getUsers,
+  getUserGroup,
+  getUserId,
+  getUserLiveGroup
+} from "../../Redux/eventSession";
 import AvatarGroup from "@material-ui/lab/AvatarGroup";
 import ParticipantAvatar from "../Misc/ParticipantAvatar";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -22,23 +28,23 @@ const useStyles = makeStyles((theme) => ({
   groupContainer: {
     margin: theme.spacing(0, 1),
     padding: theme.spacing(0, 1),
-    position: "relative",
+    position: "relative"
   },
   avatarsContainer: {
-    display: "flex",
+    display: "flex"
   },
   title: {
     margin: theme.spacing(0, 0, 1, 0),
-    display: "block",
+    display: "block"
   },
   leaveCallContainer: {
     position: "absolute",
     right: -9,
-    top: 24,
+    top: 24
   },
   leaveCallButton: {
     // color: red[500]
-  },
+  }
 }));
 
 export default function (props) {
@@ -65,7 +71,8 @@ export default function (props) {
     var timerID = setInterval(() => {
       const currentTimestamp = new Date().getTime();
       const joinedTimestamp =
-        userGroup.participants[userId] && userGroup.participants[userId].joinedTimestamp.toDate().getTime();
+        userGroup.participants[userId] &&
+        userGroup.participants[userId].joinedTimestamp.toDate().getTime();
       setElapsedTime(currentTimestamp - joinedTimestamp);
     }, 1000);
 
@@ -77,18 +84,21 @@ export default function (props) {
   useEffect(() => {
     // calculate list participants online
     if (liveGroup) {
-      const participants = Object.keys(liveGroup.participants).reduce((result, participantId) => {
-        let participant = users[participantId];
-        let participantSession = userGroup.participants[participantId];
+      const participants = Object.keys(liveGroup.participants).reduce(
+        (result, participantId) => {
+          let participant = users[participantId];
+          let participantSession = userGroup.participants[participantId];
 
-        // console.log({ participantSession, participant });
+          // console.log({ participantSession, participant });
 
-        if (participant && participantSession.leftTimestamp === null) {
-          result.push(participant);
-        }
-        // console.log({ result });
-        return result;
-      }, []);
+          if (participant && participantSession.leftTimestamp === null) {
+            result.push(participant);
+          }
+          // console.log({ result });
+          return result;
+        },
+        []
+      );
 
       // console.log({ participants });
       setParticipants(participants);
@@ -97,7 +107,9 @@ export default function (props) {
     }
   }, [liveGroup, users, userGroup.participants]);
 
-  const isRoom = React.useMemo(() => liveGroup && liveGroup.isRoom, [liveGroup]);
+  const isRoom = React.useMemo(() => liveGroup && liveGroup.isRoom, [
+    liveGroup
+  ]);
 
   const showElapsedTime = () => {
     let elapsedMoment = moment.duration(elapsedTime, "milliseconds");
@@ -118,9 +130,14 @@ export default function (props) {
 
   return (
     <div className={classes.groupContainer}>
-      <LeaveCallDialog open={leaveCallOpen} handleLeaveCall={handleLeaveCall} setOpen={setLeaveCallOpen} />
+      <LeaveCallDialog
+        open={leaveCallOpen}
+        handleLeaveCall={handleLeaveCall}
+        setOpen={setLeaveCallOpen}
+      />
       <Typography variant="caption" className={classes.title}>
-        {isRoom ? liveGroup.roomName : "CURRENT CONVERSATION"} ({showElapsedTime()})
+        {isRoom ? liveGroup.roomName : "CURRENT CONVERSATION"} (
+        {showElapsedTime()})
       </Typography>
       <div className={classes.avatarsContainer}>
         {!isRoom && <GroupAvatars group={participants} />}
@@ -143,21 +160,26 @@ export default function (props) {
       </div>
       <div className={classes.leaveCallContainer}>
         {/* <Tooltip title="Leave conversation" placement="right"> */}
-        <IconButton color="primary" className={classes.leaveCallButton} aria-label="Call menu" onClick={handleMenu}>
+        <IconButton
+          color="primary"
+          className={classes.leaveCallButton}
+          aria-label="Call menu"
+          onClick={handleMenu}
+        >
           <MoreVertIcon />
         </IconButton>
         {/* </Tooltip> */}
         <Menu
           id="menu-appbar"
           anchorEl={menuAnchorEl}
-          anchorOrigin={{
-            vertical: "center",
-            horizontal: "right",
-          }}
-          transformOrigin={{
-            vertical: "bottom",
-            horizontal: "center",
-          }}
+          // anchorOrigin={{
+          //   vertical: "center",
+          //   horizontal: "right",
+          // }}
+          // transformOrigin={{
+          //   vertical: "bottom",
+          //   horizontal: "center",
+          // }}
           keepMounted
           open={openMenu}
           onClose={handleMenuClose}

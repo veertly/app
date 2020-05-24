@@ -28,6 +28,7 @@ const middlewares = [thunkMiddleware];
 
 const store = createStore(
   rootReducer,
+  // applyMiddleware(...middlewares)
   composeWithDevTools(applyMiddleware(...middlewares))
 );
 
