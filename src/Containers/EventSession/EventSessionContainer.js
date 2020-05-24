@@ -44,9 +44,10 @@ import SideMenuIcons from "../../Components/EventSession/SideMenuIcons";
 import ChatPane, { CHAT_DEFAULT_WIDTH } from "../../Components/Chat/ChatPane";
 import EditProfileDialog from "../../Components/EditProfile/EditProfileDialog";
 import EventPageDialog from "../../Components/Event/EventPageDialog";
-import { isChatOpen } from "../../Redux/dialogs";
+import { isChatOpen, openRoomArchived } from "../../Redux/dialogs";
 import ShareEventDialog from "../../Components/Event/ShareEventDialog";
 import FeedbackDialog from "../../Components/EventSession/FeedbackDialog";
+import RoomArchivedDialog from "../../Components/EventSession/RoomArchivedDialog";
 import {
   updateEventSession,
   getEventSessionDetails,
@@ -64,7 +65,8 @@ import {
   setStateLoaded,
   isStateLoaded,
   crossCheckKeepAlives,
-  setEnabledFeatures
+  setEnabledFeatures,
+  getFeatureDetails
 } from "../../Redux/eventSession";
 import useInterval from "../../Hooks/useInterval";
 import JoinParticipantDialog from "../../Components/EventSession/JoinParticipantDialog";
@@ -75,7 +77,7 @@ import {
   SMALL_PLAYER_INITIAL_HEIGHT,
   SMALL_PLAYER_INITIAL_WIDTH
 } from "../../Utils";
-import { getFeatureDetails, FEATURES } from "../../Modules/features";
+import { FEATURES } from "../../Modules/features";
 import JoinRoomDialog from "../../Components/EventSession/JoinRoomDialog";
 import CreateRoomDialog from "../../Components/EventSession/CreateRoomDialog";
 
@@ -198,31 +200,9 @@ const EventSessionContainer = (props) => {
   );
   const userId = useMemo(() => (userAuth ? userAuth.uid : null), [userAuth]);
 
-  const [eventSessionsEnabledFeatures] = useDocumentData(
-    firebase
-      .firestore()
-      .collection("eventSessionsEnabledFeatures")
-      .doc(sessionId)
-  );
-
-  useEffect(() => {
-    dispatch(setEnabledFeatures(eventSessionsEnabledFeatures));
-  }, [eventSessionsEnabledFeatures, dispatch]);
-
-  const isMiniPlayerEnabledDB = React.useMemo(
-    () => getFeatureDetails(eventSessionsEnabledFeatures, FEATURES.MINI_PLAYER),
-    [eventSessionsEnabledFeatures]
-  );
-
   const [showSmallPlayer, setShowSmallPlayer] = useState(true);
 
   const [miniPlayerEnabled, setMiniPlayerEnabled] = useState(false);
-
-  useEffect(() => {
-    if (isMiniPlayerEnabledDB) {
-      setMiniPlayerEnabled(isMiniPlayerEnabledDB.enabled);
-    }
-  }, [isMiniPlayerEnabledDB]);
 
   const [lastEventSessionDBJson, setLastEventSessionDBJson] = useState("");
   const [
@@ -233,18 +213,47 @@ const EventSessionContainer = (props) => {
   const [lastParticipantsJoinedDB, setLastParticipantsJoinedDB] = useState("");
   const [lastLiveGroupsDB, setLastLiveGroupsDB] = useState("");
   const [lastUsersDB, setLastUsersDB] = useState("");
+  const [
+    lastEventSessionsEnabledFeaturesDB,
+    setLastEventSessionsEnabledFeaturesDB
+  ] = useState("");
 
   // const eventSession = useSelector(getEventSession, shallowEqual);
   const eventSessionDetails = useSelector(getEventSessionDetails, shallowEqual);
   const participantsJoined = useSelector(getParticipantsJoined, shallowEqual);
   const liveGroups = useSelector(getLiveGroups, shallowEqual);
   const users = useSelector(getUsers, shallowEqual);
+  const miniPlayerFeature = useSelector(
+    getFeatureDetails(FEATURES.MINI_PLAYER),
+    shallowEqual
+  );
 
   const user = useSelector(getUser, shallowEqual);
   const userSession = useSelector(getUserSession, shallowEqual);
   const userGroup = useSelector(getUserGroup, shallowEqual);
+  const [
+    lastRoomArchivedInformed,
+    setLastRoomArchivedInformed
+  ] = React.useState(null);
 
   const stateLoaded = useSelector(isStateLoaded);
+
+  useEffect(() => {
+    const userGroupJson = JSON.stringify(userGroup);
+    console.log({
+      userGroup,
+      userGroupJson
+    });
+    if (
+      userGroup &&
+      userGroup.isLive === false &&
+      userGroupJson !== lastRoomArchivedInformed
+    ) {
+      setLastRoomArchivedInformed(userGroupJson);
+      leaveCall(sessionId, userGroup, userId);
+      dispatch(openRoomArchived(userGroup));
+    }
+  }, [userGroup, lastRoomArchivedInformed, dispatch, sessionId, userId]);
 
   const isInConferenceRoom = useMemo(
     () => userSession && !userSession.inNetworkingRoom,
@@ -306,6 +315,38 @@ const EventSessionContainer = (props) => {
       .doc(sessionId)
       .collection("participantsDetails")
   );
+
+  const [eventSessionsEnabledFeaturesDB] = useDocumentData(
+    firebase
+      .firestore()
+      .collection("eventSessionsEnabledFeatures")
+      .doc(sessionId)
+  );
+
+  useEffect(() => {
+    const currentEventSessionEnabledFeaturesDBJson = JSON.stringify(
+      eventSessionsEnabledFeaturesDB
+    );
+    if (
+      lastEventSessionsEnabledFeaturesDB !==
+      currentEventSessionEnabledFeaturesDBJson
+    ) {
+      dispatch(setEnabledFeatures(eventSessionsEnabledFeaturesDB));
+      setLastEventSessionsEnabledFeaturesDB(
+        currentEventSessionEnabledFeaturesDBJson
+      );
+    }
+  }, [
+    eventSessionsEnabledFeaturesDB,
+    lastEventSessionsEnabledFeaturesDB,
+    dispatch
+  ]);
+
+  useEffect(() => {
+    if (miniPlayerFeature) {
+      setMiniPlayerEnabled(miniPlayerFeature.enabled);
+    }
+  }, [miniPlayerFeature]);
 
   // --- userId ---
   useEffect(() => {
@@ -615,6 +656,7 @@ const EventSessionContainer = (props) => {
         />
         <JoinRoomDialog setIsInConferenceRoom={handleSetIsInConferenceRoom} />
         <CreateRoomDialog />
+        <RoomArchivedDialog />
 
         <EventSessionTopbar
           isInConferenceRoom={isInConferenceRoom}
