@@ -44,9 +44,10 @@ import SideMenuIcons from "../../Components/EventSession/SideMenuIcons";
 import ChatPane, { CHAT_DEFAULT_WIDTH } from "../../Components/Chat/ChatPane";
 import EditProfileDialog from "../../Components/EditProfile/EditProfileDialog";
 import EventPageDialog from "../../Components/Event/EventPageDialog";
-import { isChatOpen } from "../../Redux/dialogs";
+import { isChatOpen, openRoomArchived } from "../../Redux/dialogs";
 import ShareEventDialog from "../../Components/Event/ShareEventDialog";
 import FeedbackDialog from "../../Components/EventSession/FeedbackDialog";
+import RoomArchivedDialog from "../../Components/EventSession/RoomArchivedDialog";
 import {
   updateEventSession,
   getEventSessionDetails,
@@ -243,8 +244,29 @@ const EventSessionContainer = (props) => {
   const user = useSelector(getUser, shallowEqual);
   const userSession = useSelector(getUserSession, shallowEqual);
   const userGroup = useSelector(getUserGroup, shallowEqual);
+  const [
+    lastRoomArchivedInformed,
+    setLastRoomArchivedInformed
+  ] = React.useState(null);
 
   const stateLoaded = useSelector(isStateLoaded);
+
+  useEffect(() => {
+    const userGroupJson = JSON.stringify(userGroup);
+    console.log({
+      userGroup,
+      userGroupJson
+    });
+    if (
+      userGroup &&
+      userGroup.isLive === false &&
+      userGroupJson !== lastRoomArchivedInformed
+    ) {
+      setLastRoomArchivedInformed(userGroupJson);
+      leaveCall(sessionId, userGroup, userId);
+      dispatch(openRoomArchived(userGroup));
+    }
+  }, [userGroup, lastRoomArchivedInformed, dispatch, sessionId, userId]);
 
   const isInConferenceRoom = useMemo(
     () => userSession && !userSession.inNetworkingRoom,
@@ -615,6 +637,7 @@ const EventSessionContainer = (props) => {
         />
         <JoinRoomDialog setIsInConferenceRoom={handleSetIsInConferenceRoom} />
         <CreateRoomDialog />
+        <RoomArchivedDialog />
 
         <EventSessionTopbar
           isInConferenceRoom={isInConferenceRoom}

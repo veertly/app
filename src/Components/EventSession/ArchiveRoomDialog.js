@@ -2,12 +2,13 @@ import React from "react";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import { makeStyles } from "@material-ui/core/styles";
-import { editRoom } from "../../Modules/eventSessionOperations";
+import { archiveRoom } from "../../Modules/eventSessionOperations";
 import { useSnackbar } from "material-ui-snackbar-provider";
+import Alert from "@material-ui/lab/Alert";
 
 import { useSelector } from "react-redux";
 import { getSessionId, getUserId } from "../../Redux/eventSession";
-import { Typography, TextField } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
 const useStyles = makeStyles((theme) => ({
   content: {
     position: "relative",
@@ -30,7 +31,6 @@ export default function (props) {
   const snackbar = useSnackbar();
   const { room, open, setOpen } = props;
 
-  let [roomName, setRoomName] = React.useState(room.roomName);
   let [saving, setSaving] = React.useState(false);
 
   // const userGroup = useSelector(getUserLiveGroup, shallowEqual);
@@ -41,18 +41,22 @@ export default function (props) {
     setOpen(false);
   };
 
-  const handleEditRoom = (e) => {
+  const handleArchiveRoom = (e) => {
     e.preventDefault();
     const cb = async () => {
       setSaving(true);
 
-      editRoom(sessionId, room.id, roomName, userId, snackbar);
+      archiveRoom(sessionId, room.id, userId, snackbar);
 
       handleClose();
       setSaving(false);
     };
     cb();
   };
+  const hasParticipants = React.useMemo(
+    () => room.participants && Object.keys(room.participants).length > 0,
+    [room.participants]
+  );
 
   return (
     <div>
@@ -62,16 +66,27 @@ export default function (props) {
         aria-labelledby="draggable-dialog-title"
       >
         <div className={classes.content}>
-          {/* <div style={{ marginBottom: isMyGroup ? -16 : 8 }}> */}
           <Typography
             color="primary"
             variant="h4"
             align="left"
             style={{ marginBottom: 24 }}
           >
-            Edit room
+            {/* Archive room */}
+            {room.roomName}
           </Typography>
-          <TextField
+          {hasParticipants && (
+            <Alert severity={"error"} className={classes.alert}>
+              This room will be archived and all participants will be removed
+              from the room
+            </Alert>
+          )}
+          {!hasParticipants && (
+            <Alert severity={"warning"} className={classes.alert}>
+              This room will be archived
+            </Alert>
+          )}
+          {/* <TextField
             autoFocus
             label="Room Name"
             name="roomName"
@@ -80,24 +95,23 @@ export default function (props) {
             fullWidth
             onChange={(e) => setRoomName(e.target.value)}
             required
-          />
+          /> */}
           <div className={classes.buttonContainer}>
             <Button
               variant="contained"
               color="primary"
               className={classes.button}
-              onClick={handleEditRoom}
+              onClick={handleArchiveRoom}
               disabled={
-                roomName.trim() === "" ||
-                roomName.trim() === room.roomName.trim() ||
+                // roomName.trim() === "" ||
+                // roomName.trim() === room.roomName.trim() ||
                 saving
               }
             >
-              Save
+              Archive Room
             </Button>
           </div>
         </div>
-        {/* </div> */}
       </Dialog>
     </div>
   );

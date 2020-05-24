@@ -12,6 +12,7 @@ import { IconButton } from "@material-ui/core";
 import { getUserId, getEventSessionDetails } from "../../Redux/eventSession";
 import { Typography } from "@material-ui/core";
 import EditRoomDialog from "./EditRoomDialog";
+import ArchiveRoomDialog from "./ArchiveRoomDialog";
 
 const useStyles = makeStyles((theme) => ({
   participantContainer: {
@@ -83,14 +84,8 @@ export default function (props) {
     () => room.roomOwner === myUserId || eventDetails.owner === myUserId,
     [room.roomOwner, eventDetails.owner, myUserId]
   );
-  console.log(room);
-  console.log({
-    myUserId,
-    roomOwner: room.owner,
-    eventOwner: eventDetails.owner
-  });
+
   const handleJoinRoom = () => {
-    console.log("on handleJoinRoom");
     dispatch(openJoinRoom(room));
   };
 
@@ -205,7 +200,7 @@ export default function (props) {
         setOpen={setRenameRoomOpen}
         room={room}
       />
-      <EditRoomDialog
+      <ArchiveRoomDialog
         open={archiveRoomOpen}
         setOpen={setArchiveRoomOpen}
         room={room}

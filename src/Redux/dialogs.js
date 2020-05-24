@@ -20,6 +20,9 @@ const CLOSE_CREATE_ROOM = "dialogs.CLOSE_CREATE_ROOM";
 const OPEN_JOIN_ROOM = "dialogs.OPEN_JOIN_ROOM";
 const CLOSE_JOIN_ROOM = "dialogs.CLOSE_JOIN_ROOM";
 
+const OPEN_ROOM_ARCHIVED = "dialogs.OPEN_ROOM_ARCHIVED";
+const CLOSE_ROOM_ARCHIVED = "dialogs.CLOSE_ROOM_ARCHIVED";
+
 const initialState = {
   editProfileOpen: false,
   eventDetailsOpen: false,
@@ -32,6 +35,8 @@ const initialState = {
   createRoomOpen: false,
   joinRoomOpen: false,
   joinRoomEntity: null,
+  roomArchivedOpen: false,
+  roomArchivedEntity: null
 };
 
 export const dialogsReducer = (state = initialState, action) => {
@@ -39,70 +44,70 @@ export const dialogsReducer = (state = initialState, action) => {
     case OPEN_EDIT_PROFILE: {
       return {
         ...state,
-        editProfileOpen: true,
+        editProfileOpen: true
       };
     }
     case CLOSE_EDIT_PROFILE: {
       return {
         ...state,
-        editProfileOpen: false,
+        editProfileOpen: false
       };
     }
 
     case OPEN_EVENT_DETAILS: {
       return {
         ...state,
-        eventDetailsOpen: true,
+        eventDetailsOpen: true
       };
     }
     case CLOSE_EVENT_DETAILS: {
       return {
         ...state,
-        eventDetailsOpen: false,
+        eventDetailsOpen: false
       };
     }
 
     case OPEN_CHAT: {
       return {
         ...state,
-        chatOpen: true,
+        chatOpen: true
       };
     }
     case CLOSE_CHAT: {
       return {
         ...state,
-        chatOpen: false,
+        chatOpen: false
       };
     }
     case CHAT_RESIZED: {
       return {
         ...state,
-        chatWidt: action.newWidth,
+        chatWidt: action.newWidth
       };
     }
     case OPEN_SHARE: {
       return {
         ...state,
-        shareOpen: true,
+        shareOpen: true
       };
     }
     case CLOSE_SHARE: {
       return {
         ...state,
-        shareOpen: false,
+        shareOpen: false
       };
     }
 
     case OPEN_FEEDBACK: {
       return {
         ...state,
-        feedbackOpen: true,
+        feedbackOpen: true
       };
     }
     case CLOSE_FEEDBACK: {
       return {
         ...state,
-        feedbackOpen: false,
+        feedbackOpen: false
       };
     }
 
@@ -110,27 +115,27 @@ export const dialogsReducer = (state = initialState, action) => {
       return {
         ...state,
         joinParticipantOpen: true,
-        joinParticipantEntity: action.participant,
+        joinParticipantEntity: action.participant
       };
     }
     case CLOSE_JOIN_PARTICIPANT: {
       return {
         ...state,
         joinParticipantOpen: false,
-        joinRoomEntity: null,
+        joinRoomEntity: null
       };
     }
 
     case OPEN_CREATE_ROOM: {
       return {
         ...state,
-        createRoomOpen: true,
+        createRoomOpen: true
       };
     }
     case CLOSE_CREATE_ROOM: {
       return {
         ...state,
-        createRoomOpen: false,
+        createRoomOpen: false
       };
     }
 
@@ -138,24 +143,42 @@ export const dialogsReducer = (state = initialState, action) => {
       return {
         ...state,
         joinRoomOpen: true,
-        joinRoomEntity: action.room,
+        joinRoomEntity: action.room
       };
     }
     case CLOSE_JOIN_ROOM: {
       return {
         ...state,
         joinRoomOpen: false,
-        joinRoomEntity: null,
+        joinRoomEntity: null
       };
     }
+
+    case OPEN_ROOM_ARCHIVED: {
+      return {
+        ...state,
+        roomArchivedOpen: true,
+        roomArchivedEntity: action.room
+      };
+    }
+    case CLOSE_ROOM_ARCHIVED: {
+      return {
+        ...state,
+        roomArchivedOpen: false,
+        roomArchivedEntity: null
+      };
+    }
+
     default:
       return state;
   }
 };
 
-export const isEditProfileOpen = (store) => store.dialogs.editProfileOpen === true;
+export const isEditProfileOpen = (store) =>
+  store.dialogs.editProfileOpen === true;
 
-export const isEventDetailsOpen = (store) => store.dialogs.eventDetailsOpen === true;
+export const isEventDetailsOpen = (store) =>
+  store.dialogs.eventDetailsOpen === true;
 
 export const isChatOpen = (store) => store.dialogs.chatOpen === true;
 
@@ -165,83 +188,100 @@ export const isShareOpen = (store) => store.dialogs.shareOpen === true;
 
 export const isFeedbackOpen = (store) => store.dialogs.feedbackOpen === true;
 
-export const isJoinParticipantOpen = (store) => store.dialogs.joinParticipantOpen === true;
+export const isJoinParticipantOpen = (store) =>
+  store.dialogs.joinParticipantOpen === true;
 
-export const getJoinParticipantEntity = (store) => store.dialogs.joinParticipantEntity;
+export const getJoinParticipantEntity = (store) =>
+  store.dialogs.joinParticipantEntity;
 
-export const isCreateRoomOpen = (store) => store.dialogs.createRoomOpen === true;
+export const isCreateRoomOpen = (store) =>
+  store.dialogs.createRoomOpen === true;
 
 export const isJoinRoomOpen = (store) => store.dialogs.joinRoomOpen === true;
 
 export const getJoinRoomEntity = (store) => store.dialogs.joinRoomEntity;
 
+export const isRoomArchivedOpen = (store) =>
+  store.dialogs.roomArchivedOpen === true;
+
+export const getRoomArchivedEntity = (store) =>
+  store.dialogs.roomArchivedEntity;
+
 export const openEditProfile = () => ({
-  type: OPEN_EDIT_PROFILE,
+  type: OPEN_EDIT_PROFILE
 });
 
 export const closeEditProfile = () => ({
-  type: CLOSE_EDIT_PROFILE,
+  type: CLOSE_EDIT_PROFILE
 });
 
 export const openEventDetails = () => ({
-  type: OPEN_EVENT_DETAILS,
+  type: OPEN_EVENT_DETAILS
 });
 
 export const closeEventDetails = () => ({
-  type: CLOSE_EVENT_DETAILS,
+  type: CLOSE_EVENT_DETAILS
 });
 
 export const closeChat = () => ({
-  type: CLOSE_CHAT,
+  type: CLOSE_CHAT
 });
 
 export const openChat = () => ({
-  type: OPEN_CHAT,
+  type: OPEN_CHAT
 });
 export const chatResized = (newWidth) => ({
   type: CHAT_RESIZED,
-  newWidth,
+  newWidth
 });
 
 export const openShare = () => ({
-  type: OPEN_SHARE,
+  type: OPEN_SHARE
 });
 
 export const closeShare = () => ({
-  type: CLOSE_SHARE,
+  type: CLOSE_SHARE
 });
 
 export const openFeedback = () => ({
-  type: OPEN_FEEDBACK,
+  type: OPEN_FEEDBACK
 });
 
 export const closeFeedback = () => ({
-  type: CLOSE_FEEDBACK,
+  type: CLOSE_FEEDBACK
 });
 
 export const openJoinParticipant = (participant) => ({
   type: OPEN_JOIN_PARTICIPANT,
-  participant,
+  participant
 });
 
 export const closeJoinParticipant = () => ({
-  type: CLOSE_JOIN_PARTICIPANT,
+  type: CLOSE_JOIN_PARTICIPANT
 });
 
 export const openCreateRoom = () => ({
-  type: OPEN_CREATE_ROOM,
+  type: OPEN_CREATE_ROOM
 });
 
 export const closeCreateRoom = () => ({
-  type: CLOSE_CREATE_ROOM,
+  type: CLOSE_CREATE_ROOM
 });
 
 export const openJoinRoom = (room) => ({
   type: OPEN_JOIN_ROOM,
-
-  room,
+  room
 });
 
 export const closeJoinRoom = () => ({
-  type: CLOSE_JOIN_ROOM,
+  type: CLOSE_JOIN_ROOM
+});
+
+export const openRoomArchived = (room) => ({
+  type: OPEN_ROOM_ARCHIVED,
+  room
+});
+
+export const closeRoomArchived = () => ({
+  type: CLOSE_ROOM_ARCHIVED
 });
