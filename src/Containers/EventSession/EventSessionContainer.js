@@ -29,7 +29,9 @@ import Page from "../../Components/Core/Page";
 import routes from "../../Config/routes";
 import {
   initFirebasePresenceSync,
-  keepAlive
+  keepAlive,
+  getUserDb,
+  updateUser
 } from "../../Modules/userOperations";
 import Announcements from "../../Components/EventSession/Announcements";
 import {
@@ -304,6 +306,7 @@ const EventSessionContainer = (props) => {
       .doc(sessionId)
       .collection("participantsDetails")
   );
+
   // --- userId ---
   useEffect(() => {
     dispatch(updateUserId(userId));
@@ -374,14 +377,22 @@ const EventSessionContainer = (props) => {
   // --- init ---
   useEffect(() => {
     if (!initCompleted && stateLoaded && participantsJoined && liveGroups) {
-      if (!user) {
-        dispatch(setStateLoaded(false));
-        history.push(routes.EDIT_PROFILE(), { from: location, sessionId });
-      }
-      initFirebasePresenceSync(sessionId, userId, participantsJoined);
-      setInitCompleted(true);
-      keepAlive(sessionId, userId, userSession);
-      dispatch(crossCheckKeepAlives(keepALivesDB));
+      const checkAndProceed = async () => {
+        const myUser = await getUserDb(userAuth.uid);
+        if (!user && myUser.firstName && myUser.firstName.trim() !== "") {
+          // skip profile editing as the user already has a first name
+          await updateUser(userAuth.uid, sessionId, myUser);
+        } else if (!user) {
+          dispatch(setStateLoaded(false));
+          history.push(routes.EDIT_PROFILE(), { from: location, sessionId });
+          return;
+        }
+        initFirebasePresenceSync(sessionId, userId, participantsJoined);
+        setInitCompleted(true);
+        keepAlive(sessionId, userId, userSession);
+        dispatch(crossCheckKeepAlives(keepALivesDB));
+      };
+      checkAndProceed();
     }
   }, [
     initCompleted,
@@ -396,7 +407,8 @@ const EventSessionContainer = (props) => {
     userSession,
     keepALivesDB,
     dispatch,
-    location
+    location,
+    userAuth.uid
   ]);
 
   useEffect(() => {
@@ -417,7 +429,6 @@ const EventSessionContainer = (props) => {
     loadingSessionDetailsDB,
     loadingParticipantsJoinedDB,
     loadingLiveGroupsDB,
-    userId,
     dispatch
   ]);
 
@@ -487,7 +498,8 @@ const EventSessionContainer = (props) => {
     loadingSessionDB ||
     loadingSessionDetailsDB ||
     loadingParticipantsJoinedDB ||
-    loadingLiveGroupsDB
+    loadingLiveGroupsDB ||
+    !initCompleted
   ) {
     return <SplashScreen />;
   }

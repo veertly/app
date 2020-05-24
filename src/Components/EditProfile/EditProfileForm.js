@@ -23,28 +23,28 @@ import useIsMounted from "../../Hooks/useIsMounted";
 
 const useStyles = makeStyles((theme) => ({
   row: {
-    flexDirection: "row",
+    flexDirection: "row"
   },
   button: {
-    marginTop: theme.spacing(2),
+    marginTop: theme.spacing(2)
   },
   bottom: {
     textAlign: "center",
-    marginTop: 8,
+    marginTop: 8
   },
   textField: {
-    marginTop: 16,
+    marginTop: 16
     // marginBottom: 16
   },
   star: {
     fontSize: 16,
-    marginRight: 4,
+    marginRight: 4
   },
   termsContainer: {
     display: "flex",
     flexDirection: "row",
-    alignItems: "center",
-  },
+    alignItems: "center"
+  }
 }));
 
 const getUserDefaultValues = (userAuth) => {
@@ -56,6 +56,7 @@ const getUserDefaultValues = (userAuth) => {
     firstName = splitted[0];
     lastName = splitted[splitted.length - 1];
   }
+  // IF UPDATED, don't forget to update the registerNewUser on the userOperations.js file
   return {
     id: userAuth.uid,
     firstName,
@@ -75,7 +76,7 @@ const getUserDefaultValues = (userAuth) => {
     isAnonymous,
     checkedTerms: false,
     checkedNewsletter: false,
-    location: "",
+    location: ""
   };
 };
 
@@ -120,11 +121,12 @@ function EditProfileForm(props) {
             checkedTerms,
             checkedNewsletter,
             location,
-            locationDetails,
+            locationDetails
           } = userDb;
 
           const x = (str) => (str ? str : "");
 
+          // IF UPDATED, don't forget to update the registerNewUser on the userOperations.js file
           setValues((v) => ({
             ...v,
             firstName: x(firstName),
@@ -144,7 +146,7 @@ function EditProfileForm(props) {
             checkedNewsletter: checkedNewsletter === true,
             checkedTerms: checkedTerms === true,
             location: x(location),
-            locationDetails: locationDetails ? locationDetails : null,
+            locationDetails: locationDetails ? locationDetails : null
           }));
 
           setInterestsChips(interestsChips ? interestsChips : []);
@@ -228,7 +230,7 @@ function EditProfileForm(props) {
       setValues({
         ...values,
         location: value.description,
-        locationDetails: value,
+        locationDetails: value
       });
     } else {
       setValues({ ...values, location: "", locationDetails: null });
@@ -348,7 +350,7 @@ function EditProfileForm(props) {
               <InputAdornment position="start">
                 <LinkedinIcon color="primary" />
               </InputAdornment>
-            ),
+            )
           }}
           style={{ width: "32%" }}
           value={values.linkedin}
@@ -366,7 +368,7 @@ function EditProfileForm(props) {
               <InputAdornment position="start">
                 <TwitterIcon color="primary" />
               </InputAdornment>
-            ),
+            )
           }}
           onChange={handleUpdateField("twitter")}
         />
@@ -382,7 +384,7 @@ function EditProfileForm(props) {
               <InputAdornment position="start">
                 <KeybaseIcon color="primary" />
               </InputAdornment>
-            ),
+            )
           }}
           onChange={handleUpdateField("keybase")}
         />

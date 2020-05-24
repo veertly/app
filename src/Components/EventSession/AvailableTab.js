@@ -18,7 +18,7 @@ import {
   getUsers,
   isInNetworkingRoom,
   getAvailableParticipantsList,
-  getFilters,
+  getFilters
 } from "../../Redux/eventSession";
 
 // import JoinConversationDialog from "./JoinConversationDialog";
@@ -32,38 +32,38 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": {
       backgroundColor: "rgba(28, 71, 98, 0.08)", //"#e0f3ff", //"#e4ffe4",
       cursor: "pointer",
-      borderRadius: 0,
+      borderRadius: 0
     },
     margin: theme.spacing(1),
     padding: theme.spacing(1),
-    display: "flex",
+    display: "flex"
   },
   participantDetails: {
     flexGrow: 1,
     marginLeft: theme.spacing(2),
-    position: "relative",
+    position: "relative"
   },
   topicsInterested: {
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
     overflow: "hidden",
     display: "block",
-    width: 190,
+    width: 190
   },
   avatar: {
-    marginTop: 1,
+    marginTop: 1
   },
   socialContainer: {
     position: "absolute",
     right: 0,
     top: 0,
     // wi dth: 16,
-    color: theme.palette.text.secondary,
+    color: theme.palette.text.secondary
   },
   flagContainer: {
     position: "absolute",
     right: 0,
-    bottom: 0,
+    bottom: 0
     // wi dth: 16,
     // color: theme.palette.text.secondary,
   },
@@ -72,7 +72,7 @@ const useStyles = makeStyles((theme) => ({
     whiteSpace: "nowrap",
     overflow: "hidden",
     display: "block",
-    width: 155,
+    width: 155
   },
   buttonContainer: {
     width: "100%",
@@ -81,21 +81,21 @@ const useStyles = makeStyles((theme) => ({
     top: -8,
     paddingTop: theme.spacing(1),
     backgroundColor: "#fff",
-    zIndex: 2,
+    zIndex: 2
   },
   button: {
-    margin: theme.spacing(1),
+    margin: theme.spacing(1)
   },
   filterButton: ({ filters }) => ({
     backgroundColor:
       filters && Object.keys(filters).length > 0
         ? theme.palette.filtersSelected
-        : "transparent",
+        : "transparent"
   }),
   title: {
     marginTop: theme.spacing(1),
-    display: "block",
-  },
+    display: "block"
+  }
 }));
 // rgba(28, 71, 98, 0.08)
 
@@ -113,19 +113,19 @@ const AvailableBadge = withStyles((theme) => ({
       borderRadius: "50%",
       animation: "$ripple 1.2s infinite ease-in-out",
       border: "1px solid currentColor",
-      content: '""',
-    },
+      content: '""'
+    }
   },
   "@keyframes ripple": {
     "0%": {
       transform: "scale(.8)",
-      opacity: 1,
+      opacity: 1
     },
     "100%": {
       transform: "scale(2.4)",
-      opacity: 0,
-    },
-  },
+      opacity: 0
+    }
+  }
 }))(Badge);
 
 export default function (props) {
@@ -233,14 +233,15 @@ export default function (props) {
         let {
           isInConversation,
           isInConferenceRoom,
-          isAvailable,
+          isAvailable
         } = participantSession;
 
         let participant = users[participantSession.id];
         const { twitterUrl, linkedinUrl, locationDetails } = participant;
         const hasSubtitle =
-          participant.company.trim() !== "" ||
-          participant.companyTitle.trim() !== "";
+          participant.company &&
+          (participant.company.trim() !== "" ||
+            participant.companyTitle.trim() !== "");
         const hasSocials =
           (twitterUrl && twitterUrl.trim() !== "") ||
           (linkedinUrl && linkedinUrl.trim() !== "");
@@ -273,7 +274,7 @@ export default function (props) {
                   overlap="circle"
                   anchorOrigin={{
                     vertical: "bottom",
-                    horizontal: "right",
+                    horizontal: "right"
                   }}
                   variant="dot"
                 >
@@ -287,7 +288,7 @@ export default function (props) {
                   overlap="circle"
                   anchorOrigin={{
                     vertical: "bottom",
-                    horizontal: "right",
+                    horizontal: "right"
                   }}
                   badgeContent={
                     <ConversationsIcon
@@ -306,14 +307,14 @@ export default function (props) {
                   overlap="circle"
                   anchorOrigin={{
                     vertical: "bottom",
-                    horizontal: "right",
+                    horizontal: "right"
                   }}
                   badgeContent={
                     <ConferenceIcon
                       style={{
                         heigth: "0.85em",
                         width: "0.85em",
-                        color: "#666",
+                        color: "#666"
                       }}
                     />
                   }
