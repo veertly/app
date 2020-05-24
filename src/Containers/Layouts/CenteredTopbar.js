@@ -41,7 +41,7 @@ const CenteredTopBar = (props) => {
     <AppBar className={clsx(classes.root, className)}>
       <Container maxWidth="lg">
         <Toolbar>
-          <a href="https://veertly.com">
+          <a href="/">
             <img alt="Logo" src={VeertlyLogo} className={classes.logo} />
           </a>
           <div className={classes.flexGrow} />
