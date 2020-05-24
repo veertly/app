@@ -240,10 +240,6 @@ const EventSessionContainer = (props) => {
 
   useEffect(() => {
     const userGroupJson = JSON.stringify(userGroup);
-    console.log({
-      userGroup,
-      userGroupJson
-    });
     if (
       userGroup &&
       userGroup.isLive === false &&
