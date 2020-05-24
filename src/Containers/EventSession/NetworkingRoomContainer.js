@@ -66,7 +66,10 @@ const NetworkingRoomContainer = () => {
     let prefix = process.env.REACT_APP_JITSI_ROOM_PREFIX;
     let prefixStr = prefix !== undefined ? `${prefix}-` : "";
 
-    const roomName = prefixStr + currentGroup.videoConferenceAddress;
+    const roomName = currentGroup.videoConferenceAddress.includes("http")
+      ? prefixStr +
+        currentGroup.videoConferenceAddress.replace("https://meet.jit.si/", "")
+      : prefixStr + currentGroup.videoConferenceAddress;
 
     if (loaded && lastRoomLoaded !== roomName) {
       // dispose existing jitsi
