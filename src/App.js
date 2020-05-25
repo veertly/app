@@ -10,7 +10,7 @@ import "semantic-ui-css/semantic.min.css";
 import { PersistGate } from "redux-persist/integration/react";
 
 import "./App.css";
-
+import ClosableSnackbar from "./Components/Misc/CloseableSnackbar";
 // import EventSessionContainer from "./Containers/EventSession/EventSessionContainer";
 // import PasswordProtectedEventSessionContainer from "./Containers/EventSession/PasswordProtectedEventSessionContainer";
 // import CreateSessionContainer from "./Containers/Organizer/CreateSessionContainer";
@@ -68,7 +68,10 @@ const App = () => {
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <ThemeProvider theme={theme}>
-          <SnackbarProvider SnackbarProps={{ autoHideDuration: 10000 }}>
+          <SnackbarProvider
+            SnackbarProps={{ autoHideDuration: 10000 }}
+            SnackbarComponent={ClosableSnackbar}
+          >
             <CssBaseline />
             <Router history={history}>
               <Auth>

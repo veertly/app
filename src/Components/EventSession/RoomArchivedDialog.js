@@ -70,7 +70,7 @@ export default function (props) {
               className={classes.button}
               onClick={handleClose}
             >
-              Dismiss
+              OK
             </Button>
           </div>
         </div>
