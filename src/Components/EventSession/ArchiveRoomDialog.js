@@ -77,13 +77,13 @@ export default function (props) {
           </Typography>
           {hasParticipants && (
             <Alert severity={"error"} className={classes.alert}>
-              This room will be archived and all participants will be removed
-              from the room
+              Are you sure you want to archive this room? When archiving it,
+              existing conversations within this room will end.
             </Alert>
           )}
           {!hasParticipants && (
             <Alert severity={"warning"} className={classes.alert}>
-              This room will be archived
+              Are you sure you want to archive this room?
             </Alert>
           )}
           {/* <TextField
