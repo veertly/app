@@ -14,6 +14,7 @@ import AttendeesIcon from "../../../Assets/Icons/Person";
 // import ConversationsIcon from "../../../Assets/Icons/Conversations";
 // import ConversationsIcon from "../../../Assets/Icons/Conversation1-1";
 import ChatIcon from "../../../Assets/Icons/Chat";
+import PollsIcon from "../../../Assets/Icons/Polls";
 
 import { useHover } from "react-use";
 
@@ -43,7 +44,7 @@ import { useHover } from "react-use";
 // } from "../../../Redux/chatMessages";
 // import Badge from "@material-ui/core/Badge";
 // import { trackEvent } from "../../../Modules/analytics";
-import { Box, Typography } from "@material-ui/core";
+import { Box, Typography, Divider } from "@material-ui/core";
 
 // import { Badge } from "@material-ui/core";
 const useStyles = makeStyles((theme) => ({
@@ -97,7 +98,8 @@ const STAGES_OPTIONS = {
   mainStage: "MAIN_STAGE",
   rooms: "ROOMS",
   attendees: "ATTENDEES",
-  chat: "CHAT"
+  chat: "CHAT",
+  polls: "POLLS"
 };
 
 const MenuIconContainer = ({ icon, label, selected, ...rest }) => {
@@ -190,13 +192,19 @@ const VerticalNavBar = (props) => {
         selected={currentStage === STAGES_OPTIONS.attendees}
         onClick={handleClick(STAGES_OPTIONS.attendees)}
       />
-      {/* <Divider /> */}
+      <Divider />
       {/* <MenuIconContainer icon={ConversationsIcon} label="Conversations" /> */}
       <MenuIconContainer
         icon={ChatIcon}
         label="Chat"
         selected={currentStage === STAGES_OPTIONS.chat}
         onClick={handleClick(STAGES_OPTIONS.chat)}
+      />
+      <MenuIconContainer
+        icon={PollsIcon}
+        label="Polls"
+        selected={currentStage === STAGES_OPTIONS.polls}
+        onClick={handleClick(STAGES_OPTIONS.polls)}
       />
       <div style={{ flexGrow: 1 }}></div>
       {/* <MenuIconContainer icon={ChatIcon} label="Chat" /> */}
