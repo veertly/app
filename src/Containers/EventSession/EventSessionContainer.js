@@ -21,7 +21,7 @@ import {
   updateInNetworkingRoom
 } from "../../Modules/eventSessionOperations";
 
-import NetworkingSidebar from "./NetworkingSidebar";
+// import NetworkingSidebar from "./NetworkingSidebar";
 import EventSessionTopbar from "../../Components/EventSession/EventSessionTopbar";
 import ConferenceRoomContainer from "./ConferenceRoomContainer";
 import ConferenceSidebar from "./ConferenceSidebar";
@@ -80,8 +80,11 @@ import {
 import { FEATURES } from "../../Modules/features";
 import JoinRoomDialog from "../../Components/EventSession/JoinRoomDialog";
 import CreateRoomDialog from "../../Components/EventSession/CreateRoomDialog";
+import VerticalNavBar from "../../Components/EventSession/VerticalNav/VerticalNavBar";
 
 export const SIDE_PANE_WIDTH = 53;
+export const VERTICAL_NAV_WIDTH = 85;
+
 const LEFT_PANE_WIDTH = 300;
 
 const useStyles = makeStyles((theme) => ({
@@ -95,7 +98,7 @@ const useStyles = makeStyles((theme) => ({
     overflow: "hidden"
   },
   shiftContent: {
-    paddingLeft: LEFT_PANE_WIDTH
+    paddingLeft: VERTICAL_NAV_WIDTH + LEFT_PANE_WIDTH
   },
 
   mainPane: {
@@ -103,7 +106,7 @@ const useStyles = makeStyles((theme) => ({
     // height: "100%",
     top: 64,
     bottom: 0,
-    left: LEFT_PANE_WIDTH,
+    left: VERTICAL_NAV_WIDTH + LEFT_PANE_WIDTH,
     right: SIDE_PANE_WIDTH,
     backgroundColor: theme.palette.background.default,
     backgroundImage: "url('/Illustrations/EmptyNetworkingPane.svg')",
@@ -147,6 +150,18 @@ const useStyles = makeStyles((theme) => ({
     right: 0,
     bottom: 0,
     borderLeft: "1px solid rgba(0, 0, 0, 0.12)",
+    [theme.breakpoints.down("xs")]: {
+      display: "none"
+    }
+  },
+  verticalNav: {
+    width: VERTICAL_NAV_WIDTH,
+    top: 64,
+    backgroundColor: "white",
+    position: "absolute",
+    left: 0,
+    bottom: 0,
+    borderRight: "1px solid rgba(0, 0, 0, 0.12)",
     [theme.breakpoints.down("xs")]: {
       display: "none"
     }
@@ -660,15 +675,19 @@ const EventSessionContainer = (props) => {
         />
         {isLive && (
           <>
+            <div className={classes.verticalNav}>
+              <VerticalNavBar /* eventSession={composedEventSession} user={user}  */
+              />
+            </div>
             {/* NETWORKING PANE */}
             {!isInConferenceRoom && (
               <>
-                <NetworkingSidebar
+                {/* <NetworkingSidebar
                   onClose={handleSidebarClose}
                   open={shouldOpenSidebar}
                   variant={isDesktop ? "persistent" : "temporary"}
                   setIsInConferenceRoom={handleSetIsInConferenceRoom}
-                />
+                /> */}
                 <div
                   className={classes.mainPane}
                   style={
@@ -737,6 +756,7 @@ const EventSessionContainer = (props) => {
               <SideMenuIcons /* eventSession={composedEventSession} user={user}  */
               />
             </div>
+
             {/* <div
             className={clsx(classes.chatPane, {
               [classes.hide]: !chatOpen,
@@ -744,9 +764,8 @@ const EventSessionContainer = (props) => {
           >
             {`chat open: ${chatOpen ? "true" : "false"}`} */}
             <ChatPane
-              /* eventSession={composedEventSession} users={users} user={user} */ onResize={(
-                w
-              ) => setChatWidth(w)}
+              /* eventSession={composedEventSession} users={users} user={user} */
+              onResize={(w) => setChatWidth(w)}
             />
             {/* </div> */}
           </>
