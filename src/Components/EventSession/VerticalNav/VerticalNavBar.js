@@ -45,6 +45,9 @@ import { useHover } from "react-use";
 // import Badge from "@material-ui/core/Badge";
 // import { trackEvent } from "../../../Modules/analytics";
 import { Box, Typography, Divider } from "@material-ui/core";
+import VerticalNavBarContext, {
+  VERTICAL_NAV_OPTIONS
+} from "../../../Contexts/VerticalNavBarContext";
 
 // import { Badge } from "@material-ui/core";
 const useStyles = makeStyles((theme) => ({
@@ -93,15 +96,6 @@ const useStyles = makeStyles((theme) => ({
   })
 }));
 
-const STAGES_OPTIONS = {
-  lobby: "LOBBY",
-  mainStage: "MAIN_STAGE",
-  rooms: "ROOMS",
-  attendees: "ATTENDEES",
-  chat: "CHAT",
-  polls: "POLLS"
-};
-
 const MenuIconContainer = ({ icon, label, selected, ...rest }) => {
   const [isHovered, setIsHovered] = React.useState(false);
   const classes = useStyles({ selected, hovered: isHovered });
@@ -136,7 +130,11 @@ const VerticalNavBar = (props) => {
   // const { eventSession, user } = props;
   const classes = useStyles();
 
-  const [currentStage, setCurrentStage] = React.useState(STAGES_OPTIONS.lobby);
+  const {
+    currentNavBarSelection,
+    setCurrentNavBarSelection
+  } = React.useContext(VerticalNavBarContext);
+
   // const dispatch = useDispatch();
   // const chatOpen = useSelector(isChatOpen);
 
@@ -161,8 +159,8 @@ const VerticalNavBar = (props) => {
   //   }
   // }, [dispatch, chatOpen, sessionId]);
   const handleClick = (stage) => (e) => {
-    if (currentStage !== stage) {
-      setCurrentStage(stage);
+    if (currentNavBarSelection !== stage) {
+      setCurrentNavBarSelection(stage);
     }
   };
 
@@ -171,40 +169,40 @@ const VerticalNavBar = (props) => {
       <MenuIconContainer
         icon={LobbyIcon}
         label="Lobby"
-        selected={currentStage === STAGES_OPTIONS.lobby}
-        onClick={handleClick(STAGES_OPTIONS.lobby)}
+        selected={currentNavBarSelection === VERTICAL_NAV_OPTIONS.lobby}
+        onClick={handleClick(VERTICAL_NAV_OPTIONS.lobby)}
       />
       <MenuIconContainer
         icon={MainStageIcon}
         label="Main Stage"
-        selected={currentStage === STAGES_OPTIONS.mainStage}
-        onClick={handleClick(STAGES_OPTIONS.mainStage)}
+        selected={currentNavBarSelection === VERTICAL_NAV_OPTIONS.mainStage}
+        onClick={handleClick(VERTICAL_NAV_OPTIONS.mainStage)}
       />
       <MenuIconContainer
         icon={RoomsIcon}
         label="Rooms"
-        selected={currentStage === STAGES_OPTIONS.rooms}
-        onClick={handleClick(STAGES_OPTIONS.rooms)}
+        selected={currentNavBarSelection === VERTICAL_NAV_OPTIONS.rooms}
+        onClick={handleClick(VERTICAL_NAV_OPTIONS.rooms)}
       />
       <MenuIconContainer
         icon={AttendeesIcon}
         label="Attendees"
-        selected={currentStage === STAGES_OPTIONS.attendees}
-        onClick={handleClick(STAGES_OPTIONS.attendees)}
+        selected={currentNavBarSelection === VERTICAL_NAV_OPTIONS.attendees}
+        onClick={handleClick(VERTICAL_NAV_OPTIONS.attendees)}
       />
       <Divider />
       {/* <MenuIconContainer icon={ConversationsIcon} label="Conversations" /> */}
       <MenuIconContainer
         icon={ChatIcon}
         label="Chat"
-        selected={currentStage === STAGES_OPTIONS.chat}
-        onClick={handleClick(STAGES_OPTIONS.chat)}
+        selected={currentNavBarSelection === VERTICAL_NAV_OPTIONS.chat}
+        onClick={handleClick(VERTICAL_NAV_OPTIONS.chat)}
       />
       <MenuIconContainer
         icon={PollsIcon}
         label="Polls"
-        selected={currentStage === STAGES_OPTIONS.polls}
-        onClick={handleClick(STAGES_OPTIONS.polls)}
+        selected={currentNavBarSelection === VERTICAL_NAV_OPTIONS.polls}
+        onClick={handleClick(VERTICAL_NAV_OPTIONS.polls)}
       />
       <div style={{ flexGrow: 1 }}></div>
       {/* <MenuIconContainer icon={ChatIcon} label="Chat" /> */}

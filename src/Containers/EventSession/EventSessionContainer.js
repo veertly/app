@@ -649,6 +649,15 @@ const EventSessionContainer = (props) => {
         miniPlayerEnabled
       }}
     >
+      {/* <Ver.Provider
+        value={{
+          jitsiApi,
+          setJitsiApi,
+          showSmallPlayer,
+          setShowSmallPlayer,
+          miniPlayerEnabled
+        }}
+      ></JitsiContext.Provider> */}
       <div
         className={clsx({
           [classes.root]: true,
