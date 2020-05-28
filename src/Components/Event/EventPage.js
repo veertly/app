@@ -1,5 +1,6 @@
 import React from "react";
 import Dialog from "@material-ui/core/Dialog";
+import { Helmet } from "react-helmet";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import Typography from "@material-ui/core/Typography";
@@ -7,7 +8,7 @@ import MUIRichTextEditor from "mui-rte";
 import { CardMedia, Button } from "@material-ui/core";
 import * as moment from "moment";
 import routes from "../../Config/routes";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import {
   DEFAULT_EVENT_OPEN_MINUTES,
   DEFAULT_EVENT_CLOSES_MINUTES,
@@ -177,8 +178,31 @@ export default function EventPage(props) {
     );
   }, [enabledFeatures]);
 
+
+  const previewUrl =  !bannerUrl || bannerUrl.trim() === "" ? "/DefaultEventBanner.svg" : bannerUrl;
+
+  const location = useLocation(); 
+  const pageUrl = getUrl + location.pathname;
+
   return (
     <Card className={classes.root}>
+      <Helmet>
+        <title>{title}</title>
+        <meta name="title" content={title} />
+        <meta name="description" content="" />
+
+        <meta property="og:type" content="website"/>
+        <meta property="og:url" content={pageUrl}/>
+        <meta property="og:title" content={title}/>
+        <meta property="og:description" content=""/>
+        <meta property="og:image" content={previewUrl}/>
+
+        <meta property="twitter:card" content="summary_large_image"/>
+        <meta property="twitter:url" content={pageUrl}/>
+        <meta property="twitter:title" content={title}/>
+        <meta property="twitter:description" content=""/>
+        <meta property="twitter:image" content={previewUrl}></meta>
+      </Helmet>
       {!isPreview && user && user.uid === owner && (
         <Button
           variant="outlined"
