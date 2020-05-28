@@ -24,7 +24,7 @@ import {
 // import NetworkingSidebar from "./NetworkingSidebar";
 import EventSessionTopbar from "../../Components/EventSession/EventSessionTopbar";
 import ConferenceRoomContainer from "./ConferenceRoomContainer";
-import ConferenceSidebar from "./ConferenceSidebar";
+// import ConferenceSidebar from "./ConferenceSidebar";
 import Page from "../../Components/Core/Page";
 import routes from "../../Config/routes";
 import {
@@ -33,15 +33,15 @@ import {
   getUserDb,
   updateUser
 } from "../../Modules/userOperations";
-import Announcements from "../../Components/EventSession/Announcements";
+// import Announcements from "../../Components/EventSession/Announcements";
 import {
   DEFAULT_EVENT_OPEN_MINUTES,
   DEFAULT_KEEP_ALIVE_INTERVAL,
   DEFAULT_KEEP_ALIVE_CHECK_INTERVAL,
   DEFAULT_EVENT_CLOSES_MINUTES
 } from "../../Config/constants";
-import SideMenuIcons from "../../Components/EventSession/SideMenuIcons";
-import ChatPane, { CHAT_DEFAULT_WIDTH } from "../../Components/Chat/ChatPane";
+// import SideMenuIcons from "../../Components/EventSession/SideMenuIcons";
+import { CHAT_DEFAULT_WIDTH } from "../../Components/Chat/ChatPane";
 import EditProfileDialog from "../../Components/EditProfile/EditProfileDialog";
 import EventPageDialog from "../../Components/Event/EventPageDialog";
 import { isChatOpen, openRoomArchived } from "../../Redux/dialogs";
@@ -66,7 +66,8 @@ import {
   isStateLoaded,
   crossCheckKeepAlives,
   setEnabledFeatures,
-  getFeatureDetails
+  getFeatureDetails,
+  getUserCurrentLocation
 } from "../../Redux/eventSession";
 import useInterval from "../../Hooks/useInterval";
 import JoinParticipantDialog from "../../Components/EventSession/JoinParticipantDialog";
@@ -80,19 +81,26 @@ import {
 import { FEATURES } from "../../Modules/features";
 import JoinRoomDialog from "../../Components/EventSession/JoinRoomDialog";
 import CreateRoomDialog from "../../Components/EventSession/CreateRoomDialog";
-import VerticalNavBar from "../../Components/EventSession/VerticalNav/VerticalNavBar";
+import VerticalNavBar from "../../Components/EventSession/VerticalNavBar";
+import VerticalNavBarContext from "../../Contexts/VerticalNavBarContext";
+import { VERTICAL_NAV_OPTIONS } from "../../Contexts/VerticalNavBarContext";
+import VerticalNavPane from "../../Components/EventSession/VerticalNavPane";
+import EventPage from "../../Components/Event/EventPage";
+import { Box } from "@material-ui/core";
 
-export const SIDE_PANE_WIDTH = 53;
+export const SIDE_PANE_WIDTH = 0;
 export const VERTICAL_NAV_WIDTH = 85;
 
 const LEFT_PANE_WIDTH = 300;
+const TOP_BAR_MOBILE = 56;
+const TOP_BAR_NORMAL = 64;
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    paddingTop: 56,
+    paddingTop: TOP_BAR_MOBILE,
     height: "100%",
     [theme.breakpoints.up("sm")]: {
-      paddingTop: 64
+      paddingTop: TOP_BAR_NORMAL
     },
     position: "relative",
     overflow: "hidden"
@@ -101,24 +109,24 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: VERTICAL_NAV_WIDTH + LEFT_PANE_WIDTH
   },
 
-  mainPane: {
+  mainPane: ({ hasNavBarPaneOpen }) => ({
     position: "absolute",
     // height: "100%",
-    top: 64,
+    top: TOP_BAR_NORMAL,
     bottom: 0,
-    left: VERTICAL_NAV_WIDTH + LEFT_PANE_WIDTH,
+    left: VERTICAL_NAV_WIDTH + (hasNavBarPaneOpen ? LEFT_PANE_WIDTH : 0),
     right: SIDE_PANE_WIDTH,
     backgroundColor: theme.palette.background.default,
     backgroundImage: "url('/Illustrations/EmptyNetworkingPane.svg')",
     backgroundRepeat: "no-repeat",
-    backgroundSize: "50%",
-    backgroundPosition: "bottom right",
+    backgroundSize: "20%",
+    backgroundPosition: "98% 100%",
     [theme.breakpoints.down("xs")]: {
       right: 0,
       left: 0,
-      top: 56
+      top: TOP_BAR_MOBILE
     }
-  },
+  }),
   noCall: {
     width: "100%",
     textAlign: "center",
@@ -144,7 +152,7 @@ const useStyles = makeStyles((theme) => ({
   },
   sideMenu: {
     width: SIDE_PANE_WIDTH,
-    top: 64,
+    top: TOP_BAR_NORMAL,
     backgroundColor: "white",
     position: "absolute",
     right: 0,
@@ -156,7 +164,7 @@ const useStyles = makeStyles((theme) => ({
   },
   verticalNav: {
     width: VERTICAL_NAV_WIDTH,
-    top: 64,
+    top: TOP_BAR_NORMAL,
     backgroundColor: "white",
     position: "absolute",
     left: 0,
@@ -176,6 +184,26 @@ const useStyles = makeStyles((theme) => ({
     width: SMALL_PLAYER_INITIAL_WIDTH,
     padding: theme.spacing(1)
     // borderTop: "1px solid rgba(0, 0, 0, 0.12)",
+  },
+
+  navBarPane: ({ hasNavBarPaneOpen }) => ({
+    position: "absolute",
+    left: VERTICAL_NAV_WIDTH,
+    backgroundColor: "#fff",
+    bottom: 0,
+    top: TOP_BAR_NORMAL,
+    width: LEFT_PANE_WIDTH,
+    borderRight: "1px solid rgba(0, 0, 0, 0.12)"
+  }),
+  mainPaneScroll: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    top: 0,
+    overflow: "auto",
+    paddingTop: theme.spacing(4),
+    paddingBottom: theme.spacing(4)
   }
 }));
 
@@ -188,24 +216,31 @@ const EventSessionContainer = (props) => {
 
   const [jitsiApi, setJitsiApi] = useState(null);
 
-  const classes = useStyles();
   const theme = useTheme();
   const isDesktop = !useMediaQuery(theme.breakpoints.down("xs"));
 
-  const [openSidebar, setOpenSidebar] = useState(false);
+  // const [openSidebar, setOpenSidebar] = useState(false);
   const history = useHistory();
 
-  const [chatWidth, setChatWidth] = useState(CHAT_DEFAULT_WIDTH);
+  const [chatWidth /* setChatWidth */] = useState(CHAT_DEFAULT_WIDTH);
 
   const chatOpen = useSelector(isChatOpen);
 
   const location = useLocation();
 
-  const handleSidebarClose = () => {
-    setOpenSidebar(false);
-  };
+  // const handleSidebarClose = () => {
+  //   setOpenSidebar(false);
+  // };
 
-  const shouldOpenSidebar = isDesktop ? true : openSidebar;
+  // const shouldOpenSidebar = isDesktop ? true : openSidebar;
+
+  const [currentNavBarSelection, setCurrentNavBarSelection] = React.useState(
+    VERTICAL_NAV_OPTIONS.lobby
+  );
+
+  const [hasNavBarPaneOpen, setHasNavBarPaneOpen] = React.useState(false);
+
+  const classes = useStyles({ hasNavBarPaneOpen });
 
   const { sessionId: originalSessionId } = useParams();
 
@@ -541,6 +576,8 @@ const EventSessionContainer = (props) => {
     }
   }, [isLive, history, sessionId]);
 
+  const userCurrentLocation = useSelector(getUserCurrentLocation);
+
   const smallPlayerBounds = React.useMemo(() => `.${classes.root}`, [
     classes.root
   ]);
@@ -649,137 +686,152 @@ const EventSessionContainer = (props) => {
         miniPlayerEnabled
       }}
     >
-      {/* <Ver.Provider
+      <VerticalNavBarContext.Provider
         value={{
-          jitsiApi,
-          setJitsiApi,
-          showSmallPlayer,
-          setShowSmallPlayer,
-          miniPlayerEnabled
+          currentNavBarSelection,
+          setCurrentNavBarSelection,
+          hasNavBarPaneOpen,
+          setHasNavBarPaneOpen
         }}
-      ></JitsiContext.Provider> */}
-      <div
-        className={clsx({
-          [classes.root]: true,
-          [classes.shiftContent]: isDesktop
-        })}
       >
-        <Page title={`Veertly | ${eventSessionDetails.title}`}> </Page>
-        <EditProfileDialog /* user={user} eventSession={composedEventSession}  */
-        />
-        <EventPageDialog /* eventSession={composedEventSession}  */ />
-        <ShareEventDialog /*  eventSession={composedEventSession}  */ />
-        <FeedbackDialog /* eventSession={composedEventSession} myUser={myUser}  */
-        />
-        <JoinParticipantDialog
-          setIsInConferenceRoom={handleSetIsInConferenceRoom}
-        />
-        <JoinRoomDialog setIsInConferenceRoom={handleSetIsInConferenceRoom} />
-        <CreateRoomDialog />
-        <RoomArchivedDialog />
+        <div
+          className={clsx({
+            [classes.root]: true,
+            [classes.shiftContent]: isDesktop
+          })}
+        >
+          <Page title={`Veertly | ${eventSessionDetails.title}`}> </Page>
+          <EditProfileDialog /* user={user} eventSession={composedEventSession}  */
+          />
+          <EventPageDialog /* eventSession={composedEventSession}  */ />
+          <ShareEventDialog /*  eventSession={composedEventSession}  */ />
+          <FeedbackDialog /* eventSession={composedEventSession} myUser={myUser}  */
+          />
+          <JoinParticipantDialog
+            setIsInConferenceRoom={handleSetIsInConferenceRoom}
+          />
+          <JoinRoomDialog setIsInConferenceRoom={handleSetIsInConferenceRoom} />
+          <CreateRoomDialog />
+          <RoomArchivedDialog />
 
-        <EventSessionTopbar
-          isInConferenceRoom={isInConferenceRoom}
-          setIsInConferenceRoom={handleSetIsInConferenceRoom}
-        />
-        {isLive && (
-          <>
-            <div className={classes.verticalNav}>
-              <VerticalNavBar /* eventSession={composedEventSession} user={user}  */
-              />
-            </div>
-            {/* NETWORKING PANE */}
-            {!isInConferenceRoom && (
-              <>
-                {/* <NetworkingSidebar
+          <EventSessionTopbar
+            isInConferenceRoom={isInConferenceRoom}
+            setIsInConferenceRoom={handleSetIsInConferenceRoom}
+          />
+          {isLive && (
+            <>
+              <div className={classes.verticalNav}>
+                <VerticalNavBar />
+              </div>
+              {hasNavBarPaneOpen && (
+                <div className={classes.navBarPane}>
+                  <VerticalNavPane />
+                </div>
+              )}
+              <div
+                className={classes.mainPane}
+                style={chatOpen ? { right: SIDE_PANE_WIDTH + chatWidth } : null}
+              >
+                {userCurrentLocation === VERTICAL_NAV_OPTIONS.lobby && (
+                  // <div className={classes.noCall}>
+                  //   <Typography
+                  //     variant="h6"
+                  //     className={clsx(classes.blueText, classes.emptyMessage)}
+                  //   >
+                  //     You are not in any{" "}
+                  //     <span className={classes.greenText}>conversation</span>{" "}
+                  //     yet,
+                  //     <br />
+                  //     don't be shy and{" "}
+                  //     <span className={classes.greenText}>
+                  //       select someone
+                  //     </span>{" "}
+                  //     to <span className={classes.greenText}>talk</span> to!
+                  //   </Typography>
+                  // </div>
+                  <Box className={classes.mainPaneScroll}>
+                    <EventPage
+                      event={eventSessionDetails}
+                      hideButtons={true}
+                      isPreview={true}
+                    />
+                  </Box>
+                )}
+
+                {userCurrentLocation === VERTICAL_NAV_OPTIONS.mainStage && (
+                  <ConferenceRoomContainer />
+                )}
+
+                {/* NETWORKING PANE */}
+                {!isInConferenceRoom && (
+                  <>
+                    {/* <NetworkingSidebar
                   onClose={handleSidebarClose}
                   open={shouldOpenSidebar}
                   variant={isDesktop ? "persistent" : "temporary"}
                   setIsInConferenceRoom={handleSetIsInConferenceRoom}
                 /> */}
-                <div
-                  className={classes.mainPane}
-                  style={
-                    chatOpen ? { right: SIDE_PANE_WIDTH + chatWidth } : null
-                  }
-                >
-                  {!userGroup && (
-                    <div className={classes.noCall}>
-                      <Typography
-                        variant="h6"
-                        className={clsx(classes.blueText, classes.emptyMessage)}
-                      >
-                        You are not in any{" "}
-                        <span className={classes.greenText}>conversation</span>{" "}
-                        yet,
-                        <br />
-                        don't be shy and{" "}
-                        <span className={classes.greenText}>
-                          select someone
-                        </span>{" "}
-                        to <span className={classes.greenText}>talk</span> to!
-                      </Typography>
-                    </div>
-                  )}
-                  {userGroup && (
-                    <NetworkingRoomContainer
-                      jitsiApi={jitsiApi}
-                      setJitsiApi={setJitsiApi}
-                    />
-                  )}
-                </div>
-                {/* <div className={classes.smallPlayerContainer}> */}
-                <SmallPlayerContainer bounds={smallPlayerBounds} />
-                {/* </div> */}
-              </>
-            )}
-            {/* CONFERENCE PANE */}
-            {isInConferenceRoom && (
-              <>
-                <ConferenceSidebar
-                  onClose={handleSidebarClose}
-                  open={shouldOpenSidebar}
-                  variant={isDesktop ? "persistent" : "temporary"}
-                  setIsInConferenceRoom={handleSetIsInConferenceRoom}
-                />
 
-                <div
-                  className={classes.mainPane}
-                  style={
-                    chatOpen ? { right: SIDE_PANE_WIDTH + chatWidth } : null
-                  }
-                >
-                  <Announcements /* eventSession={composedEventSession} */ />
-                  <ConferenceRoomContainer
-                  // user={user}
-                  // eventSession={composedEventSession}
-                  // participantsJoined={participantsJoined}
-                  // liveGroups={liveGroups}
-                  // jitsiApi={jitsiApi}
-                  // setJitsiApi={setJitsiApi}
+                    {userGroup && (
+                      <NetworkingRoomContainer
+                        jitsiApi={jitsiApi}
+                        setJitsiApi={setJitsiApi}
+                      />
+                    )}
+                    {/* <div className={classes.smallPlayerContainer}> */}
+                    {/* </div> */}
+                  </>
+                )}
+              </div>
+              <SmallPlayerContainer bounds={smallPlayerBounds} />
+
+              {/* CONFERENCE PANE */}
+              {/* {isInConferenceRoom && (
+                <>
+                  <ConferenceSidebar
+                    onClose={handleSidebarClose}
+                    open={shouldOpenSidebar}
+                    variant={isDesktop ? "persistent" : "temporary"}
+                    setIsInConferenceRoom={handleSetIsInConferenceRoom}
                   />
-                </div>
-              </>
-            )}
-            <div className={classes.sideMenu}>
-              <SideMenuIcons /* eventSession={composedEventSession} user={user}  */
-              />
-            </div>
 
-            {/* <div
+                  <div
+                    className={classes.mainPane}
+                    style={
+                      chatOpen ? { right: SIDE_PANE_WIDTH + chatWidth } : null
+                    }
+                  >
+                    <Announcements />
+                    <ConferenceRoomContainer
+                    // user={user}
+                    // eventSession={composedEventSession}
+                    // participantsJoined={participantsJoined}
+                    // liveGroups={liveGroups}
+                    // jitsiApi={jitsiApi}
+                    // setJitsiApi={setJitsiApi}
+                    />
+                  </div>
+                </>
+              )} */}
+              {/* <div className={classes.sideMenu}>
+                <SideMenuIcons 
+                />
+              </div> */}
+
+              {/* <div
             className={clsx(classes.chatPane, {
               [classes.hide]: !chatOpen,
             })}
           >
             {`chat open: ${chatOpen ? "true" : "false"}`} */}
-            <ChatPane
-              /* eventSession={composedEventSession} users={users} user={user} */
-              onResize={(w) => setChatWidth(w)}
-            />
-            {/* </div> */}
-          </>
-        )}
-      </div>
+              {/* <ChatPane
+                onResize={(w) => setChatWidth(w)}
+              /> */}
+              {/* </div> */}
+            </>
+          )}
+        </div>
+      </VerticalNavBarContext.Provider>
     </JitsiContext.Provider>
   );
 };

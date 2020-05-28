@@ -169,6 +169,21 @@ export const hasUserSession = async (sessionId, userId) => {
   return docSnapshot.exists;
 };
 
+export const setUserCurrentLocation = async (sessionId, currentLocation) => {
+  if (sessionId) {
+    var userId = firebase.auth().currentUser.uid;
+
+    var userSessionRef = firebase
+      .firestore()
+      .collection("eventSessions")
+      .doc(sessionId)
+      .collection("participantsJoined")
+      .doc(userId);
+
+    await userSessionRef.update({ currentLocation });
+  }
+};
+
 export const setOffline = async (sessionId, userGroup) => {
   if (sessionId) {
     var userId = firebase.auth().currentUser.uid;

@@ -4,14 +4,18 @@ export const VERTICAL_NAV_OPTIONS = {
   lobby: "LOBBY",
   mainStage: "MAIN_STAGE",
   rooms: "ROOMS",
+  networking: "NETWORKING",
   attendees: "ATTENDEES",
   chat: "CHAT",
-  polls: "POLLS"
+  polls: "POLLS",
+  qna: "QNA"
 };
 
 const VerticalNavBarContext = React.createContext({
   currentNavBarSelection: VERTICAL_NAV_OPTIONS.lobby,
-  setCurrentNavBarSelection: () => {}
+  setCurrentNavBarSelection: () => {},
+  hasNavBarPaneOpen: false,
+  setHasNavBarPaneOpen: () => {}
 });
 
 export default VerticalNavBarContext;

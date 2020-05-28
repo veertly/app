@@ -4,6 +4,7 @@ import {
   DEFAULT_OFFLINE_INTERVAL
 } from "../Config/constants";
 import * as moment from "moment";
+import { VERTICAL_NAV_OPTIONS } from "../Contexts/VerticalNavBarContext";
 
 const UPDATE_EVENT_SESSION = "eventSession.UPDATE_EVENT_SESSION";
 const UPDATE_EVENT_SESSION_DETAILS =
@@ -298,6 +299,15 @@ export const getUserSession = (store) =>
   store.eventSession.userId && store.eventSession.participantsJoined
     ? store.eventSession.participantsJoined[store.eventSession.userId]
     : null;
+export const getUserCurrentLocation = (store) =>
+  store.eventSession.userId &&
+  store.eventSession.participantsJoined &&
+  store.eventSession.participantsJoined[store.eventSession.userId] &&
+  store.eventSession.participantsJoined[store.eventSession.userId]
+    .currentLocation
+    ? store.eventSession.participantsJoined[store.eventSession.userId]
+        .currentLocation
+    : VERTICAL_NAV_OPTIONS.lobby;
 
 // get original db entry of the current group
 export const getUserGroup = (store) => {

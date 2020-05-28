@@ -8,15 +8,17 @@ import { makeStyles /*, useTheme */ } from "@material-ui/core/styles";
 import LobbyIcon from "@material-ui/icons/Weekend";
 
 import MainStageIcon from "@material-ui/icons/DesktopMac";
-import RoomsIcon from "../../../Assets/Icons/Rooms";
+import RoomsIcon from "../../Assets/Icons/Rooms";
 
-import AttendeesIcon from "../../../Assets/Icons/Person";
+import AttendeesIcon from "../../Assets/Icons/Person";
 // import ConversationsIcon from "../../../Assets/Icons/Conversations";
-// import ConversationsIcon from "../../../Assets/Icons/Conversation1-1";
-import ChatIcon from "../../../Assets/Icons/Chat";
-import PollsIcon from "../../../Assets/Icons/Polls";
+import NetworkingIcon from "../../Assets/Icons/Conversation1-1";
+import ChatIcon from "../../Assets/Icons/Chat";
+import PollsIcon from "../../Assets/Icons/Polls";
+import QnAIcon from "../../Assets/Icons/QnA";
 
 import { useHover } from "react-use";
+import { leaveCall } from "../../Modules/eventSessionOperations";
 
 // import { useDispatch, useSelector, shallowEqual } from "react-redux";
 // import {
@@ -30,7 +32,7 @@ import { useHover } from "react-use";
 // } from "../../../Redux/dialogs";
 // import routes from "../../../Config/routes";
 // import ExitToAppIcon from "@material-ui/icons/ExitToApp";
-// import { logout } from "../../Modules/userOperations";
+import { setUserCurrentLocation } from "../../Modules/userOperations";
 // import { useHistory } from "react-router-dom";
 // import FeedbackIcon from "@material-ui/icons/GraphicEq";
 // import {
@@ -47,7 +49,14 @@ import { useHover } from "react-use";
 import { Box, Typography, Divider } from "@material-ui/core";
 import VerticalNavBarContext, {
   VERTICAL_NAV_OPTIONS
-} from "../../../Contexts/VerticalNavBarContext";
+} from "../../Contexts/VerticalNavBarContext";
+import { useSelector, shallowEqual } from "react-redux";
+import {
+  getUserCurrentLocation,
+  getSessionId,
+  getUserGroup,
+  getUserId
+} from "../../Redux/eventSession";
 
 // import { Badge } from "@material-ui/core";
 const useStyles = makeStyles((theme) => ({
@@ -57,16 +66,18 @@ const useStyles = makeStyles((theme) => ({
     height: "100%"
     // paddingTop: theme.spacing(2)
   },
-  menuItem: ({ selected, hovered }) => ({
-    padding: theme.spacing(2, 0, 2, 0),
+  menuItem: ({ selected, hovered, isCurrentLocation }) => ({
+    padding: theme.spacing(1, 0, 1, 0),
     // borderTop: selected ? `1px solid ${theme.palette.secondary.light}` : "none",
     // borderBottom: selected
     //   ? `1px solid ${theme.palette.secondary.light}`
     //   : "none",
 
     borderLeft: `4px solid ${
-      selected
+      isCurrentLocation
         ? theme.palette.secondary.light
+        : selected
+        ? theme.palette.primary.main
         : hovered
         ? theme.palette.background.default
         : "#fff"
@@ -82,23 +93,34 @@ const useStyles = makeStyles((theme) => ({
   itemIconBox: {
     // marginBottom: theme.spacing(0.5)
   },
-  itemIcon: ({ selected, hovered }) => ({
+  itemIcon: ({ selected, hovered, isCurrentLocation }) => ({
     width: "100%",
     height: "100%",
     maxWidth: 32,
     maxHeight: 32,
-    color:
-      hovered || selected
-        ? theme.palette.primary.main
-        : theme.palette.primary.light
+    color: isCurrentLocation
+      ? theme.palette.secondary.light
+      : hovered || selected
+      ? theme.palette.primary.main
+      : theme.palette.primary.light
 
     // color: theme.palette.text.secondary
   })
 }));
 
-const MenuIconContainer = ({ icon, label, selected, ...rest }) => {
+const MenuIconContainer = ({
+  icon,
+  label,
+  selected,
+  isCurrentLocation,
+  ...rest
+}) => {
   const [isHovered, setIsHovered] = React.useState(false);
-  const classes = useStyles({ selected, hovered: isHovered });
+  const classes = useStyles({
+    selected,
+    hovered: isHovered,
+    isCurrentLocation
+  });
 
   const item = (hovered) => (
     <Box align="center" className={classes.menuItem} {...rest}>
@@ -108,7 +130,9 @@ const MenuIconContainer = ({ icon, label, selected, ...rest }) => {
           {/* {icon} */}
         </Box>
         <Box className={classes.itemLabel}>
-          <Typography variant="caption">{label}</Typography>
+          <Typography variant="caption" color="textSecondary">
+            {label}
+          </Typography>
         </Box>
       </Box>
     </Box>
@@ -132,35 +156,57 @@ const VerticalNavBar = (props) => {
 
   const {
     currentNavBarSelection,
-    setCurrentNavBarSelection
+    setCurrentNavBarSelection,
+    setHasNavBarPaneOpen
   } = React.useContext(VerticalNavBarContext);
 
-  // const dispatch = useDispatch();
-  // const chatOpen = useSelector(isChatOpen);
+  const userCurrentLocation = useSelector(getUserCurrentLocation, shallowEqual);
+  const [currentLocation, setCurrentLocation] = React.useState(
+    userCurrentLocation
+  );
+  const sessionId = useSelector(getSessionId);
+  const userGroup = useSelector(getUserGroup);
+  const userId = useSelector(getUserId);
 
-  // const sessionId = useSelector(getSessionId);
-  // const userId = useSelector(getUserId);
-  // const eventSessionDetails = useSelector(getEventSessionDetails, shallowEqual);
+  React.useEffect(() => {
+    console.log({ userCurrentLocation });
+    setCurrentLocation(userCurrentLocation);
+    setCurrentNavBarSelection(userCurrentLocation);
 
-  // const isOwner = React.useMemo(
-  //   () => eventSessionDetails && eventSessionDetails.owner === userId,
-  //   [eventSessionDetails, userId]
-  // );
-  // const showNotificationDot = useSelector(toShowNotificationDot);
+    if (
+      userCurrentLocation === VERTICAL_NAV_OPTIONS.lobby ||
+      userCurrentLocation === VERTICAL_NAV_OPTIONS.mainStage
+    ) {
+      setHasNavBarPaneOpen(false);
+      if (userGroup) {
+        //TODO: show warning dialog
+        leaveCall(sessionId, userGroup, userId);
+      }
+    }
+  }, [
+    sessionId,
+    setCurrentNavBarSelection,
+    setHasNavBarPaneOpen,
+    userCurrentLocation,
+    userGroup,
+    userId
+  ]);
 
-  // const toggleChatPane = React.useCallback(() => {
-  //   if (chatOpen) {
-  //     trackEvent("SideMenu: Chat closed clicked", { sessionId });
-  //     dispatch(closeChat());
-  //   } else {
-  //     dispatch(hideNotificationDot());
-  //     dispatch(openChat());
-  //     trackEvent("SideMenu: Chat opened clicked", { sessionId });
-  //   }
-  // }, [dispatch, chatOpen, sessionId]);
-  const handleClick = (stage) => (e) => {
-    if (currentNavBarSelection !== stage) {
-      setCurrentNavBarSelection(stage);
+  const handleClick = (location) => (e) => {
+    if (currentNavBarSelection !== location) {
+      if (
+        location === VERTICAL_NAV_OPTIONS.lobby ||
+        location === VERTICAL_NAV_OPTIONS.mainStage
+      ) {
+        // set current location of the user
+        setUserCurrentLocation(sessionId, location);
+        setCurrentLocation(location);
+        setCurrentNavBarSelection(location);
+        setHasNavBarPaneOpen(false);
+      } else {
+        setCurrentNavBarSelection(location);
+        setHasNavBarPaneOpen(true);
+      }
     }
   };
 
@@ -171,18 +217,28 @@ const VerticalNavBar = (props) => {
         label="Lobby"
         selected={currentNavBarSelection === VERTICAL_NAV_OPTIONS.lobby}
         onClick={handleClick(VERTICAL_NAV_OPTIONS.lobby)}
+        isCurrentLocation={currentLocation === VERTICAL_NAV_OPTIONS.lobby}
       />
       <MenuIconContainer
         icon={MainStageIcon}
         label="Main Stage"
         selected={currentNavBarSelection === VERTICAL_NAV_OPTIONS.mainStage}
         onClick={handleClick(VERTICAL_NAV_OPTIONS.mainStage)}
+        isCurrentLocation={currentLocation === VERTICAL_NAV_OPTIONS.mainStage}
       />
       <MenuIconContainer
         icon={RoomsIcon}
         label="Rooms"
         selected={currentNavBarSelection === VERTICAL_NAV_OPTIONS.rooms}
         onClick={handleClick(VERTICAL_NAV_OPTIONS.rooms)}
+        isCurrentLocation={currentLocation === VERTICAL_NAV_OPTIONS.rooms}
+      />
+      <MenuIconContainer
+        icon={NetworkingIcon}
+        label="Networking"
+        selected={currentNavBarSelection === VERTICAL_NAV_OPTIONS.networking}
+        onClick={handleClick(VERTICAL_NAV_OPTIONS.networking)}
+        isCurrentLocation={currentLocation === VERTICAL_NAV_OPTIONS.networking}
       />
       <MenuIconContainer
         icon={AttendeesIcon}
@@ -197,6 +253,13 @@ const VerticalNavBar = (props) => {
         label="Chat"
         selected={currentNavBarSelection === VERTICAL_NAV_OPTIONS.chat}
         onClick={handleClick(VERTICAL_NAV_OPTIONS.chat)}
+      />
+
+      <MenuIconContainer
+        icon={QnAIcon}
+        label="Q&amp;A"
+        selected={currentNavBarSelection === VERTICAL_NAV_OPTIONS.qna}
+        onClick={handleClick(VERTICAL_NAV_OPTIONS.qna)}
       />
       <MenuIconContainer
         icon={PollsIcon}

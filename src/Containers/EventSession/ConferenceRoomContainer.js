@@ -24,10 +24,13 @@ import {
   getJistiDomain,
   isMeetJitsi
 } from "../../Modules/jitsi";
-import { setOffline } from "../../Modules/userOperations";
-import { useHistory } from "react-router-dom";
-import routes from "../../Config/routes";
+import {
+  // setOffline,
+  setUserCurrentLocation
+} from "../../Modules/userOperations";
+// import { useHistory } from "react-router-dom";
 import { FEATURES } from "../../Modules/features";
+import { VERTICAL_NAV_OPTIONS } from "../../Contexts/VerticalNavBarContext";
 
 const useStyles = makeStyles((theme) => ({
   videoContainer: {
@@ -82,7 +85,7 @@ export default () => {
   const sessionId = useSelector(getSessionId);
   const eventSessionDetails = useSelector(getEventSessionDetails, shallowEqual);
 
-  const history = useHistory();
+  // const history = useHistory();
 
   const [loaded, error] = useScript(
     getJistiServer(eventSessionDetails) + "external_api.js"
@@ -94,9 +97,10 @@ export default () => {
 
   const handleCallEnded = React.useCallback(async () => {
     await leaveCall(sessionId, userGroup, userId);
-    await setOffline(sessionId, userGroup);
-    history.push(routes.EVENT_SESSION(sessionId));
-  }, [sessionId, userGroup, userId, history]);
+    // await setOffline(sessionId, userGroup);
+    // history.push(routes.EVENT_SESSION(sessionId));
+    setUserCurrentLocation(sessionId, VERTICAL_NAV_OPTIONS.lobby);
+  }, [sessionId, userGroup, userId]);
 
   const removeJitsiLogoFeature = useSelector(
     getFeatureDetails(FEATURES.REMOVE_JITSI_LOGO),

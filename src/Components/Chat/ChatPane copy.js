@@ -1,5 +1,7 @@
 import React from "react";
+import clsx from "clsx";
 import { makeStyles /* , useTheme */ } from "@material-ui/core/styles";
+import { isChatOpen, closeChat } from "../../Redux/dialogs";
 // import useIsMounted from "react-is-mounted-hook";
 // import useEventListener from "../../Hooks/useEventListener";
 import { SIDE_PANE_WIDTH } from "../../Containers/EventSession/EventSessionContainer";
@@ -9,20 +11,12 @@ import { useCollectionData } from "react-firebase-hooks/firestore";
 
 import firebase from "../../Modules/firebaseApp";
 import { sendChatMessage } from "../../Modules/chatMessagesOperations";
-
-import {
-  // showNotificationDot,
-  setMessageCount,
-  getMessageCountByNS
-} from "../../Redux/chatMessages";
+import { Typography, Paper, IconButton, Tooltip } from "@material-ui/core";
+import CloseIcon from "@material-ui/icons/Close";
+import { showNotificationDot, setMessageCount, getMessageCountByNS } from "../../Redux/chatMessages";
 
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
-import {
-  getUsers,
-  getUser,
-  getSessionId,
-  getUserId
-} from "../../Redux/eventSession";
+import { getUsers, getUser, getSessionId, getUserId } from "../../Redux/eventSession";
 
 const minWidth = 150;
 // const maxWidth = 800;
@@ -43,14 +37,14 @@ const useStyles = makeStyles((theme) => ({
     width: CHAT_DEFAULT_WIDTH,
     transition: theme.transitions.create(["width", "margin"], {
       easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen
-    })
+      duration: theme.transitions.duration.leavingScreen,
+    }),
     // borderLeft: "1px solid rgba(0, 0, 0, 0.12)",
   },
   chatBackground: {
     backgroundColor: "rgba(27, 71, 98, 0.1)",
     // padding: theme.spacing(1),
-    height: "100%"
+    height: "100%",
   },
   dragger: {
     width: "1px",
@@ -62,32 +56,32 @@ const useStyles = makeStyles((theme) => ({
     left: 0,
     bottom: 0,
     zIndex: "100",
-    backgroundColor: "rgba(27, 71, 98, 0.5)"
+    backgroundColor: "rgba(27, 71, 98, 0.5)",
   },
   hide: {
-    display: "none"
+    display: "none",
   },
   messagesPane: {
     position: "absolute",
     bottom: 50,
     right: 0,
     left: 0,
-    top: CHAT_TOOLBAR_HEIGHT
+    top: CHAT_TOOLBAR_HEIGHT,
   },
   sendMessagePane: {
     position: "absolute",
     bottom: 0,
     right: 0,
     left: 0,
-    height: 50
+    height: 50,
   },
   toolbar: {
     width: "100%",
     padding: theme.spacing(1, 2),
     backgroundColor: "white",
     height: CHAT_TOOLBAR_HEIGHT,
-    display: "flex"
-  }
+    display: "flex",
+  },
 }));
 
 export default function ChatPane(props) {
@@ -100,7 +94,7 @@ export default function ChatPane(props) {
   const userId = useSelector(getUserId);
   const user = useSelector(getUser, shallowEqual);
   // const isOwner = React.useMemo(() => eventSession && user && eventSession.owner === user.uid, [eventSession, user]);
-  // const chatOpen = useSelector(isChatOpen);
+  const chatOpen = useSelector(isChatOpen);
   const messageCountActual = useSelector(getMessageCountByNS(sessionId));
 
   // const handleCloseChat = React.useCallback(() => dispatch(closeChat()), [dispatch]);
@@ -109,12 +103,40 @@ export default function ChatPane(props) {
     mobileOpen: false,
     isResizing: false,
     lastDownX: 0,
-    newWidth: {}
+    newWidth: {},
   });
 
-  const [
-    messagesFirebase /* , loadingMessages, errorMessages */
-  ] = useCollectionData(
+  // const handleMousemove = React.useCallback(
+  //   (e) => {
+  //     // we don't want to do anything if we aren't resizing.
+  //     if (!draggerState.isResizing || !mounted) {
+  //       return;
+  //     }
+
+  //     let offsetRight = document.body.offsetWidth - (e.clientX - document.body.offsetLeft) - SIDE_PANE_WIDTH;
+  //     if (offsetRight > minWidth && offsetRight < maxWidth) {
+  //       setDraggerState({ ...draggerState, newWidth: { width: offsetRight } });
+  //       dispatch(chatResized(offsetRight));
+  //       onResize(offsetRight);
+  //     }
+  //   },
+  //   [draggerState, mounted, onResize, dispatch]
+  // );
+
+  // const handleMousedown = (e) => {
+  //   setDraggerState({ ...draggerState, isResizing: true, lastDownX: e.clientX });
+  // };
+
+  // const handleMouseup = (e) => {
+  //   if (mounted) {
+  //     setDraggerState({ ...draggerState, isResizing: false });
+  //   }
+  // };
+
+  // useEventListener("mousemove", handleMousemove);
+  // useEventListener("mouseup", handleMouseup);
+
+  const [messagesFirebase /* , loadingMessages, errorMessages */] = useCollectionData(
     firebase
       .firestore()
       .collection("eventSessionsChatMessages")
@@ -125,19 +147,12 @@ export default function ChatPane(props) {
   );
 
   if (messagesFirebase) {
-    if (
-      messageCountActual &&
-      messageCountActual !== 0 &&
-      messageCountActual < messagesFirebase.length
-    ) {
-      // if (!chatOpen) {
-      //   dispatch(showNotificationDot());
-      // }
+    if (messageCountActual && messageCountActual !== 0 && messageCountActual < messagesFirebase.length) {
+      if (!chatOpen) {
+        dispatch(showNotificationDot());
+      }
       dispatch(setMessageCount(sessionId, messagesFirebase.length));
-    } else if (
-      (!messageCountActual || messageCountActual === 0) &&
-      messagesFirebase.length > 0
-    ) {
+    } else if ((!messageCountActual || messageCountActual === 0) && messagesFirebase.length > 0) {
       dispatch(setMessageCount(sessionId, messagesFirebase.length));
     }
   }
@@ -147,13 +162,7 @@ export default function ChatPane(props) {
       let timestamp = new Date().getTime();
 
       let messageId = "" + timestamp + "-" + userId;
-      await sendChatMessage(
-        sessionId,
-        user.id,
-        CHAT_GLOBAL_NS,
-        messageId,
-        message
-      );
+      await sendChatMessage(sessionId, user.id, CHAT_GLOBAL_NS, messageId, message);
     }
   };
   // React.useEffect(() => {
@@ -165,20 +174,37 @@ export default function ChatPane(props) {
 
   return (
     <div
-      // className={clsx(classes.chatPane, {
-      //   [classes.hide]: !chatOpen
-      // })}
+      className={clsx(classes.chatPane, {
+        [classes.hide]: !chatOpen,
+      })}
       style={draggerState.newWidth}
     >
       <div className={classes.chatBackground}>
         {/* https://stackblitz.com/edit/react-2h1g6x?file=ResponsiveDrawer.js */}
-        {/* <div
+        <div
           id="dragger"
           // onMouseDown={(event) => {
           //   handleMousedown(event);
           // }}
           className={classes.dragger}
-        /> */}
+        />
+        <Paper className={classes.toolbar} elevation={1}>
+          <Typography variant="button" className={classes.title} align="center" color="primary">
+            GLOBAL CHAT
+          </Typography>
+          <div style={{ flexGrow: 1 }}></div>
+          <Tooltip title="Close chat">
+            <IconButton
+              aria-label="delete"
+              className={classes.margin}
+              size="small"
+              color="primary"
+              onClick={() => dispatch(closeChat())}
+            >
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
+          </Tooltip>
+        </Paper>
         <div className={classes.messagesPane}>
           <ChatMessagesPane messages={messagesFirebase} users={users} />
         </div>

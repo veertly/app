@@ -1,15 +1,18 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import JoinConversationDialog from "./JoinConversationDialog";
-import Divider from "@material-ui/core/Divider";
-import GroupAvatars from "./GroupAvatars";
-import { MAX_PARTICIPANTS_GROUP } from "../../Config/constants";
 
-import { useSelector, shallowEqual } from "react-redux";
-import { getUsers, getLiveGroups, getUser } from "../../Redux/eventSession";
+import { useSelector, shallowEqual, useDispatch } from "react-redux";
+import {
+  getUsers,
+  getLiveGroups,
+  getUser,
+  getEventSessionDetails
+} from "../../Redux/eventSession";
+import RoomCard from "./RoomCard";
 import _ from "lodash";
+import { openCreateRoom } from "../../Redux/dialogs";
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -88,25 +91,38 @@ const useStyles = makeStyles((theme) => ({
 
 export default function (props) {
   const classes = useStyles();
-  const [groupHover, setGroupHover] = React.useState(-1);
   const [joinDialog, setJoinDialog] = React.useState(false);
 
-  const [selectedGroup, setSelectedGroup] = React.useState(null);
-  const [selectedGroupId, setSelectedGroupId] = React.useState(null);
+  const [selectedGroup /* setSelectedGroup */] = React.useState(null);
+  const [selectedGroupId /* setSelectedGroupId */] = React.useState(null);
 
   // const { users, eventSession, user } = props;
+  const dispatch = useDispatch();
 
   const users = useSelector(getUsers, shallowEqual);
   const user = useSelector(getUser, shallowEqual);
   const liveGroups = useSelector(getLiveGroups, shallowEqual);
+  const eventSessionDetails = useSelector(getEventSessionDetails, shallowEqual);
 
-  const { conversations } = React.useMemo(() => {
+  const handleCreateRoom = React.useCallback(() => dispatch(openCreateRoom()), [
+    dispatch
+  ]);
+  const isRoomCreationAllowed = React.useMemo(
+    () => !eventSessionDetails || eventSessionDetails.denyRoomCreation !== true,
+    [eventSessionDetails]
+  );
+  const { rooms } = React.useMemo(() => {
     let rooms = [];
     let conversations = [];
 
     _.forEach(liveGroups, (group) => {
       let extendedGroup = { ...group };
       let participantsIds = Object.keys(group.participants);
+      // participantsIds = participantsIds.concat(participantsIds);
+      // participantsIds = participantsIds.concat(participantsIds);
+      // participantsIds = participantsIds.concat(participantsIds);
+      // participantsIds = participantsIds.concat(participantsIds);
+      // participantsIds = participantsIds.concat(participantsIds);
 
       extendedGroup.participants = participantsIds.map(
         (userId) => users[userId]
@@ -122,7 +138,6 @@ export default function (props) {
     return { rooms, conversations };
   }, [liveGroups, users, user]);
 
-  const numConversations = conversations.length;
   return (
     <div className={classes.root}>
       <JoinConversationDialog
@@ -132,56 +147,22 @@ export default function (props) {
         groupId={selectedGroupId}
       />
       <div className={classes.relativeContainer}>
-        {conversations.map((group, index) => {
-          let isLast = index === numConversations - 1;
-          return (
-            <div key={group.id}>
-              <div
-                className={classes.groupContainer}
-                onMouseEnter={() => {
-                  setGroupHover(group.id);
-                }}
-                onMouseLeave={() => {
-                  setGroupHover(-1);
-                }}
-              >
-                <GroupAvatars group={group.participants} />
-                {groupHover === group.id &&
-                  group.participants.length < MAX_PARTICIPANTS_GROUP && (
-                    <div className={classes.joinButtonContainer}>
-                      <Button
-                        variant="outlined"
-                        color="primary"
-                        size="small"
-                        className={classes.button}
-                        onClick={() => {
-                          setSelectedGroup(group.participants);
-                          setSelectedGroupId(group.id);
-                          setJoinDialog(true);
-                        }}
-                      >
-                        {group.isMyGroup ? "View" : "Join"}
-                      </Button>
-                    </div>
-                  )}
-              </div>
-
-              {!isLast && <Divider variant="middle" />}
-            </div>
-          );
+        {rooms.map((room) => {
+          return <RoomCard key={room.id} room={room} />;
         })}
-        {numConversations === 0 && (
-          <Typography
-            variant="caption"
-            align="center"
-            display="block"
-            className={classes.noGroupsText}
-          >
-            {/* There are no conversations yet, <br />
-              select someone and start networking! */}
-            There are no conversations yet, check out the topic rooms or select
-            someone and start networking!
-          </Typography>
+        {isRoomCreationAllowed && (
+          <div className={classes.centerButton}>
+            <Button
+              variant="outlined"
+              color="primary"
+              size="small"
+              className={classes.button}
+              onClick={handleCreateRoom}
+              // disabled={participantsAvailable.length <= 1}
+            >
+              Create room
+            </Button>
+          </div>
         )}
       </div>
     </div>

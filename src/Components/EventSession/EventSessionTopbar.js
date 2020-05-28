@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { withRouter, useHistory } from "react-router-dom";
 import clsx from "clsx";
-import Button from "@material-ui/core/Button";
+// import Button from "@material-ui/core/Button";
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
 
@@ -24,11 +24,11 @@ import {
   getSessionId,
   getUser,
   getUserGroup,
-  getEventSessionDetails,
-  getFeatureDetails
+  getEventSessionDetails
+  // getFeatureDetails
 } from "../../Redux/eventSession";
 import { openEditProfile } from "../../Redux/dialogs";
-import { FEATURES } from "../../Modules/features";
+// import { FEATURES } from "../../Modules/features";
 import { logout } from "../../Redux/account";
 
 // import routes from "../../Config/routes";
@@ -83,46 +83,46 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const RoomButton = ({ onClick, disabled, isCurrentRoom, children, icon }) => {
-  const classes = useStyles();
-  if (disabled) {
-    return (
-      <Button
-        className={classes.button}
-        variant="outlined"
-        color="secondary"
-        size="small"
-        disabled
-        onClick={() => onClick()}
-      >
-        {children}
-      </Button>
-    );
-  }
-  if (isCurrentRoom) {
-    return (
-      <div className={classes.currentRoomContainer}>
-        {icon}
-        <Typography variant="overline">{children}</Typography>
-      </div>
-    );
-  }
-  return (
-    <Button
-      className={classes.button}
-      variant="outlined"
-      color="secondary"
-      size="small"
-      onClick={() => onClick()}
-      startIcon={icon}
-    >
-      {children}
-    </Button>
-  );
-};
+// const RoomButton = ({ onClick, disabled, isCurrentRoom, children, icon }) => {
+//   const classes = useStyles();
+//   if (disabled) {
+//     return (
+//       <Button
+//         className={classes.button}
+//         variant="outlined"
+//         color="secondary"
+//         size="small"
+//         disabled
+//         onClick={() => onClick()}
+//       >
+//         {children}
+//       </Button>
+//     );
+//   }
+//   if (isCurrentRoom) {
+//     return (
+//       <div className={classes.currentRoomContainer}>
+//         {icon}
+//         <Typography variant="overline">{children}</Typography>
+//       </div>
+//     );
+//   }
+//   return (
+//     <Button
+//       className={classes.button}
+//       variant="outlined"
+//       color="secondary"
+//       size="small"
+//       onClick={() => onClick()}
+//       startIcon={icon}
+//     >
+//       {children}
+//     </Button>
+//   );
+// };
 
 export default withRouter((props) => {
-  const { isInConferenceRoom, setIsInConferenceRoom } = props;
+  // const { isInConferenceRoom, setIsInConferenceRoom } = props;
   let [goToNetworkingDialog, setGoToNetworkingDialog] = useState(false);
   let [goToConferenceDialog, setGoToConferenceDialog] = useState(false);
   const theme = useTheme();
@@ -140,16 +140,16 @@ export default withRouter((props) => {
   const sessionId = useSelector(getSessionId);
   const eventSessionDetails = useSelector(getEventSessionDetails, shallowEqual);
 
-  const miniPlayerProperties = useSelector(
-    getFeatureDetails(FEATURES.MINI_PLAYER),
-    shallowEqual
-  );
+  // const miniPlayerProperties = useSelector(
+  //   getFeatureDetails(FEATURES.MINI_PLAYER),
+  //   shallowEqual
+  // );
 
-  const isMiniPlayerEnabled = React.useMemo(
-    () =>
-      miniPlayerProperties ? miniPlayerProperties.enabled === true : false,
-    [miniPlayerProperties]
-  );
+  // const isMiniPlayerEnabled = React.useMemo(
+  //   () =>
+  //     miniPlayerProperties ? miniPlayerProperties.enabled === true : false,
+  //   [miniPlayerProperties]
+  // );
 
   // isInNetworkingCall,
   //   isNetworkingAvailable,
@@ -170,24 +170,24 @@ export default withRouter((props) => {
     }
   };
 
-  const handleConferenceRoomClick = () => {
-    if (userGroup) {
-      setGoToConferenceDialog(true);
-    } else {
-      setIsInConferenceRoom(true);
-    }
-  };
+  // const handleConferenceRoomClick = () => {
+  //   if (userGroup) {
+  //     setGoToConferenceDialog(true);
+  //   } else {
+  //     setIsInConferenceRoom(true);
+  //   }
+  // };
 
-  const handleNetworkingRoomClick = () => {
-    if (
-      isMiniPlayerEnabled &&
-      eventSessionDetails.conferenceVideoType !== "JITSI"
-    ) {
-      setIsInConferenceRoom(false);
-    } else {
-      setGoToNetworkingDialog(true);
-    }
-  };
+  // const handleNetworkingRoomClick = () => {
+  //   if (
+  //     isMiniPlayerEnabled &&
+  //     eventSessionDetails.conferenceVideoType !== "JITSI"
+  //   ) {
+  //     setIsInConferenceRoom(false);
+  //   } else {
+  //     setGoToNetworkingDialog(true);
+  //   }
+  // };
 
   const handleEditProfileClick = () => {
     dispatch(openEditProfile());
@@ -199,9 +199,9 @@ export default withRouter((props) => {
       <AppBar className={clsx(classes.root)}>
         <Toolbar style={{ position: "relative" }}>
           <img alt="Logo" src={VeertlyLogo} className={classes.logo} />
-          {!isMobile && eventSessionDetails && (
+          {/*{!isMobile && eventSessionDetails && (
             <div className={classes.roomButtonsContainer}>
-              <RoomButton
+               <RoomButton
                 isCurrentRoom={isInConferenceRoom}
                 onClick={handleConferenceRoomClick}
                 // icon={<DesktopMacIcon />}
@@ -215,16 +215,16 @@ export default withRouter((props) => {
                 // icon={<ConversationsIcon />}
               >
                 Networking Area
-              </RoomButton>
+              </RoomButton> 
             </div>
-          )}
+          )}*/}
           {/* </RouterLink> */}
           <div className={classes.flexGrow}>
             {!isMobile && eventSessionDetails && (
               // <div className={classes.title}>
               <Typography
                 variant="h5"
-                align="left"
+                align="center"
                 style={{ fontWeight: "lighter" }}
                 className={classes.title}
               >
@@ -261,16 +261,16 @@ export default withRouter((props) => {
         open={goToNetworkingDialog}
         setOpen={setGoToNetworkingDialog}
         handleLeaveCall={() => {
-          setIsInConferenceRoom(false);
-          setGoToNetworkingDialog(false);
+          // setIsInConferenceRoom(false);
+          // setGoToNetworkingDialog(false);
         }}
       />
       <GoToConferenceRoomDialog
         open={goToConferenceDialog}
         setOpen={setGoToConferenceDialog}
         handleLeaveCall={() => {
-          setIsInConferenceRoom(true);
-          setGoToConferenceDialog(false);
+          // setIsInConferenceRoom(true);
+          // setGoToConferenceDialog(false);
         }}
       />
     </React.Fragment>
