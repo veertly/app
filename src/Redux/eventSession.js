@@ -309,6 +309,13 @@ export const getUserCurrentLocation = (store) =>
         .currentLocation
     : VERTICAL_NAV_OPTIONS.lobby;
 
+export const getUserAvailableForCall = (store) =>
+  store.eventSession.userId &&
+  store.eventSession.participantsJoined &&
+  store.eventSession.participantsJoined[store.eventSession.userId] &&
+  store.eventSession.participantsJoined[store.eventSession.userId]
+    .availableForCall;
+
 // get original db entry of the current group
 export const getUserGroup = (store) => {
   let userSession = getUserSession(store);

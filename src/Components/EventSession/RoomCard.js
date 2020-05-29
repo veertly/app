@@ -62,6 +62,9 @@ const useStyles = makeStyles((theme) => ({
     position: "absolute",
     right: 0,
     bottom: 12
+  },
+  roomIcon: {
+    color: theme.palette.primary.light
   }
 }));
 
@@ -132,7 +135,7 @@ export default function (props) {
         }}
       >
         <Typography className={classes.roomName}>
-          <RoomIcon style={{ marginRight: 8 }} />
+          <RoomIcon style={{ marginRight: 8 }} className={classes.roomIcon} />
           {/* <img
             src="/static/Room_icon_02.svg"
             style={{ marginRight: 8, width: 16 }}

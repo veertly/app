@@ -184,6 +184,21 @@ export const setUserCurrentLocation = async (sessionId, currentLocation) => {
   }
 };
 
+export const setUserAvailableForCall = async (sessionId, availableForCall) => {
+  if (sessionId) {
+    var userId = firebase.auth().currentUser.uid;
+
+    var userSessionRef = firebase
+      .firestore()
+      .collection("eventSessions")
+      .doc(sessionId)
+      .collection("participantsJoined")
+      .doc(userId);
+
+    await userSessionRef.update({ availableForCall });
+  }
+};
+
 export const setOffline = async (sessionId, userGroup) => {
   if (sessionId) {
     var userId = firebase.auth().currentUser.uid;
