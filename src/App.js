@@ -58,6 +58,14 @@ const theme = createMuiTheme({
       rounded: {
         borderRadius: 0
       }
+    },
+    MuiTooltip: {
+      popper: {
+        pointerEvents: "none",
+        "&$open": {
+          pointerEvents: "none"
+        }
+      }
     }
   }
 });

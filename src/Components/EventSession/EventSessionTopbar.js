@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { withRouter, useHistory } from "react-router-dom";
 import clsx from "clsx";
 // import Button from "@material-ui/core/Button";
@@ -11,8 +11,6 @@ import { AppBar, Toolbar, Typography } from "@material-ui/core";
 import VeertlyLogo from "../../Assets/Veertly_white.svg";
 
 // import AvatarLogin from "../Topbar/AvatarLogin";
-import GoToNetworkingRoomDialog from "./GoToNetworkingRoomDialog";
-import GoToConferenceRoomDialog from "./GoToConferenceRoomDialog";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme } from "@material-ui/core/styles";
 import UserAvatar from "../Misc/UserAvatar";
@@ -30,6 +28,7 @@ import {
 import { openEditProfile } from "../../Redux/dialogs";
 // import { FEATURES } from "../../Modules/features";
 import { logout } from "../../Redux/account";
+import PresenceSwitch from "./PresenceSwitch";
 
 // import routes from "../../Config/routes";
 const useStyles = makeStyles((theme) => ({
@@ -78,9 +77,16 @@ const useStyles = makeStyles((theme) => ({
     display: "block"
   },
   avatarContainer: {
+    // position: "absolute",
+    // right: theme.spacing(2)
+  },
+  titleContainer: {
     position: "absolute",
-    right: theme.spacing(2)
-  }
+    left: 0,
+    right: 0,
+    textAlign: "center"
+  },
+  presenceContainer: { marginRight: theme.spacing(3) }
 }));
 
 // const RoomButton = ({ onClick, disabled, isCurrentRoom, children, icon }) => {
@@ -122,9 +128,6 @@ const useStyles = makeStyles((theme) => ({
 // };
 
 export default withRouter((props) => {
-  // const { isInConferenceRoom, setIsInConferenceRoom } = props;
-  let [goToNetworkingDialog, setGoToNetworkingDialog] = useState(false);
-  let [goToConferenceDialog, setGoToConferenceDialog] = useState(false);
   const theme = useTheme();
 
   const isMobile = useMediaQuery(theme.breakpoints.down("xs"));
@@ -219,7 +222,8 @@ export default withRouter((props) => {
             </div>
           )}*/}
           {/* </RouterLink> */}
-          <div className={classes.flexGrow}>
+          <div className={classes.flexGrow}></div>
+          <div className={classes.titleContainer}>
             {!isMobile && eventSessionDetails && (
               // <div className={classes.title}>
               <Typography
@@ -231,6 +235,9 @@ export default withRouter((props) => {
                 {eventSessionDetails.title}
               </Typography>
             )}
+          </div>
+          <div className={classes.presenceContainer}>
+            <PresenceSwitch />
           </div>
           <div className={classes.avatarContainer}>
             {/* <AvatarLogin eventSession={eventSession} /> */}
@@ -257,22 +264,6 @@ export default withRouter((props) => {
           </div>
         </Toolbar>
       </AppBar>
-      <GoToNetworkingRoomDialog
-        open={goToNetworkingDialog}
-        setOpen={setGoToNetworkingDialog}
-        handleLeaveCall={() => {
-          // setIsInConferenceRoom(false);
-          // setGoToNetworkingDialog(false);
-        }}
-      />
-      <GoToConferenceRoomDialog
-        open={goToConferenceDialog}
-        setOpen={setGoToConferenceDialog}
-        handleLeaveCall={() => {
-          // setIsInConferenceRoom(true);
-          // setGoToConferenceDialog(false);
-        }}
-      />
     </React.Fragment>
   );
 });

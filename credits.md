@@ -4,6 +4,7 @@
 
 - Ankita
 - Undraw.co
+- Many Pixels
 
 ## Icons
 

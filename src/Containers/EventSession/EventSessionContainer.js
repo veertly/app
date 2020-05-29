@@ -87,6 +87,7 @@ import { VERTICAL_NAV_OPTIONS } from "../../Contexts/VerticalNavBarContext";
 import VerticalNavPane from "../../Components/EventSession/VerticalNavPane";
 import EventPage from "../../Components/Event/EventPage";
 import { Box } from "@material-ui/core";
+import CurrentCallActionsVertical from "../../Components/EventSession/CurrentCallActionsVertical";
 
 export const SIDE_PANE_WIDTH = 0;
 export const VERTICAL_NAV_WIDTH = 85;
@@ -204,6 +205,18 @@ const useStyles = makeStyles((theme) => ({
     overflow: "auto",
     paddingTop: theme.spacing(4),
     paddingBottom: theme.spacing(4)
+  },
+  callActionsContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    // bottom: 0,
+    display: "flex",
+    // alignItems: "center",
+    // width: 300,
+    // backgroundColor: theme.palette.background.default,
+    // padding: theme.spacing(1, 0),
+    borderRadius: "0 16px 0 0"
   }
 }));
 
@@ -761,25 +774,15 @@ const EventSessionContainer = (props) => {
                 {userCurrentLocation === VERTICAL_NAV_OPTIONS.mainStage && (
                   <ConferenceRoomContainer />
                 )}
-
-                {/* NETWORKING PANE */}
-                {!isInConferenceRoom && (
+                {userGroup && (
                   <>
-                    {/* <NetworkingSidebar
-                  onClose={handleSidebarClose}
-                  open={shouldOpenSidebar}
-                  variant={isDesktop ? "persistent" : "temporary"}
-                  setIsInConferenceRoom={handleSetIsInConferenceRoom}
-                /> */}
-
-                    {userGroup && (
-                      <NetworkingRoomContainer
-                        jitsiApi={jitsiApi}
-                        setJitsiApi={setJitsiApi}
-                      />
-                    )}
-                    {/* <div className={classes.smallPlayerContainer}> */}
-                    {/* </div> */}
+                    <NetworkingRoomContainer
+                      jitsiApi={jitsiApi}
+                      setJitsiApi={setJitsiApi}
+                    />
+                    <Box className={classes.callActionsContainer}>
+                      <CurrentCallActionsVertical />
+                    </Box>
                   </>
                 )}
               </div>

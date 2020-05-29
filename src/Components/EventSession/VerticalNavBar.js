@@ -58,7 +58,6 @@ import {
   getUserId
 } from "../../Redux/eventSession";
 
-// import { Badge } from "@material-ui/core";
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
@@ -177,11 +176,16 @@ const VerticalNavBar = (props) => {
       userCurrentLocation === VERTICAL_NAV_OPTIONS.lobby ||
       userCurrentLocation === VERTICAL_NAV_OPTIONS.mainStage
     ) {
-      setHasNavBarPaneOpen(false);
+      // setHasNavBarPaneOpen(false);
       if (userGroup) {
         //TODO: show warning dialog
         leaveCall(sessionId, userGroup, userId);
       }
+    }
+    if (userCurrentLocation === VERTICAL_NAV_OPTIONS.lobby) {
+      setHasNavBarPaneOpen(false);
+    } else {
+      setHasNavBarPaneOpen(true);
     }
   }, [
     sessionId,
@@ -195,17 +199,27 @@ const VerticalNavBar = (props) => {
   const handleClick = (location) => (e) => {
     if (currentNavBarSelection !== location) {
       if (
-        location === VERTICAL_NAV_OPTIONS.lobby ||
-        location === VERTICAL_NAV_OPTIONS.mainStage
+        userCurrentLocation === VERTICAL_NAV_OPTIONS.lobby &&
+        location === VERTICAL_NAV_OPTIONS.lobby
       ) {
-        // set current location of the user
-        setUserCurrentLocation(sessionId, location);
-        setCurrentLocation(location);
-        setCurrentNavBarSelection(location);
         setHasNavBarPaneOpen(false);
       } else {
-        setCurrentNavBarSelection(location);
         setHasNavBarPaneOpen(true);
+      }
+      setCurrentNavBarSelection(location);
+
+      if (
+        userCurrentLocation === VERTICAL_NAV_OPTIONS.lobby &&
+        location === VERTICAL_NAV_OPTIONS.mainStage
+      ) {
+        setUserCurrentLocation(sessionId, VERTICAL_NAV_OPTIONS.mainStage);
+      }
+
+      // }
+    } else {
+      if (location !== VERTICAL_NAV_OPTIONS.lobby) {
+        setCurrentNavBarSelection(null);
+        setHasNavBarPaneOpen(false);
       }
     }
   };

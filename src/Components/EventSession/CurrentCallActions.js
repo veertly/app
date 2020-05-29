@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function (props) {
+const CurrentCallActions = function (props) {
   const classes = useStyles();
 
   const [elapsedTime, setElapsedTime] = useState(0);
@@ -62,10 +62,6 @@ export default function (props) {
   const userGroup = useSelector(getUserGroup, shallowEqual);
   const sessionId = useSelector(getSessionId);
   const liveGroup = useSelector(getUserLiveGroup, shallowEqual);
-
-  if (!userGroup) {
-    return null;
-  }
 
   useEffect(() => {
     var timerID = setInterval(() => {
@@ -111,6 +107,9 @@ export default function (props) {
     liveGroup
   ]);
 
+  if (!userGroup) {
+    return null;
+  }
   const showElapsedTime = () => {
     let elapsedMoment = moment.duration(elapsedTime, "milliseconds");
     return elapsedMoment.format();
@@ -189,4 +188,6 @@ export default function (props) {
       </div>
     </div>
   );
-}
+};
+
+export default CurrentCallActions;

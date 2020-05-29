@@ -9,5 +9,6 @@
     "source.fixAll.tslint": true,
     // For Stylelint
     "source.fixAll.stylelint": true
-  }
+  },
+  "editor.tabSize": 2
 }
