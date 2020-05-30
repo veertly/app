@@ -7,7 +7,7 @@ import { createBrowserHistory } from "history";
 // import { BrowserRouter, Route, Switch } from "react-router-dom";
 import "semantic-ui-css/semantic.min.css";
 // import routes from "./Config/routes";
-import { PersistGate } from "redux-persist/integration/react";
+// import { PersistGate } from "redux-persist/integration/react";
 
 import "./App.css";
 import ClosableSnackbar from "./Components/Misc/CloseableSnackbar";
@@ -30,7 +30,7 @@ import { SnackbarProvider } from "material-ui-snackbar-provider";
 // import EditSessionContainer from "./Containers/Organizer/EditSessionContainer";
 
 import { Provider } from "react-redux";
-import store, { persistor } from "./Redux/store";
+import store from "./Redux/store";
 import Routes from "./Routes";
 import Auth from "./Components/Guards/Auth";
 
@@ -74,25 +74,25 @@ const history = createBrowserHistory();
 const App = () => {
   return (
     <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <ThemeProvider theme={theme}>
-          <SnackbarProvider
-            SnackbarProps={{ autoHideDuration: 10000 }}
-            SnackbarComponent={ClosableSnackbar}
-          >
-            <CssBaseline />
-            <Router history={history}>
-              <Auth>
-                {/* <ScrollReset /> */}
-                {/* <GoogleAnalytics /> */}
-                {/* <CookiesNotification /> */}
-                {/* <SettingsNotification /> */}
-                <Routes />
-              </Auth>
-            </Router>
-          </SnackbarProvider>
-        </ThemeProvider>
-      </PersistGate>
+      {/* <PersistGate loading={null} persistor={persistor}> */}
+      <ThemeProvider theme={theme}>
+        <SnackbarProvider
+          SnackbarProps={{ autoHideDuration: 10000 }}
+          SnackbarComponent={ClosableSnackbar}
+        >
+          <CssBaseline />
+          <Router history={history}>
+            <Auth>
+              {/* <ScrollReset /> */}
+              {/* <GoogleAnalytics /> */}
+              {/* <CookiesNotification /> */}
+              {/* <SettingsNotification /> */}
+              <Routes />
+            </Auth>
+          </Router>
+        </SnackbarProvider>
+      </ThemeProvider>
+      {/* </PersistGate> */}
     </Provider>
   );
 };

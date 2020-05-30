@@ -47,6 +47,7 @@ import { FEATURES } from "../../Modules/features";
 import { VerticalNavBarContextWrapper } from "../../Contexts/VerticalNavBarContext";
 import EventSessionContainer from "./EventSessionContainer";
 import { openRoomArchived } from "../../Redux/dialogs";
+import { ChatMessagesContextWrapper } from "../../Contexts/ChatMessagesContext";
 
 const EventSessionContainerWrapper = (props) => {
   const dispatch = useDispatch();
@@ -372,7 +373,9 @@ const EventSessionContainerWrapper = (props) => {
       }}
     >
       <VerticalNavBarContextWrapper>
-        <EventSessionContainer />
+        <ChatMessagesContextWrapper>
+          <EventSessionContainer />
+        </ChatMessagesContextWrapper>
       </VerticalNavBarContextWrapper>
     </JitsiContext.Provider>
   );

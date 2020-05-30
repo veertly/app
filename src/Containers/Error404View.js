@@ -5,6 +5,7 @@ import Page from "../Components/Core/Page";
 import { useHistory } from "react-router-dom";
 import routes from "../Config/routes";
 import CenteredTopbar from "./Layouts/CenteredTopbar";
+import Error404Img from "../Assets/illustrations/404_page_not_found.svg";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -32,7 +33,7 @@ export default (props) => {
 
         <div style={{ textAlign: "center" }}>
           <img
-            src="/illustrations/404_page_not_found.svg"
+            src={Error404Img}
             className={classes.image}
             alt="Page not found"
           />

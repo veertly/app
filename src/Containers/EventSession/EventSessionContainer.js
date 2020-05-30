@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useParams, useHistory } from "react-router-dom";
 import Typography from "@material-ui/core/Typography";
 import clsx from "clsx";
@@ -18,9 +18,7 @@ import {
   DEFAULT_EVENT_OPEN_MINUTES,
   DEFAULT_EVENT_CLOSES_MINUTES
 } from "../../Config/constants";
-import { CHAT_DEFAULT_WIDTH } from "../../Components/Chat/ChatPane";
 import EditProfileDialog from "../../Components/EditProfile/EditProfileDialog";
-import { isChatOpen } from "../../Redux/dialogs";
 import RoomArchivedDialog from "../../Components/EventSession/RoomArchivedDialog";
 import {
   getEventSessionDetails,
@@ -182,10 +180,6 @@ const EventSessionContainer = (props) => {
   // const [openSidebar, setOpenSidebar] = useState(false);
   const history = useHistory();
 
-  const [chatWidth /* setChatWidth */] = useState(CHAT_DEFAULT_WIDTH);
-
-  const chatOpen = useSelector(isChatOpen);
-
   const { hasNavBarPaneOpen } = React.useContext(VerticalNavBarContext);
   const { jitsiApi, setJitsiApi } = React.useContext(JitsiContext);
 
@@ -318,10 +312,7 @@ const EventSessionContainer = (props) => {
               <VerticalNavPane />
             </div>
           )}
-          <div
-            className={classes.mainPane}
-            style={chatOpen ? { right: SIDE_PANE_WIDTH + chatWidth } : null}
-          >
+          <div className={classes.mainPane}>
             {userCurrentLocation === VERTICAL_NAV_OPTIONS.lobby && (
               <Box className={classes.mainPaneScroll}>
                 <EventPage
@@ -367,17 +358,6 @@ const EventSessionContainer = (props) => {
               )}
           </div>
           <SmallPlayerContainer bounds={smallPlayerBounds} />
-
-          {/* <div
-            className={clsx(classes.chatPane, {
-              [classes.hide]: !chatOpen,
-            })}
-          >
-            {`chat open: ${chatOpen ? "true" : "false"}`} */}
-          {/* <ChatPane
-                onResize={(w) => setChatWidth(w)}
-              /> */}
-          {/* </div> */}
         </>
       )}
     </div>
