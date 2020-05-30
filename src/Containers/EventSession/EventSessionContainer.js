@@ -327,22 +327,6 @@ const EventSessionContainer = (props) => {
             style={chatOpen ? { right: SIDE_PANE_WIDTH + chatWidth } : null}
           >
             {userCurrentLocation === VERTICAL_NAV_OPTIONS.lobby && (
-              // <div className={classes.noCall}>
-              //   <Typography
-              //     variant="h6"
-              //     className={clsx(classes.blueText, classes.emptyMessage)}
-              //   >
-              //     You are not in any{" "}
-              //     <span className={classes.greenText}>conversation</span>{" "}
-              //     yet,
-              //     <br />
-              //     don't be shy and{" "}
-              //     <span className={classes.greenText}>
-              //       select someone
-              //     </span>{" "}
-              //     to <span className={classes.greenText}>talk</span> to!
-              //   </Typography>
-              // </div>
               <Box className={classes.mainPaneScroll}>
                 <EventPage
                   event={eventSessionDetails}
@@ -365,6 +349,22 @@ const EventSessionContainer = (props) => {
                   <CurrentCallActionsVertical />
                 </Box>
               </>
+            )}
+            {!userGroup && (
+              <div className={classes.noCall}>
+                <Typography
+                  variant="h6"
+                  className={clsx(classes.blueText, classes.emptyMessage)}
+                >
+                  You are not in any{" "}
+                  <span className={classes.greenText}>conversation</span> yet,
+                  <br />
+                  don't be shy and{" "}
+                  <span className={classes.greenText}>
+                    select someone
+                  </span> to <span className={classes.greenText}>talk</span> to!
+                </Typography>
+              </div>
             )}
           </div>
           <SmallPlayerContainer bounds={smallPlayerBounds} />
