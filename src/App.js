@@ -33,6 +33,7 @@ import { Provider } from "react-redux";
 import store from "./Redux/store";
 import Routes from "./Routes";
 import Auth from "./Components/Guards/Auth";
+import AppMetaTags from "./Components/Shared/AppMetaTags";
 
 const theme = createMuiTheme({
   palette: {
@@ -80,6 +81,8 @@ const App = () => {
           SnackbarProps={{ autoHideDuration: 10000 }}
           SnackbarComponent={ClosableSnackbar}
         >
+          <AppMetaTags />
+
           <CssBaseline />
           <Router history={history}>
             <Auth>
