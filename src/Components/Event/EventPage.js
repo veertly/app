@@ -1,5 +1,4 @@
 import React from "react";
-import Dialog from "@material-ui/core/Dialog";
 import { Helmet } from "react-helmet";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
@@ -28,6 +27,7 @@ import SuccessIcon from "@material-ui/icons/CheckCircleOutline";
 import Alert from "@material-ui/lab/Alert";
 import CompatibilityInfoAlert from "../Shared/CompatibilityInfo";
 import MarginProvider from "../Shared/MarginProvider";
+import DialogClose from "../Misc/DialogClose";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -395,7 +395,7 @@ export default function EventPage(props) {
         )}
       </div>
       {hasRsvpEnabled && (
-        <Dialog
+        <DialogClose
           onClose={() => {
             setRegisterOpen(false);
             setIsRegistered(userRegisteredEvent(id));
@@ -413,7 +413,7 @@ export default function EventPage(props) {
               }}
             />
           </div>
-        </Dialog>
+        </DialogClose>
       )}
     </Card>
   );
