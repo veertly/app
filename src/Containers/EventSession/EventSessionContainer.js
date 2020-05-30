@@ -350,22 +350,25 @@ const EventSessionContainer = (props) => {
                 </Box>
               </>
             )}
-            {!userGroup && (
-              <div className={classes.noCall}>
-                <Typography
-                  variant="h6"
-                  className={clsx(classes.blueText, classes.emptyMessage)}
-                >
-                  You are not in any{" "}
-                  <span className={classes.greenText}>conversation</span> yet,
-                  <br />
-                  don't be shy and{" "}
-                  <span className={classes.greenText}>
-                    select someone
-                  </span> to <span className={classes.greenText}>talk</span> to!
-                </Typography>
-              </div>
-            )}
+            {!userGroup &&
+              (userCurrentLocation === VERTICAL_NAV_OPTIONS.networking ||
+                userCurrentLocation === VERTICAL_NAV_OPTIONS.rooms) && (
+                <div className={classes.noCall}>
+                  <Typography
+                    variant="h6"
+                    className={clsx(classes.blueText, classes.emptyMessage)}
+                  >
+                    You are not in any{" "}
+                    <span className={classes.greenText}>conversation</span> yet,
+                    <br />
+                    don't be shy and{" "}
+                    <span className={classes.greenText}>
+                      select someone
+                    </span> to <span className={classes.greenText}>talk</span>{" "}
+                    to!
+                  </Typography>
+                </div>
+              )}
           </div>
           <SmallPlayerContainer bounds={smallPlayerBounds} />
 
