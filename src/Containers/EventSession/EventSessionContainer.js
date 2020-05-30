@@ -20,10 +20,7 @@ import {
 } from "../../Config/constants";
 import { CHAT_DEFAULT_WIDTH } from "../../Components/Chat/ChatPane";
 import EditProfileDialog from "../../Components/EditProfile/EditProfileDialog";
-import EventPageDialog from "../../Components/Event/EventPageDialog";
 import { isChatOpen } from "../../Redux/dialogs";
-import ShareEventDialog from "../../Components/Event/ShareEventDialog";
-import FeedbackDialog from "../../Components/EventSession/FeedbackDialog";
 import RoomArchivedDialog from "../../Components/EventSession/RoomArchivedDialog";
 import {
   getEventSessionDetails,
@@ -302,9 +299,8 @@ const EventSessionContainer = (props) => {
     >
       <Page title={`Veertly | ${eventSessionDetails.title}`}> </Page>
       <EditProfileDialog />
-      <EventPageDialog />
-      <ShareEventDialog />
-      <FeedbackDialog />
+      {/* <ShareEventDialog />
+      <FeedbackDialog /> */}
       <JoinParticipantDialog />
       <JoinRoomDialog />
       <CreateRoomDialog />
