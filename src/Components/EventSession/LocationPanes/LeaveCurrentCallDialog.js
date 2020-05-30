@@ -11,7 +11,8 @@ import {
 import Alert from "@material-ui/lab/Alert";
 
 const useStyles = makeStyles((theme) => ({
-  button: { margin: theme.spacing(2) }
+  button: { margin: theme.spacing(2) },
+  dialogTitle: { color: theme.palette.primary.main }
 }));
 
 const LeaveCurrentCallDialog = ({ open, setOpen, onConfirmation }) => {
@@ -21,7 +22,9 @@ const LeaveCurrentCallDialog = ({ open, setOpen, onConfirmation }) => {
   };
   return (
     <Dialog open={open} onClose={handleClose}>
-      <DialogTitle>Leaving conversation</DialogTitle>
+      <DialogTitle className={classes.dialogTitle}>
+        Leaving conversation
+      </DialogTitle>
 
       <DialogContent>
         <DialogContentText>

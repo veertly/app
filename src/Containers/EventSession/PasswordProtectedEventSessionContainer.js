@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo } from "react";
 // import { useSelector, shallowEqual } from "react-redux";
 // import { getFeatureDetails, getUserSession } from "../../Redux/eventSession";
 import { FEATURES } from "../../Modules/features";
-import EventSessionContainer from "./EventSessionContainer";
 import Dialog from "@material-ui/core/Dialog";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
@@ -15,6 +14,7 @@ import { useParams } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
 import SplashScreen from "../../Components/Misc/SplashScreen";
 import CompatibilityDialog from "../../Components/Shared/CompatibilityDialog";
+import EventSessionContainerWrapper from "./EventSessionContainerWrapper";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -198,7 +198,7 @@ const ProtectedEventSessionContainer = () => {
   const { sessionId, code } = useParams();
 
   const { showDialog, loading } = useAuth();
-  
+
   const {
     error,
     loading: loadingEvent,
@@ -236,7 +236,7 @@ const ProtectedEventSessionContainer = () => {
   } else {
     return (
       <>
-        <EventSessionContainer></EventSessionContainer>
+        <EventSessionContainerWrapper />
         <CompatibilityDialog />
       </>
     );

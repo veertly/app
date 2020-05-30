@@ -22,7 +22,7 @@ import {
   closeChat,
   openShare,
   openFeedback,
-  isChatOpen,
+  isChatOpen
 } from "../../Redux/dialogs";
 import routes from "../../Config/routes";
 // import ExitToAppIcon from "@material-ui/icons/ExitToApp";
@@ -32,11 +32,11 @@ import FeedbackIcon from "@material-ui/icons/GraphicEq";
 import {
   getSessionId,
   getEventSessionDetails,
-  getUserId,
+  getUserId
 } from "../../Redux/eventSession";
 import {
   hideNotificationDot,
-  toShowNotificationDot,
+  toShowNotificationDot
 } from "../../Redux/chatMessages";
 import Badge from "@material-ui/core/Badge";
 import { trackEvent } from "../../Modules/analytics";
@@ -46,14 +46,14 @@ const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
     flexDirection: "column",
-    height: "100%",
+    height: "100%"
   },
   menuButton: {
-    marginRight: 36,
+    marginRight: 36
   },
   hide: {
-    display: "none",
-  },
+    display: "none"
+  }
 }));
 
 export default function SideMenuIcons(props) {

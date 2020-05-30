@@ -125,26 +125,9 @@ const crossCheckParticipantsJoined = (
       if (
         !participantResult.isMyUser &&
         (!participant.isOnline || !isStillLive(keepAlive))
-        // keepAlive &&
-        // keepAlive.lastSeen &&
-        // moment(keepAlive.lastSeen.toDate()).add(DEFAULT_OFFLINE_INTERVAL, "ms").isBefore(now)
       ) {
         return result; // skip this participant as he is offline
       }
-
-      let isInConversation =
-        participant &&
-        participant.groupId !== undefined &&
-        participant.groupId !== null &&
-        liveGroups &&
-        liveGroups[participant.groupId];
-      let isInConferenceRoom =
-        !isInConversation && !participant.inNetworkingRoom;
-      let isAvailable = !isInConversation && participant.inNetworkingRoom;
-
-      participantResult.isInConversation = isInConversation;
-      participantResult.isInConferenceRoom = isInConferenceRoom;
-      participantResult.isAvailable = isAvailable;
 
       result.push(participantResult);
       return result;

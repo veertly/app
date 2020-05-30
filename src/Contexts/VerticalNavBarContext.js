@@ -8,7 +8,8 @@ export const VERTICAL_NAV_OPTIONS = {
   attendees: "ATTENDEES",
   chat: "CHAT",
   polls: "POLLS",
-  qna: "QNA"
+  qna: "QNA",
+  help: "HELP"
 };
 
 const VerticalNavBarContext = React.createContext({
@@ -19,3 +20,22 @@ const VerticalNavBarContext = React.createContext({
 });
 
 export default VerticalNavBarContext;
+
+export const VerticalNavBarContextWrapper = ({ children }) => {
+  const [currentNavBarSelection, setCurrentNavBarSelection] = React.useState(
+    VERTICAL_NAV_OPTIONS.lobby
+  );
+  const [hasNavBarPaneOpen, setHasNavBarPaneOpen] = React.useState(false);
+  return (
+    <VerticalNavBarContext.Provider
+      value={{
+        currentNavBarSelection,
+        setCurrentNavBarSelection,
+        hasNavBarPaneOpen,
+        setHasNavBarPaneOpen
+      }}
+    >
+      {children}
+    </VerticalNavBarContext.Provider>
+  );
+};

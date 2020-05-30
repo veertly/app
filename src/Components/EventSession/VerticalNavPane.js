@@ -7,13 +7,15 @@ import { Box, Typography, IconButton, Tooltip } from "@material-ui/core";
 import VerticalNavBarContext, {
   VERTICAL_NAV_OPTIONS
 } from "../../Contexts/VerticalNavBarContext";
-import ConversationsTab from "./ConversationsTab";
+import ConversationsPane from "./LocationPanes/NetworkingPane";
 import RoomsTab from "./RoomsTab";
 import ChatPane from "../Chat/ChatPane";
 import MainStagePane from "./LocationPanes/MainStagePane";
 import LobbyPane from "./LocationPanes/LobbyPane";
 import PollsPane from "./LocationPanes/PollsPane";
 import QnAPane from "./LocationPanes/QnAPane";
+import HelpPane from "./LocationPanes/HelpPane";
+
 import AttendeesPane, {
   ATTENDEES_PANE_FILTER
 } from "./LocationPanes/AttendeesPane";
@@ -56,7 +58,6 @@ const VerticalNavPane = (props) => {
   } = React.useContext(VerticalNavBarContext);
 
   const getTitle = () => {
-    console.log({ currentNavBarSelection });
     switch (currentNavBarSelection) {
       case VERTICAL_NAV_OPTIONS.lobby:
         return "Lobby";
@@ -81,6 +82,9 @@ const VerticalNavPane = (props) => {
 
       case VERTICAL_NAV_OPTIONS.qna:
         return "Q&A";
+
+      case VERTICAL_NAV_OPTIONS.help:
+        return "Help";
 
       default:
         return "";
@@ -120,7 +124,7 @@ const VerticalNavPane = (props) => {
         {currentNavBarSelection === VERTICAL_NAV_OPTIONS.rooms && <RoomsTab />}
 
         {currentNavBarSelection === VERTICAL_NAV_OPTIONS.networking && (
-          <ConversationsTab />
+          <ConversationsPane />
         )}
 
         {currentNavBarSelection === VERTICAL_NAV_OPTIONS.attendees && (
@@ -135,6 +139,8 @@ const VerticalNavPane = (props) => {
         {currentNavBarSelection === VERTICAL_NAV_OPTIONS.polls && <PollsPane />}
 
         {currentNavBarSelection === VERTICAL_NAV_OPTIONS.qna && <QnAPane />}
+
+        {currentNavBarSelection === VERTICAL_NAV_OPTIONS.help && <HelpPane />}
       </Box>
       {/* <MenuIconContainer icon={ChatIcon} label="Chat" /> */}
 
