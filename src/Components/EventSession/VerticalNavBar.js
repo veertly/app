@@ -16,6 +16,7 @@ import NetworkingIcon from "../../Assets/Icons/Conversation1-1";
 import ChatIcon from "../../Assets/Icons/Chat";
 import PollsIcon from "../../Assets/Icons/Polls";
 import QnAIcon from "../../Assets/Icons/QnA";
+import HelpIcon from "../../Assets/Icons/Help";
 
 import { useHover } from "react-use";
 import { leaveCall } from "../../Modules/eventSessionOperations";
@@ -46,7 +47,7 @@ import { setUserCurrentLocation } from "../../Modules/userOperations";
 // } from "../../../Redux/chatMessages";
 // import Badge from "@material-ui/core/Badge";
 // import { trackEvent } from "../../../Modules/analytics";
-import { Box, Typography, Divider } from "@material-ui/core";
+import { Box, Typography, Divider, Badge } from "@material-ui/core";
 import VerticalNavBarContext, {
   VERTICAL_NAV_OPTIONS
 } from "../../Contexts/VerticalNavBarContext";
@@ -57,6 +58,7 @@ import {
   getUserGroup,
   getUserId
 } from "../../Redux/eventSession";
+import { toShowNotificationDot } from "../../Redux/chatMessages";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -112,6 +114,7 @@ const MenuIconContainer = ({
   label,
   selected,
   isCurrentLocation,
+  hasBadge = false,
   ...rest
 }) => {
   const [isHovered, setIsHovered] = React.useState(false);
@@ -125,8 +128,9 @@ const MenuIconContainer = ({
     <Box align="center" className={classes.menuItem} {...rest}>
       <Box className={classes.itemInnerBox}>
         <Box className={classes.itemIconBox}>
-          <Icon className={classes.itemIcon} />
-          {/* {icon} */}
+          <Badge color="secondary" variant="dot" invisible={!hasBadge}>
+            <Icon className={classes.itemIcon} />
+          </Badge>
         </Box>
         <Box className={classes.itemLabel}>
           <Typography variant="caption" color="textSecondary">
@@ -167,8 +171,9 @@ const VerticalNavBar = (props) => {
   const userGroup = useSelector(getUserGroup);
   const userId = useSelector(getUserId);
 
+  const showNotificationDot = useSelector(toShowNotificationDot);
+
   React.useEffect(() => {
-    console.log({ userCurrentLocation });
     setCurrentLocation(userCurrentLocation);
     setCurrentNavBarSelection(userCurrentLocation);
 
@@ -267,6 +272,7 @@ const VerticalNavBar = (props) => {
         label="Chat"
         selected={currentNavBarSelection === VERTICAL_NAV_OPTIONS.chat}
         onClick={handleClick(VERTICAL_NAV_OPTIONS.chat)}
+        hasBadge={showNotificationDot}
       />
 
       <MenuIconContainer
@@ -282,23 +288,12 @@ const VerticalNavBar = (props) => {
         onClick={handleClick(VERTICAL_NAV_OPTIONS.polls)}
       />
       <div style={{ flexGrow: 1 }}></div>
-      {/* <MenuIconContainer icon={ChatIcon} label="Chat" /> */}
-
-      {/* <List>
-        <Tooltip title="Exit Event">
-          <ListItem
-            button
-            onClick={() => {
-              logout();
-              history.push(routes.EVENT_SESSION(sessionId));
-            }}
-          >
-            <ListItemIcon>
-              <ExitToAppIcon color="primary" />
-            </ListItemIcon>
-          </ListItem>
-        </Tooltip>
-      </List> */}
+      <MenuIconContainer
+        icon={HelpIcon}
+        label="Help"
+        selected={currentNavBarSelection === VERTICAL_NAV_OPTIONS.help}
+        onClick={handleClick(VERTICAL_NAV_OPTIONS.help)}
+      />
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import React from "react";
 import { makeStyles, Typography, Box } from "@material-ui/core";
+import QnAImg from "../../../Assets/illustrations/qna.svg";
 
 const useStyles = makeStyles((theme) => ({
   emptyPane: {
@@ -19,7 +20,7 @@ const PollsPane = () => {
       <Box className={classes.emptyPane}>
         <img
           className={classes.emptyImage}
-          src="/illustrations/qna.svg"
+          src={QnAImg}
           alt="Q&amp;A coming soon"
         />
         <Typography variant="body2" color="textSecondary" display="block">

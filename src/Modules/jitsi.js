@@ -51,11 +51,13 @@ export const getJitsiOptions = (
       enableWelcomePage: false,
       SHOW_JITSI_WATERMARK: showJitsiLogo,
       // JITSI_WATERMARK_LINK: "https://veertly.com",
+
       TOOLBAR_ALWAYS_VISIBLE: true,
       SHOW_WATERMARK_FOR_GUESTS: showJitsiLogo,
       SHOW_BRAND_WATERMARK: showJitsiLogo,
       SHOW_POWERED_BY: false,
       GENERATE_ROOMNAMES_ON_WELCOME_PAGE: false,
+      SHOW_CHROME_EXTENSION_BANNER: false,
       TOOLBAR_BUTTONS: [
         "microphone",
         "camera",
@@ -76,20 +78,27 @@ export const getJitsiOptions = (
         // "raisehand",
         "videoquality",
         "filmstrip",
-        "invite",
-        "feedback",
+        // "invite",
+        // "feedback",
         "stats",
         "shortcuts",
         "tileview",
         // "videobackgroundblur",
-        "download",
+        // "download",
         "help",
         "mute-everyone",
         "e2ee"
       ],
       CLOSE_PAGE_GUEST_HINT: false,
       SHOW_PROMOTIONAL_CLOSE_PAGE: false,
-      RECENT_LIST_ENABLED: false
+      RECENT_LIST_ENABLED: false,
+      SETTINGS_SECTIONS: [
+        "devices",
+        "language",
+        "moderator"
+        // "profile",
+        // "calendar"
+      ]
 
       // SUPPORT_URL: 'https://github.com/jitsi/jitsi-meet/issues/new',
     }

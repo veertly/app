@@ -10,9 +10,6 @@ import {
   getUserGroup,
   getUserLiveGroup
 } from "../../Redux/eventSession";
-import AvatarGroup from "@material-ui/lab/AvatarGroup";
-import ParticipantAvatar from "../Misc/ParticipantAvatar";
-
 momentDurationFormatSetup(moment);
 
 const useStyles = makeStyles((theme) => ({
@@ -20,11 +17,12 @@ const useStyles = makeStyles((theme) => ({
     // margin: theme.spacing(0, 1),
     padding: theme.spacing(1),
     position: "relative",
-    backgroundColor: theme.palette.background.default,
-    borderRadius: theme.spacing(0, 0, 2, 0)
+    backgroundColor: "rgba(244,246,248, 0.4)", // theme.palette.background.default,
+    borderRadius: theme.spacing(0, 2, 2, 0)
   },
   avatarsContainer: {
-    display: "flex"
+    display: "flex",
+    flexDirection: "column"
   },
   title: {
     margin: theme.spacing(0, 0, 1, 0),
@@ -75,10 +73,6 @@ const CurrentCallActionsVertical = function (props) {
     }
   }, [liveGroup, users, userGroup.participants]);
 
-  const isRoom = React.useMemo(() => liveGroup && liveGroup.isRoom, [
-    liveGroup
-  ]);
-
   if (!userGroup) {
     return null;
   }
@@ -86,23 +80,29 @@ const CurrentCallActionsVertical = function (props) {
   return (
     <div className={classes.groupContainer}>
       <div className={classes.avatarsContainer}>
-        {!isRoom && <GroupAvatars group={participants} />}
+        <GroupAvatars group={participants} hideName max={6} />
+        {/* {!isRoom && <GroupAvatars group={participants} hideName />}
         {isRoom && (
           <>
-            <AvatarGroup max={10} spacing="small">
+            <AvatarGroup
+              max={6}
+              spacing={0}
+              className={classes.avatarsContainer}
+              // style={{ paddingLeft: 4, paddingRight: 4 }}
+            >
               {participants.map((participant) => {
                 if (!participant) return null;
                 return (
                   <ParticipantAvatar
                     key={participant.id}
                     participant={participant}
-                    style={{ marginLeft: 2, marginRight: 2 }}
+                    style={{ marginTop: 2, marginBottom: 2 }}
                   />
                 );
               })}
             </AvatarGroup>
           </>
-        )}
+        )} */}
       </div>
     </div>
   );

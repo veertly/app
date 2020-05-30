@@ -178,10 +178,16 @@ export const createNewConversation = (
       transaction.set(newGroupRef, groupObj);
 
       // update my user group id
-      transaction.update(myUserRef, { groupId });
+      transaction.update(myUserRef, {
+        groupId,
+        currentLocation: VERTICAL_NAV_OPTIONS.networking
+      });
 
       // update other user group id
-      transaction.update(otherUserRef, { groupId });
+      transaction.update(otherUserRef, {
+        groupId,
+        currentLocation: VERTICAL_NAV_OPTIONS.networking
+      });
     })
     .then(function () {
       // console.log("Transaction successfully committed!");

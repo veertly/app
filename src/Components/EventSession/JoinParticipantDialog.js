@@ -1,11 +1,14 @@
-import React from "react";
+import React, { useMemo } from "react";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import ParticipantCard from "./ParticipantCard";
-import { createNewConversation, joinConversation } from "../../Modules/eventSessionOperations";
+import {
+  createNewConversation,
+  joinConversation
+} from "../../Modules/eventSessionOperations";
 import { useSnackbar } from "material-ui-snackbar-provider";
 import {
   getSessionId,
@@ -16,28 +19,39 @@ import {
   getLiveGroups,
   getUsers,
   getParticipantsJoined,
-  getLiveGroupsOriginal,
+  getLiveGroupsOriginal
 } from "../../Redux/eventSession";
-import { isJoinParticipantOpen, closeJoinParticipant, getJoinParticipantEntity } from "../../Redux/dialogs";
+import {
+  isJoinParticipantOpen,
+  closeJoinParticipant,
+  getJoinParticipantEntity
+} from "../../Redux/dialogs";
 import { useSelector, shallowEqual, useDispatch } from "react-redux";
 import _ from "lodash";
 import Alert from "@material-ui/lab/Alert";
 import { MAX_PARTICIPANTS_GROUP } from "../../Config/constants";
 import ParticipantAvatar from "../Misc/ParticipantAvatar";
+import {
+  isParticipantOnNetworkingCall,
+  isParticipantMainStage,
+  isParticipantOnCall,
+  isParticipantAvailableForCall
+} from "../../Helpers/participantsHelper";
+import DialogClose from "../Misc/DialogClose";
 
 const useStyles = makeStyles((theme) => ({
   content: {
     position: "relative",
     width: theme.breakpoints.values.sm,
-    padding: theme.spacing(6),
+    padding: theme.spacing(6)
   },
   closeContainer: {
-    position: "absolute",
+    position: "absolute"
   },
   buttonContainer: {
     width: "100%",
     textAlign: "center",
-    marginTop: theme.spacing(4),
+    marginTop: theme.spacing(4)
   },
   hintText: {
     marginBottom: theme.spacing(4),
@@ -46,24 +60,24 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     marginLeft: "auto",
     marginRight: "auto",
-    marginTop: theme.spacing(2),
+    marginTop: theme.spacing(2)
   },
   emptySpaceBottom: {
-    marginBottom: theme.spacing(4),
+    marginBottom: theme.spacing(4)
   },
   conversationWith: {
-    margin: theme.spacing(3, 0),
+    margin: theme.spacing(3, 0)
   },
   participantContainer: {
-    margin: theme.spacing(2, 0),
+    margin: theme.spacing(2, 0)
   },
   alert: {
     marginTop: theme.spacing(2),
-    textAlign: "left",
+    textAlign: "left"
   },
   avatar: {
-    marginRight: theme.spacing(2),
-  },
+    marginRight: theme.spacing(2)
+  }
 }));
 
 export default function (props) {
@@ -80,42 +94,89 @@ export default function (props) {
   const userGroup = useSelector(getUserLiveGroup, shallowEqual);
   const users = useSelector(getUsers, shallowEqual);
   const userSession = useSelector(getUserSession, shallowEqual);
-  const availableParticipantsList = useSelector(getAvailableParticipantsList, shallowEqual);
+  const availableParticipantsList = useSelector(
+    getAvailableParticipantsList,
+    shallowEqual
+  );
   const liveGroups = useSelector(getLiveGroups, shallowEqual);
   const liveGroupsOriginal = useSelector(getLiveGroupsOriginal, shallowEqual);
   const participantsJoined = useSelector(getParticipantsJoined, shallowEqual);
 
   const participantSession = React.useMemo(
-    () => _.find(availableParticipantsList, (p) => participant && p.id === participant.id),
+    () =>
+      _.find(
+        availableParticipantsList,
+        (p) => participant && p.id === participant.id
+      ),
     [availableParticipantsList, participant]
   );
 
   const liveGroup = React.useMemo(
     () =>
-      liveGroups && participantSession && participantSession.groupId ? liveGroups[participantSession.groupId] : null,
+      liveGroups && participantSession && participantSession.groupId
+        ? liveGroups[participantSession.groupId]
+        : null,
     [liveGroups, participantSession]
   );
 
-  const isMyGroup = React.useMemo(() => liveGroup && _.find(liveGroup.participants, (p) => p.id === userId), [
-    liveGroup,
-    userId,
-  ]);
+  const isMyGroup = React.useMemo(
+    () => liveGroup && _.find(liveGroup.participants, (p) => p.id === userId),
+    [liveGroup, userId]
+  );
   const isMyUser = userId && participant && userId === participant.id;
 
-  let participantInConversation = participantSession && participantSession.groupId;
-  let userInConferenceRoom = userSession && !userSession.inNetworkingRoom;
-  let participantInConferenceRoom = !isMyUser && participantSession && !participantSession.inNetworkingRoom;
+  const participantInConversation = useMemo(
+    () => isParticipantOnNetworkingCall(participantSession),
+    [participantSession]
+  );
 
-  let canStartConversation =
-    !isMyUser && !isMyGroup && !participantInConversation && !participantInConferenceRoom && participantSession;
-  let canJoinConversation =
-    !isMyUser &&
-    !isMyGroup &&
-    !participantInConferenceRoom &&
-    liveGroup &&
-    _.size(liveGroup.participants) < MAX_PARTICIPANTS_GROUP;
+  const participantAvailableForCall = useMemo(
+    () => isParticipantAvailableForCall(participantSession),
+    [participantSession]
+  );
 
-  let userInConversation = userSession && !!userSession.groupId;
+  const userInConferenceRoom = useMemo(
+    () => isParticipantMainStage(userSession),
+    [userSession]
+  );
+
+  const participantInConferenceRoom = useMemo(
+    () => !isMyUser && isParticipantMainStage(participantSession),
+    [isMyUser, participantSession]
+  );
+
+  const canStartConversation = useMemo(
+    () =>
+      !isMyUser &&
+      !isMyGroup &&
+      !participantInConversation &&
+      !participantInConferenceRoom &&
+      participantSession &&
+      participantAvailableForCall,
+    [
+      isMyUser,
+      isMyGroup,
+      participantInConversation,
+      participantInConferenceRoom,
+      participantSession,
+      participantAvailableForCall
+    ]
+  );
+
+  const canJoinConversation = useMemo(
+    () =>
+      !isMyUser &&
+      !isMyGroup &&
+      !participantInConferenceRoom &&
+      liveGroup &&
+      (liveGroup.isRoom ||
+        (!liveGroup.isRoom &&
+          _.size(liveGroup.participants) < MAX_PARTICIPANTS_GROUP)),
+    [isMyUser, isMyGroup, participantInConferenceRoom, liveGroup]
+  );
+  let userInConversation = useMemo(() => isParticipantOnCall(userSession), [
+    userSession
+  ]);
 
   // console.log({
   //   participantSession,
@@ -136,9 +197,11 @@ export default function (props) {
         <Dialog open={open} onClose={handleClose} maxWidth={"sm"}>
           <div className={classes.content}>
             <Alert severity="info">
-              Sorry no attendee is available for a conversation at the moment. Either they are on the ‘Main Stage’ or
-              busy talking to others already on the ‘Networking Area’. <br />
-              Check out the ‘Conversations’ tab to join an existing conversation.
+              Sorry no attendee is available for a conversation at the moment.
+              Either they are on the ‘Main Stage’ or busy talking to others
+              already on the ‘Networking Area’. <br />
+              Check out the ‘Conversations’ tab to join an existing
+              conversation.
             </Alert>
           </div>
         </Dialog>
@@ -149,10 +212,13 @@ export default function (props) {
   const startConversation = (e) => {
     e.preventDefault();
     try {
-      if (userInConferenceRoom) {
-        setIsInConferenceRoom(false);
-      }
-      createNewConversation(sessionId, userId, participant.id, userGroup, snackbar);
+      createNewConversation(
+        sessionId,
+        userId,
+        participant.id,
+        userGroup,
+        snackbar
+      );
     } catch (error) {
       console.error(error);
     }
@@ -165,15 +231,23 @@ export default function (props) {
       if (userInConferenceRoom) {
         setIsInConferenceRoom(false);
       }
-      joinConversation(sessionId, participantsJoined, liveGroupsOriginal, userId, liveGroup.id, snackbar);
+      joinConversation(
+        sessionId,
+        participantsJoined,
+        liveGroupsOriginal,
+        userId,
+        liveGroup.id,
+        snackbar
+      );
       handleClose();
     }
   };
   return (
     <div>
-      <Dialog open={open} onClose={handleClose} maxWidth={"sm"}>
+      <DialogClose open={open} onClose={handleClose} maxWidth={"sm"}>
         <div className={classes.content}>
           <ParticipantCard participant={participant} />
+
           {isMyUser && (
             <Alert severity="info" className={classes.alert}>
               This is yourself{" "}
@@ -182,6 +256,7 @@ export default function (props) {
               </span>
             </Alert>
           )}
+
           {participantInConversation && (
             <div className={classes.conversationWith}>
               <>
@@ -196,7 +271,7 @@ export default function (props) {
                     In the room: {liveGroup.roomName}
                   </Typography>
                 )}
-                {/* <Divider color="secondary" /> */}
+
                 {liveGroup &&
                   !liveGroup.isRoom &&
                   liveGroup.participants &&
@@ -214,6 +289,7 @@ export default function (props) {
                       </div>
                     );
                   })}
+
                 {liveGroup && liveGroup.isRoom && liveGroup.participants && (
                   <>
                     <div style={{ display: "flex", marginTop: 16 }}>
@@ -244,20 +320,27 @@ export default function (props) {
                         className={classes.button}
                         onClick={handleJoinConversation}
                       >
-                        Join {liveGroup && liveGroup.isRoom ? "Room" : "Conversation"}
+                        Join{" "}
+                        {liveGroup && liveGroup.isRoom
+                          ? "Room"
+                          : "Conversation"}
                       </Button>
                     </div>
                     {/* <Typography className={classes.hintText} variant="caption"> */}
                     {!userInConferenceRoom && !userInConversation && (
                       <Alert severity="info" className={classes.alert}>
-                        You will join this {liveGroup && liveGroup.isRoom ? "room's" : "conversation's"} video
-                        conferencing call
+                        You will join this{" "}
+                        {liveGroup && liveGroup.isRoom
+                          ? "room's"
+                          : "conversation's"}{" "}
+                        video conferencing call
                       </Alert>
                     )}
 
                     {!userInConferenceRoom && userInConversation && (
                       <Alert severity="warning" className={classes.alert}>
-                        You will leave your current conversation and join this one
+                        You will leave your current conversation and join this
+                        one
                       </Alert>
                     )}
 
@@ -271,46 +354,61 @@ export default function (props) {
           {canStartConversation && (
             <React.Fragment>
               <div className={classes.buttonContainer}>
-                <Button variant="contained" color="primary" className={classes.button} onClick={startConversation}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  className={classes.button}
+                  onClick={startConversation}
+                >
                   Start Conversation
                 </Button>
               </div>
               {/* <Typography className={classes.hintText} variant="caption"> */}
               {!userInConferenceRoom && !userInConversation && (
                 <Alert severity="info" className={classes.alert}>
-                  Start a video-call with {participant.firstName} now{/* </Typography> */}
+                  Start a video-call with {participant.firstName} now
+                  {/* </Typography> */}
                 </Alert>
               )}
 
               {!userInConferenceRoom && userInConversation && (
                 <Alert severity="warning" className={classes.alert}>
-                  You will leave your current conversation and start a new one with {participant.firstName}
+                  You will leave your current conversation and start a new one
+                  with {participant.firstName}
                 </Alert>
               )}
             </React.Fragment>
           )}
-          {participantInConferenceRoom /* && (canJoinConversation || canStartConversation) */ && (
-            <div className={classes.buttonContainer}>
-              <Alert severity="info" className={classes.alert}>
-                {participant.firstName} is currently watching the presentation on the main stage and is not available to
-                talk
-              </Alert>
 
-              {/* </Typography> */}
-            </div>
-          )}
-          {userInConferenceRoom && (canJoinConversation || canStartConversation) && (
+          {participantInConferenceRoom && (
             <div className={classes.buttonContainer}>
-              {/* <div style={{ textAlign: "center", width: "100%" }}>
-                <SuccessIcon style={{ fontSize: 64, color: "#53a653" }} />
-              </div> */}
               <Alert severity="info" className={classes.alert}>
-                When starting this conversation, you will leave the "Main Stage and enter the 'Networking Area', but you
-                can come back at any time. Happy networking!
+                {participant.firstName} is currently watching the presentation
+                on the main stage and is not available to talk
               </Alert>
             </div>
           )}
 
+          {/* {userInConferenceRoom &&
+            (canJoinConversation || canStartConversation) && (
+              <div className={classes.buttonContainer}>
+                <Alert severity="info" className={classes.alert}>
+                  When starting this conversation, you will leave the 'Main
+                  Stage' and enter the 'Networking Area', but you can come back
+                  at any time. Happy networking!
+                </Alert>
+              </div>
+            )} */}
+          {participantSession &&
+            !isMyUser &&
+            !participantAvailableForCall &&
+            !participantInConversation && (
+              <div className={classes.buttonContainer}>
+                <Alert severity="info" className={classes.alert}>
+                  {participant.firstName} is not available to talk
+                </Alert>
+              </div>
+            )}
           {!participantSession && (
             <div className={classes.buttonContainer}>
               {/* <div style={{ textAlign: "center", width: "100%" }}>
@@ -322,7 +420,7 @@ export default function (props) {
             </div>
           )}
         </div>
-      </Dialog>
+      </DialogClose>
     </div>
   );
 }

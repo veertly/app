@@ -35,8 +35,12 @@ export const isParticipantOnCall = (participantSession) => {
   return (
     participantSession &&
     (participantSession.groupId ||
-      participantSession.currentLocation === VERTICAL_NAV_OPTIONS.mainStage)
+      participantSession.currentLocation === VERTICAL_NAV_OPTIONS.mainStage) // TODO: check if not a jitsi conference
   );
+};
+
+export const isParticipantOnNetworkingCall = (participantSession) => {
+  return participantSession && participantSession.groupId;
 };
 
 export const participantHasSubtitle = (participant) =>

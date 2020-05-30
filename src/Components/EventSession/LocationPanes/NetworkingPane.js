@@ -1,15 +1,16 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
-import Button from "@material-ui/core/Button";
-import JoinConversationDialog from "./JoinConversationDialog";
+import JoinConversationDialog from "../JoinConversationDialog";
 import Divider from "@material-ui/core/Divider";
-import GroupAvatars from "./GroupAvatars";
-import { MAX_PARTICIPANTS_GROUP } from "../../Config/constants";
+import GroupAvatars from "../GroupAvatars";
 
 import { useSelector, shallowEqual } from "react-redux";
-import { getUsers, getLiveGroups, getUser } from "../../Redux/eventSession";
+import { getUsers, getLiveGroups, getUser } from "../../../Redux/eventSession";
 import _ from "lodash";
+import NoConversationImg from "../../../Assets/illustrations/no_conversations.svg";
+import { Box } from "@material-ui/core";
+import AttendeesPane, { ATTENDEES_PANE_FILTER } from "./AttendeesPane";
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -17,7 +18,12 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
     padding: theme.spacing(1),
     display: "flex",
-    position: "relative"
+    position: "relative",
+    "&:hover": {
+      backgroundColor: "rgba(28, 71, 98, 0.08)", //"#e0f3ff", //"#e4ffe4",
+      cursor: "pointer",
+      borderRadius: 0
+    }
   },
   participantContainer: {
     marginRight: theme.spacing(2)
@@ -61,7 +67,8 @@ const useStyles = makeStyles((theme) => ({
   noGroupsText: {
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(3),
-    width: "100%"
+    width: "80%",
+    margin: "auto"
   },
   relativeContainer: {
     position: "relative"
@@ -82,13 +89,21 @@ const useStyles = makeStyles((theme) => ({
   centerButton: {
     width: "100%",
     textAlign: "center"
+  },
+  emptyPane: {
+    marginTop: theme.spacing(4),
+    textAlign: "center",
+    padding: theme.spacing(0, 2)
+  },
+  emptyImage: {
+    width: "65%",
+    marginBottom: theme.spacing(1)
   }
 }));
 // rgba(28, 71, 98, 0.08)
 
 export default function (props) {
   const classes = useStyles();
-  const [groupHover, setGroupHover] = React.useState(-1);
   const [joinDialog, setJoinDialog] = React.useState(false);
 
   const [selectedGroup, setSelectedGroup] = React.useState(null);
@@ -138,15 +153,15 @@ export default function (props) {
             <div key={group.id}>
               <div
                 className={classes.groupContainer}
-                onMouseEnter={() => {
-                  setGroupHover(group.id);
-                }}
-                onMouseLeave={() => {
-                  setGroupHover(-1);
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedGroup(group.participants);
+                  setSelectedGroupId(group.id);
+                  setJoinDialog(true);
                 }}
               >
                 <GroupAvatars group={group.participants} />
-                {groupHover === group.id &&
+                {/* {groupHover === group.id &&
                   group.participants.length < MAX_PARTICIPANTS_GROUP && (
                     <div className={classes.joinButtonContainer}>
                       <Button
@@ -163,7 +178,7 @@ export default function (props) {
                         {group.isMyGroup ? "View" : "Join"}
                       </Button>
                     </div>
-                  )}
+                  )} */}
               </div>
 
               {!isLast && <Divider variant="middle" />}
@@ -171,18 +186,24 @@ export default function (props) {
           );
         })}
         {numConversations === 0 && (
-          <Typography
-            variant="caption"
-            align="center"
-            display="block"
-            className={classes.noGroupsText}
-          >
-            {/* There are no conversations yet, <br />
-              select someone and start networking! */}
-            There are no conversations yet, check out the topic rooms or select
-            someone and start networking!
-          </Typography>
+          <Box className={classes.emptyPane}>
+            <img
+              className={classes.emptyImage}
+              src={NoConversationImg}
+              alt="No conversations"
+            />
+            <Typography variant="body2" color="textSecondary" display="block">
+              There are no conversations yet, check out the rooms or select
+              someone and start networking!{" "}
+            </Typography>
+          </Box>
         )}
+        <AttendeesPane
+          paneFilter={ATTENDEES_PANE_FILTER.available}
+          showFilter
+          showStartConversation
+          hideButtonsIfEmpty
+        />
       </div>
     </div>
   );

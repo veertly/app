@@ -173,25 +173,6 @@ export default withRouter((props) => {
     }
   };
 
-  // const handleConferenceRoomClick = () => {
-  //   if (userGroup) {
-  //     setGoToConferenceDialog(true);
-  //   } else {
-  //     setIsInConferenceRoom(true);
-  //   }
-  // };
-
-  // const handleNetworkingRoomClick = () => {
-  //   if (
-  //     isMiniPlayerEnabled &&
-  //     eventSessionDetails.conferenceVideoType !== "JITSI"
-  //   ) {
-  //     setIsInConferenceRoom(false);
-  //   } else {
-  //     setGoToNetworkingDialog(true);
-  //   }
-  // };
-
   const handleEditProfileClick = () => {
     dispatch(openEditProfile());
     handleMenuClose();
@@ -202,30 +183,9 @@ export default withRouter((props) => {
       <AppBar className={clsx(classes.root)}>
         <Toolbar style={{ position: "relative" }}>
           <img alt="Logo" src={VeertlyLogo} className={classes.logo} />
-          {/*{!isMobile && eventSessionDetails && (
-            <div className={classes.roomButtonsContainer}>
-               <RoomButton
-                isCurrentRoom={isInConferenceRoom}
-                onClick={handleConferenceRoomClick}
-                // icon={<DesktopMacIcon />}
-              >
-                Main Stage
-              </RoomButton>
-              <RoomButton
-                isCurrentRoom={!isInConferenceRoom}
-                onClick={handleNetworkingRoomClick}
-                disabled={!eventSessionDetails.isNetworkingAvailable}
-                // icon={<ConversationsIcon />}
-              >
-                Networking Area
-              </RoomButton> 
-            </div>
-          )}*/}
-          {/* </RouterLink> */}
           <div className={classes.flexGrow}></div>
           <div className={classes.titleContainer}>
             {!isMobile && eventSessionDetails && (
-              // <div className={classes.title}>
               <Typography
                 variant="h5"
                 align="center"

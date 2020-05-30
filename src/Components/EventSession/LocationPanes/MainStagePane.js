@@ -10,6 +10,7 @@ import {
   isParticipantOnCall
 } from "../../../Helpers/participantsHelper";
 import LeaveCurrentCallDialog from "./LeaveCurrentCallDialog";
+import EmptyPaneImg from "../../../Assets/illustrations/emptyPane.svg";
 
 const useStyles = makeStyles((theme) => ({
   buttonContainer: {
@@ -86,7 +87,7 @@ const MainStagePane = () => {
         <Box className={classes.emptyPane}>
           <img
             className={classes.emptyImage}
-            src="/illustrations/emptyPane.svg"
+            src={EmptyPaneImg}
             alt="Empty Main Stage"
           />
           <Typography variant="body2" color="textSecondary" display="block">
