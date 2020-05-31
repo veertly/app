@@ -1,11 +1,8 @@
 import React, { useRef, useEffect, useState } from "react";
-import { makeStyles /* , useTheme */ } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import { Grid } from "@material-ui/core";
 import ChatMessage from "./ChatMessage";
-// import InfiniteScroll from "react-infinite-scroller";
-// import { useSelector } from "react-redux";
-// import { getUserId } from "../../Redux/eventSession";
-// import { useScroll } from "react-use";
+import { useScroll, useUpdate, useScrolling } from "react-use";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -25,55 +22,124 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default (props) => {
+export default ({ user, users, messages }) => {
   const chatEnd = useRef(null);
   const scrollRef = React.useRef(null);
-  // const { x, y } = useScroll(scrollRef);
-  // console.log({ x, y });
 
-  let { user, users } = props;
+  const { y: scrollY } = useScroll(scrollRef);
+  const scrolling = useScrolling(scrollRef);
 
-  const [messages, setMessages] = useState([]);
+  const isScrollAtBottom = !!(
+    scrollRef.current &&
+    scrollRef.current.scrollHeight - scrollY === scrollRef.current.clientHeight
+  );
+
+  const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
+
+  const [lastTrackedMessagesJson, setLastTrackedMessagesJson] = useState(
+    messages ? JSON.stringify(messages) : null
+  );
+
+  const [isForcingScroll, setIsForcingScroll] = useState(true);
+  const [lastScrollingState, setLastScrollingState] = useState(false);
+  const [showNewMessages, setShowNewMessages] = useState(false);
+
+  const forceRender = useUpdate();
+
+  const scrollToBottom = React.useCallback(
+    () => chatEnd.current.scrollIntoView({ behavior: "auto" }),
+    []
+  );
 
   useEffect(() => {
-    setMessages(props.messages);
-    chatEnd.current.scrollIntoView({ behavior: "auto" });
-  }, [props.messages]);
+    const currentMessagesJson = JSON.stringify(messages);
+    if (currentMessagesJson !== lastTrackedMessagesJson) {
+      if (isForcingScroll) {
+        scrollToBottom();
+        setShowNewMessages(false);
+      } else {
+        setShowNewMessages(true);
+      }
+      setLastTrackedMessagesJson(currentMessagesJson);
+    }
+  }, [isForcingScroll, lastTrackedMessagesJson, messages, scrollToBottom]);
 
-  // useEffect(() => {
-  //   chatEnd.current.scrollIntoView({ behavior: "auto" });
-  // }, []);
-
+  // force update of timestamps
   useEffect(() => {
     const intervalId = setInterval(() => {
-      setMessages((mess) => [...mess]);
+      // setMessages((mess) => [...mess]);
+      forceRender();
     }, 60 * 1000);
     return () => clearInterval(intervalId);
-  }, []);
+  }, [forceRender]);
+
+  // initial scroll to bottom
+  useEffect(() => {
+    if (
+      messages &&
+      messages.length > 0 &&
+      !hasScrolledToBottom &&
+      scrollY === 0
+    ) {
+      chatEnd.current.scrollIntoView({ behavior: "auto" });
+      setHasScrolledToBottom(true);
+    }
+  }, [hasScrolledToBottom, messages, scrollY]);
+  console.log({
+    scrolling,
+    showNewMessages,
+    isScrollAtBottom,
+    isForcingScroll
+  });
+
+  // detect scroll changed
+  useEffect(() => {
+    if (scrolling !== lastScrollingState) {
+      if (scrolling) {
+        setIsForcingScroll(false);
+      } else {
+        setIsForcingScroll(isScrollAtBottom);
+      }
+      if (isScrollAtBottom) {
+        setShowNewMessages(false);
+      }
+      setLastScrollingState(scrolling);
+    }
+  }, [isScrollAtBottom, lastScrollingState, scrolling]);
 
   const classes = useStyles();
 
   return (
     <div className={classes.root} ref={scrollRef}>
-      <Grid
-        container
-        direction="column-reverse"
-        justify="flex-start"
-        alignItems="center"
-        className={classes.messagesContainerGrid}
-      >
-        {messages &&
-          messages.map((message) => (
-            <Grid
-              item
-              key={message.messageId}
-              className={classes.messageContainer}
-            >
-              <ChatMessage message={message} user={user} users={users} />
-            </Grid>
-          ))}
-      </Grid>
-      <div className={classes.shadowElement} ref={chatEnd} />
+      <div ref={scrollRef}>
+        <Grid
+          container
+          direction="column-reverse"
+          justify="flex-start"
+          alignItems="center"
+          className={classes.messagesContainerGrid}
+        >
+          {messages &&
+            messages.map((message) => (
+              <Grid
+                item
+                key={message.messageId}
+                className={classes.messageContainer}
+                // ref={!firstMessageRef ? firstMessageRef : lastMessageRef}
+              >
+                <ChatMessage message={message} user={user} users={users} />
+              </Grid>
+            ))}
+          {/* {loadingMore && (
+          <Grid item className={classes.messageContainer}>
+            <Typography variant="caption" display="block" align="center">
+              Loading more messages...
+            </Typography>
+          </Grid>
+        )} */}
+        </Grid>
+        <div className={classes.shadowElement} ref={chatEnd} />
+      </div>
     </div>
   );
 };
