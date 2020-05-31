@@ -161,9 +161,9 @@ const useStyles = makeStyles((theme) => ({
   },
   callActionsContainer: {
     position: "absolute",
-    top: 0,
+    top: 80,
     left: 0,
-    bottom: 0,
+    bottom: 80,
     display: "flex",
     alignItems: "center",
     // width: 300,
