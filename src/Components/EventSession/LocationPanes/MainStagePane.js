@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(1)
   }
 }));
-const MainStagePane = () => {
+const MainStagePane = ({ setTotalUsers }) => {
   const classes = useStyles();
   const sessionId = useSelector(getSessionId);
   const userSession = useSelector(getUserSession);
@@ -82,6 +82,7 @@ const MainStagePane = () => {
       <AttendeesPane
         paneFilter={ATTENDEES_PANE_FILTER.mainStage}
         setIsEmptyPane={setIsEmpty}
+        setTotalUsers={setTotalUsers}
       />
       {isEmpty && (
         <Box className={classes.emptyPane}>

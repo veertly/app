@@ -89,7 +89,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 // rgba(28, 71, 98, 0.08)
 
-export default function (props) {
+export default function ({ setRoomsCount }) {
   const classes = useStyles();
   const [joinDialog, setJoinDialog] = React.useState(false);
 
@@ -118,11 +118,6 @@ export default function (props) {
     _.forEach(liveGroups, (group) => {
       let extendedGroup = { ...group };
       let participantsIds = Object.keys(group.participants);
-      // participantsIds = participantsIds.concat(participantsIds);
-      // participantsIds = participantsIds.concat(participantsIds);
-      // participantsIds = participantsIds.concat(participantsIds);
-      // participantsIds = participantsIds.concat(participantsIds);
-      // participantsIds = participantsIds.concat(participantsIds);
 
       extendedGroup.participants = participantsIds.map(
         (userId) => users[userId]
@@ -135,8 +130,9 @@ export default function (props) {
         conversations.push(extendedGroup);
       }
     });
+    setRoomsCount(rooms.length);
     return { rooms, conversations };
-  }, [liveGroups, users, user]);
+  }, [liveGroups, setRoomsCount, user, users]);
 
   return (
     <div className={classes.root}>
