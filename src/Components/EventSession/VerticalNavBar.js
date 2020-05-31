@@ -179,19 +179,24 @@ const VerticalNavBar = (props) => {
   ]);
 
   useEffect(() => {
-    if (
-      chatMessages[CHAT_GLOBAL_NS].length > lastGlobalChatOpenCount && // new msg
-      currentNavBarSelection !== VERTICAL_NAV_OPTIONS.chat && // not on chat
-      lastNavBarSelection !== VERTICAL_NAV_OPTIONS.chat // not previously on chat
-      // currentNavBarSelection !== lastNavBarSelection // cha
-    ) {
-      setHasChatBadge(true);
+    if (chatMessages[CHAT_GLOBAL_NS].length > lastGlobalChatOpenCount) {
+      // new msg
+      if (
+        currentNavBarSelection !== VERTICAL_NAV_OPTIONS.chat && // not on chat
+        lastNavBarSelection !== VERTICAL_NAV_OPTIONS.chat // not previously on chat
+      ) {
+        setHasChatBadge(true);
+      }
+      if (currentNavBarSelection === VERTICAL_NAV_OPTIONS.chat) {
+        setLastGlobalChatOpenCount(chatMessages[CHAT_GLOBAL_NS].length);
+      }
     }
   }, [
     chatMessages,
     currentNavBarSelection,
     lastGlobalChatOpenCount,
-    lastNavBarSelection
+    lastNavBarSelection,
+    setLastGlobalChatOpenCount
   ]);
 
   useEffect(() => {

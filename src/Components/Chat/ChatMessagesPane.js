@@ -1,8 +1,9 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useCallback } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Grid } from "@material-ui/core";
 import ChatMessage from "./ChatMessage";
 import { useScroll, useUpdate, useScrolling } from "react-use";
+import ChatUnreadMessages from "./ChatUnreadMessages";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -42,7 +43,7 @@ export default ({ user, users, messages }) => {
 
   const [isForcingScroll, setIsForcingScroll] = useState(true);
   const [lastScrollingState, setLastScrollingState] = useState(false);
-  const [showNewMessages, setShowNewMessages] = useState(false);
+  const [countNewMessages, setCountNewMessages] = useState(0);
 
   const forceRender = useUpdate();
 
@@ -51,14 +52,15 @@ export default ({ user, users, messages }) => {
     []
   );
 
+  // handle new messages
   useEffect(() => {
     const currentMessagesJson = JSON.stringify(messages);
     if (currentMessagesJson !== lastTrackedMessagesJson) {
       if (isForcingScroll) {
         scrollToBottom();
-        setShowNewMessages(false);
+        setCountNewMessages(0);
       } else {
-        setShowNewMessages(true);
+        setCountNewMessages((v) => v + 1);
       }
       setLastTrackedMessagesJson(currentMessagesJson);
     }
@@ -85,12 +87,6 @@ export default ({ user, users, messages }) => {
       setHasScrolledToBottom(true);
     }
   }, [hasScrolledToBottom, messages, scrollY]);
-  console.log({
-    scrolling,
-    showNewMessages,
-    isScrollAtBottom,
-    isForcingScroll
-  });
 
   // detect scroll changed
   useEffect(() => {
@@ -101,13 +97,18 @@ export default ({ user, users, messages }) => {
         setIsForcingScroll(isScrollAtBottom);
       }
       if (isScrollAtBottom) {
-        setShowNewMessages(false);
+        setCountNewMessages(0);
       }
       setLastScrollingState(scrolling);
     }
   }, [isScrollAtBottom, lastScrollingState, scrolling]);
 
   const classes = useStyles();
+
+  const onClickNewMessages = useCallback(() => {
+    setCountNewMessages(0);
+    scrollToBottom();
+  }, [scrollToBottom]);
 
   return (
     <div className={classes.root} ref={scrollRef}>
@@ -140,6 +141,12 @@ export default ({ user, users, messages }) => {
         </Grid>
         <div className={classes.shadowElement} ref={chatEnd} />
       </div>
+      {countNewMessages > 0 && (
+        <ChatUnreadMessages
+          numMessages={countNewMessages}
+          onClickUnread={onClickNewMessages}
+        />
+      )}
     </div>
   );
 };
