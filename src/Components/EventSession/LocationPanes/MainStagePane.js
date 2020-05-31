@@ -91,7 +91,7 @@ const MainStagePane = () => {
             alt="Empty Main Stage"
           />
           <Typography variant="body2" color="textSecondary" display="block">
-            There's no one in the main stage
+            There's no one on the main stage
           </Typography>
         </Box>
       )}

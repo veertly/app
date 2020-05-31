@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { makeStyles /*, useTheme */ } from "@material-ui/core/styles";
 
 // import LobbyIcon from "@material-ui/icons/Store";
@@ -6,6 +6,7 @@ import { makeStyles /*, useTheme */ } from "@material-ui/core/styles";
 // import LobbyIcon from "@material-ui/icons/EventSeat";
 
 import LobbyIcon from "@material-ui/icons/Weekend";
+import { useLocalStorage } from "react-use";
 
 import MainStageIcon from "@material-ui/icons/DesktopMac";
 import RoomsIcon from "../../Assets/Icons/Rooms";
@@ -20,33 +21,7 @@ import HelpIcon from "../../Assets/Icons/Help";
 
 import { useHover } from "react-use";
 import { leaveCall } from "../../Modules/eventSessionOperations";
-
-// import { useDispatch, useSelector, shallowEqual } from "react-redux";
-// import {
-//   openEditProfile,
-//   openEventDetails,
-//   openChat,
-//   closeChat,
-//   openShare,
-//   openFeedback,
-//   isChatOpen
-// } from "../../../Redux/dialogs";
-// import routes from "../../../Config/routes";
-// import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import { setUserCurrentLocation } from "../../Modules/userOperations";
-// import { useHistory } from "react-router-dom";
-// import FeedbackIcon from "@material-ui/icons/GraphicEq";
-// import {
-//   getSessionId,
-//   getEventSessionDetails,
-//   getUserId
-// } from "../../../Redux/eventSession";
-// import {
-//   hideNotificationDot,
-//   toShowNotificationDot
-// } from "../../../Redux/chatMessages";
-// import Badge from "@material-ui/core/Badge";
-// import { trackEvent } from "../../../Modules/analytics";
 import { Box, Typography, Divider, Badge } from "@material-ui/core";
 import VerticalNavBarContext, {
   VERTICAL_NAV_OPTIONS
@@ -58,22 +33,18 @@ import {
   getUserGroup,
   getUserId
 } from "../../Redux/eventSession";
-import { toShowNotificationDot } from "../../Redux/chatMessages";
+import ChatMessagesContext, {
+  CHAT_GLOBAL_NS
+} from "../../Contexts/ChatMessagesContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
     flexDirection: "column",
     height: "100%"
-    // paddingTop: theme.spacing(2)
   },
   menuItem: ({ selected, hovered, isCurrentLocation }) => ({
     padding: theme.spacing(1, 0, 1, 0),
-    // borderTop: selected ? `1px solid ${theme.palette.secondary.light}` : "none",
-    // borderBottom: selected
-    //   ? `1px solid ${theme.palette.secondary.light}`
-    //   : "none",
-
     borderLeft: `4px solid ${
       isCurrentLocation
         ? theme.palette.secondary.light
@@ -86,14 +57,10 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: selected ? theme.palette.background.default : "inherit",
     "&:hover": {
       backgroundColor: theme.palette.background.default, //"rgba(0, 0, 0, 0.04)",
-      // backgroundColor: theme.palette.secondary.light, //"rgba(0, 0, 0, 0.04)",
       cursor: "pointer"
     }
   }),
   itemInnerBox: ({ selected }) => ({}),
-  itemIconBox: {
-    // marginBottom: theme.spacing(0.5)
-  },
   itemIcon: ({ selected, hovered, isCurrentLocation }) => ({
     width: "100%",
     height: "100%",
@@ -104,8 +71,6 @@ const useStyles = makeStyles((theme) => ({
       : hovered || selected
       ? theme.palette.primary.main
       : theme.palette.primary.light
-
-    // color: theme.palette.text.secondary
   })
 }));
 
@@ -154,7 +119,6 @@ const MenuIconContainer = ({
 };
 
 const VerticalNavBar = (props) => {
-  // const { eventSession, user } = props;
   const classes = useStyles();
 
   const {
@@ -163,17 +127,79 @@ const VerticalNavBar = (props) => {
     setHasNavBarPaneOpen
   } = React.useContext(VerticalNavBarContext);
 
-  const userCurrentLocation = useSelector(getUserCurrentLocation, shallowEqual);
-  const [currentLocation, setCurrentLocation] = React.useState(
-    userCurrentLocation
-  );
   const sessionId = useSelector(getSessionId);
   const userGroup = useSelector(getUserGroup);
   const userId = useSelector(getUserId);
 
-  const showNotificationDot = useSelector(toShowNotificationDot);
+  const [lastNavBarSelection, setLastNavBarSelection] = React.useState(null);
 
-  React.useEffect(() => {
+  const userCurrentLocation = useSelector(getUserCurrentLocation, shallowEqual);
+  const [currentLocation, setCurrentLocation] = React.useState(
+    userCurrentLocation
+  );
+
+  // const [lastGlobalChatOpenCount, setLastGlobalChatOpenCount] = React.useState(
+  //   0
+  // );
+  const [lastGlobalChatOpenCount, setLastGlobalChatOpenCount] = useLocalStorage(
+    `veertly/chat/${CHAT_GLOBAL_NS}/${sessionId}/${userId}/count`,
+    0,
+    {
+      raw: true
+    }
+  );
+
+  const [hasChatBadge, setHasChatBadge] = React.useState(false);
+
+  const { chatMessages } = React.useContext(ChatMessagesContext);
+
+  useEffect(() => {
+    if (currentNavBarSelection !== lastNavBarSelection) {
+      if (
+        lastNavBarSelection === VERTICAL_NAV_OPTIONS.chat &&
+        currentNavBarSelection !== VERTICAL_NAV_OPTIONS.chat
+      ) {
+        // chat closed
+        setLastGlobalChatOpenCount(chatMessages[CHAT_GLOBAL_NS].length);
+      } else if (
+        lastNavBarSelection !== VERTICAL_NAV_OPTIONS.chat &&
+        currentNavBarSelection === VERTICAL_NAV_OPTIONS.chat
+      ) {
+        // chat opened
+        setLastGlobalChatOpenCount(chatMessages[CHAT_GLOBAL_NS].length);
+        setHasChatBadge(false);
+      }
+      setLastNavBarSelection(currentNavBarSelection);
+    }
+  }, [
+    chatMessages,
+    currentNavBarSelection,
+    lastNavBarSelection,
+    setLastGlobalChatOpenCount
+  ]);
+
+  useEffect(() => {
+    if (chatMessages[CHAT_GLOBAL_NS].length > lastGlobalChatOpenCount) {
+      // new msg
+      if (
+        currentNavBarSelection !== VERTICAL_NAV_OPTIONS.chat && // not on chat
+        lastNavBarSelection !== VERTICAL_NAV_OPTIONS.chat // not previously on chat
+      ) {
+        setHasChatBadge(true);
+      }
+      if (currentNavBarSelection === VERTICAL_NAV_OPTIONS.chat) {
+        setLastGlobalChatOpenCount(chatMessages[CHAT_GLOBAL_NS].length);
+      }
+    }
+  }, [
+    chatMessages,
+    currentNavBarSelection,
+    lastGlobalChatOpenCount,
+    lastNavBarSelection,
+    setLastGlobalChatOpenCount
+  ]);
+
+  useEffect(() => {
     setCurrentLocation(userCurrentLocation);
     setCurrentNavBarSelection(userCurrentLocation);
 
@@ -181,9 +207,7 @@ const VerticalNavBar = (props) => {
       userCurrentLocation === VERTICAL_NAV_OPTIONS.lobby ||
       userCurrentLocation === VERTICAL_NAV_OPTIONS.mainStage
     ) {
-      // setHasNavBarPaneOpen(false);
       if (userGroup) {
-        //TODO: show warning dialog
         leaveCall(sessionId, userGroup, userId);
       }
     }
@@ -272,7 +296,7 @@ const VerticalNavBar = (props) => {
         label="Chat"
         selected={currentNavBarSelection === VERTICAL_NAV_OPTIONS.chat}
         onClick={handleClick(VERTICAL_NAV_OPTIONS.chat)}
-        hasBadge={showNotificationDot}
+        hasBadge={hasChatBadge}
       />
 
       <MenuIconContainer
