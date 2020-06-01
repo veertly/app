@@ -64,6 +64,7 @@
     "react-timestamp": "^5.1.0",
     "react-use": "^15.1.0",
     "react-window": "^1.8.5",
+    "react-webcam": "^5.0.2",
     "redux-devtools-extension": "^2.13.8",
     "redux-persist": "^6.0.0",
     "redux-thunk": "^2.3.0",
