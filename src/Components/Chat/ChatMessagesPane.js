@@ -9,6 +9,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     height: "100%",
     overflow: "auto",
+    overflowX: "hidden",
     flexWrap: "inherit"
   },
   messagesContainerGrid: {

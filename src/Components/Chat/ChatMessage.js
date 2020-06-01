@@ -20,6 +20,9 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     width: "calc(100% - 56px)"
   },
+  messageText: {
+    wordWrap: "break-word"
+  },
   avatar: {
     margin: theme.spacing(0, 1, 0, 0)
   },

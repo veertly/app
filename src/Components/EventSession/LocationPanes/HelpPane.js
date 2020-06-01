@@ -35,13 +35,21 @@ const HelpPane = () => {
     setExpanded(isExpanded ? panel : false);
   };
 
+  const handleChat = () => {
+    // window.$crisp.push(["do", "chat:open"]);
+    window.open(
+      "https://go.crisp.chat/chat/embed/?website_id=e2d77fef-388b-4609-a944-238bdcc2fc70",
+      "_blank"
+    );
+  };
+
   return (
     <div className={classes.root}>
       <div className={classes.buttonContainer}>
         <Button
           variant="contained"
           color="primary"
-          onClick={() => alert("under construction")}
+          onClick={handleChat}
           startIcon={<ChatIcon />}
         >
           Support Chat
