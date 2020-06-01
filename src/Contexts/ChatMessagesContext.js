@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { getSessionId } from "../Redux/eventSession";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import firebase from "../Modules/firebaseApp";
+import ChatArchiveDialog from "../Components/Chat/ChatArchiveDialog";
 
 export const CHAT_GLOBAL_NS = "global";
 const LIMIT_NUM_MESSAGES_QUERY = 500;
@@ -21,6 +22,11 @@ export const ChatMessagesContextWrapper = ({ children }) => {
     initialContext.chatMessages
   );
 
+  const [
+    chatArchiveDialogMessage,
+    setChatArchiveDialogMessage
+  ] = React.useState(null);
+
   const sessionId = useSelector(getSessionId);
 
   // --- global chat ---
@@ -32,16 +38,20 @@ export const ChatMessagesContextWrapper = ({ children }) => {
       .collection("eventSessionsChatMessages")
       .doc(sessionId)
       .collection(CHAT_GLOBAL_NS)
+      // .where("isArchived", "==", false)
       .orderBy("sentDate", "desc")
       .limit(LIMIT_NUM_MESSAGES_QUERY)
   );
 
   useEffect(() => {
     if (globalChatMessagesDb) {
-      console.log("--> Updated chat: " + globalChatMessagesDb.length);
+      const newMsgs = globalChatMessagesDb.filter(
+        (m) => m.status !== "ARCHIVED"
+      );
+
       setChatMessages((v) => ({
         ...v,
-        [CHAT_GLOBAL_NS]: globalChatMessagesDb
+        [CHAT_GLOBAL_NS]: newMsgs
       }));
     }
   }, [globalChatMessagesDb, sessionId]);
@@ -50,9 +60,15 @@ export const ChatMessagesContextWrapper = ({ children }) => {
     <ChatMessagesContext.Provider
       value={{
         chatMessages,
-        setChatMessages
+        setChatMessages,
+        setChatArchiveDialogMessage
       }}
     >
+      <ChatArchiveDialog
+        open={!!chatArchiveDialogMessage}
+        closeDialog={() => setChatArchiveDialogMessage(null)}
+        message={chatArchiveDialogMessage}
+      />
       {children}
     </ChatMessagesContext.Provider>
   );

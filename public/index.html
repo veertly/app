@@ -495,24 +495,26 @@
           s.src = "https://client.crisp.chat/l.js";
           s.async = 1;
           d.getElementsByTagName("head")[0].appendChild(s);
+          $crisp.push(["do", "chat:hide"]);
         })();
 
-        setInterval(() => {
-          try {
-            if (window.location.href.includes("/live")) {
-              let elem = document.querySelectorAll("a[data-maximized]")[0];
-              if (!elem) {
-                elem = document.querySelectorAll("a[data-cshid]")[0];
-              }
-              if (elem) {
-                elem.setAttribute(
-                  "style",
-                  "right: -4px!important; bottom: 0px!important"
-                );
-              }
-            }
-          } catch (e) {}
-        }, 5000);
+        // setInterval(() => {
+        //   try {
+        //     if (window.location.href.includes("/live")) {
+        //       let elem = document.querySelectorAll("a[data-maximized]")[0];
+        //       if (!elem) {
+        //         elem = document.querySelectorAll("a[data-cshid]")[0];
+        //       }
+        //       if (elem) {
+        //         elem.setAttribute(
+        //           "style",
+        //           // "right: -4px!important; bottom: 0px!important"
+        //           "display: hidden!important"
+        //         );
+        //       }
+        //     }
+        //   } catch (e) {}
+        // }, 5000);
       }
     </script>
 

@@ -146,7 +146,8 @@ export default function ({
   showFilter = false,
   showStartConversation = false,
   showSearch = false,
-  hideButtonsIfEmpty = false
+  hideButtonsIfEmpty = false,
+  setTotalUsers = (count) => {}
 }) {
   const [filterDialog, setFilterDialog] = React.useState(false);
 
@@ -199,8 +200,17 @@ export default function ({
 
       return isFiltered;
     });
+    setTotalUsers(result.length);
     return result;
-  }, [allParticipantsList, users, myUserId, paneFilter, showFilter, filters]);
+  }, [
+    allParticipantsList,
+    setTotalUsers,
+    users,
+    myUserId,
+    paneFilter,
+    showFilter,
+    filters
+  ]);
 
   React.useEffect(() => {
     setIsEmptyPane(filteredParticipants.length === 0);

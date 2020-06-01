@@ -13,6 +13,7 @@ import {
 } from "../../Redux/eventSession";
 import { participantCanNetwork } from "../../Helpers/participantsHelper";
 import { setUserAvailableForCall } from "../../Modules/userOperations";
+import useIsMobile from "../../Hooks/useIsMobile";
 
 // const useStyles = makeStyles((theme) => ({
 //   emptyPane: {
@@ -30,7 +31,7 @@ const PresenceSwitch = () => {
   const userSession = useSelector(getUserSession);
   const isAvailableForCall = useSelector(getUserAvailableForCall);
   const canNetwork = participantCanNetwork(userSession);
-
+  const isMobile = useIsMobile();
   const [switchValue, setSwitchValue] = useState(isAvailableForCall);
 
   useEffect(() => {
@@ -45,6 +46,9 @@ const PresenceSwitch = () => {
     setUserAvailableForCall(sessionId, value);
   };
 
+  if (isMobile) {
+    return null;
+  }
   return (
     <div>
       {canNetwork && (

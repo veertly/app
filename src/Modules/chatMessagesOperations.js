@@ -12,7 +12,8 @@ export const sendChatMessage = async (
     userId,
     sentDate: firebase.firestore.FieldValue.serverTimestamp(),
     messageId,
-    message
+    message,
+    status: "SENT"
   };
   // console.log({ messageDb });
   await db
@@ -23,116 +24,25 @@ export const sendChatMessage = async (
     .set(messageDb);
 };
 
-export const conferenceExists = async (sessionId) => {
-  let docRef = firebase
-    .firestore()
-    .collection("eventSessionsDetails")
-    .doc(sessionId.toLowerCase());
-
-  let docSnapshot = await docRef.get();
-  return docSnapshot.exists;
-};
-
-export const userRegisteredEvent = (sessionId) => {
-  //, userId, email) => {
-  let storageKey = "/veertly/" + sessionId;
-  if (localStorage.getItem(storageKey)) {
-    return true;
-  }
-  return false;
-
-  // let db = firebase.firestore();
-  // debugger;
-  // if (userId) {
-  //   let found = false;
-  //   let snapshot = await db
-  //     .collection("eventSessionsRegistrations")
-  //     .doc(sessionId)
-  //     .collection("registrations")
-  //     .where("userId", "==", userId)
-  //     .get();
-  //   debugger;
-
-  //   await snapshot.forEach((doc) => {
-  //     debugger;
-
-  //     found = true;
-  //   });
-  //   if (found) {
-  //     debugger;
-
-  //     return true;
-  //   }
-
-  // if (email) {
-  //   let found = false;
-  //   debugger;
-  //   let snapshot = await db
-  //     .collection("eventSessionsRegistrations")
-  //     .doc(sessionId)
-  //     .collection("registrations")
-  //     .where("email", "==", email)
-  //     .get();
-  //   debugger;
-  //   await snapshot.forEach((doc) => {
-  //     debugger;
-  //     found = true;
-  //   });
-  //   if (found) {
-  //     debugger;
-
-  //     return true;
-  //   }
-  // }
-
-  // return false;
-};
-
-export const registerToEvent = async (eventSession, userId, userDetails) => {
-  let sessionId = eventSession.id.toLowerCase();
-
-  if (!conferenceExists(sessionId)) {
-    throw new Error("Event doesn't exist...");
-  }
-  if (userRegisteredEvent(sessionId)) {
-    //, userId, userDetails.email)) {
-    throw new Error("You have already registered to this event.");
-  }
-  // if (userId || (userDetails.email && userDetails.email.trim() !== "")) {
-  //   if (await userRegisteredEvent(sessionId, userId, userDetails.email)) {
-  //     throw new Error("User is already registered");
-  //   }
-  // }
-
-  let { title, originalSessionId, eventBeginDate } = eventSession;
-
+export const archiveChatMessage = async (
+  sessionId,
+  namespace,
+  messageId,
+  archivedBy
+) => {
   let db = firebase.firestore();
+  let updateObj = {
+    status: "ARCHIVED",
+    archivedDate: firebase.firestore.FieldValue.serverTimestamp(),
+    archivedBy
+  };
+  console.log({ updateObj });
+  console.log({ sessionId, namespace, messageId, archivedBy });
 
-  let timestamp = new Date().getTime();
   await db
-    .collection("eventSessionsRegistrations")
-    .doc(sessionId)
-    .collection("registrations")
-    .doc("" + timestamp)
-    .set({
-      ...userDetails,
-      userId,
-      registrationDate: firebase.firestore.FieldValue.serverTimestamp(),
-      title,
-      originalSessionId,
-      eventBeginDate: eventBeginDate ? eventBeginDate : null
-    });
-  localStorage.setItem("/veertly/" + sessionId, true);
-};
-
-export const isUserRegisteredToEvent = async (sessionId, userId) => {
-  let docRef = firebase
-    .firestore()
-    .collection("eventSessionsRegistrations")
+    .collection("eventSessionsChatMessages")
     .doc(sessionId.toLowerCase())
-    .collection("registrations")
-    .doc(userId);
-
-  let docSnapshot = await docRef.get();
-  return docSnapshot.exists;
+    .collection(namespace)
+    .doc(messageId)
+    .update(updateObj);
 };

@@ -299,6 +299,9 @@ export const getUserAvailableForCall = (store) =>
   store.eventSession.participantsJoined[store.eventSession.userId]
     .availableForCall;
 
+export const isEventOwner = (store) =>
+  store.eventSession.userId === store.eventSession.eventSessionDetails.owner;
+
 // get original db entry of the current group
 export const getUserGroup = (store) => {
   let userSession = getUserSession(store);

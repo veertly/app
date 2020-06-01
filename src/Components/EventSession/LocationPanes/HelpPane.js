@@ -35,13 +35,21 @@ const HelpPane = () => {
     setExpanded(isExpanded ? panel : false);
   };
 
+  const handleChat = () => {
+    // window.$crisp.push(["do", "chat:open"]);
+    window.open(
+      "https://go.crisp.chat/chat/embed/?website_id=e2d77fef-388b-4609-a944-238bdcc2fc70",
+      "_blank"
+    );
+  };
+
   return (
     <div className={classes.root}>
       <div className={classes.buttonContainer}>
         <Button
           variant="contained"
           color="primary"
-          onClick={() => alert("under construction")}
+          onClick={handleChat}
           startIcon={<ChatIcon />}
         >
           Support Chat
@@ -84,7 +92,7 @@ const HelpPane = () => {
           </div>
         </ExpansionPanelDetails>
       </ExpansionPanel>
-      <ExpansionPanel
+      {/* <ExpansionPanel
         expanded={expanded === "panel2"}
         onChange={handleChange("panel2")}
       >
@@ -138,7 +146,7 @@ const HelpPane = () => {
             sit amet egestas eros, vitae egestas augue. Duis vel est augue.
           </Typography>
         </ExpansionPanelDetails>
-      </ExpansionPanel>
+      </ExpansionPanel> */}
     </div>
   );
 };

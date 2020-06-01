@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { makeStyles /*, useTheme */ } from "@material-ui/core/styles";
 
 import DoubleArrowIcon from "@material-ui/icons/DoubleArrow";
@@ -15,7 +15,7 @@ import LobbyPane from "./LocationPanes/LobbyPane";
 import PollsPane from "./LocationPanes/PollsPane";
 import QnAPane from "./LocationPanes/QnAPane";
 import HelpPane from "./LocationPanes/HelpPane";
-
+// import InfoIcon from "../../Assets/Icons/Info";
 import AttendeesPane, {
   ATTENDEES_PANE_FILTER
 } from "./LocationPanes/AttendeesPane";
@@ -30,7 +30,8 @@ const useStyles = makeStyles((theme) => ({
   },
   titleBox: {
     padding: theme.spacing(1.5, 1, 1.5, 2),
-    display: "flex"
+    display: "flex",
+    alignItems: "center"
   },
   rotateIcon: {
     "-ms-transform": "rotate(180deg)",
@@ -44,12 +45,21 @@ const useStyles = makeStyles((theme) => ({
   },
   paneContent: {
     overflow: "auto"
+  },
+  infoIcon: {
+    color: theme.palette.primary.light,
+    fontSize: "1em",
+    marginLeft: theme.spacing(2)
+  },
+  counter: {
+    color: theme.palette.text.hint
   }
 }));
 
 const VerticalNavPane = (props) => {
   // const { eventSession, user } = props;
   const classes = useStyles();
+  const [titleCount, setTitleCount] = useState(null);
 
   const {
     currentNavBarSelection,
@@ -96,12 +106,22 @@ const VerticalNavPane = (props) => {
     setHasNavBarPaneOpen(false);
   };
 
+  const showCount =
+    currentNavBarSelection === VERTICAL_NAV_OPTIONS.mainStage ||
+    currentNavBarSelection === VERTICAL_NAV_OPTIONS.attendees ||
+    currentNavBarSelection === VERTICAL_NAV_OPTIONS.rooms;
+
   return (
     <div className={classes.root}>
       <Box className={classes.titleBox}>
         <Typography color="secondary" className={classes.paneTitle}>
           {getTitle()}
+          {showCount && titleCount !== null && (
+            <span className={classes.counter}>{` (${titleCount})`}</span>
+          )}
         </Typography>
+        {/* <InfoIcon className={classes.infoIcon} /> */}
+
         <div style={{ flexGrow: 1 }}></div>
         <Tooltip title="Collapse">
           <IconButton
@@ -116,12 +136,15 @@ const VerticalNavPane = (props) => {
           </IconButton>
         </Tooltip>
       </Box>
+
       <Box className={classes.paneContent}>
         {currentNavBarSelection === VERTICAL_NAV_OPTIONS.mainStage && (
-          <MainStagePane />
+          <MainStagePane setTotalUsers={setTitleCount} />
         )}
         {currentNavBarSelection === VERTICAL_NAV_OPTIONS.lobby && <LobbyPane />}
-        {currentNavBarSelection === VERTICAL_NAV_OPTIONS.rooms && <RoomsTab />}
+        {currentNavBarSelection === VERTICAL_NAV_OPTIONS.rooms && (
+          <RoomsTab setRoomsCount={setTitleCount} />
+        )}
 
         {currentNavBarSelection === VERTICAL_NAV_OPTIONS.networking && (
           <ConversationsPane />
@@ -131,6 +154,7 @@ const VerticalNavPane = (props) => {
           <AttendeesPane
             paneFilter={ATTENDEES_PANE_FILTER.all}
             showFilter={true}
+            setTotalUsers={setTitleCount}
           />
         )}
 

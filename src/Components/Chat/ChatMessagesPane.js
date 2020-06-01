@@ -4,11 +4,14 @@ import { Grid } from "@material-ui/core";
 import ChatMessage from "./ChatMessage";
 import { useScroll, useUpdate, useScrolling } from "react-use";
 import ChatUnreadMessages from "./ChatUnreadMessages";
+import { useSelector } from "react-redux";
+import { isEventOwner, getUserId } from "../../Redux/eventSession";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     height: "100%",
     overflow: "auto",
+    overflowX: "hidden",
     flexWrap: "inherit"
   },
   messagesContainerGrid: {
@@ -52,6 +55,9 @@ export default ({ user, users, messages }) => {
     []
   );
 
+  const isOwner = useSelector(isEventOwner);
+  const userId = useSelector(getUserId);
+
   // handle new messages
   useEffect(() => {
     const currentMessagesJson = JSON.stringify(messages);
@@ -60,7 +66,10 @@ export default ({ user, users, messages }) => {
         scrollToBottom();
         setCountNewMessages(0);
       } else {
-        setCountNewMessages((v) => v + 1);
+        const lastMessages = JSON.parse(lastTrackedMessagesJson);
+        const diff = messages.length - lastMessages.length;
+
+        setCountNewMessages(diff > 0 ? diff : 0);
       }
       setLastTrackedMessagesJson(currentMessagesJson);
     }
@@ -128,7 +137,13 @@ export default ({ user, users, messages }) => {
                 className={classes.messageContainer}
                 // ref={!firstMessageRef ? firstMessageRef : lastMessageRef}
               >
-                <ChatMessage message={message} user={user} users={users} />
+                <ChatMessage
+                  message={message}
+                  user={user}
+                  users={users}
+                  isOwner={isOwner}
+                  userId={userId}
+                />
               </Grid>
             ))}
           {/* {loadingMore && (
