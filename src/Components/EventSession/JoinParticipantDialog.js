@@ -402,7 +402,8 @@ export default function (props) {
           {participantSession &&
             !isMyUser &&
             !participantAvailableForCall &&
-            !participantInConversation && (
+            !participantInConversation &&
+            !participantInConferenceRoom && (
               <div className={classes.buttonContainer}>
                 <Alert severity="info" className={classes.alert}>
                   {participant.firstName} is not available to talk

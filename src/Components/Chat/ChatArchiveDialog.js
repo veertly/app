@@ -38,7 +38,7 @@ const ChatArchiveDialog = ({ open, closeDialog, message }) => {
       <DialogContent>
         {message && <ChatMessage message={message} users={users} previewOnly />}
         <Alert severity="error">
-          Are you sure you really want to archive this message?
+          This message will be removed for all attendees
         </Alert>
       </DialogContent>
       <DialogActions>
