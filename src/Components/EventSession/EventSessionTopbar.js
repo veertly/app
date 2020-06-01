@@ -6,8 +6,14 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
 
 import { makeStyles } from "@material-ui/styles";
-import { AppBar, Toolbar, Typography } from "@material-ui/core";
-
+import {
+  AppBar,
+  Toolbar,
+  Typography
+  // Hidden,
+  // IconButton
+} from "@material-ui/core";
+// import MenuIcon from "@material-ui/icons/Menu";
 import VeertlyLogo from "../../Assets/Veertly_white.svg";
 
 // import AvatarLogin from "../Topbar/AvatarLogin";
@@ -36,7 +42,8 @@ const useStyles = makeStyles((theme) => ({
     boxShadow: "none"
   },
   flexGrow: {
-    flexGrow: 1
+    flexGrow: 1,
+    textAlign: "center"
   },
   signOutButton: {
     marginLeft: theme.spacing(1)
@@ -86,7 +93,8 @@ const useStyles = makeStyles((theme) => ({
     right: 0,
     textAlign: "center"
   },
-  presenceContainer: { marginRight: theme.spacing(3) }
+  presenceContainer: { marginRight: theme.spacing(3) },
+  menuIcon: { color: "white" }
 }));
 
 // const RoomButton = ({ onClick, disabled, isCurrentRoom, children, icon }) => {
@@ -182,6 +190,16 @@ export default withRouter((props) => {
     <React.Fragment>
       <AppBar className={clsx(classes.root)}>
         <Toolbar style={{ position: "relative" }}>
+          {/* <Hidden smUp>
+            <IconButton className={classes.menuIcon}>
+              <MenuIcon />
+            </IconButton>
+            <div className={classes.flexGrow}>
+              <img alt="Logo" src={VeertlyLogo} className={classes.logo} />
+            </div>
+          </Hidden> */}
+
+          {/* <Hidden smDown> */}
           <img alt="Logo" src={VeertlyLogo} className={classes.logo} />
           <div className={classes.flexGrow}></div>
           <div className={classes.titleContainer}>
@@ -199,6 +217,8 @@ export default withRouter((props) => {
           <div className={classes.presenceContainer}>
             <PresenceSwitch />
           </div>
+          {/* </Hidden> */}
+
           <div className={classes.avatarContainer}>
             {/* <AvatarLogin eventSession={eventSession} /> */}
             <UserAvatar user={user} onClick={handleMenu} />

@@ -40,7 +40,7 @@ import { VERTICAL_NAV_OPTIONS } from "../../Contexts/VerticalNavBarContext";
 import VerticalNavPane from "../../Components/EventSession/VerticalNavPane";
 import EventPage from "../../Components/Event/EventPage";
 import { Box } from "@material-ui/core";
-import CurrentCallActionsVertical from "../../Components/EventSession/CurrentCallActionsVertical";
+// import CurrentCallActionsVertical from "../../Components/EventSession/CurrentCallActionsVertical";
 
 export const SIDE_PANE_WIDTH = 0;
 export const VERTICAL_NAV_WIDTH = 85;
@@ -78,7 +78,8 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down("xs")]: {
       right: 0,
       left: 0,
-      top: TOP_BAR_MOBILE
+      top: TOP_BAR_MOBILE,
+      backgroundSize: "50%"
     }
   }),
   noCall: {
@@ -156,8 +157,10 @@ const useStyles = makeStyles((theme) => ({
     bottom: 0,
     top: 0,
     overflow: "auto",
-    paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(4)
+    padding: theme.spacing(2, 2),
+    [theme.breakpoints.up("sm")]: {
+      padding: theme.spacing(4, 2)
+    }
   },
   callActionsContainer: {
     position: "absolute",
@@ -332,9 +335,9 @@ const EventSessionContainer = (props) => {
                   jitsiApi={jitsiApi}
                   setJitsiApi={setJitsiApi}
                 />
-                <Box className={classes.callActionsContainer}>
+                {/* <Box className={classes.callActionsContainer}>
                   <CurrentCallActionsVertical />
-                </Box>
+                </Box> */}
               </>
             )}
             {!userGroup &&
