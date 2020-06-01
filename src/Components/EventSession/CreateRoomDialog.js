@@ -12,14 +12,19 @@ import {
 } from "../../Redux/eventSession";
 import Alert from "@material-ui/lab/Alert";
 import { isCreateRoomOpen, closeCreateRoom } from "../../Redux/dialogs";
-import { Typography, TextField } from "@material-ui/core";
+import {
+  TextField,
+  DialogTitle,
+  DialogActions,
+  DialogContent
+} from "@material-ui/core";
 import DialogClose from "../Misc/DialogClose";
 const useStyles = makeStyles((theme) => ({
   content: {
-    position: "relative",
-    width: theme.breakpoints.values.sm,
-    padding: theme.spacing(6),
-    textAlign: "center"
+    position: "relative"
+    // width: theme.breakpoints.values.sm
+    // padding: theme.spacing(6),
+    // textAlign: "center"
   },
   closeContainer: {
     position: "absolute"
@@ -52,7 +57,9 @@ const useStyles = makeStyles((theme) => ({
   },
   avatar: {
     margin: theme.spacing(0.5)
-  }
+  },
+  dialogTitle: { color: theme.palette.primary.main },
+  button: { margin: theme.spacing(2) }
 }));
 
 export default function (props) {
@@ -85,26 +92,31 @@ export default function (props) {
         onClose={handleClose}
         aria-labelledby="draggable-dialog-title"
       >
-        <div className={classes.content}>
-          <Typography
+        <DialogTitle className={classes.dialogTitle}>
+          Create new room
+        </DialogTitle>
+        <DialogContent>
+          <div className={classes.content}>
+            {/* <Typography
             color="primary"
             variant="h4"
             align="center"
             style={{ marginBottom: 16 }}
           >
             Create new room
-          </Typography>
-          <TextField
-            autoFocus
-            label="Room Name"
-            name="roomName"
-            variant="outlined"
-            value={roomName}
-            style={{ width: "50%" }}
-            onChange={(e) => setRoomName(e.target.value)}
-            required
-          />
-          <div className={classes.buttonContainer}>
+          </Typography> */}
+            <TextField
+              autoFocus
+              label="Room Name"
+              name="roomName"
+              variant="outlined"
+              value={roomName}
+              // style={{ width: "50%" }}
+              onChange={(e) => setRoomName(e.target.value)}
+              required
+              fullWidth
+            />
+            {/* <div className={classes.buttonContainer}>
             <Button
               variant="contained"
               color="primary"
@@ -112,19 +124,37 @@ export default function (props) {
               onClick={handleCreateRoom}
               disabled={roomName.trim() === ""}
             >
-              Create &amp; join
+              Create
             </Button>
-          </div>
-          <Alert severity="info" className={classes.alert}>
-            A room will be created with this name and any attendee will be able
-            to join it
-          </Alert>
-          {userGroup && (
+          </div> */}
+            <Alert severity="info" className={classes.alert}>
+              A room will be created with this name and any attendee will be
+              able to join it
+            </Alert>
+            {/* {userGroup && (
             <Alert severity="warning" className={classes.alert}>
               You will leave your current call
             </Alert>
-          )}
-        </div>
+          )} */}
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={handleClose}
+            color="primary"
+            className={classes.button}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleCreateRoom}
+            className={classes.button}
+            color="primary"
+            variant="contained"
+          >
+            Create
+          </Button>
+        </DialogActions>
       </DialogClose>
     </div>
   );

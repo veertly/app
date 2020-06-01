@@ -200,21 +200,13 @@ export default function ({
 
       return isFiltered;
     });
-    setTotalUsers(result.length);
     return result;
-  }, [
-    allParticipantsList,
-    setTotalUsers,
-    users,
-    myUserId,
-    paneFilter,
-    showFilter,
-    filters
-  ]);
+  }, [allParticipantsList, users, myUserId, paneFilter, showFilter, filters]);
 
   React.useEffect(() => {
     setIsEmptyPane(filteredParticipants.length === 0);
-  }, [filteredParticipants.length, setIsEmptyPane]);
+    setTotalUsers(filteredParticipants.length);
+  }, [filteredParticipants.length, setIsEmptyPane, setTotalUsers]);
 
   const feelingLucky = React.useCallback(() => {
     let selectedParticipantSession = _.sample(filteredParticipants);

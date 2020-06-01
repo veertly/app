@@ -134,13 +134,12 @@ const VerticalNavBar = (props) => {
   const [lastNavBarSelection, setLastNavBarSelection] = React.useState(null);
 
   const userCurrentLocation = useSelector(getUserCurrentLocation, shallowEqual);
+
   const [currentLocation, setCurrentLocation] = React.useState(
     userCurrentLocation
   );
+  const [lastCurrentSelection, setLastCurrentSelection] = React.useState(null);
 
-  // const [lastGlobalChatOpenCount, setLastGlobalChatOpenCount] = React.useState(
-  //   0
-  // );
   const [lastGlobalChatOpenCount, setLastGlobalChatOpenCount] = useLocalStorage(
     `veertly/chat/${CHAT_GLOBAL_NS}/${sessionId}/${userId}/count`,
     0,
@@ -169,6 +168,7 @@ const VerticalNavBar = (props) => {
         setLastGlobalChatOpenCount(chatMessages[CHAT_GLOBAL_NS].length);
         setHasChatBadge(false);
       }
+
       setLastNavBarSelection(currentNavBarSelection);
     }
   }, [
@@ -200,23 +200,27 @@ const VerticalNavBar = (props) => {
   ]);
 
   useEffect(() => {
-    setCurrentLocation(userCurrentLocation);
-    setCurrentNavBarSelection(userCurrentLocation);
+    if (userCurrentLocation !== lastCurrentSelection) {
+      setCurrentLocation(userCurrentLocation);
+      setCurrentNavBarSelection(userCurrentLocation);
 
-    if (
-      userCurrentLocation === VERTICAL_NAV_OPTIONS.lobby ||
-      userCurrentLocation === VERTICAL_NAV_OPTIONS.mainStage
-    ) {
-      if (userGroup) {
-        leaveCall(sessionId, userGroup, userId);
+      if (
+        userCurrentLocation === VERTICAL_NAV_OPTIONS.lobby ||
+        userCurrentLocation === VERTICAL_NAV_OPTIONS.mainStage
+      ) {
+        if (userGroup) {
+          leaveCall(sessionId, userGroup, userId);
+        }
       }
-    }
-    if (userCurrentLocation === VERTICAL_NAV_OPTIONS.lobby) {
-      setHasNavBarPaneOpen(false);
-    } else {
-      setHasNavBarPaneOpen(true);
+      if (userCurrentLocation === VERTICAL_NAV_OPTIONS.lobby) {
+        setHasNavBarPaneOpen(false);
+      } else {
+        setHasNavBarPaneOpen(true);
+      }
+      setLastCurrentSelection(userCurrentLocation);
     }
   }, [
+    lastCurrentSelection,
     sessionId,
     setCurrentNavBarSelection,
     setHasNavBarPaneOpen,

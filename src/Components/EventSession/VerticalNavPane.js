@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import { makeStyles /*, useTheme */ } from "@material-ui/core/styles";
 
 import DoubleArrowIcon from "@material-ui/icons/DoubleArrow";
@@ -15,6 +15,8 @@ import LobbyPane from "./LocationPanes/LobbyPane";
 import PollsPane from "./LocationPanes/PollsPane";
 import QnAPane from "./LocationPanes/QnAPane";
 import HelpPane from "./LocationPanes/HelpPane";
+import SplashScreen from "../Misc/SplashScreen";
+
 // import InfoIcon from "../../Assets/Icons/Info";
 import AttendeesPane, {
   ATTENDEES_PANE_FILTER
@@ -85,7 +87,7 @@ const VerticalNavPane = (props) => {
         return "All Attendees";
 
       case VERTICAL_NAV_OPTIONS.chat:
-        return "Chat";
+        return "Global Chat";
 
       case VERTICAL_NAV_OPTIONS.polls:
         return "Polls";
@@ -116,7 +118,7 @@ const VerticalNavPane = (props) => {
       <Box className={classes.titleBox}>
         <Typography color="secondary" className={classes.paneTitle}>
           {getTitle()}
-          {showCount && titleCount !== null && (
+          {showCount && titleCount > 0 && (
             <span className={classes.counter}>{` (${titleCount})`}</span>
           )}
         </Typography>
@@ -138,33 +140,39 @@ const VerticalNavPane = (props) => {
       </Box>
 
       <Box className={classes.paneContent}>
-        {currentNavBarSelection === VERTICAL_NAV_OPTIONS.mainStage && (
-          <MainStagePane setTotalUsers={setTitleCount} />
-        )}
-        {currentNavBarSelection === VERTICAL_NAV_OPTIONS.lobby && <LobbyPane />}
-        {currentNavBarSelection === VERTICAL_NAV_OPTIONS.rooms && (
-          <RoomsTab setRoomsCount={setTitleCount} />
-        )}
+        <Suspense fallback={<SplashScreen />}>
+          {currentNavBarSelection === VERTICAL_NAV_OPTIONS.mainStage && (
+            <MainStagePane setTotalUsers={setTitleCount} />
+          )}
+          {currentNavBarSelection === VERTICAL_NAV_OPTIONS.lobby && (
+            <LobbyPane />
+          )}
+          {currentNavBarSelection === VERTICAL_NAV_OPTIONS.rooms && (
+            <RoomsTab setRoomsCount={setTitleCount} />
+          )}
 
-        {currentNavBarSelection === VERTICAL_NAV_OPTIONS.networking && (
-          <ConversationsPane />
-        )}
+          {currentNavBarSelection === VERTICAL_NAV_OPTIONS.networking && (
+            <ConversationsPane />
+          )}
 
-        {currentNavBarSelection === VERTICAL_NAV_OPTIONS.attendees && (
-          <AttendeesPane
-            paneFilter={ATTENDEES_PANE_FILTER.all}
-            showFilter={true}
-            setTotalUsers={setTitleCount}
-          />
-        )}
+          {currentNavBarSelection === VERTICAL_NAV_OPTIONS.attendees && (
+            <AttendeesPane
+              paneFilter={ATTENDEES_PANE_FILTER.all}
+              showFilter={true}
+              setTotalUsers={setTitleCount}
+            />
+          )}
 
-        {currentNavBarSelection === VERTICAL_NAV_OPTIONS.chat && <ChatPane />}
+          {currentNavBarSelection === VERTICAL_NAV_OPTIONS.chat && <ChatPane />}
 
-        {currentNavBarSelection === VERTICAL_NAV_OPTIONS.polls && <PollsPane />}
+          {currentNavBarSelection === VERTICAL_NAV_OPTIONS.polls && (
+            <PollsPane />
+          )}
 
-        {currentNavBarSelection === VERTICAL_NAV_OPTIONS.qna && <QnAPane />}
+          {currentNavBarSelection === VERTICAL_NAV_OPTIONS.qna && <QnAPane />}
 
-        {currentNavBarSelection === VERTICAL_NAV_OPTIONS.help && <HelpPane />}
+          {currentNavBarSelection === VERTICAL_NAV_OPTIONS.help && <HelpPane />}
+        </Suspense>
       </Box>
       {/* <MenuIconContainer icon={ChatIcon} label="Chat" /> */}
 

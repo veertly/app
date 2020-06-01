@@ -69,7 +69,7 @@ export const getJitsiOptions = (
         showChat ? "chat" : "",
 
         // "profile",
-        "info",
+        // "info",
         "recording",
         "livestreaming",
         "etherpad",

@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import JoinConversationDialog from "./JoinConversationDialog";
-
+import NoRoomsImg from "../../Assets/illustrations/undraw_group_hangout_5gmq.svg";
+// undraw_group_hangout_5gmq
+// conference_call
 import { useSelector, shallowEqual, useDispatch } from "react-redux";
 import {
   getUsers,
@@ -13,6 +15,7 @@ import {
 import RoomCard from "./RoomCard";
 import _ from "lodash";
 import { openCreateRoom } from "../../Redux/dialogs";
+import { Box, Typography } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -53,8 +56,8 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     textAlign: "center"
   },
-  button: {
-    margin: theme.spacing(1)
+  roomButton: {
+    margin: theme.spacing(2)
   },
   joinButtonContainer: {
     position: "absolute",
@@ -85,6 +88,14 @@ const useStyles = makeStyles((theme) => ({
   centerButton: {
     width: "100%",
     textAlign: "center"
+  },
+  emptyPane: {
+    marginTop: theme.spacing(4),
+    textAlign: "center"
+  },
+  emptyImage: {
+    width: "55%",
+    marginBottom: theme.spacing(1)
   }
 }));
 // rgba(28, 71, 98, 0.08)
@@ -130,9 +141,12 @@ export default function ({ setRoomsCount }) {
         conversations.push(extendedGroup);
       }
     });
-    setRoomsCount(rooms.length);
     return { rooms, conversations };
-  }, [liveGroups, setRoomsCount, user, users]);
+  }, [liveGroups, user, users]);
+
+  useEffect(() => {
+    setRoomsCount(rooms.length);
+  }, [rooms.length, setRoomsCount]);
 
   return (
     <div className={classes.root}>
@@ -143,6 +157,28 @@ export default function ({ setRoomsCount }) {
         groupId={selectedGroupId}
       />
       <div className={classes.relativeContainer}>
+        {rooms.length === 0 && (
+          <Box className={classes.emptyPane}>
+            <img
+              className={classes.emptyImage}
+              src={NoRoomsImg}
+              alt="no rooms available"
+            />
+            {isRoomCreationAllowed && (
+              <Typography variant="body2" color="textSecondary" display="block">
+                There are no rooms available yet.
+                <br />
+                Create a topic room and start talking with others...
+              </Typography>
+            )}
+            {!isRoomCreationAllowed && (
+              <Typography variant="body2" color="textSecondary" display="block">
+                The organizer has no rooms created yet. <br />
+                Check again later.
+              </Typography>
+            )}
+          </Box>
+        )}
         {rooms.map((room) => {
           return <RoomCard key={room.id} room={room} />;
         })}
@@ -152,7 +188,7 @@ export default function ({ setRoomsCount }) {
               variant="outlined"
               color="primary"
               size="small"
-              className={classes.button}
+              className={classes.roomButton}
               onClick={handleCreateRoom}
               // disabled={participantsAvailable.length <= 1}
             >
