@@ -1,29 +1,33 @@
 import React, { useState } from "react";
 import Button from "@material-ui/core/Button";
-import Dialog from "@material-ui/core/Dialog";
 
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import _ from "lodash";
 import FormGroup from "@material-ui/core/FormGroup";
 import { useSelector, shallowEqual, useDispatch } from "react-redux";
-import { getUsers, getParticipantsJoined, setFilters } from "../../Redux/eventSession";
+import {
+  getUsers,
+  getParticipantsJoined,
+  setFilters
+} from "../../Redux/eventSession";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
+import DialogClose from "../Misc/DialogClose";
 
 const useStyles = makeStyles((theme) => ({
   content: {
     position: "relative",
     width: theme.breakpoints.values.sm,
-    padding: theme.spacing(6),
+    padding: theme.spacing(6)
   },
   closeContainer: {
-    position: "absolute",
+    position: "absolute"
   },
   buttonContainer: {
     width: "100%",
     textAlign: "center",
-    marginTop: theme.spacing(4),
+    marginTop: theme.spacing(4)
   },
   hintText: {
     marginBottom: theme.spacing(4),
@@ -32,17 +36,17 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     marginLeft: "auto",
     marginRight: "auto",
-    marginTop: theme.spacing(2),
+    marginTop: theme.spacing(2)
   },
   emptySpaceBottom: {
-    marginBottom: theme.spacing(4),
+    marginBottom: theme.spacing(4)
   },
   autoComplete: {
-    width: "100%",
+    width: "100%"
   },
   caption: {
-    marginTop: theme.spacing(1),
-  },
+    marginTop: theme.spacing(1)
+  }
 }));
 
 export default function (props) {
@@ -60,14 +64,19 @@ export default function (props) {
   const handleClose = () => {
     setOpen(false);
   };
-  
+
   const usersInterests = React.useMemo(() => {
     let result = {};
     _.forEach(users, (user, id) => {
       let { interestsChips } = user;
       let sessionParticipant = participantsJoined[id];
 
-      if (interestsChips && interestsChips.length > 0 && sessionParticipant && sessionParticipant.isOnline) {
+      if (
+        interestsChips &&
+        interestsChips.length > 0 &&
+        sessionParticipant &&
+        sessionParticipant.isOnline
+      ) {
         for (let i = 0; i < interestsChips.length; i++) {
           let interest = interestsChips[i].label;
           if (result[interest]) {
@@ -75,7 +84,7 @@ export default function (props) {
           } else {
             result[interest] = {
               label: interest,
-              count: 1,
+              count: 1
             };
           }
         }
@@ -86,30 +95,33 @@ export default function (props) {
 
     return sorted;
   }, [users, participantsJoined]);
-  
+
   // set the default value
   const savedFiltersLabel = Object.keys(filters);
-  const [values, setValues] = useState(usersInterests.filter((interest) => savedFiltersLabel.includes(interest.label)));
+  const [values, setValues] = useState(
+    usersInterests.filter((interest) =>
+      savedFiltersLabel.includes(interest.label)
+    )
+  );
 
   const handleFilterSelected = (interests) => {
     const newFilters = interests.reduce((acc, interest) => {
       acc[interest.label] = true;
       return acc;
-    }, {})
+    }, {});
     setInternalFilters(newFilters);
-    dispatch(setFilters(newFilters))
-    setValues(interests)
-  }
+    dispatch(setFilters(newFilters));
+    setValues(interests);
+  };
 
   const applyFilters = React.useCallback(() => {
-    dispatch(setFilters(internalFilters))
+    dispatch(setFilters(internalFilters));
     setOpen(false);
   }, [internalFilters, setOpen, dispatch]);
 
-
   return (
     <div>
-      <Dialog open={open} onClose={handleClose} maxWidth={"sm"}>
+      <DialogClose open={open} onClose={handleClose} maxWidth={"sm"}>
         <div className={classes.content}>
           <Typography variant="h5" color="primary" align="left">
             Filter list of attendees by interest/hobby
@@ -123,7 +135,7 @@ export default function (props) {
               getOptionLabel={(option) => option.label}
               value={values}
               onChange={(_, value) => {
-                handleFilterSelected(value)
+                handleFilterSelected(value);
               }}
               filterSelectedOptions
               className={classes.autoComplete}
@@ -136,16 +148,24 @@ export default function (props) {
                 />
               )}
             />
-
           </FormGroup>
-          
-          <Typography className={classes.caption} variant="caption" display="block">
+
+          <Typography
+            className={classes.caption}
+            variant="caption"
+            display="block"
+          >
             * The more keywords you add, the more results you will see.
           </Typography>
 
           <React.Fragment>
             <div className={classes.buttonContainer}>
-              <Button variant="contained" color="primary" className={classes.button} onClick={applyFilters}>
+              <Button
+                variant="contained"
+                color="primary"
+                className={classes.button}
+                onClick={applyFilters}
+              >
                 Apply filters
               </Button>
             </div>
@@ -166,7 +186,7 @@ export default function (props) {
           )} */}
           {/* {(onConferenceRoom || participant.id === user.uid) && <div className={classes.emptySpaceBottom}></div>} */}
         </div>
-      </Dialog>
+      </DialogClose>
     </div>
   );
 }

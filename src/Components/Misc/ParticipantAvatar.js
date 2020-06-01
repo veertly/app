@@ -6,9 +6,11 @@ import ParticipantCard from "../EventSession/ParticipantCard";
 
 const useStyles = makeStyles((theme) => ({
   root: {},
-  // tooltip: {
-  //   width: 400,
-  // },
+  avatar: {
+    border: "1px solid #F4F6F8",
+    marginLeft: 3,
+    marginRight: 3
+  }
 }));
 
 const HtmlTooltip = withStyles((theme) => ({
@@ -20,8 +22,8 @@ const HtmlTooltip = withStyles((theme) => ({
     width: "100%",
     fontSize: theme.typography.pxToRem(12),
     border: "1px solid #dadde9",
-    padding: theme.spacing(2),
-  },
+    padding: theme.spacing(2)
+  }
 }))(Tooltip);
 
 export default function (props) {
@@ -43,7 +45,12 @@ export default function (props) {
         }
         interactive
       >
-        <Avatar alt={participant.firstName} src={participant.avatarUrl} className={classes.avatar} {...rest} />
+        <Avatar
+          alt={participant.firstName}
+          src={participant.avatarUrl}
+          className={classes.avatar}
+          {...rest}
+        />
       </HtmlTooltip>
     );
   }

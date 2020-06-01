@@ -1,29 +1,33 @@
 import React from "react";
 import Button from "@material-ui/core/Button";
-import Dialog from "@material-ui/core/Dialog";
 import { makeStyles } from "@material-ui/core/styles";
 import { createNewRoom } from "../../Modules/eventSessionOperations";
 import { useSnackbar } from "material-ui-snackbar-provider";
 
 import { useSelector, shallowEqual, useDispatch } from "react-redux";
-import { getSessionId, getUserId, getUserLiveGroup } from "../../Redux/eventSession";
+import {
+  getSessionId,
+  getUserId,
+  getUserLiveGroup
+} from "../../Redux/eventSession";
 import Alert from "@material-ui/lab/Alert";
 import { isCreateRoomOpen, closeCreateRoom } from "../../Redux/dialogs";
 import { Typography, TextField } from "@material-ui/core";
+import DialogClose from "../Misc/DialogClose";
 const useStyles = makeStyles((theme) => ({
   content: {
     position: "relative",
     width: theme.breakpoints.values.sm,
     padding: theme.spacing(6),
-    textAlign: "center",
+    textAlign: "center"
   },
   closeContainer: {
-    position: "absolute",
+    position: "absolute"
   },
   buttonContainer: {
     width: "100%",
     textAlign: "center",
-    paddingTop: theme.spacing(2),
+    paddingTop: theme.spacing(2)
   },
   hintText: {
     marginBottom: theme.spacing(4),
@@ -32,23 +36,23 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     marginLeft: "auto",
     marginRight: "auto",
-    marginTop: theme.spacing(2),
+    marginTop: theme.spacing(2)
   },
   emptySpaceBottom: {
-    marginBottom: theme.spacing(4),
+    marginBottom: theme.spacing(4)
   },
   participantContainer: {
-    marginBottom: theme.spacing(3),
+    marginBottom: theme.spacing(3)
   },
   alert: {
-    marginTop: theme.spacing(2),
+    marginTop: theme.spacing(2)
   },
   avatarsContainer: {
-    padding: theme.spacing(3),
+    padding: theme.spacing(3)
   },
   avatar: {
-    margin: theme.spacing(0.5),
-  },
+    margin: theme.spacing(0.5)
+  }
 }));
 
 export default function (props) {
@@ -76,10 +80,18 @@ export default function (props) {
 
   return (
     <div>
-      <Dialog open={open} onClose={handleClose} aria-labelledby="draggable-dialog-title">
+      <DialogClose
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="draggable-dialog-title"
+      >
         <div className={classes.content}>
-          {/* <div style={{ marginBottom: isMyGroup ? -16 : 8 }}> */}
-          <Typography color="primary" variant="h4" align="center" style={{ marginBottom: 16 }}>
+          <Typography
+            color="primary"
+            variant="h4"
+            align="center"
+            style={{ marginBottom: 16 }}
+          >
             Create new room
           </Typography>
           <TextField
@@ -104,7 +116,8 @@ export default function (props) {
             </Button>
           </div>
           <Alert severity="info" className={classes.alert}>
-            A room will be created with this name and any attendee will be able to join it
+            A room will be created with this name and any attendee will be able
+            to join it
           </Alert>
           {userGroup && (
             <Alert severity="warning" className={classes.alert}>
@@ -112,8 +125,7 @@ export default function (props) {
             </Alert>
           )}
         </div>
-        {/* </div> */}
-      </Dialog>
+      </DialogClose>
     </div>
   );
 }

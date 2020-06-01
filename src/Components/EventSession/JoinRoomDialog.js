@@ -1,6 +1,5 @@
 import React from "react";
 import Button from "@material-ui/core/Button";
-import Dialog from "@material-ui/core/Dialog";
 import { makeStyles } from "@material-ui/core/styles";
 import { joinConversation } from "../../Modules/eventSessionOperations";
 import { useSnackbar } from "material-ui-snackbar-provider";
@@ -21,6 +20,7 @@ import {
 } from "../../Redux/dialogs";
 import { Typography, Grid } from "@material-ui/core";
 import ParticipantAvatar from "../Misc/ParticipantAvatar";
+import DialogClose from "../Misc/DialogClose";
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -105,7 +105,7 @@ export default function (props) {
 
   return (
     <div>
-      <Dialog
+      <DialogClose
         open={open}
         onClose={handleClose}
         aria-labelledby="draggable-dialog-title"
@@ -174,7 +174,7 @@ export default function (props) {
           )}
           {/* {isMyGroup && <div className={classes.emptySpaceBottom}></div>} */}
         </div>
-      </Dialog>
+      </DialogClose>
     </div>
   );
 }

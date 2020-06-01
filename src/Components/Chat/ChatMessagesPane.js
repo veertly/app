@@ -1,57 +1,167 @@
-import React, { useRef, useEffect, useState } from "react";
-import { makeStyles /* , useTheme */ } from "@material-ui/core/styles";
+import React, { useRef, useEffect, useState, useCallback } from "react";
+import { makeStyles } from "@material-ui/core/styles";
 import { Grid } from "@material-ui/core";
 import ChatMessage from "./ChatMessage";
+import { useScroll, useUpdate, useScrolling } from "react-use";
+import ChatUnreadMessages from "./ChatUnreadMessages";
+import { useSelector } from "react-redux";
+import { isEventOwner, getUserId } from "../../Redux/eventSession";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     height: "100%",
     overflow: "auto",
-    flexWrap: "inherit",
+    overflowX: "hidden",
+    flexWrap: "inherit"
   },
   messagesContainerGrid: {
-    flex: 1,
+    flex: 1
   },
   messageContainer: {
-    width: "100%",
+    width: "100%"
   },
   shadowElement: {
-    float:"left",
-    clear: "both",
-  },
+    float: "left",
+    clear: "both"
+  }
 }));
 
-export default (props) => {
+export default ({ user, users, messages }) => {
   const chatEnd = useRef(null);
-  let { user, users } = props;
+  const scrollRef = React.useRef(null);
 
-  const [messages, setMessages] = useState([]);
+  const { y: scrollY } = useScroll(scrollRef);
+  const scrolling = useScrolling(scrollRef);
 
+  const isScrollAtBottom = !!(
+    scrollRef.current &&
+    scrollRef.current.scrollHeight - scrollY === scrollRef.current.clientHeight
+  );
+
+  const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
+
+  const [lastTrackedMessagesJson, setLastTrackedMessagesJson] = useState(
+    messages ? JSON.stringify(messages) : null
+  );
+
+  const [isForcingScroll, setIsForcingScroll] = useState(true);
+  const [lastScrollingState, setLastScrollingState] = useState(false);
+  const [countNewMessages, setCountNewMessages] = useState(0);
+
+  const forceRender = useUpdate();
+
+  const scrollToBottom = React.useCallback(
+    () => chatEnd.current.scrollIntoView({ behavior: "auto" }),
+    []
+  );
+
+  const isOwner = useSelector(isEventOwner);
+  const userId = useSelector(getUserId);
+
+  // handle new messages
   useEffect(() => {
-    setMessages(props.messages);
-    chatEnd.current.scrollIntoView({ behavior: "auto" });
-  }, [props.messages])
+    const currentMessagesJson = JSON.stringify(messages);
+    if (currentMessagesJson !== lastTrackedMessagesJson) {
+      if (isForcingScroll) {
+        scrollToBottom();
+        setCountNewMessages(0);
+      } else {
+        const lastMessages = JSON.parse(lastTrackedMessagesJson);
+        const diff = messages.length - lastMessages.length;
 
+        setCountNewMessages(diff > 0 ? diff : 0);
+      }
+      setLastTrackedMessagesJson(currentMessagesJson);
+    }
+  }, [isForcingScroll, lastTrackedMessagesJson, messages, scrollToBottom]);
 
+  // force update of timestamps
   useEffect(() => {
     const intervalId = setInterval(() => {
-     setMessages((mess) => [...mess])
+      // setMessages((mess) => [...mess]);
+      forceRender();
     }, 60 * 1000);
-    return () => clearInterval(intervalId); 
-  }, []);
+    return () => clearInterval(intervalId);
+  }, [forceRender]);
+
+  // initial scroll to bottom
+  useEffect(() => {
+    if (
+      messages &&
+      messages.length > 0 &&
+      !hasScrolledToBottom &&
+      scrollY === 0
+    ) {
+      chatEnd.current.scrollIntoView({ behavior: "auto" });
+      setHasScrolledToBottom(true);
+    }
+  }, [hasScrolledToBottom, messages, scrollY]);
+
+  // detect scroll changed
+  useEffect(() => {
+    if (scrolling !== lastScrollingState) {
+      if (scrolling) {
+        setIsForcingScroll(false);
+      } else {
+        setIsForcingScroll(isScrollAtBottom);
+      }
+      if (isScrollAtBottom) {
+        setCountNewMessages(0);
+      }
+      setLastScrollingState(scrolling);
+    }
+  }, [isScrollAtBottom, lastScrollingState, scrolling]);
 
   const classes = useStyles();
+
+  const onClickNewMessages = useCallback(() => {
+    setCountNewMessages(0);
+    scrollToBottom();
+  }, [scrollToBottom]);
+
   return (
-    <div className={classes.root}>
-      <Grid container direction="column-reverse" justify="flex-start" alignItems="center" className={classes.messagesContainerGrid} >
-        {messages &&
-          messages.map((message) => (
-            <Grid item key={message.messageId} className={classes.messageContainer}>
-              <ChatMessage message={message} user={user} users={users} />
-            </Grid>
-          ))}
-      </Grid>
-      <div className={classes.shadowElement} ref={chatEnd} />
+    <div className={classes.root} ref={scrollRef}>
+      <div ref={scrollRef}>
+        <Grid
+          container
+          direction="column-reverse"
+          justify="flex-start"
+          alignItems="center"
+          className={classes.messagesContainerGrid}
+        >
+          {messages &&
+            messages.map((message) => (
+              <Grid
+                item
+                key={message.messageId}
+                className={classes.messageContainer}
+                // ref={!firstMessageRef ? firstMessageRef : lastMessageRef}
+              >
+                <ChatMessage
+                  message={message}
+                  user={user}
+                  users={users}
+                  isOwner={isOwner}
+                  userId={userId}
+                />
+              </Grid>
+            ))}
+          {/* {loadingMore && (
+          <Grid item className={classes.messageContainer}>
+            <Typography variant="caption" display="block" align="center">
+              Loading more messages...
+            </Typography>
+          </Grid>
+        )} */}
+        </Grid>
+        <div className={classes.shadowElement} ref={chatEnd} />
+      </div>
+      {countNewMessages > 0 && (
+        <ChatUnreadMessages
+          numMessages={countNewMessages}
+          onClickUnread={onClickNewMessages}
+        />
+      )}
     </div>
   );
 };

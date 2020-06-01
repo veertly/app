@@ -100,9 +100,9 @@ const NetworkingRoomContainer = () => {
       /*eslint-enable no-undef*/
       api.executeCommand("displayName", user.firstName + " " + user.lastName);
       if (currentGroup.isRoom) {
-        api.executeCommand("subject", `Veertly | ${currentGroup.roomName}`);
+        api.executeCommand("subject", `Room | ${currentGroup.roomName}`);
       } else {
-        api.executeCommand("subject", "Veertly | Networking Conversation");
+        api.executeCommand("subject", "Networking Conversation");
       }
 
       if (user.avatarUrl) {

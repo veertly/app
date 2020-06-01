@@ -46,7 +46,7 @@ export default function (props) {
     const cb = async () => {
       setSaving(true);
 
-      archiveRoom(sessionId, room.id, userId, snackbar);
+      await archiveRoom(sessionId, room.id, userId, snackbar);
 
       handleClose();
       setSaving(false);

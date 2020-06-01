@@ -1,6 +1,7 @@
 import firebase from "./firebaseApp";
 import { v1 as uuidv1 } from "uuid";
 import { MAX_PARTICIPANTS_GROUP } from "../Config/constants";
+import { VERTICAL_NAV_OPTIONS } from "../Contexts/VerticalNavBarContext";
 
 const getVideoConferenceAddress = (groupId) => `veertly-${groupId}`;
 
@@ -177,10 +178,16 @@ export const createNewConversation = (
       transaction.set(newGroupRef, groupObj);
 
       // update my user group id
-      transaction.update(myUserRef, { groupId });
+      transaction.update(myUserRef, {
+        groupId,
+        currentLocation: VERTICAL_NAV_OPTIONS.networking
+      });
 
       // update other user group id
-      transaction.update(otherUserRef, { groupId });
+      transaction.update(otherUserRef, {
+        groupId,
+        currentLocation: VERTICAL_NAV_OPTIONS.networking
+      });
     })
     .then(function () {
       // console.log("Transaction successfully committed!");
@@ -351,7 +358,12 @@ export const joinConversation = (
       }
 
       // 3. set new groupId on the user
-      transaction.update(myUserRef, { groupId: newGroupId });
+      transaction.update(myUserRef, {
+        groupId: newGroupId,
+        currentLocation: isRoomNewGroup
+          ? VERTICAL_NAV_OPTIONS.rooms
+          : VERTICAL_NAV_OPTIONS.networking
+      });
 
       // 4. add user to the participants of the new group
       let updateObj = {};
@@ -517,6 +529,7 @@ export const archiveRoom = async (
   snackbar
 ) => {
   const sessionId = originalSessionId.toLowerCase();
+
   let db = firebase.firestore();
   let roomRef = db
     .collection("eventSessions")
