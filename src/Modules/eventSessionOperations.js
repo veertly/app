@@ -529,6 +529,7 @@ export const archiveRoom = async (
   snackbar
 ) => {
   const sessionId = originalSessionId.toLowerCase();
+
   let db = firebase.firestore();
   let roomRef = db
     .collection("eventSessions")

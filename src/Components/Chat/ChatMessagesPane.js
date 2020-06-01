@@ -61,7 +61,10 @@ export default ({ user, users, messages }) => {
         scrollToBottom();
         setCountNewMessages(0);
       } else {
-        setCountNewMessages((v) => v + 1);
+        const lastMessages = JSON.parse(lastTrackedMessagesJson);
+        const diff = messages.length - lastMessages.length;
+
+        setCountNewMessages(diff > 0 ? diff : 0);
       }
       setLastTrackedMessagesJson(currentMessagesJson);
     }

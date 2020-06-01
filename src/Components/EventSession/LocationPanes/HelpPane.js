@@ -92,7 +92,7 @@ const HelpPane = () => {
           </div>
         </ExpansionPanelDetails>
       </ExpansionPanel>
-      <ExpansionPanel
+      {/* <ExpansionPanel
         expanded={expanded === "panel2"}
         onChange={handleChange("panel2")}
       >
@@ -146,7 +146,7 @@ const HelpPane = () => {
             sit amet egestas eros, vitae egestas augue. Duis vel est augue.
           </Typography>
         </ExpansionPanelDetails>
-      </ExpansionPanel>
+      </ExpansionPanel> */}
     </div>
   );
 };
