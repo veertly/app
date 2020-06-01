@@ -4,6 +4,8 @@ import { Grid } from "@material-ui/core";
 import ChatMessage from "./ChatMessage";
 import { useScroll, useUpdate, useScrolling } from "react-use";
 import ChatUnreadMessages from "./ChatUnreadMessages";
+import { useSelector } from "react-redux";
+import { isEventOwner, getUserId } from "../../Redux/eventSession";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -52,6 +54,9 @@ export default ({ user, users, messages }) => {
     () => chatEnd.current.scrollIntoView({ behavior: "auto" }),
     []
   );
+
+  const isOwner = useSelector(isEventOwner);
+  const userId = useSelector(getUserId);
 
   // handle new messages
   useEffect(() => {
@@ -132,7 +137,13 @@ export default ({ user, users, messages }) => {
                 className={classes.messageContainer}
                 // ref={!firstMessageRef ? firstMessageRef : lastMessageRef}
               >
-                <ChatMessage message={message} user={user} users={users} />
+                <ChatMessage
+                  message={message}
+                  user={user}
+                  users={users}
+                  isOwner={isOwner}
+                  userId={userId}
+                />
               </Grid>
             ))}
           {/* {loadingMore && (

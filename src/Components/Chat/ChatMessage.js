@@ -10,10 +10,9 @@ import {
 import * as moment from "moment";
 import UserAvatar from "../Misc/UserAvatar";
 import EllipsisLoader from "../Misc/EllipsisLoader";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { openJoinParticipant } from "../../Redux/dialogs";
 import Linkify from "react-linkify";
-import { isEventOwner } from "../../Redux/eventSession";
 import MenuIcon from "@material-ui/icons/MoreHoriz";
 import ChatMessagesContext from "../../Contexts/ChatMessagesContext";
 
@@ -59,15 +58,17 @@ const componentDecorator = (href, text, key) => (
   </a>
 );
 
-export default ({ message, users, previewOnly = false }) => {
+export default ({ message, users, previewOnly = false, isOwner, userId }) => {
   const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
   const openMenu = Boolean(menuAnchorEl);
   const [mouseHover, setMouseHover] = React.useState(false);
 
-  const isOwner = useSelector(isEventOwner);
-
   const classes = useStyles({ previewOnly });
-  // const isMyMessage = React.useMemo(() => message.userId === user.id, [user, message]);
+
+  const isMyMessage = message.userId === userId;
+
+  const canArchive = isOwner || isMyMessage;
+
   const dispatch = useDispatch();
 
   const closeMenu = () => {
@@ -147,7 +148,7 @@ export default ({ message, users, previewOnly = false }) => {
           {!sentDate && <EllipsisLoader />}
         </Typography>
       </Grid>
-      {mouseHover && isOwner && !previewOnly && (
+      {mouseHover && canArchive && !previewOnly && (
         <div className={classes.menuContainer}>
           <IconButton
             color="primary"
