@@ -145,7 +145,7 @@ export default () => {
       const api = new JitsiMeetExternalAPI(domain, options);
       /*eslint-enable no-undef*/
       api.executeCommand("displayName", user.firstName + " " + user.lastName);
-      api.executeCommand("subject", `Veertly | ${eventSessionDetails.title}`);
+      api.executeCommand("subject", "Main Stage");
 
       if (user.avatarUrl) {
         api.executeCommand("avatarUrl", user.avatarUrl);

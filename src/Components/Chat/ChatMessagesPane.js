@@ -44,9 +44,9 @@ export default ({ user, users, messages }) => {
   useDebounce(
     () => {
       setScrollY(y);
-      console.log("Stopped debouncing y: " + y);
+      // console.log("Stopped debouncing y: " + y);
     },
-    2000,
+    1000,
     [y]
   );
 
@@ -55,9 +55,9 @@ export default ({ user, users, messages }) => {
   useDebounce(
     () => {
       setScrolling(scrollingOriginal);
-      console.log("Stopped debouncing scrollingOriginal: " + scrollingOriginal);
+      // console.log("Stopped debouncing scrollingOriginal: " + scrollingOriginal);
     },
-    2000,
+    1000,
     [scrollingOriginal]
   );
 
@@ -72,7 +72,6 @@ export default ({ user, users, messages }) => {
     messages ? JSON.stringify(messages) : null
   );
 
-  const [isForcingScroll, setIsForcingScroll] = useState(true);
   const [lastScrollingState, setLastScrollingState] = useState(false);
   const [countNewMessages, setCountNewMessages] = useState(0);
 
@@ -91,18 +90,24 @@ export default ({ user, users, messages }) => {
     // console.log("useEffect: handle new messages");
     const currentMessagesJson = JSON.stringify(messages);
     if (currentMessagesJson !== lastTrackedMessagesJson) {
-      if (isForcingScroll) {
+      if (isScrollAtBottom) {
         scrollToBottom();
         setCountNewMessages(0);
       } else {
         const lastMessages = JSON.parse(lastTrackedMessagesJson);
         const diff = messages.length - lastMessages.length;
-
-        setCountNewMessages(diff > 0 ? diff : 0);
+        // console.log({ prev: lastMessages.length, new: messages.length, diff });
+        setCountNewMessages(diff > 0 ? countNewMessages + diff : 0);
       }
       setLastTrackedMessagesJson(currentMessagesJson);
     }
-  }, [isForcingScroll, lastTrackedMessagesJson, messages, scrollToBottom]);
+  }, [
+    countNewMessages,
+    isScrollAtBottom,
+    lastTrackedMessagesJson,
+    messages,
+    scrollToBottom
+  ]);
 
   // force update of timestamps
   useEffect(() => {
@@ -132,11 +137,6 @@ export default ({ user, users, messages }) => {
   useEffect(() => {
     // console.log("useEffect: detect scroll changed");
     if (scrolling !== lastScrollingState) {
-      if (scrolling) {
-        setIsForcingScroll(false);
-      } else {
-        setIsForcingScroll(isScrollAtBottom);
-      }
       if (isScrollAtBottom) {
         setCountNewMessages(0);
       }
@@ -151,6 +151,13 @@ export default ({ user, users, messages }) => {
     scrollToBottom();
   }, [scrollToBottom]);
 
+  // console.log({
+  //   scrolling,
+  //   isScrollAtBottom,
+  //   scrollY,
+  //   countNewMessages,
+  //   isForcingScroll
+  // });
   return (
     <div className={classes.root} ref={scrollRef}>
       <div ref={scrollRef}>

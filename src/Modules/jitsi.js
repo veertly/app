@@ -75,7 +75,7 @@ export const getJitsiOptions = (
         "etherpad",
         "sharedvideo",
         "settings",
-        // "raisehand",
+        "raisehand",
         "videoquality",
         "filmstrip",
         // "invite",
