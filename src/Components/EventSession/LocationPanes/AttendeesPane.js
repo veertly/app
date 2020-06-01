@@ -162,7 +162,7 @@ export default function ({
     shallowEqual
   );
 
-  const filteredParticipants = React.useMemo(() => {
+  const scopedParticipants = React.useMemo(() => {
     const result = allParticipantsList.filter((participantSession) => {
       const participant = users[participantSession.id];
       const isMyUser = participantSession.id === myUserId;
@@ -181,7 +181,17 @@ export default function ({
         isFiltered = true; // show all attendees
       }
 
-      if (showFilter && isFiltered) {
+      return isFiltered;
+    });
+    return result;
+  }, [allParticipantsList, users, myUserId, paneFilter]);
+
+  const filteredParticipants = React.useMemo(() => {
+    const result = scopedParticipants.filter((participantSession) => {
+      const participant = users[participantSession.id];
+
+      let isFiltered = true;
+      if (showFilter) {
         // check interests
         if (_.size(filters) !== 0) {
           const { interestsChips } = participant;
@@ -201,7 +211,7 @@ export default function ({
       return isFiltered;
     });
     return result;
-  }, [allParticipantsList, users, myUserId, paneFilter, showFilter, filters]);
+  }, [scopedParticipants, users, showFilter, filters]);
 
   React.useEffect(() => {
     setIsEmptyPane(filteredParticipants.length === 0);
@@ -232,7 +242,7 @@ export default function ({
       )}
 
       {(showFilter || showStartConversation || showSearch) &&
-        ((hideButtonsIfEmpty && filteredParticipants.length > 0) ||
+        ((hideButtonsIfEmpty && scopedParticipants.length > 0) ||
           !hideButtonsIfEmpty) && (
           <div className={classes.buttonContainer}>
             {showStartConversation && (
