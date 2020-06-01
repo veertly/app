@@ -4,7 +4,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import { leaveCall } from "../../Modules/eventSessionOperations";
 import NoVideoImage from "../../Assets/illustrations/undraw_video_call_kxyp.svg";
 import { Typography } from "@material-ui/core";
-import { ANNOUNCEMENT_HEIGHT } from "../../Components/EventSession/Announcements";
 import { useSelector, shallowEqual } from "react-redux";
 import {
   getUser,
@@ -181,14 +180,6 @@ export default () => {
     removeJitsiLogoFeature
   ]);
 
-  const hasAnnouncement = React.useMemo(
-    () =>
-      eventSessionDetails &&
-      eventSessionDetails.announcements &&
-      eventSessionDetails.announcements.conference &&
-      eventSessionDetails.announcements.conference.trim() !== "",
-    [eventSessionDetails]
-  );
   if (error) {
     console.log(error);
     return <p>Error :(</p>;
@@ -198,10 +189,7 @@ export default () => {
     const getYoutubeFrame = () => {
       let videoId = eventSessionDetails.conferenceRoomYoutubeVideoId;
       return (
-        <div
-          className={classes.root}
-          style={{ top: hasAnnouncement ? ANNOUNCEMENT_HEIGHT : 0 }}
-        >
+        <div className={classes.root}>
           <iframe
             className={classes.videoContainer}
             src={`https://www.youtube.com/embed/${videoId}?autoplay=1&fs=0&modestbranding=0`}
@@ -221,10 +209,7 @@ export default () => {
         ? facebookUrl
         : `https://www.facebook.com/facebook/videos/${facebookVideoId}`;
       return (
-        <div
-          className={classes.root}
-          style={{ top: hasAnnouncement ? ANNOUNCEMENT_HEIGHT : 0 }}
-        >
+        <div className={classes.root}>
           <div className={classes.reactPlayerContainer}>
             <ReactPlayer
               url={url}
