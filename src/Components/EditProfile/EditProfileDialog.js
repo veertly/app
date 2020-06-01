@@ -1,5 +1,4 @@
 import React from "react";
-import Dialog from "@material-ui/core/Dialog";
 import { makeStyles } from "@material-ui/core/styles";
 import EditProfileForm from "./EditProfileForm";
 import { useDispatch, useSelector } from "react-redux";
@@ -7,19 +6,20 @@ import { closeEditProfile, isEditProfileOpen } from "../../Redux/dialogs";
 import { getSessionId } from "../../Redux/eventSession";
 import { useAuthState } from "react-firebase-hooks/auth";
 import firebase from "../../Modules/firebaseApp";
+import DialogClose from "../Misc/DialogClose";
 
 const useStyles = makeStyles((theme) => ({
   content: {
     position: "relative",
-    padding: 48,
+    padding: 48
   },
   closeContainer: {
-    position: "absolute",
+    position: "absolute"
   },
   buttonContainer: {
     width: "100%",
     textAlign: "center",
-    marginTop: theme.spacing(2),
+    marginTop: theme.spacing(2)
   },
   hintText: {
     marginBottom: theme.spacing(4),
@@ -28,11 +28,11 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     marginLeft: "auto",
     marginRight: "auto",
-    marginTop: theme.spacing(2),
+    marginTop: theme.spacing(2)
   },
   emptySpaceBottom: {
-    marginBottom: theme.spacing(4),
-  },
+    marginBottom: theme.spacing(4)
+  }
 }));
 
 export default function (props) {
@@ -50,13 +50,17 @@ export default function (props) {
   };
   return (
     <div>
-      <Dialog open={open} onClose={handleClose}>
+      <DialogClose open={open} onClose={handleClose}>
         <div className={classes.content}>
           {sessionId && (
-            <EditProfileForm userAuth={userAuth} sessionId={sessionId} profileUpdatedCallback={handleClose} />
+            <EditProfileForm
+              userAuth={userAuth}
+              sessionId={sessionId}
+              profileUpdatedCallback={handleClose}
+            />
           )}
         </div>
-      </Dialog>
+      </DialogClose>
     </div>
   );
 }

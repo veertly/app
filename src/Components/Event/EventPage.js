@@ -1,5 +1,5 @@
 import React from "react";
-import Dialog from "@material-ui/core/Dialog";
+import { Helmet } from "react-helmet";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import Typography from "@material-ui/core/Typography";
@@ -7,10 +7,10 @@ import MUIRichTextEditor from "mui-rte";
 import { CardMedia, Button } from "@material-ui/core";
 import * as moment from "moment";
 import routes from "../../Config/routes";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import {
   DEFAULT_EVENT_OPEN_MINUTES,
-  DEFAULT_EVENT_CLOSES_MINUTES,
+  DEFAULT_EVENT_CLOSES_MINUTES
 } from "../../Config/constants";
 import { useAuthState } from "react-firebase-hooks/auth";
 import firebase from "../../Modules/firebaseApp";
@@ -27,40 +27,41 @@ import SuccessIcon from "@material-ui/icons/CheckCircleOutline";
 import Alert from "@material-ui/lab/Alert";
 import CompatibilityInfoAlert from "../Shared/CompatibilityInfo";
 import MarginProvider from "../Shared/MarginProvider";
+import DialogClose from "../Misc/DialogClose";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     maxWidth: theme.breakpoints.values.sm,
     width: "100%",
     margin: "auto",
-    position: "relative",
+    position: "relative"
   },
-  contentContainer: {
-    padding: 32,
+  contentContainer: ({ isSmallContainer }) => ({
+    padding: isSmallContainer ? 16 : 32,
     [theme.breakpoints.down("xs")]: {
-      padding: 20,
-    },
-  },
+      padding: 20
+    }
+  }),
   ctaContainer: {
     // [theme.breakpoints.down("xs")]: {},
     width: "100%",
     textAlign: "center",
-    marginTop: 16,
+    marginTop: 16
   },
   joinButton: {
-    height: 48,
+    height: 48
   },
   editButton: {
     position: "absolute",
     right: theme.spacing(2),
-    top: theme.spacing(2),
+    top: theme.spacing(2)
   },
   registerButton: {
-    marginBottom: theme.spacing(1),
+    marginBottom: theme.spacing(1)
   },
   dialogContent: {
-    padding: theme.spacing(3),
-  },
+    padding: theme.spacing(3)
+  }
 }));
 
 export default function EventPage(props) {
@@ -74,10 +75,16 @@ export default function EventPage(props) {
     id,
     eventOpens,
     eventCloses,
-    owner,
+    owner
   } = props.event;
-  let { isPreview, hideButtons, enabledFeatures } = props;
-  const classes = useStyles();
+  let {
+    isPreview,
+    hideButtons,
+    enabledFeatures,
+    isSmallContainer,
+    hideBanner
+  } = props;
+  const classes = useStyles({ isSmallContainer });
 
   const history = useHistory();
 
@@ -142,7 +149,7 @@ export default function EventPage(props) {
       location: sessionUrl,
       startTime: beginDate,
       endTime: endDate,
-      rawDescription,
+      rawDescription
     };
   }, [id, description, title, beginDate, endDate]);
 
@@ -162,7 +169,7 @@ export default function EventPage(props) {
       : null;
   }, [enabledFeatures]);
   const hasTicketsEnabled = React.useMemo(() => ticketsProperties !== null, [
-    ticketsProperties,
+    ticketsProperties
   ]);
 
   const isPrivateEvent = React.useMemo(() => {
@@ -177,8 +184,31 @@ export default function EventPage(props) {
     );
   }, [enabledFeatures]);
 
+
+  const previewUrl =  !bannerUrl || bannerUrl.trim() === "" ? "/DefaultEventBanner.svg" : bannerUrl;
+
+  const location = useLocation(); 
+  const pageUrl = getUrl + location.pathname;
+
   return (
     <Card className={classes.root}>
+      <Helmet>
+        <title>{title}</title>
+        <meta name="title" content={title} />
+        <meta name="description" content="" />
+
+        <meta property="og:type" content="website"/>
+        <meta property="og:url" content={pageUrl}/>
+        <meta property="og:title" content={title}/>
+        <meta property="og:description" content=""/>
+        <meta property="og:image" content={previewUrl}/>
+
+        <meta property="twitter:card" content="summary_large_image"/>
+        <meta property="twitter:url" content={pageUrl}/>
+        <meta property="twitter:title" content={title}/>
+        <meta property="twitter:description" content=""/>
+        <meta property="twitter:image" content={previewUrl}></meta>
+      </Helmet>
       {!isPreview && user && user.uid === owner && (
         <Button
           variant="outlined"
@@ -191,21 +221,25 @@ export default function EventPage(props) {
           Edit Event
         </Button>
       )}
-      {bannerUrl && bannerUrl.trim() !== "" && (
-        <CardMedia
-          component="img"
-          alt={title}
-          image={bannerUrl}
-          title={title}
-        />
-      )}
-      {(!bannerUrl || bannerUrl.trim() === "") && (
-        <CardMedia
-          component="img"
-          alt={title}
-          image="/DefaultEventBanner.svg"
-          title={title}
-        />
+      {!hideBanner && (
+        <>
+          {bannerUrl && bannerUrl.trim() !== "" && (
+            <CardMedia
+              component="img"
+              alt={title}
+              image={bannerUrl}
+              title={title}
+            />
+          )}
+          {(!bannerUrl || bannerUrl.trim() === "") && (
+            <CardMedia
+              component="img"
+              alt={title}
+              image="/DefaultEventBanner.svg"
+              title={title}
+            />
+          )}
+        </>
       )}
       <div className={classes.contentContainer}>
         <Typography
@@ -224,7 +258,7 @@ export default function EventPage(props) {
               <span
                 role="img"
                 aria-label="calendar"
-                style={{ marginRight: 16 }}
+                style={{ marginRight: isSmallContainer ? 4 : 16 }}
               >
                 📅
               </span>
@@ -294,7 +328,7 @@ export default function EventPage(props) {
                       justifyContent: " center",
                       alignItems: "center",
                       color: "green",
-                      marginBottom: 8,
+                      marginBottom: 8
                     }}
                   >
                     <span style={{ paddingRight: 8, paddingTop: 4 }}>
@@ -325,7 +359,7 @@ export default function EventPage(props) {
               </Button>
             )}
 
-            <MarginProvider top={16} >
+            <MarginProvider top={16}>
               <CompatibilityInfoAlert />
             </MarginProvider>
 
@@ -336,7 +370,7 @@ export default function EventPage(props) {
                   justifyContent: " center",
                   alignItems: "center",
                   color: "green",
-                  marginBottom: 8,
+                  marginBottom: 8
                 }}
               >
                 {/* <span style={{ paddingRight: 8, paddingTop: 4 }}>
@@ -361,7 +395,7 @@ export default function EventPage(props) {
         )}
       </div>
       {hasRsvpEnabled && (
-        <Dialog
+        <DialogClose
           onClose={() => {
             setRegisterOpen(false);
             setIsRegistered(userRegisteredEvent(id));
@@ -379,7 +413,7 @@ export default function EventPage(props) {
               }}
             />
           </div>
-        </Dialog>
+        </DialogClose>
       )}
     </Card>
   );

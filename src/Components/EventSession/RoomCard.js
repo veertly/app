@@ -52,22 +52,27 @@ const useStyles = makeStyles((theme) => ({
     marginTop: 4,
     marginBottom: 4
   },
-  roomName: {
-    color: theme.palette.primary.main,
+  roomName: ({ isMyRoom }) => ({
+    color: isMyRoom
+      ? theme.palette.secondary.main
+      : theme.palette.primary.light,
+
     marginBottom: theme.spacing(1),
     display: "flex",
     overflow: "hidden"
-  },
+  }),
   roomMenu: {
     position: "absolute",
     right: 0,
     bottom: 12
-  }
+  },
+  roomIcon: ({ isMyRoom }) => ({
+    color: isMyRoom ? theme.palette.secondary.main : theme.palette.primary.light
+    // color: theme.palette.primary.light
+  })
 }));
 
 export default function (props) {
-  const classes = useStyles();
-
   const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
   const openMenu = Boolean(menuAnchorEl);
   const [renameRoomOpen, setRenameRoomOpen] = React.useState(false);
@@ -84,6 +89,13 @@ export default function (props) {
     () => room.roomOwner === myUserId || eventDetails.owner === myUserId,
     [room.roomOwner, eventDetails.owner, myUserId]
   );
+
+  const isMyRoom = React.useMemo(
+    () => room.participants.findIndex((p) => p.id === myUserId) !== -1,
+    [myUserId, room.participants]
+  );
+  console.log({ name: room.roomName, isMyRoom });
+  const classes = useStyles({ isMyRoom });
 
   const handleJoinRoom = () => {
     dispatch(openJoinRoom(room));
@@ -132,7 +144,7 @@ export default function (props) {
         }}
       >
         <Typography className={classes.roomName}>
-          <RoomIcon style={{ marginRight: 8 }} />
+          <RoomIcon style={{ marginRight: 8 }} className={classes.roomIcon} />
           {/* <img
             src="/static/Room_icon_02.svg"
             style={{ marginRight: 8, width: 16 }}

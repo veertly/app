@@ -2,30 +2,36 @@ import React from "react";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import Avatar from "@material-ui/core/Avatar";
 import Typography from "@material-ui/core/Typography";
-import LinkedinIcon from "../../Assets/Icons/Linkedin";
-import TwitterIcon from "../../Assets/Icons/Twitter";
+import LinkedinIcon from "../../../Assets/Icons/Linkedin";
+import TwitterIcon from "../../../Assets/Icons/Twitter";
 // import KeybaseIcon from "../../Assets/Icons/Keybase";
 import Button from "@material-ui/core/Button";
-import JoinParticipantDialog from "./JoinParticipantDialog";
+import JoinParticipantDialog from "../JoinParticipantDialog";
 import Badge from "@material-ui/core/Badge";
-import ConversationsIcon from "../../Assets/Icons/Conversations";
 import { Tooltip } from "@material-ui/core";
-import ConferenceIcon from "@material-ui/icons/DesktopMac";
-import FilterAttendeesDialog from "./FilterAttendeesDialog";
+import FilterAttendeesDialog from "../FilterAttendeesDialog";
 
 import { useSelector, shallowEqual, useDispatch } from "react-redux";
 import {
   getUsers,
-  isInNetworkingRoom,
   getAvailableParticipantsList,
-  getFilters
-} from "../../Redux/eventSession";
+  getFilters,
+  getUserId
+} from "../../../Redux/eventSession";
 
 // import JoinConversationDialog from "./JoinConversationDialog";
 import _ from "lodash";
-import { openJoinParticipant } from "../../Redux/dialogs";
-import Flag from "../Misc/Flag";
-import { trackEvent } from "../../Modules/analytics";
+import { openJoinParticipant } from "../../../Redux/dialogs";
+import Flag from "../../Misc/Flag";
+import { trackEvent } from "../../../Modules/analytics";
+import {
+  isParticipantAvailableForCall,
+  isParticipantMainStage,
+  participantHasFlag,
+  participantHasSocials,
+  participantHasSubtitle
+} from "../../../Helpers/participantsHelper";
+
 const useStyles = makeStyles((theme) => ({
   root: {},
   participantContainer: {
@@ -128,58 +134,93 @@ const AvailableBadge = withStyles((theme) => ({
   }
 }))(Badge);
 
-export default function (props) {
-  const [filterDialog, setFilterDialog] = React.useState(false);
-  let { setIsInConferenceRoom } = props;
+export const ATTENDEES_PANE_FILTER = {
+  all: "ALL",
+  mainStage: "MAIN_STAGE",
+  available: "AVAILABLE"
+};
 
-  const filters = useSelector(getFilters);
+export default function ({
+  paneFilter,
+  setIsEmptyPane = (isEmpty) => {},
+  showFilter = false,
+  showStartConversation = false,
+  showSearch = false,
+  hideButtonsIfEmpty = false,
+  setTotalUsers = (count) => {}
+}) {
+  const [filterDialog, setFilterDialog] = React.useState(false);
+
+  const filters = useSelector(getFilters); //TODO: remove from redux
   const classes = useStyles({ filters });
   const dispatch = useDispatch();
 
   const users = useSelector(getUsers, shallowEqual);
-  const onConferenceRoom = !useSelector(isInNetworkingRoom);
-  const availableParticipantsList = useSelector(
+  const myUserId = useSelector(getUserId, shallowEqual);
+  const allParticipantsList = useSelector(
     getAvailableParticipantsList,
     shallowEqual
   );
 
-  let participantsAvailable = React.useMemo(() => {
-    let result = availableParticipantsList.filter((participantSession) => {
-      let participant = users[participantSession.id];
+  const scopedParticipants = React.useMemo(() => {
+    const result = allParticipantsList.filter((participantSession) => {
+      const participant = users[participantSession.id];
+      const isMyUser = participantSession.id === myUserId;
 
       if (!participant) {
         return false;
       }
 
-      // check interests
-      if (_.size(filters) !== 0) {
-        let { interestsChips } = participant;
+      let isFiltered = false;
+      if (paneFilter === ATTENDEES_PANE_FILTER.available) {
+        isFiltered =
+          !isMyUser && isParticipantAvailableForCall(participantSession);
+      } else if (paneFilter === ATTENDEES_PANE_FILTER.mainStage) {
+        isFiltered = isParticipantMainStage(participantSession);
+      } else {
+        isFiltered = true; // show all attendees
+      }
 
-        let foundInterest = false;
+      return isFiltered;
+    });
+    return result;
+  }, [allParticipantsList, users, myUserId, paneFilter]);
 
-        for (let i = 0; i < interestsChips.length; i++) {
-          let interest = interestsChips[i];
-          if (filters[interest.label] === true) {
-            foundInterest = true;
+  const filteredParticipants = React.useMemo(() => {
+    const result = scopedParticipants.filter((participantSession) => {
+      const participant = users[participantSession.id];
+
+      let isFiltered = true;
+      if (showFilter) {
+        // check interests
+        if (_.size(filters) !== 0) {
+          const { interestsChips } = participant;
+
+          let foundInterest = false;
+
+          for (let i = 0; i < interestsChips.length; i++) {
+            const interest = interestsChips[i];
+            if (filters[interest.label] === true) {
+              foundInterest = true;
+            }
           }
-        }
-
-        if (!foundInterest) {
-          return false;
+          isFiltered = foundInterest;
         }
       }
 
-      return true;
+      return isFiltered;
     });
     return result;
-  }, [availableParticipantsList, users, filters]);
+  }, [scopedParticipants, users, showFilter, filters]);
+
+  React.useEffect(() => {
+    setIsEmptyPane(filteredParticipants.length === 0);
+    setTotalUsers(filteredParticipants.length);
+  }, [filteredParticipants.length, setIsEmptyPane, setTotalUsers]);
 
   const feelingLucky = React.useCallback(() => {
-    let selectedParticipantSession = _.sample(
-      participantsAvailable.filter(
-        ({ isMyUser, isAvailable }) => !isMyUser && isAvailable
-      )
-    );
+    let selectedParticipantSession = _.sample(filteredParticipants);
+    console.log({ selectedParticipantSession });
     let participant = selectedParticipantSession
       ? users[selectedParticipantSession.id]
       : null;
@@ -187,65 +228,60 @@ export default function (props) {
     dispatch(openJoinParticipant(participant));
 
     trackEvent("Feeling lucky clicked", {});
-  }, [participantsAvailable, users, dispatch]);
+  }, [filteredParticipants, users, dispatch]);
 
   return (
     <div className={classes.root}>
-      <JoinParticipantDialog setIsInConferenceRoom={setIsInConferenceRoom} />
-      <FilterAttendeesDialog
-        open={filterDialog}
-        setOpen={setFilterDialog}
-        filters={filters}
-      />
-
-      {onConferenceRoom && (
-        <Typography variant="overline" className={classes.title} align="center">
-          All attendees ({participantsAvailable.length})
-        </Typography>
+      <JoinParticipantDialog />
+      {showFilter && (
+        <FilterAttendeesDialog
+          open={filterDialog}
+          setOpen={setFilterDialog}
+          filters={filters}
+        />
       )}
 
-      <div className={classes.buttonContainer}>
-        <Button
-          variant="outlined"
-          color="primary"
-          size="small"
-          className={classes.button}
-          onClick={feelingLucky}
-          disabled={participantsAvailable.length <= 1}
-        >
-          Start a conversation
-        </Button>
-        <Button
-          variant="outlined"
-          color="primary"
-          size="small"
-          className={`${classes.button} ${classes.filterButton}`}
-          onClick={() => {
-            setFilterDialog(true);
-            trackEvent("Filter clicked", {});
-          }}
-        >
-          Filter
-        </Button>
-      </div>
+      {(showFilter || showStartConversation || showSearch) &&
+        ((hideButtonsIfEmpty && scopedParticipants.length > 0) ||
+          !hideButtonsIfEmpty) && (
+          <div className={classes.buttonContainer}>
+            {showStartConversation && (
+              <Button
+                variant="outlined"
+                color="primary"
+                size="small"
+                className={classes.button}
+                onClick={feelingLucky}
+                disabled={filteredParticipants.length === 0}
+              >
+                Start a conversation
+              </Button>
+            )}
+            {showFilter && (
+              <Button
+                variant="outlined"
+                color="primary"
+                size="small"
+                className={`${classes.button} ${classes.filterButton}`}
+                onClick={() => {
+                  setFilterDialog(true);
+                  trackEvent("Filter clicked", {});
+                }}
+              >
+                Filter
+              </Button>
+            )}
+          </div>
+        )}
 
-      {participantsAvailable.map((participantSession, index) => {
-        let {
-          isInConversation,
-          isInConferenceRoom,
-          isAvailable
-        } = participantSession;
+      {filteredParticipants.map((participantSession, index) => {
+        let isAvailable = isParticipantAvailableForCall(participantSession);
 
         let participant = users[participantSession.id];
-        const { twitterUrl, linkedinUrl, locationDetails } = participant;
-        const hasSubtitle =
-          participant.company &&
-          (participant.company.trim() !== "" ||
-            participant.companyTitle.trim() !== "");
-        const hasSocials =
-          (twitterUrl && twitterUrl.trim() !== "") ||
-          (linkedinUrl && linkedinUrl.trim() !== "");
-        const hasFlag = locationDetails !== null;
+
+        const hasSubtitle = participantHasSubtitle(participant);
+        const hasSocials = participantHasSocials(participant);
+        const hasFlag = participantHasFlag(participant);
 
         const participantAvatar = participant.avatarUrl ? (
           <Avatar
@@ -282,47 +318,8 @@ export default function (props) {
                 </AvailableBadge>
               </Tooltip>
             )}
-            {isInConversation && (
-              <Tooltip title="Currently in a conversation">
-                <Badge
-                  overlap="circle"
-                  anchorOrigin={{
-                    vertical: "bottom",
-                    horizontal: "right"
-                  }}
-                  badgeContent={
-                    <ConversationsIcon
-                      style={{ heigth: "0.85em", width: "0.85em" }}
-                      color="primary"
-                    />
-                  }
-                >
-                  {participantAvatar}
-                </Badge>
-              </Tooltip>
-            )}
-            {isInConferenceRoom && (
-              <Tooltip title="Watching on the main stage">
-                <Badge
-                  overlap="circle"
-                  anchorOrigin={{
-                    vertical: "bottom",
-                    horizontal: "right"
-                  }}
-                  badgeContent={
-                    <ConferenceIcon
-                      style={{
-                        heigth: "0.85em",
-                        width: "0.85em",
-                        color: "#666"
-                      }}
-                    />
-                  }
-                >
-                  {participantAvatar}
-                </Badge>
-              </Tooltip>
-            )}
+            {!isAvailable && participantAvatar}
+
             <div
               className={classes.participantDetails}
               style={{ paddingTop: hasSubtitle ? 0 : 8 }}

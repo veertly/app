@@ -4,6 +4,7 @@ import {
   DEFAULT_OFFLINE_INTERVAL
 } from "../Config/constants";
 import * as moment from "moment";
+import { VERTICAL_NAV_OPTIONS } from "../Contexts/VerticalNavBarContext";
 
 const UPDATE_EVENT_SESSION = "eventSession.UPDATE_EVENT_SESSION";
 const UPDATE_EVENT_SESSION_DETAILS =
@@ -124,26 +125,9 @@ const crossCheckParticipantsJoined = (
       if (
         !participantResult.isMyUser &&
         (!participant.isOnline || !isStillLive(keepAlive))
-        // keepAlive &&
-        // keepAlive.lastSeen &&
-        // moment(keepAlive.lastSeen.toDate()).add(DEFAULT_OFFLINE_INTERVAL, "ms").isBefore(now)
       ) {
         return result; // skip this participant as he is offline
       }
-
-      let isInConversation =
-        participant &&
-        participant.groupId !== undefined &&
-        participant.groupId !== null &&
-        liveGroups &&
-        liveGroups[participant.groupId];
-      let isInConferenceRoom =
-        !isInConversation && !participant.inNetworkingRoom;
-      let isAvailable = !isInConversation && participant.inNetworkingRoom;
-
-      participantResult.isInConversation = isInConversation;
-      participantResult.isInConferenceRoom = isInConferenceRoom;
-      participantResult.isAvailable = isAvailable;
 
       result.push(participantResult);
       return result;
@@ -298,6 +282,25 @@ export const getUserSession = (store) =>
   store.eventSession.userId && store.eventSession.participantsJoined
     ? store.eventSession.participantsJoined[store.eventSession.userId]
     : null;
+export const getUserCurrentLocation = (store) =>
+  store.eventSession.userId &&
+  store.eventSession.participantsJoined &&
+  store.eventSession.participantsJoined[store.eventSession.userId] &&
+  store.eventSession.participantsJoined[store.eventSession.userId]
+    .currentLocation
+    ? store.eventSession.participantsJoined[store.eventSession.userId]
+        .currentLocation
+    : VERTICAL_NAV_OPTIONS.lobby;
+
+export const getUserAvailableForCall = (store) =>
+  store.eventSession.userId &&
+  store.eventSession.participantsJoined &&
+  store.eventSession.participantsJoined[store.eventSession.userId] &&
+  store.eventSession.participantsJoined[store.eventSession.userId]
+    .availableForCall;
+
+export const isEventOwner = (store) =>
+  store.eventSession.userId === store.eventSession.eventSessionDetails.owner;
 
 // get original db entry of the current group
 export const getUserGroup = (store) => {
