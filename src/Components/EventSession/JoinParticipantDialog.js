@@ -85,8 +85,6 @@ export default function (props) {
   const snackbar = useSnackbar();
   const dispatch = useDispatch();
 
-  const { setIsInConferenceRoom } = props;
-
   const open = useSelector(isJoinParticipantOpen);
   const participant = useSelector(getJoinParticipantEntity, shallowEqual);
   const sessionId = useSelector(getSessionId);
@@ -228,9 +226,6 @@ export default function (props) {
   const handleJoinConversation = (e) => {
     e.preventDefault();
     if (liveGroup) {
-      if (userInConferenceRoom) {
-        setIsInConferenceRoom(false);
-      }
       joinConversation(
         sessionId,
         participantsJoined,

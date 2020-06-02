@@ -6,7 +6,6 @@ import LinkedinIcon from "../../../Assets/Icons/Linkedin";
 import TwitterIcon from "../../../Assets/Icons/Twitter";
 // import KeybaseIcon from "../../Assets/Icons/Keybase";
 import Button from "@material-ui/core/Button";
-import JoinParticipantDialog from "../JoinParticipantDialog";
 import Badge from "@material-ui/core/Badge";
 import { Tooltip } from "@material-ui/core";
 import FilterAttendeesDialog from "../FilterAttendeesDialog";
@@ -220,7 +219,7 @@ export default function ({
 
   const feelingLucky = React.useCallback(() => {
     let selectedParticipantSession = _.sample(filteredParticipants);
-    console.log({ selectedParticipantSession });
+    // console.log({ selectedParticipantSession });
     let participant = selectedParticipantSession
       ? users[selectedParticipantSession.id]
       : null;
@@ -232,7 +231,7 @@ export default function ({
 
   return (
     <div className={classes.root}>
-      <JoinParticipantDialog />
+      {/* <JoinParticipantDialog /> */}
       {showFilter && (
         <FilterAttendeesDialog
           open={filterDialog}

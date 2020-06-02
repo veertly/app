@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { withRouter, useHistory } from "react-router-dom";
 import clsx from "clsx";
 // import Button from "@material-ui/core/Button";
@@ -9,7 +9,8 @@ import { makeStyles } from "@material-ui/styles";
 import {
   AppBar,
   Toolbar,
-  Typography
+  Typography,
+  Divider
   // Hidden,
   // IconButton
 } from "@material-ui/core";
@@ -35,6 +36,7 @@ import { openEditProfile } from "../../Redux/dialogs";
 // import { FEATURES } from "../../Modules/features";
 import { logout } from "../../Redux/account";
 import PresenceSwitch from "./PresenceSwitch";
+import { trackEvent } from "../../Modules/analytics";
 
 // import routes from "../../Config/routes";
 const useStyles = makeStyles((theme) => ({
@@ -151,6 +153,10 @@ export default withRouter((props) => {
   const sessionId = useSelector(getSessionId);
   const eventSessionDetails = useSelector(getEventSessionDetails, shallowEqual);
 
+  const isOwner = useMemo(() => user.id === eventSessionDetails.owner, [
+    eventSessionDetails.owner,
+    user.id
+  ]);
   // const miniPlayerProperties = useSelector(
   //   getFeatureDetails(FEATURES.MINI_PLAYER),
   //   shallowEqual
@@ -184,6 +190,18 @@ export default withRouter((props) => {
   const handleEditProfileClick = () => {
     dispatch(openEditProfile());
     handleMenuClose();
+  };
+
+  const handleEditEventClick = () => {
+    trackEvent("Edit event clicked", { sessionId });
+    window.open(window.open(routes.EDIT_EVENT_SESSION(sessionId), "_blank"));
+  };
+
+  const handleCockpitClick = () => {
+    trackEvent("Cockpit clicked", { sessionId });
+    window.open(
+      window.open("https://cockpit.veertly.com/event/" + sessionId, "_blank")
+    );
   };
 
   return (
@@ -238,6 +256,14 @@ export default withRouter((props) => {
               onClose={handleMenuClose}
             >
               <MenuItem onClick={handleEditProfileClick}>Edit profile</MenuItem>
+              {isOwner && <Divider />}
+              {isOwner && (
+                <MenuItem onClick={handleEditEventClick}>Edit event</MenuItem>
+              )}
+              {isOwner && (
+                <MenuItem onClick={handleCockpitClick}>Cockpit</MenuItem>
+              )}
+              {isOwner && <Divider />}
               {/* <MenuItem onClick={handleLeaveEventClick}>Leave event</MenuItem> */}
               <MenuItem onClick={handleLogoutClick}>Log out</MenuItem>
             </Menu>

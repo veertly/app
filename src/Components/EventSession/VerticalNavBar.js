@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { makeStyles /*, useTheme */ } from "@material-ui/core/styles";
 
 // import LobbyIcon from "@material-ui/icons/Store";
@@ -10,6 +10,7 @@ import { useLocalStorage } from "react-use";
 
 import MainStageIcon from "@material-ui/icons/DesktopMac";
 import RoomsIcon from "../../Assets/Icons/Rooms";
+import _ from "lodash";
 
 import AttendeesIcon from "../../Assets/Icons/Person";
 // import ConversationsIcon from "../../../Assets/Icons/Conversations";
@@ -31,11 +32,79 @@ import {
   getUserCurrentLocation,
   getSessionId,
   getUserGroup,
-  getUserId
+  getUserId,
+  getFeatureDetails
 } from "../../Redux/eventSession";
 import ChatMessagesContext, {
   CHAT_GLOBAL_NS
 } from "../../Contexts/ChatMessagesContext";
+import { FEATURES } from "../../Modules/features";
+
+const DEAFULT_NAV_BAR = {
+  [VERTICAL_NAV_OPTIONS.lobby]: {
+    id: VERTICAL_NAV_OPTIONS.lobby,
+    label: "Lobby",
+    icon: LobbyIcon,
+    order: 1,
+    visible: true
+  },
+  [VERTICAL_NAV_OPTIONS.mainStage]: {
+    id: VERTICAL_NAV_OPTIONS.mainStage,
+    label: "Main Stage",
+    icon: MainStageIcon,
+    order: 2,
+    visible: true
+  },
+  [VERTICAL_NAV_OPTIONS.rooms]: {
+    id: VERTICAL_NAV_OPTIONS.rooms,
+    label: "Rooms",
+    icon: RoomsIcon,
+    order: 3,
+    visible: true
+  },
+  [VERTICAL_NAV_OPTIONS.networking]: {
+    id: VERTICAL_NAV_OPTIONS.networking,
+    label: "Networking",
+    icon: NetworkingIcon,
+    order: 4,
+    visible: true
+  },
+  [VERTICAL_NAV_OPTIONS.attendees]: {
+    id: VERTICAL_NAV_OPTIONS.attendees,
+    label: "Attendees",
+    icon: AttendeesIcon,
+    order: 5,
+    visible: true
+  },
+  divider: {
+    id: "divider",
+    label: "",
+    icon: null,
+    order: 6,
+    visible: true
+  },
+  [VERTICAL_NAV_OPTIONS.chat]: {
+    id: VERTICAL_NAV_OPTIONS.chat,
+    label: "Chat",
+    icon: ChatIcon,
+    order: 7,
+    visible: true
+  },
+  [VERTICAL_NAV_OPTIONS.qna]: {
+    id: VERTICAL_NAV_OPTIONS.qna,
+    label: "Q&A",
+    icon: QnAIcon,
+    order: 8,
+    visible: false
+  },
+  [VERTICAL_NAV_OPTIONS.polls]: {
+    id: VERTICAL_NAV_OPTIONS.polls,
+    label: "Polls",
+    icon: PollsIcon,
+    order: 9,
+    visible: true
+  }
+};
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -152,6 +221,27 @@ const VerticalNavBar = (props) => {
 
   const { chatMessages } = React.useContext(ChatMessagesContext);
 
+  const customNavBarFeature = useSelector(
+    getFeatureDetails(FEATURES.CUSTOM_NAV_BAR),
+    shallowEqual
+  );
+  const navBarOptions = useMemo(() => {
+    if (!customNavBarFeature) {
+      return Object.values(DEAFULT_NAV_BAR);
+    }
+
+    let result = { ...DEAFULT_NAV_BAR };
+
+    _.forEach(Object.values(customNavBarFeature), ({ id, label, visible }) => {
+      if (result[id]) {
+        result[id].label = label;
+        result[id].visible = visible !== false;
+      }
+    });
+
+    return Object.values(result);
+  }, [customNavBarFeature]);
+
   useEffect(() => {
     if (currentNavBarSelection !== lastNavBarSelection) {
       if (
@@ -250,71 +340,34 @@ const VerticalNavBar = (props) => {
 
       // }
     } else {
-      if (location !== VERTICAL_NAV_OPTIONS.lobby) {
-        setCurrentNavBarSelection(null);
-        setHasNavBarPaneOpen(false);
-      }
+      // if (location !== VERTICAL_NAV_OPTIONS.lobby) {
+      setCurrentNavBarSelection(null);
+      setHasNavBarPaneOpen(false);
+      // }
     }
   };
 
   return (
     <div className={classes.root}>
-      <MenuIconContainer
-        icon={LobbyIcon}
-        label="Lobby"
-        selected={currentNavBarSelection === VERTICAL_NAV_OPTIONS.lobby}
-        onClick={handleClick(VERTICAL_NAV_OPTIONS.lobby)}
-        isCurrentLocation={currentLocation === VERTICAL_NAV_OPTIONS.lobby}
-      />
-      <MenuIconContainer
-        icon={MainStageIcon}
-        label="Main Stage"
-        selected={currentNavBarSelection === VERTICAL_NAV_OPTIONS.mainStage}
-        onClick={handleClick(VERTICAL_NAV_OPTIONS.mainStage)}
-        isCurrentLocation={currentLocation === VERTICAL_NAV_OPTIONS.mainStage}
-      />
-      <MenuIconContainer
-        icon={RoomsIcon}
-        label="Rooms"
-        selected={currentNavBarSelection === VERTICAL_NAV_OPTIONS.rooms}
-        onClick={handleClick(VERTICAL_NAV_OPTIONS.rooms)}
-        isCurrentLocation={currentLocation === VERTICAL_NAV_OPTIONS.rooms}
-      />
-      <MenuIconContainer
-        icon={NetworkingIcon}
-        label="Networking"
-        selected={currentNavBarSelection === VERTICAL_NAV_OPTIONS.networking}
-        onClick={handleClick(VERTICAL_NAV_OPTIONS.networking)}
-        isCurrentLocation={currentLocation === VERTICAL_NAV_OPTIONS.networking}
-      />
-      <MenuIconContainer
-        icon={AttendeesIcon}
-        label="Attendees"
-        selected={currentNavBarSelection === VERTICAL_NAV_OPTIONS.attendees}
-        onClick={handleClick(VERTICAL_NAV_OPTIONS.attendees)}
-      />
-      <Divider />
-      {/* <MenuIconContainer icon={ConversationsIcon} label="Conversations" /> */}
-      <MenuIconContainer
-        icon={ChatIcon}
-        label="Chat"
-        selected={currentNavBarSelection === VERTICAL_NAV_OPTIONS.chat}
-        onClick={handleClick(VERTICAL_NAV_OPTIONS.chat)}
-        hasBadge={hasChatBadge}
-      />
+      {navBarOptions.map(({ icon, label, id, visible }) => {
+        if (id === "divider" && visible) {
+          return <Divider key="divider" />;
+        } else if (visible) {
+          return (
+            <MenuIconContainer
+              key={id}
+              icon={icon}
+              label={label}
+              selected={currentNavBarSelection === id}
+              onClick={handleClick(id)}
+              isCurrentLocation={currentLocation === id}
+              hasBadge={id === VERTICAL_NAV_OPTIONS.chat ? hasChatBadge : false}
+            />
+          );
+        }
+        return null;
+      })}
 
-      <MenuIconContainer
-        icon={QnAIcon}
-        label="Q&amp;A"
-        selected={currentNavBarSelection === VERTICAL_NAV_OPTIONS.qna}
-        onClick={handleClick(VERTICAL_NAV_OPTIONS.qna)}
-      />
-      <MenuIconContainer
-        icon={PollsIcon}
-        label="Polls"
-        selected={currentNavBarSelection === VERTICAL_NAV_OPTIONS.polls}
-        onClick={handleClick(VERTICAL_NAV_OPTIONS.polls)}
-      />
       <div style={{ flexGrow: 1 }}></div>
       <MenuIconContainer
         icon={HelpIcon}

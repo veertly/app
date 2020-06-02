@@ -94,7 +94,7 @@ export default function (props) {
     () => room.participants.findIndex((p) => p.id === myUserId) !== -1,
     [myUserId, room.participants]
   );
-  console.log({ name: room.roomName, isMyRoom });
+  // console.log({ name: room.roomName, isMyRoom });
   const classes = useStyles({ isMyRoom });
 
   const handleJoinRoom = () => {

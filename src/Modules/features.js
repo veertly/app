@@ -3,7 +3,8 @@ export const FEATURES = {
   TICKETS: "tickets",
   MINI_PLAYER: "miniplayer",
   PASSWORD_PROTECTED: "passwordProtected",
-  REMOVE_JITSI_LOGO: "removeJitsiLogo"
+  REMOVE_JITSI_LOGO: "removeJitsiLogo",
+  CUSTOM_NAV_BAR: "customNavBar"
 };
 
 export const getFeatureDetails = (enabledFeatures, feature) => {

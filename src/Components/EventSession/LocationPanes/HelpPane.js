@@ -7,6 +7,9 @@ import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ChatIcon from "@material-ui/icons/Chat";
+import { useDispatch } from "react-redux";
+import { openEditProfile, openFeedback } from "../../../Redux/dialogs";
+import Link from "@material-ui/core/Link";
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%"
@@ -25,11 +28,16 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: theme.spacing(1),
     backgroundColor: "#fff",
     zIndex: 2
+  },
+  linksContainer: {
+    textAlign: "center",
+    padding: theme.spacing(4, 0)
   }
 }));
 const HelpPane = () => {
   const classes = useStyles();
   const [expanded, setExpanded] = React.useState(false);
+  const dispatch = useDispatch();
 
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
@@ -56,8 +64,8 @@ const HelpPane = () => {
         </Button>
       </div>
       <ExpansionPanel
-        expanded={expanded === "panel1"}
-        onChange={handleChange("panel1")}
+        expanded={expanded === "camera_mic"}
+        onChange={handleChange("camera_mic")}
       >
         <ExpansionPanelSummary
           expandIcon={<ExpandMoreIcon />}
@@ -65,6 +73,9 @@ const HelpPane = () => {
           id="panel1bh-header"
         >
           <Typography className={classes.heading}>
+            <span role="img" aria-label="camera">
+              📹
+            </span>{" "}
             My camera and microphone are not working
           </Typography>
         </ExpansionPanelSummary>
@@ -92,61 +103,163 @@ const HelpPane = () => {
           </div>
         </ExpansionPanelDetails>
       </ExpansionPanel>
-      {/* <ExpansionPanel
-        expanded={expanded === "panel2"}
-        onChange={handleChange("panel2")}
+
+      <ExpansionPanel
+        expanded={expanded === "browser_not_supported"}
+        onChange={handleChange("browser_not_supported")}
       >
         <ExpansionPanelSummary
           expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel2bh-content"
-          id="panel2bh-header"
+          aria-controls="panel1bh-content"
+          id="panel1bh-header"
         >
-          <Typography className={classes.heading}>Users</Typography>
+          <Typography className={classes.heading}>
+            <span role="img" aria-label="camera">
+              🌐
+            </span>{" "}
+            My browser is not fully supported. What does that mean?{" "}
+          </Typography>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
-          <Typography>
-            Donec placerat, lectus sed mattis semper, neque lectus feugiat
-            lectus, varius pulvinar diam eros in elit. Pellentesque convallis
-            laoreet laoreet.
-          </Typography>
+          <div>
+            <Typography>
+              Veertly works best by using a recent version of the Chrome
+              browser.
+            </Typography>
+            <Typography>
+              By using other browsers (e.g. Firefox, Safari) in their latest
+              version it might also work well, but some functionalities might
+              not be perfectly displayed.
+            </Typography>
+            <Typography>
+              When using a browser that does not support WebRTC (e.g. Internet
+              Explorer) or older versions of other browsers, your event
+              experience will not be very smoothly.
+            </Typography>
+          </div>
         </ExpansionPanelDetails>
       </ExpansionPanel>
+
       <ExpansionPanel
-        expanded={expanded === "panel3"}
-        onChange={handleChange("panel3")}
+        expanded={expanded === "available_dnd"}
+        onChange={handleChange("available_dnd")}
       >
         <ExpansionPanelSummary
           expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel3bh-content"
-          id="panel3bh-header"
+          aria-controls="panel1bh-content"
+          id="panel1bh-header"
         >
-          <Typography className={classes.heading}>Advanced settings</Typography>
+          <Typography className={classes.heading}>
+            <span role="img" aria-label="camera">
+              🧑
+            </span>{" "}
+            What does the 'Available / Do not disturb' switch on the top bar
+            mean?
+          </Typography>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
-          <Typography>
-            Nunc vitae orci ultricies, auctor nunc in, volutpat nisl. Integer
-            sit amet egestas eros, vitae egestas augue. Duis vel est augue.
-          </Typography>
+          <div>
+            <Typography>
+              When you indicate that you are 'available' and when you are not in
+              a conversation, other attendees can start a video call with you
+              and your avatar will appear in the 'Networking' section. If you
+              are in the 'Do not disturb' mode, you will not be approached by
+              anyone via video call.
+            </Typography>
+          </div>
         </ExpansionPanelDetails>
       </ExpansionPanel>
+
       <ExpansionPanel
-        expanded={expanded === "panel4"}
-        onChange={handleChange("panel4")}
+        expanded={expanded === "profile"}
+        onChange={handleChange("profile")}
       >
         <ExpansionPanelSummary
           expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel4bh-content"
-          id="panel4bh-header"
+          aria-controls="panel1bh-content"
+          id="panel1bh-header"
         >
-          <Typography className={classes.heading}>Personal data</Typography>
+          <Typography className={classes.heading}>
+            <span role="img" aria-label="camera">
+              🧑‍🎨
+            </span>{" "}
+            How can I update my profile?
+          </Typography>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
-          <Typography>
-            Nunc vitae orci ultricies, auctor nunc in, volutpat nisl. Integer
-            sit amet egestas eros, vitae egestas augue. Duis vel est augue.
-          </Typography>
+          <div>
+            <Typography>
+              Click on your avatar on the top-right of the screen and click '
+              <Link
+                component="button"
+                onClick={() => {
+                  dispatch(openEditProfile());
+                }}
+                // className={classes.link}
+              >
+                Edit profile
+              </Link>
+              '. <br />
+              When having your profile updated, you are more likely to have more
+              meaningful interactions with other attendees.
+            </Typography>
+          </div>
         </ExpansionPanelDetails>
-      </ExpansionPanel> */}
+      </ExpansionPanel>
+
+      <ExpansionPanel
+        expanded={expanded === "mobile"}
+        onChange={handleChange("mobile")}
+      >
+        <ExpansionPanelSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1bh-content"
+          id="panel1bh-header"
+        >
+          <Typography className={classes.heading}>
+            <span role="img" aria-label="camera">
+              📱
+            </span>{" "}
+            Can I join a Veertly event on my smartphone?
+          </Typography>
+        </ExpansionPanelSummary>
+        <ExpansionPanelDetails>
+          <div>
+            <Typography>
+              We are working on improving your mobile experience. In order to
+              give you a work-around in the meantime, we recommend to download
+              the '
+              <Link
+                href="https://jitsi.org/downloads/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Jitsi Meet
+              </Link>
+              ' app. When accessing Veertly on your mobile phone and entering
+              the main stage or a conversation, you will be forwarded to your
+              'Jitsi Meet' mobile app to join the video call.
+            </Typography>
+          </div>
+        </ExpansionPanelDetails>
+      </ExpansionPanel>
+      <div className={classes.linksContainer}>
+        <Button
+          color="secondary"
+          display="block"
+          onClick={() => dispatch(openFeedback())}
+          style={{ display: "block", margin: "auto", marginBottom: 8 }}
+        >
+          Share your Feedback
+        </Button>
+        <a
+          href="https://www.veertly.com"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          www.veertly.com
+        </a>
+      </div>
     </div>
   );
 };
