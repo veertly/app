@@ -62,7 +62,7 @@ export function loginWithGoogle() {
       const provider = new firebase.auth.GoogleAuthProvider();
 
       const result = await firebase.auth().signInWithPopup(provider);
-      console.log({ result });
+      // console.log({ result });
       const { user } = result;
       const isNewUser = result.additionalUserInfo.isNewUser;
 
@@ -70,7 +70,7 @@ export function loginWithGoogle() {
       // if (!firebase.apps.length) {
       //   firebase.initializeApp(firebaseConfig)
       // }
-      
+
       const userDb = isNewUser
         ? await registerNewUser(result.user)
         : await getUserDb(user.uid);
@@ -167,7 +167,7 @@ export function register(firstName, lastName, email, password) {
       const auth = await firebase.auth();
       const result = await auth.createUserWithEmailAndPassword(email, password);
       const { user } = result;
-      console.log(user);
+      // console.log(user);
       await user.updateProfile({ displayName: `${firstName} ${lastName}` });
       let userDb = await registerNewUser(auth.currentUser);
 

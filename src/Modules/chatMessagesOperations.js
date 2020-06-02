@@ -36,8 +36,8 @@ export const archiveChatMessage = async (
     archivedDate: firebase.firestore.FieldValue.serverTimestamp(),
     archivedBy
   };
-  console.log({ updateObj });
-  console.log({ sessionId, namespace, messageId, archivedBy });
+  // console.log({ updateObj });
+  // console.log({ sessionId, namespace, messageId, archivedBy });
 
   await db
     .collection("eventSessionsChatMessages")

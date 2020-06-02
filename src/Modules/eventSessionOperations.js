@@ -234,7 +234,7 @@ export const joinConversation = (
 
   if (currentGroupId !== null) {
     let participantsKeysCurrentGroup = Object.keys(
-      liveGroups[currentGroupId].participants
+      liveGroups[currentGroupId].participants // TODO:  this may lead to the error: Cannot read property 'participants' of undefined. Will be fixed with the more reliable data model
     );
 
     for (let i = 0; i < participantsKeysCurrentGroup.length; i++) {
