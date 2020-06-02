@@ -67,7 +67,7 @@ jobs:
         run: firebase use --token ${{ secrets.STAGE_FIREBASE_DEPLOY_KEY }} ${{ secrets.PROD_REACT_APP_FIREBASE_PROJECT_ID }}
 
       - name: Set firebase config
-        run: firebase --token ${{ secrets.STAGE_FIREBASE_DEPLOY_KEY }} functions:config:set global.base_url="${{ secrets.PROD_REACT_APP_FIREBASE_BASE_URL }}" slack.webhook="${{ secrets.PROD_SLACK_WEBHOOK }}" sendgrid.key="${{ secrets.SENDGRID_KEY }}"
+        run: firebase --token ${{ secrets.STAGE_FIREBASE_DEPLOY_KEY }} functions:config:set global.base_url="${{ secrets.PROD_REACT_APP_FIREBASE_BASE_URL }}" slack.webhook="${{ secrets.SLACK_WEBHOOK }}" sendgrid.key="${{ secrets.SENDGRID_KEY }}"
 
       - name: Deploy functions
         run: firebase deploy --token ${{ secrets.STAGE_FIREBASE_DEPLOY_KEY }} --only functions
