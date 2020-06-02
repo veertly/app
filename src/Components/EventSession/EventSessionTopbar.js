@@ -256,14 +256,14 @@ export default withRouter((props) => {
               onClose={handleMenuClose}
             >
               <MenuItem onClick={handleEditProfileClick}>Edit profile</MenuItem>
+              {isOwner && <Divider />}
               {isOwner && (
-                <>
-                  <Divider />
-                  <MenuItem onClick={handleEditEventClick}>Edit event</MenuItem>
-                  <MenuItem onClick={handleCockpitClick}>Cockpit</MenuItem>
-                  <Divider />
-                </>
+                <MenuItem onClick={handleEditEventClick}>Edit event</MenuItem>
               )}
+              {isOwner && (
+                <MenuItem onClick={handleCockpitClick}>Cockpit</MenuItem>
+              )}
+              {isOwner && <Divider />}
               {/* <MenuItem onClick={handleLeaveEventClick}>Leave event</MenuItem> */}
               <MenuItem onClick={handleLogoutClick}>Log out</MenuItem>
             </Menu>
