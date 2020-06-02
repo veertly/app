@@ -32,11 +32,11 @@ const PresenceSwitch = () => {
   const isAvailableForCall = useSelector(getUserAvailableForCall);
   const canNetwork = participantCanNetwork(userSession);
   const isMobile = useIsMobile();
-  const [switchValue, setSwitchValue] = useState(isAvailableForCall);
+  const [switchValue, setSwitchValue] = useState(isAvailableForCall === true);
 
   useEffect(() => {
     if (isAvailableForCall !== switchValue) {
-      setSwitchValue(isAvailableForCall);
+      setSwitchValue(isAvailableForCall === true);
     }
   }, [isAvailableForCall, setSwitchValue, switchValue]);
 

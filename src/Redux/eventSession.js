@@ -297,7 +297,7 @@ export const getUserAvailableForCall = (store) =>
   store.eventSession.participantsJoined &&
   store.eventSession.participantsJoined[store.eventSession.userId] &&
   store.eventSession.participantsJoined[store.eventSession.userId]
-    .availableForCall;
+    .availableForCall !== false;
 
 export const isEventOwner = (store) =>
   store.eventSession.userId === store.eventSession.eventSessionDetails.owner;
