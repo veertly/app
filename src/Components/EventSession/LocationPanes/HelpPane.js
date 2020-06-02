@@ -8,7 +8,7 @@ import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ChatIcon from "@material-ui/icons/Chat";
 import { useDispatch } from "react-redux";
-import { openEditProfile } from "../../../Redux/dialogs";
+import { openEditProfile, openFeedback } from "../../../Redux/dialogs";
 import Link from "@material-ui/core/Link";
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -244,6 +244,14 @@ const HelpPane = () => {
         </ExpansionPanelDetails>
       </ExpansionPanel>
       <div className={classes.linksContainer}>
+        <Button
+          color="secondary"
+          display="block"
+          onClick={() => dispatch(openFeedback())}
+          style={{ display: "block", margin: "auto", marginBottom: 8 }}
+        >
+          Share your Feedback
+        </Button>
         <a
           href="https://www.veertly.com"
           target="_blank"
