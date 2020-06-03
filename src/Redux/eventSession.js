@@ -23,6 +23,9 @@ const SET_FILTERS = "eventSessions.SET_FILTERS";
 const SET_ENABLED_FEATURES = "eventSessions.SET_ENABLED_FEATURES";
 const CLEAR_EVENT_SESSION = "eventSessions.CLEAR_EVENT_SESSION";
 
+const SET_MUTE_AUDIO_ON_ENTER = "eventSessions.SET_AUDIO_ON_ENTER";
+const SET_MUTE_VIDEO_ON_ENTER = "eventSessions.SET_VIDEO_ON_ENTER";
+
 const initialState = {
   eventSession: null,
   eventSessionDetails: null,
@@ -38,7 +41,9 @@ const initialState = {
   availableParticipantsList: [],
   keepAlives: {},
   filters: {},
-  enabledFeatures: {}
+  enabledFeatures: {},
+  muteVideoOnEnter: false,
+  muteAudioOnEnter: false,
 };
 
 const isStillLive = (keepAlive) =>
@@ -256,6 +261,18 @@ export const eventSessionReducer = (state = initialState, action) => {
         enabledFeatures: action.enabledFeatures
       };
     }
+    case SET_MUTE_AUDIO_ON_ENTER: {
+      return  {
+        ...state,
+        muteAudioOnEnter: action.muteAudioOnEnter
+      }
+    }
+    case SET_MUTE_VIDEO_ON_ENTER: {
+      return {
+        ...state,
+        muteVideoOnEnter: action.muteVideoOnEnter,
+      }
+    }
     case CLEAR_EVENT_SESSION: {
       return { ...state, ...initialState };
     }
@@ -263,6 +280,10 @@ export const eventSessionReducer = (state = initialState, action) => {
       return state;
   }
 };
+
+
+////////////////////////// selectors
+
 export const getSessionId = (store) =>
   store.eventSession.eventSession
     ? store.eventSession.eventSession.id.toLowerCase()
@@ -336,6 +357,10 @@ export const getFeatureDetails = (feature) => (store) => {
     : null;
 };
 
+export const getMuteAudioOnEnter = (store) => store.eventSession.muteAudioOnEnter;
+
+export const getMuteVideoOnEnter = (store) => store.eventSession.muteVideoOnEnter;
+
 ////////////////// action creators
 
 export const updateEventSession = (eventSession) => ({
@@ -388,3 +413,13 @@ export const setEnabledFeatures = (enabledFeatures) => ({
 export const clearEventSession = () => ({
   type: CLEAR_EVENT_SESSION
 });
+
+export const setMuteVideo = (muteVideoOnEnter) => ({
+  type: SET_MUTE_VIDEO_ON_ENTER,
+  muteVideoOnEnter
+});
+
+export const setMuteAudio = (muteAudioOnEnter) => ({
+  type: SET_MUTE_VIDEO_ON_ENTER,
+  muteAudioOnEnter,
+})
