@@ -8,7 +8,14 @@ import { makeStyles } from "@material-ui/core/styles";
 // import { createNewRoom } from "../../Modules/eventSessionOperations";
 // import { useSnackbar } from "material-ui-snackbar-provider";
 import Webcam from "react-webcam";
+import { useDispatch, useSelector } from "react-redux";
+import { getMuteAudioOnEnter, getMuteVideoOnEnter, setMuteVideo, setMuteAudio } from "../../Redux/eventSession";
 // import { Paper } from "@material-ui/core";
+import { Switch } from "@material-ui/core";
+import VideocamIcon from "@material-ui/icons/Videocam";
+import VideocamOffIcon from "@material-ui/icons/VideocamOff";
+import MicIcon from "@material-ui/icons/Mic";
+import MicOffIcon from "@material-ui/icons/MicOff";
 
 const useStyles = makeStyles((theme) => ({
   dialog: {
@@ -39,11 +46,69 @@ const useStyles = makeStyles((theme) => ({
   cameraContainer: {
     height: "100%",
     width: "100%",
+  },
+  switchesContainer: {
+    display: "flex",
+    flexDirection: "row",
+    width: "100%",
+    marginTop: theme.spacing(4),
+    justifyContent: "space-around",
+  },
+  switchWrapper: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center"
   }
 }));
 
-const AudioVideoCheckDialog = ({ handleSubmit, sessionId }) => {
+const AudioVideoCheckDialog = ({ handleSubmit, sessionId,  audioSwitchRender, videoSwitchRender }) => {
   const styles = useStyles();
+
+  const dispatch = useDispatch();
+  const muteVideo = useSelector(getMuteAudioOnEnter)
+  const muteAudio = useSelector(getMuteVideoOnEnter);
+
+  const handleVideoToggle = () => {
+    // setMuteVideo(!muteVideo)
+    dispatch(setMuteVideo())
+  }
+
+  const handleAudioToggle = () => {
+    // setMuteAudio(!muteAudio)
+    dispatch(setMuteAudio())
+  }
+
+  const VideoSwitch = () => {
+    return (
+      <div className={styles.switchWrapper}>
+        {!muteVideo && <VideocamIcon />}
+        {muteVideo && <VideocamOffIcon />}
+        <Switch
+          checked={!muteVideo}
+          onChange={handleVideoToggle}
+          name="checkedB"
+          color="primary"
+        >
+        </Switch>
+      </div>
+    )
+  }
+
+  const AudioSwitch = () => {
+    return (
+      <div className={styles.switchWrapper}>
+        {muteAudio && <MicOffIcon />}
+        {!muteAudio && <MicIcon />}
+        <Switch
+          checked={!muteAudio}
+          onChange={handleAudioToggle}
+          name="checkedB"
+          color="primary"
+        >
+        </Switch>
+      </div>
+    )
+  }
 
   return (
     // <Paper>
@@ -59,6 +124,11 @@ const AudioVideoCheckDialog = ({ handleSubmit, sessionId }) => {
               height="100%"
               width="100%"
             />
+          </div>
+
+          <div className={styles.switchesContainer}>
+            <VideoSwitch />
+            <AudioSwitch />
           </div>
           
           <Button
