@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 
+import Alert from "@material-ui/lab/Alert";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
@@ -17,6 +18,7 @@ import MicOffIcon from "@material-ui/icons/MicOff";
 import { setVideoMuteStatusDB, setAudioMuteStatusDB } from "../../Modules/eventSessionOperations";
 import { useDocumentData } from "react-firebase-hooks/firestore";
 import firebase from "../../Modules/firebaseApp";
+// import { useMediaDevices } from "react-use";
 
 const useStyles = makeStyles((theme) => ({
   dialog: {
@@ -47,6 +49,8 @@ const useStyles = makeStyles((theme) => ({
   cameraContainer: {
     height: "100%",
     width: "100%",
+    backgroundColor: "gray",
+    padding: 0,
   },
   switchesContainer: {
     display: "flex",
@@ -59,18 +63,24 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "row",
     alignItems: "center"
+  },
+  alert: {
+    marginTop: theme.spacing(4),
+    textAlign: "center",
   }
 }));
 
 const AudioVideoCheckDialog = ({ handleSubmit, sessionId, setShowAudioVideoCheck }) => {
   const styles = useStyles();
-  
+  // const mediaDevices = useMediaDevices();
   const [eventSessionData] = useDocumentData(
     firebase
     .firestore()
     .collection("eventSessions")
     .doc(sessionId)
   )
+
+  const [showAlert, setShowAlert] = useState(false);
 
   const muteVideo = eventSessionData && eventSessionData.muteVideo ? eventSessionData.muteVideo : false;
   const muteAudio = eventSessionData && eventSessionData.muteAudio ? eventSessionData.muteAudio : false;
@@ -98,7 +108,7 @@ const AudioVideoCheckDialog = ({ handleSubmit, sessionId, setShowAudioVideoCheck
         <Switch
           checked={!muteVideo}
           onChange={handleVideoToggle}
-          name="checkedB"
+          name="mute video"
           color="primary"
         >
         </Switch>
@@ -114,7 +124,7 @@ const AudioVideoCheckDialog = ({ handleSubmit, sessionId, setShowAudioVideoCheck
         <Switch
           checked={!muteAudio}
           onChange={handleAudioToggle}
-          name="checkedB"
+          name="mute audio"
           color="primary"
         >
         </Switch>
@@ -132,11 +142,19 @@ const AudioVideoCheckDialog = ({ handleSubmit, sessionId, setShowAudioVideoCheck
         <DialogContent className={styles.dialogContent}>
           
           <div className={styles.cameraContainer}>
-            <Webcam 
+            <Webcam
+              onUserMediaError={() => setShowAlert(true)}
               height="100%"
               width="100%"
             />
           </div>
+
+          {
+            showAlert && 
+            <Alert severity="warning" className={styles.alert}>
+              Audio and Video permissions are required by Veertly. Please make sure to give those permissions
+            </Alert>
+          }
 
           <div className={styles.switchesContainer}>
             <VideoSwitch />
