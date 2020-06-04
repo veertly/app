@@ -110,8 +110,10 @@ export default function (props) {
   }
 
   const hasSubtitle =
-    participant.company.trim() !== "" || participant.companyTitle.trim() !== "";
-  const hasChips = participant.interestsChips.length > 0;
+    (participant.company && participant.company.trim() !== "") ||
+    (participant.companyTitle && participant.companyTitle.trim() !== "");
+  const hasChips =
+    participant.interestsChips && participant.interestsChips.length > 0;
 
   const onSelectFile = async (e) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -164,37 +166,41 @@ export default function (props) {
           />
         </CustomTooltip>
       )}
-      {!participant.avatarUrl && participant.firstName.trim() !== "" && (
-        <CustomTooltip
-          show={editPicture}
-          title="Change picture"
-          onClick={handleAvatarClick}
-        >
-          <Avatar
-            className={clsx(
-              classes.avatar,
-              editPicture && classes.avatarEditable
-            )}
+      {!participant.avatarUrl &&
+        participant.firstName &&
+        participant.firstName.trim() !== "" && (
+          <CustomTooltip
+            show={editPicture}
+            title="Change picture"
+            onClick={handleAvatarClick}
           >
-            {participant.firstName.charAt(0).toUpperCase()}
-            {participant.lastName.charAt(0).toUpperCase()}
-          </Avatar>
-        </CustomTooltip>
-      )}
-      {!participant.avatarUrl && participant.firstName.trim() === "" && (
-        <CustomTooltip
-          show={editPicture}
-          title="Change picture"
-          onClick={handleAvatarClick}
-        >
-          <Avatar
-            className={clsx(
-              classes.avatar,
-              editPicture && classes.avatarEditable
-            )}
-          ></Avatar>
-        </CustomTooltip>
-      )}
+            <Avatar
+              className={clsx(
+                classes.avatar,
+                editPicture && classes.avatarEditable
+              )}
+            >
+              {participant.firstName.charAt(0).toUpperCase()}
+              {participant.lastName.charAt(0).toUpperCase()}
+            </Avatar>
+          </CustomTooltip>
+        )}
+      {!participant.avatarUrl &&
+        participant.firstName &&
+        participant.firstName.trim() === "" && (
+          <CustomTooltip
+            show={editPicture}
+            title="Change picture"
+            onClick={handleAvatarClick}
+          >
+            <Avatar
+              className={clsx(
+                classes.avatar,
+                editPicture && classes.avatarEditable
+              )}
+            ></Avatar>
+          </CustomTooltip>
+        )}
       <div
         className={classes.participantDetails}
         style={{
@@ -204,7 +210,7 @@ export default function (props) {
       >
         <div className={classes.participantName}>
           <Typography variant="h6">
-            {participant.firstName.trim() === ""
+            {!participant.firstName || participant.firstName.trim() === ""
               ? "Guest User"
               : `${participant.firstName} ${participant.lastName}`}
           </Typography>
@@ -237,15 +243,17 @@ export default function (props) {
               <KeybaseIcon className={classes.socialNetworkIcon} />
             </a>
           )}
-          {participant.emailPublic && participant.email.trim() !== "" && (
-            <a
-              href={`mailto:${participant.email}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <MailOutlineIcon className={classes.socialNetworkIcon} />
-            </a>
-          )}
+          {participant.emailPublic &&
+            participant.email &&
+            participant.email.trim() !== "" && (
+              <a
+                href={`mailto:${participant.email}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <MailOutlineIcon className={classes.socialNetworkIcon} />
+              </a>
+            )}
         </div>
 
         {(participant.company || participant.companyTitle) && (
