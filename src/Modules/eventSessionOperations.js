@@ -700,3 +700,45 @@ export const createConference = async (
       throw error;
     });
 };
+
+// set video mute status
+export const setVideoMuteStatusDB = async (muteVideo, originalSessionId) => {
+  const sessionId = originalSessionId.toLowerCase();
+  await firebase
+  .firestore()
+  .collection("eventSessions")
+  .doc(sessionId)
+  .set({
+    muteVideo: muteVideo
+  }, {
+    merge: true
+  })
+}
+
+// set audio mute status
+export const setAudioMuteStatusDB = async (muteAudio, originalSessionId) => {
+  const sessionId = originalSessionId.toLowerCase();
+  await firebase
+  .firestore()
+  .collection("eventSessions")
+  .doc(sessionId)
+  .set({
+    muteAudio: muteAudio
+  }, {
+    merge: true
+  })
+}
+
+// set technical check shown for event session
+export const setTechnicalCheckShowDB = async (technicalCheckShown, originalSessionId) => {
+  const sessionId = originalSessionId.toLowerCase();
+  await firebase
+  .firestore()
+  .collection("eventSessions")
+  .doc(sessionId)
+  .set({
+    technicalCheckShown: technicalCheckShown
+  }, {
+    merge: true
+  })
+}

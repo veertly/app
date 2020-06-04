@@ -8,14 +8,15 @@ import { makeStyles } from "@material-ui/core/styles";
 // import { createNewRoom } from "../../Modules/eventSessionOperations";
 // import { useSnackbar } from "material-ui-snackbar-provider";
 import Webcam from "react-webcam";
-import { useDispatch, useSelector } from "react-redux";
-import { getMuteAudioOnEnter, getMuteVideoOnEnter, setMuteVideo, setMuteAudio } from "../../Redux/eventSession";
 // import { Paper } from "@material-ui/core";
 import { Switch } from "@material-ui/core";
 import VideocamIcon from "@material-ui/icons/Videocam";
 import VideocamOffIcon from "@material-ui/icons/VideocamOff";
 import MicIcon from "@material-ui/icons/Mic";
 import MicOffIcon from "@material-ui/icons/MicOff";
+import { setVideoMuteStatusDB, setAudioMuteStatusDB } from "../../Modules/eventSessionOperations";
+import { useDocumentData } from "react-firebase-hooks/firestore";
+import firebase from "../../Modules/firebaseApp";
 
 const useStyles = makeStyles((theme) => ({
   dialog: {
@@ -61,21 +62,32 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const AudioVideoCheckDialog = ({ handleSubmit, sessionId,  audioSwitchRender, videoSwitchRender }) => {
+const AudioVideoCheckDialog = ({ handleSubmit, sessionId, setShowAudioVideoCheck }) => {
   const styles = useStyles();
+  
+  const [eventSessionData] = useDocumentData(
+    firebase
+    .firestore()
+    .collection("eventSessions")
+    .doc(sessionId)
+  )
 
-  const dispatch = useDispatch();
-  const muteVideo = useSelector(getMuteAudioOnEnter)
-  const muteAudio = useSelector(getMuteVideoOnEnter);
+  const muteVideo = eventSessionData && eventSessionData.muteVideo ? eventSessionData.muteVideo : false;
+  const muteAudio = eventSessionData && eventSessionData.muteAudio ? eventSessionData.muteAudio : false;
+
+  // const muteVideo = useSelector(getMuteVideoOnEnter)
+  // const muteAudio = useSelector(getMuteAudioOnEnter);
 
   const handleVideoToggle = () => {
     // setMuteVideo(!muteVideo)
-    dispatch(setMuteVideo())
+    // dispatch(setMuteVideo(sessionId))
+    setVideoMuteStatusDB(!muteVideo, sessionId);
   }
 
   const handleAudioToggle = () => {
     // setMuteAudio(!muteAudio)
-    dispatch(setMuteAudio())
+    // dispatch(setMuteAudio(sessionId))
+    setAudioMuteStatusDB(!muteAudio, sessionId);
   }
 
   const VideoSwitch = () => {

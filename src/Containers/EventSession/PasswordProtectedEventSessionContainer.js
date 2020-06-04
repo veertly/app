@@ -262,8 +262,7 @@ const ProtectedEventSessionContainer = () => {
     <AudioVideoCheckDialog 
       handleSubmit={handleClickPreview}
       sessionId={sessionId}
-      // audioSwitchRender={AudioSwitch}
-      // videoSwitchRender={VideoSwitch}
+      setShowAudioVideoCheck={(showTechCheck) => setShowAudioVideoCheck(showTechCheck)}
     />
    )
   }else {
