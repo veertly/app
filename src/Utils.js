@@ -14,3 +14,18 @@ export const SMALL_PLAYER_INITIAL_HEIGHT = Math.floor(
 export const SMALL_PLAYER_INITIAL_WIDTH =
   (SMALL_PLAYER_INITIAL_HEIGHT * 14) / 9;
 export const TOPBAR_HEIGHT = 64;
+
+
+export const getButtonText = ({ muteAudio, muteVideo }) =>{
+  let buttonText = "Join event";
+  if (muteVideo) {
+    buttonText = " Join event without video";
+  }
+  if (muteAudio) {
+    buttonText = "Join event without audio";
+  }
+  if (muteVideo && muteAudio) {
+    buttonText = "Join event without audio and video";
+  }
+  return buttonText;
+};
