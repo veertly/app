@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import useScript from "../../Hooks/useScript";
 import { makeStyles } from "@material-ui/core/styles";
-import { leaveCall } from "../../Modules/eventSessionOperations";
+import { leaveCall, setVideoMuteStatusDB, setAudioMuteStatusDB } from "../../Modules/eventSessionOperations";
 import NoVideoImage from "../../Assets/illustrations/undraw_video_call_kxyp.svg";
 import { Typography } from "@material-ui/core";
 import { useSelector, shallowEqual } from "react-redux";
@@ -11,7 +11,7 @@ import {
   getSessionId,
   getUserId,
   getEventSessionDetails,
-  getFeatureDetails
+  getFeatureDetails,
 } from "../../Redux/eventSession";
 import ReactPlayer from "react-player";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -30,6 +30,8 @@ import {
 // import { useHistory } from "react-router-dom";
 import { FEATURES } from "../../Modules/features";
 import { VERTICAL_NAV_OPTIONS } from "../../Contexts/VerticalNavBarContext";
+import { useDocumentDataOnce } from "react-firebase-hooks/firestore";
+import firebase from "../../Modules/firebaseApp";
 
 const useStyles = makeStyles((theme) => ({
   videoContainer: {
@@ -83,6 +85,20 @@ export default () => {
   const userGroup = useSelector(getUserGroup, shallowEqual);
   const sessionId = useSelector(getSessionId);
   const eventSessionDetails = useSelector(getEventSessionDetails, shallowEqual);
+
+  // const history = useHistory();
+  const [eventSessionData] = useDocumentDataOnce(
+    firebase
+    .firestore()
+    .collection("eventSessions")
+    .doc(sessionId)
+  )
+
+  const muteVideo = eventSessionData && eventSessionData.muteVideo ? eventSessionData.muteVideo : false;
+  const muteAudio = eventSessionData && eventSessionData.muteAudio ? eventSessionData.muteAudio : false;
+
+  // const muteVideo = useSelector(getMuteVideoOnEnter)
+  // const muteAudio = useSelector(getMuteAudioOnEnter);
 
   // const history = useHistory();
 
@@ -166,6 +182,25 @@ export default () => {
         handleCallEnded();
       });
 
+      api.addEventListener("audioMuteStatusChanged", (event) => {
+        //dispatch the status
+        setAudioMuteStatusDB(event.muted, sessionId);
+        
+      });
+      
+      api.addEventListener("videoMuteStatusChanged", (event) => {
+        setVideoMuteStatusDB(event.muted, sessionId);
+      });
+
+
+      if (muteAudio) {
+        api.executeCommand("toggleAudio");
+      }
+      // if false set
+      if (muteVideo) {
+        api.executeCommand("toggleVideo");
+      }
+
       setLastRoomLoaded(roomName);
       setJitsiApi(api);
     }
@@ -185,7 +220,9 @@ export default () => {
     lastRoomLoaded,
     setJitsiApi,
     sessionId,
-    removeJitsiLogoFeature
+    removeJitsiLogoFeature,
+    muteAudio,
+    muteVideo,
   ]);
 
   if (error) {

@@ -6,6 +6,7 @@ import {
 import * as moment from "moment";
 import { VERTICAL_NAV_OPTIONS } from "../Contexts/VerticalNavBarContext";
 
+///// constants
 const UPDATE_EVENT_SESSION = "eventSession.UPDATE_EVENT_SESSION";
 const UPDATE_EVENT_SESSION_DETAILS =
   "eventSession.UPDATE_EVENT_SESSION_DETAILS";
@@ -23,8 +24,8 @@ const SET_FILTERS = "eventSessions.SET_FILTERS";
 const SET_ENABLED_FEATURES = "eventSessions.SET_ENABLED_FEATURES";
 const CLEAR_EVENT_SESSION = "eventSessions.CLEAR_EVENT_SESSION";
 
-const SET_MUTE_AUDIO_ON_ENTER = "eventSessions.SET_AUDIO_ON_ENTER";
-const SET_MUTE_VIDEO_ON_ENTER = "eventSessions.SET_VIDEO_ON_ENTER";
+// const SET_MUTE_AUDIO_ON_ENTER = "eventSessions.SET_AUDIO_ON_ENTER";
+// const SET_MUTE_VIDEO_ON_ENTER = "eventSessions.SET_VIDEO_ON_ENTER";
 
 const initialState = {
   eventSession: null,
@@ -42,8 +43,8 @@ const initialState = {
   keepAlives: {},
   filters: {},
   enabledFeatures: {},
-  muteVideoOnEnter: false,
-  muteAudioOnEnter: false,
+  // muteVideoOnEnter: false,
+  // muteAudioOnEnter: false,
 };
 
 const isStillLive = (keepAlive) =>
@@ -141,6 +142,8 @@ const crossCheckParticipantsJoined = (
   );
 };
 
+
+///////// Reducer
 export const eventSessionReducer = (state = initialState, action) => {
   switch (action.type) {
     case UPDATE_EVENT_SESSION: {
@@ -261,18 +264,18 @@ export const eventSessionReducer = (state = initialState, action) => {
         enabledFeatures: action.enabledFeatures
       };
     }
-    case SET_MUTE_AUDIO_ON_ENTER: {
-      return  {
-        ...state,
-        muteAudioOnEnter: action.muteAudioOnEnter
-      }
-    }
-    case SET_MUTE_VIDEO_ON_ENTER: {
-      return {
-        ...state,
-        muteVideoOnEnter: action.muteVideoOnEnter,
-      }
-    }
+    // case SET_MUTE_AUDIO_ON_ENTER: {
+    //   return  {
+    //     ...state,
+    //     muteAudioOnEnter: !state.muteAudioOnEnter
+    //   }
+    // }
+    // case SET_MUTE_VIDEO_ON_ENTER: {
+    //   return {
+    //     ...state,
+    //     muteVideoOnEnter: !state.muteVideoOnEnter,
+    //   }
+    // }
     case CLEAR_EVENT_SESSION: {
       return { ...state, ...initialState };
     }
@@ -414,12 +417,19 @@ export const clearEventSession = () => ({
   type: CLEAR_EVENT_SESSION
 });
 
-export const setMuteVideo = (muteVideoOnEnter) => ({
-  type: SET_MUTE_VIDEO_ON_ENTER,
-  muteVideoOnEnter
-});
 
-export const setMuteAudio = (muteAudioOnEnter) => ({
-  type: SET_MUTE_VIDEO_ON_ENTER,
-  muteAudioOnEnter,
-})
+
+///////// thunks
+// export const setMuteVideo = (sessionId) => (dispatch, state) => {
+//   const muteVideoPrevious = stateMapping(state).eventSession.muteVideoOnEnter
+//   setVideoMuteStatusDB(!muteVideoPrevious,)
+//   return ({
+//     type: SET_MUTE_VIDEO_ON_ENTER,
+//     muteVideoOnEnter: muteVideoPrevious,
+//   })
+// };
+
+// export const setMuteAudio = (muteAudioOnEnter) => ({
+//   type: SET_MUTE_AUDIO_ON_ENTER,
+//   // muteAudioOnEnter,
+// })
