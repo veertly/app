@@ -18,6 +18,7 @@ import MicOffIcon from "@material-ui/icons/MicOff";
 import { setVideoMuteStatusDB, setAudioMuteStatusDB } from "../../Modules/eventSessionOperations";
 import { useDocumentData } from "react-firebase-hooks/firestore";
 import firebase from "../../Modules/firebaseApp";
+import { getButtonText } from "../../Utils";
 // import { useMediaDevices } from "react-use";
 
 const useStyles = makeStyles((theme) => ({
@@ -168,7 +169,9 @@ const AudioVideoCheckDialog = ({ handleSubmit, sessionId, setShowAudioVideoCheck
             variant="contained"
             color="primary"
           >
-            Join Event
+            {
+              getButtonText({ muteAudio, muteVideo })
+            }
           </Button>
 
         </DialogContent>
