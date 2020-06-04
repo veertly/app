@@ -29,14 +29,15 @@ import {
   getSessionId,
   getUser,
   getUserGroup,
-  getEventSessionDetails
-  // getFeatureDetails
+  getEventSessionDetails,
+  getFeatureDetails
 } from "../../Redux/eventSession";
 import { openEditProfile } from "../../Redux/dialogs";
 // import { FEATURES } from "../../Modules/features";
 import { logout } from "../../Redux/account";
 import PresenceSwitch from "./PresenceSwitch";
 import { trackEvent } from "../../Modules/analytics";
+import { FEATURES } from "../../Modules/features";
 
 // import routes from "../../Config/routes";
 const useStyles = makeStyles((theme) => ({
@@ -51,7 +52,10 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(1)
   },
   logo: {
-    width: 150
+    width: "100%",
+    maxWidth: 150,
+    height: "100%",
+    maxHeight: 42
     // marginTop: theme.spacing(1)
   },
   button: {
@@ -152,7 +156,9 @@ export default withRouter((props) => {
   const userGroup = useSelector(getUserGroup, shallowEqual);
   const sessionId = useSelector(getSessionId);
   const eventSessionDetails = useSelector(getEventSessionDetails, shallowEqual);
-
+  const customThemeFeature = useSelector(
+    getFeatureDetails(FEATURES.CUSTOM_THEME)
+  );
   const isOwner = useMemo(() => user.id === eventSessionDetails.owner, [
     eventSessionDetails.owner,
     user.id
@@ -204,6 +210,12 @@ export default withRouter((props) => {
     );
   };
 
+  const logo = useMemo(() => {
+    return customThemeFeature && customThemeFeature.logo
+      ? customThemeFeature.logo
+      : VeertlyLogo;
+  }, [customThemeFeature]);
+
   return (
     <React.Fragment>
       <AppBar className={clsx(classes.root)}>
@@ -218,7 +230,7 @@ export default withRouter((props) => {
           </Hidden> */}
 
           {/* <Hidden smDown> */}
-          <img alt="Logo" src={VeertlyLogo} className={classes.logo} />
+          <img alt="Logo" src={logo} className={classes.logo} />
           <div className={classes.flexGrow}></div>
           <div className={classes.titleContainer}>
             {!isMobile && eventSessionDetails && (

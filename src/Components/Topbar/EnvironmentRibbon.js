@@ -18,17 +18,17 @@ const useStyles = makeStyles((theme) => ({
     "-webkit-transform": "rotate(-45deg)",
     boxShadow: "0 0 3px rgba(0,0,0,.3)",
     position: "fixed",
-    zIndex: 1101,
+    zIndex: 1101
   },
   ribbonStage: {
-    background: theme.palette.secondary.main,
+    background: theme.palette.secondary.main
   },
   ribbonOrange: {
-    background: "#e82",
+    background: "#e82"
   },
   text: {
-    textTransform: "uppercase",
-  },
+    textTransform: "uppercase"
+  }
 }));
 
 const EnvironmentRibbon = (props) => {
@@ -45,13 +45,14 @@ const EnvironmentRibbon = (props) => {
       </div>
     );
   }
-  return (
-    <div className={`${classes.cornerRibbon} ${classes.ribbonStage}`}>
-      <Typography color="inherit" className={classes.text}>
-        Dev
-      </Typography>
-    </div>
-  );
+  return null;
+  // return (
+  //   <div className={`${classes.cornerRibbon} ${classes.ribbonStage}`}>
+  //     <Typography color="inherit" className={classes.text}>
+  //       Dev
+  //     </Typography>
+  //   </div>
+  // );
 };
 
 export default EnvironmentRibbon;
