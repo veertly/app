@@ -159,9 +159,9 @@ export default withRouter((props) => {
   const customThemeFeature = useSelector(
     getFeatureDetails(FEATURES.CUSTOM_THEME)
   );
-  const isOwner = useMemo(() => user.id === eventSessionDetails.owner, [
+  const isOwner = useMemo(() => user && user.id === eventSessionDetails.owner, [
     eventSessionDetails.owner,
-    user.id
+    user
   ]);
   // const miniPlayerProperties = useSelector(
   //   getFeatureDetails(FEATURES.MINI_PLAYER),

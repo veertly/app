@@ -39,7 +39,7 @@ import ChatMessagesContext, {
 } from "../../Contexts/ChatMessagesContext";
 import { FEATURES } from "../../Modules/features";
 
-const DEAFULT_NAV_BAR = {
+export const DEAFULT_NAV_BAR = {
   [VERTICAL_NAV_OPTIONS.lobby]: {
     id: VERTICAL_NAV_OPTIONS.lobby,
     label: "Lobby",
