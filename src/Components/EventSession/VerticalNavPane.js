@@ -94,7 +94,7 @@ const VerticalNavPane = (props) => {
 
     return result;
   }, [customNavBarFeature]);
-  console.log({ customNavBarFeature, navBarOptions });
+
   const getTitle = () => {
     let navBarItem = navBarOptions[currentNavBarSelection];
     switch (currentNavBarSelection) {
