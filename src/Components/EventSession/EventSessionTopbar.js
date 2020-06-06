@@ -52,9 +52,9 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(1)
   },
   logo: {
-    width: "100%",
+    // width: "100%",
     maxWidth: 150,
-    height: "100%",
+    // height: "100%",
     maxHeight: 42
     // marginTop: theme.spacing(1)
   },
@@ -65,24 +65,7 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     whiteSpace: "nowrap"
   },
-  roomButtonsContainer: {
-    margin: theme.spacing(0, 4, 0, 4),
-    minWidth: 318
-  },
-  currentRoomContainer: {
-    backgroundColor: theme.palette.secondary.main,
-    height: 29,
-    // padding: 8
-    color: theme.palette.text.primary,
-    float: "left",
-    margin: theme.spacing(0, 2, 0, 1),
-    padding: theme.spacing(0, 1),
-    border: "1px solid " + theme.palette.secondary.main,
-    boxShadow:
-      "0px 1px 5px 0px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 3px 1px -2px rgba(0,0,0,0.12)",
-    width: 135,
-    textAlign: "center"
-  },
+
   title: {
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
@@ -200,14 +183,12 @@ export default withRouter((props) => {
 
   const handleEditEventClick = () => {
     trackEvent("Edit event clicked", { sessionId });
-    window.open(window.open(routes.EDIT_EVENT_SESSION(sessionId), "_blank"));
+    window.open(routes.EDIT_EVENT_SESSION(sessionId), "_blank");
   };
 
   const handleCockpitClick = () => {
     trackEvent("Cockpit clicked", { sessionId });
-    window.open(
-      window.open("https://cockpit.veertly.com/event/" + sessionId, "_blank")
-    );
+    window.open("https://cockpit.veertly.com/event/" + sessionId, "_blank");
   };
 
   const logo = useMemo(() => {

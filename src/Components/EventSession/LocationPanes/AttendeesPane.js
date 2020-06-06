@@ -106,8 +106,8 @@ const useStyles = makeStyles((theme) => ({
 
 const AvailableBadge = withStyles((theme) => ({
   badge: {
-    backgroundColor: theme.palette.secondary.main, //"#44b700",
-    color: theme.palette.secondary.main, //"#44b700",
+    backgroundColor: "#44b700",
+    color: "#44b700",
     boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
     "&::after": {
       position: "absolute",
