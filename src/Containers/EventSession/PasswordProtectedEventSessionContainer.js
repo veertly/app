@@ -213,7 +213,6 @@ const ProtectedEventSessionContainer = () => {
 
   const { showDialog, loading } = useAuth();
   const { showAudioVideoCheck, setShowAudioVideoCheck, devicesPermissionGiven, enterWithoutPermissions } = useShowTechCheck(sessionId);
-  console.log(devicesPermissionGiven);
   // const [muteVideo, setMuteVideo] = useState(false);
   // const [muteAudio, setMuteAudio] = useState(false);
   // const classes = useStyles();

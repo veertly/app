@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
-  // makeStyles,
+  makeStyles,
   Switch,
   FormControlLabel,
   Tooltip
@@ -15,18 +15,13 @@ import { participantCanNetwork } from "../../Helpers/participantsHelper";
 import { setUserAvailableForCall } from "../../Modules/userOperations";
 import useIsMobile from "../../Hooks/useIsMobile";
 
-// const useStyles = makeStyles((theme) => ({
-//   emptyPane: {
-//     marginTop: theme.spacing(4),
-//     textAlign: "center"
-//   },
-//   emptyImage: {
-//     width: "55%",
-//     marginBottom: theme.spacing(1)
-//   }
-// }));
+const useStyles = makeStyles((theme) => ({
+  lable: {
+    color: "white"
+  }
+}));
 const PresenceSwitch = () => {
-  // const classes = useStyles();
+  const classes = useStyles();
   const sessionId = useSelector(getSessionId);
   const userSession = useSelector(getUserSession);
   const isAvailableForCall = useSelector(getUserAvailableForCall);
@@ -68,6 +63,7 @@ const PresenceSwitch = () => {
         <Tooltip title="While in a conversation, you will not be interrupted">
           <FormControlLabel
             // label={"In a conversation"}
+            className={classes.label}
             label={switchValue ? "Available" : "Do not disturb"}
             control={<Switch checked={switchValue} onChange={handleChange} />}
             labelPlacement="start"
