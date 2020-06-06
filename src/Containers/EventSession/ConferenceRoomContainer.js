@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import useScript from "../../Hooks/useScript";
 import { makeStyles } from "@material-ui/core/styles";
-import { leaveCall, setVideoMuteStatusDB, setAudioMuteStatusDB } from "../../Modules/eventSessionOperations";
+import { leaveCall } from "../../Modules/eventSessionOperations";
 import NoVideoImage from "../../Assets/illustrations/undraw_video_call_kxyp.svg";
 import { Typography } from "@material-ui/core";
 import { useSelector, shallowEqual } from "react-redux";
@@ -30,8 +30,7 @@ import {
 // import { useHistory } from "react-router-dom";
 import { FEATURES } from "../../Modules/features";
 import { VERTICAL_NAV_OPTIONS } from "../../Contexts/VerticalNavBarContext";
-import { useDocumentDataOnce } from "react-firebase-hooks/firestore";
-import firebase from "../../Modules/firebaseApp";
+import useMuteAudioVideo from "../../Hooks/useMuteAudioVideo";
 
 const useStyles = makeStyles((theme) => ({
   videoContainer: {
@@ -87,15 +86,14 @@ export default () => {
   const eventSessionDetails = useSelector(getEventSessionDetails, shallowEqual);
 
   // const history = useHistory();
-  const [eventSessionData] = useDocumentDataOnce(
-    firebase
-    .firestore()
-    .collection("eventSessions")
-    .doc(sessionId)
-  )
+  // const [eventSessionData] = useDocumentDataOnce(
+  //   firebase
+  //   .firestore()
+  //   .collection("eventSessions")
+  //   .doc(sessionId)
+  // )
 
-  const muteVideo = eventSessionData && eventSessionData.muteVideo ? eventSessionData.muteVideo : false;
-  const muteAudio = eventSessionData && eventSessionData.muteAudio ? eventSessionData.muteAudio : false;
+  const { muteVideo, muteAudio, setMuteAudio, setMuteVideo } = useMuteAudioVideo(sessionId);
 
   // const muteVideo = useSelector(getMuteVideoOnEnter)
   // const muteAudio = useSelector(getMuteAudioOnEnter);
@@ -184,12 +182,14 @@ export default () => {
 
       api.addEventListener("audioMuteStatusChanged", (event) => {
         //dispatch the status
-        setAudioMuteStatusDB(event.muted, sessionId);
+        // setAudioMuteStatusDB(event.muted, sessionId);
+        setMuteAudio(event.muted)
         
       });
       
       api.addEventListener("videoMuteStatusChanged", (event) => {
-        setVideoMuteStatusDB(event.muted, sessionId);
+        // setVideoMuteStatusDB(event.muted, sessionId);
+        setMuteVideo(event.muted);
       });
 
 
@@ -211,19 +211,7 @@ export default () => {
       //   jitsiApi.dispose();
       // }
     };
-  }, [
-    loaded,
-    eventSessionDetails,
-    user,
-    handleCallEnded,
-    jitsiApi,
-    lastRoomLoaded,
-    setJitsiApi,
-    sessionId,
-    removeJitsiLogoFeature,
-    muteAudio,
-    muteVideo,
-  ]);
+  }, [loaded, eventSessionDetails, user, handleCallEnded, jitsiApi, lastRoomLoaded, setJitsiApi, sessionId, removeJitsiLogoFeature, muteAudio, muteVideo, setMuteAudio, setMuteVideo]);
 
   if (error) {
     console.log(error);
