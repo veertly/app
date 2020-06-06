@@ -1,4 +1,4 @@
-const { firestore } = require("../modules/firebase");
+const { firestore, admin } = require("../modules/firebase");
 
 module.exports = {};
 
@@ -14,20 +14,42 @@ module.exports.loginInEvent = async (data, context) => {
   const passwordEvent = eventSessionDataDoc.exists
     ? eventSessionDataDoc.data().password
     : "";
-  // console.log("password in db", passwordEvent);
-  if (passwordEvent && password === passwordEvent) {
+
+  if (password === passwordEvent) {
     // set logged in parameter to event session object
+
+    const loginId = new Date().getTime();
+
     const userRef = firestore
       .collection("eventSessions")
       .doc(eventSessionId)
       .collection("participantsJoined")
       .doc(uid);
+
     userRef.set(
       {
-        isAuthenticated: true
+        isAuthorized: true,
+        loggedInAt: admin.firestore.FieldValue.serverTimestamp()
       },
       { merge: true }
     );
+
+    const loginRef = firestore
+      .collection("eventSessions")
+      .doc(eventSessionId)
+      .collection("participantsJoined")
+      .doc(uid)
+      .collection("loginAttempts")
+      .doc("" + loginId);
+
+    loginRef.set(
+      {
+        withCode: password && password.trim() !== "",
+        loggedInAt: admin.firestore.FieldValue.serverTimestamp()
+      },
+      { merge: true }
+    );
+
     return {
       success: true
     };

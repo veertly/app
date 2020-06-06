@@ -15,6 +15,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import SplashScreen from "../../Components/Misc/SplashScreen";
 import CompatibilityDialog from "../../Components/Shared/CompatibilityDialog";
 import EventSessionContainerWrapper from "./EventSessionContainerWrapper";
+import ErrorPage from "../../Components/Misc/ErrorPage";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -132,26 +133,31 @@ const useAuth = () => {
       .doc(userId)
   );
 
-  const isAuthenticated = participantJoinedDetails
-    ? participantJoinedDetails.isAuthenticated
-    : null;
+  const isAuthorized = React.useMemo(
+    () =>
+      participantJoinedDetails
+        ? participantJoinedDetails.isAuthorized === true
+        : null,
+    [participantJoinedDetails]
+  );
 
   useEffect(() => {
     if (
       passwordProtectedEvent &&
       passwordProtectedEvent.enabled &&
-      !isAuthenticated
+      !isAuthorized
     ) {
       setShowDialog(true);
     } else {
       setShowDialog(false);
     }
-  }, [passwordProtectedEvent, isAuthenticated, setShowDialog]);
+  }, [passwordProtectedEvent, isAuthorized, setShowDialog]);
 
   return {
     showDialog,
     loading: loadingAuth || loadingPartcipants || loadingFeatures,
-    passwordProtectedEvent
+    passwordProtectedEvent,
+    isAuthorized
   };
 };
 
@@ -182,6 +188,7 @@ const useLoginEvent = ({ eventSessionId }) => {
           // Read result of the Cloud Function.
         })
         .catch(function (error) {
+          console.error(error);
           setLoading(false);
           setError(true);
         });
@@ -200,7 +207,12 @@ const useLoginEvent = ({ eventSessionId }) => {
 const EventSessionContainerAuthWrapper = () => {
   const { sessionId, code } = useParams();
 
-  const { showDialog, loading, passwordProtectedEvent } = useAuth();
+  const {
+    showDialog,
+    loading,
+    passwordProtectedEvent,
+    isAuthorized
+  } = useAuth();
 
   const {
     error,
@@ -226,9 +238,11 @@ const EventSessionContainerAuthWrapper = () => {
   }, [code, codeCheckedOnce, loading, loginInEventFn, passwordProtectedEvent]);
 
   if (
-    loading ||
-    (code && !codeCheckedOnce) ||
-    (!passwordProtectedEvent && !codeCheckedOnce)
+    !error &&
+    (loading ||
+      (code && !codeCheckedOnce) ||
+      (!passwordProtectedEvent && !codeCheckedOnce) ||
+      isAuthorized === null)
   ) {
     return <SplashScreen />;
   }
@@ -242,13 +256,19 @@ const EventSessionContainerAuthWrapper = () => {
         code={code}
       />
     );
-  } else {
+  } else if (isAuthorized) {
     return (
       <>
         <EventSessionContainerWrapper />
         <CompatibilityDialog />
       </>
     );
+  } else if (error) {
+    return (
+      <ErrorPage message="Opps, an error occurred while connecting you to the event. Please contact the support team if the error persists." />
+    );
+  } else {
+    return <ErrorPage message="Opps, you have been disconnected..." />;
   }
 };
 
