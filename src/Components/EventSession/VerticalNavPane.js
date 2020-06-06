@@ -1,4 +1,4 @@
-import React, { useState, Suspense } from "react";
+import React, { useState, Suspense, useMemo } from "react";
 import { makeStyles /*, useTheme */ } from "@material-ui/core/styles";
 
 import DoubleArrowIcon from "@material-ui/icons/DoubleArrow";
@@ -21,6 +21,11 @@ import SplashScreen from "../Misc/SplashScreen";
 import AttendeesPane, {
   ATTENDEES_PANE_FILTER
 } from "./LocationPanes/AttendeesPane";
+import { useSelector, shallowEqual } from "react-redux";
+import { getFeatureDetails } from "../../Redux/eventSession";
+import { FEATURES } from "../../Modules/features";
+import _ from "lodash";
+import { DEAFULT_NAV_BAR } from "./VerticalNavBar";
 
 // import { Badge } from "@material-ui/core";
 const useStyles = makeStyles((theme) => ({
@@ -69,31 +74,53 @@ const VerticalNavPane = (props) => {
     setCurrentNavBarSelection
   } = React.useContext(VerticalNavBarContext);
 
+  const customNavBarFeature = useSelector(
+    getFeatureDetails(FEATURES.CUSTOM_NAV_BAR),
+    shallowEqual
+  );
+  const navBarOptions = useMemo(() => {
+    if (!customNavBarFeature) {
+      return Object.values(DEAFULT_NAV_BAR);
+    }
+
+    let result = { ...DEAFULT_NAV_BAR };
+
+    _.forEach(Object.values(customNavBarFeature), ({ id, label, visible }) => {
+      if (result[id]) {
+        result[id].label = label;
+        result[id].visible = visible !== false;
+      }
+    });
+
+    return result;
+  }, [customNavBarFeature]);
+
   const getTitle = () => {
+    let navBarItem = navBarOptions[currentNavBarSelection];
     switch (currentNavBarSelection) {
       case VERTICAL_NAV_OPTIONS.lobby:
-        return "Lobby";
+        return navBarItem ? navBarItem.label : "Lobby";
 
       case VERTICAL_NAV_OPTIONS.mainStage:
-        return "Main Stage Attendees";
+        return `${navBarItem ? navBarItem.label : "Main Stage"} Attendees`;
 
       case VERTICAL_NAV_OPTIONS.rooms:
-        return "Rooms";
+        return navBarItem ? navBarItem.label : "Rooms";
 
       case VERTICAL_NAV_OPTIONS.networking:
-        return "Networking";
+        return navBarItem ? navBarItem.label : "Networking";
 
       case VERTICAL_NAV_OPTIONS.attendees:
-        return "All Attendees";
+        return `All ${navBarItem ? navBarItem.label : "Attendees"}`;
 
       case VERTICAL_NAV_OPTIONS.chat:
-        return "Global Chat";
+        return `Global ${navBarItem ? navBarItem.label : "Chat"}`;
 
       case VERTICAL_NAV_OPTIONS.polls:
-        return "Polls";
+        return navBarItem ? navBarItem.label : "Polls";
 
       case VERTICAL_NAV_OPTIONS.qna:
-        return "Q&A";
+        return navBarItem ? navBarItem.label : "Q&A";
 
       case VERTICAL_NAV_OPTIONS.help:
         return "Help";

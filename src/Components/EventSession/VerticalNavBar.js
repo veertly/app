@@ -5,15 +5,14 @@ import { makeStyles /*, useTheme */ } from "@material-ui/core/styles";
 // import LobbyIcon from "@material-ui/icons/Deck";
 // import LobbyIcon from "@material-ui/icons/EventSeat";
 
-import LobbyIcon from "@material-ui/icons/Weekend";
 import { useLocalStorage } from "react-use";
 
-import MainStageIcon from "@material-ui/icons/DesktopMac";
-import RoomsIcon from "../../Assets/Icons/Rooms";
 import _ from "lodash";
 
+import LobbyIcon from "@material-ui/icons/Weekend";
+import MainStageIcon from "@material-ui/icons/DesktopMac";
+import RoomsIcon from "../../Assets/Icons/Rooms";
 import AttendeesIcon from "../../Assets/Icons/Person";
-// import ConversationsIcon from "../../../Assets/Icons/Conversations";
 import NetworkingIcon from "../../Assets/Icons/Conversation1-1";
 import ChatIcon from "../../Assets/Icons/Chat";
 import PollsIcon from "../../Assets/Icons/Polls";
@@ -40,7 +39,7 @@ import ChatMessagesContext, {
 } from "../../Contexts/ChatMessagesContext";
 import { FEATURES } from "../../Modules/features";
 
-const DEAFULT_NAV_BAR = {
+export const DEAFULT_NAV_BAR = {
   [VERTICAL_NAV_OPTIONS.lobby]: {
     id: VERTICAL_NAV_OPTIONS.lobby,
     label: "Lobby",
@@ -158,6 +157,8 @@ const MenuIconContainer = ({
     isCurrentLocation
   });
 
+  const Icon = icon;
+
   const item = (hovered) => (
     <Box align="center" className={classes.menuItem} {...rest}>
       <Box className={classes.itemInnerBox}>
@@ -174,7 +175,6 @@ const MenuIconContainer = ({
       </Box>
     </Box>
   );
-  const Icon = icon;
 
   const [hoverable, hovered] = useHover(item);
 

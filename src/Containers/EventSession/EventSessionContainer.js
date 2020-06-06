@@ -9,6 +9,7 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme } from "@material-ui/core/styles";
 import { useSelector, shallowEqual } from "react-redux";
 import NetworkingRoomContainer from "./NetworkingRoomContainer";
+import PoweredByVeertly from "../../Assets/powered_by_veertly.svg";
 
 import EventSessionTopbar from "../../Components/EventSession/EventSessionTopbar";
 import ConferenceRoomContainer from "./ConferenceRoomContainer";
@@ -175,6 +176,13 @@ const useStyles = makeStyles((theme) => ({
     // backgroundColor: theme.palette.background.default,
     // padding: theme.spacing(1, 0),
     borderRadius: "0 16px 0 0"
+  },
+  poweredByVeertly: {
+    position: "absolute",
+    bottom: 8,
+    left: 8,
+    width: 120,
+    cursor: "pointer"
   }
 }));
 
@@ -375,6 +383,22 @@ const EventSessionContainer = (props) => {
                     to!
                   </Typography>
                 </div>
+              )}
+            {!userGroup &&
+              (userCurrentLocation === VERTICAL_NAV_OPTIONS.networking ||
+                userCurrentLocation === VERTICAL_NAV_OPTIONS.rooms ||
+                userCurrentLocation === VERTICAL_NAV_OPTIONS.lobby) && (
+                <a
+                  href="https://veertly.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <img
+                    alt="Powered by Veertly"
+                    src={PoweredByVeertly}
+                    className={classes.poweredByVeertly}
+                  />
+                </a>
               )}
           </div>
           <SmallPlayerContainer bounds={smallPlayerBounds} />
