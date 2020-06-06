@@ -5,12 +5,12 @@ const useMuteAudioVideo = (sessionId) => {
   // const [muteVideoInternal, setMuteVideoInternal] = useLocalStorage("vrtly_mute_video", {});
   
   const [muteAudioVideoState, setMuteAudioVideoState] = useLocalStorage("vrtly_mute_audio_video_state", {});
+
   const muteAudio = muteAudioVideoState && muteAudioVideoState[sessionId] ? muteAudioVideoState[sessionId].muteAudio : false;
   const muteVideo = muteAudioVideoState && muteAudioVideoState[sessionId] ? muteAudioVideoState[sessionId].muteVideo : false;
   
   const previousState = muteAudioVideoState && muteAudioVideoState[sessionId] ? muteAudioVideoState[sessionId] : {};
   const setMuteAudio = (muteAudioValueBool) => {
-    // console.log(previousState);
     setMuteAudioVideoState({
       ...muteAudioVideoState,
       [sessionId]: {
@@ -21,6 +21,7 @@ const useMuteAudioVideo = (sessionId) => {
   };
 
   const setMuteVideo = (muteVideoValueBool) => {
+    // console.log(previousState)
     // const previousState = muteAudioVideoState && muteAudioVideoState.sessionId ? muteAudioVideoState.sessionId : {};
     setMuteAudioVideoState({
       ...muteAudioVideoState,

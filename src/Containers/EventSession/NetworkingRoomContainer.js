@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
 
 const NetworkingRoomContainer = () => {
   const classes = useStyles();
-  const { jitsiApi, setJitsiApi } = useContext(JitsiContext);
+  const { jitsiApi, setJitsiApi, muteVideo, muteAudio, setMuteAudio, setMuteVideo } = useContext(JitsiContext);
   const [lastRoomLoaded, setLastRoomLoaded] = useState(null);
 
   const userId = useSelector(getUserId);
@@ -105,6 +105,22 @@ const NetworkingRoomContainer = () => {
         api.executeCommand("subject", "Networking Conversation");
       }
 
+      if (muteAudio) {
+        api.executeCommand("toggleAudio");
+      }
+
+      if (muteVideo) {
+        api.executeCommand("toggleVideo");
+      }
+
+      // api.addEventListener("audioMuteStatusChanged", (event) => {
+      //   setMuteAudio(event.muted)  
+      // });
+      
+      // api.addEventListener("videoMuteStatusChanged", (event) => {
+      //   setMuteVideo(event.muted);
+      // });
+
       if (user.avatarUrl) {
         api.executeCommand("avatarUrl", user.avatarUrl);
       }
@@ -139,18 +155,7 @@ const NetworkingRoomContainer = () => {
       //   jitsiApi.dispose();
       // }
     };
-  }, [
-    loaded,
-    currentGroup,
-    sessionId,
-    handleCallEnded,
-    jitsiApi,
-    lastRoomLoaded,
-    setJitsiApi,
-    user,
-    eventSessionDetails,
-    removeJitsiLogoFeature
-  ]);
+  }, [loaded, currentGroup, sessionId, handleCallEnded, jitsiApi, lastRoomLoaded, setJitsiApi, user, eventSessionDetails, removeJitsiLogoFeature, muteAudio, muteVideo, setMuteAudio, setMuteVideo]);
 
   if (error) {
     console.log(error);

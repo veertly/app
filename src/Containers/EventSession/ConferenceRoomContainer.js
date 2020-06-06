@@ -30,7 +30,6 @@ import {
 // import { useHistory } from "react-router-dom";
 import { FEATURES } from "../../Modules/features";
 import { VERTICAL_NAV_OPTIONS } from "../../Contexts/VerticalNavBarContext";
-import useMuteAudioVideo from "../../Hooks/useMuteAudioVideo";
 
 const useStyles = makeStyles((theme) => ({
   videoContainer: {
@@ -74,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
 export default () => {
   const classes = useStyles();
 
-  const { jitsiApi, setJitsiApi } = useContext(JitsiContext);
+  const { jitsiApi, setJitsiApi,muteVideo, muteAudio, setMuteAudio, setMuteVideo } = useContext(JitsiContext);
 
   const [lastRoomLoaded, setLastRoomLoaded] = useState(null);
   const [loadingPlayer, setLoadingPlayer] = useState(true);
@@ -92,8 +91,6 @@ export default () => {
   //   .collection("eventSessions")
   //   .doc(sessionId)
   // )
-
-  const { muteVideo, muteAudio, setMuteAudio, setMuteVideo } = useMuteAudioVideo(sessionId);
 
   // const muteVideo = useSelector(getMuteVideoOnEnter)
   // const muteAudio = useSelector(getMuteAudioOnEnter);
@@ -172,23 +169,21 @@ export default () => {
         handleCallEnded();
       });
 
-      api.addEventListener("audioMuteStatusChanged", (event) => {
-        //dispatch the status
-        // setAudioMuteStatusDB(event.muted, sessionId);
-        setMuteAudio(event.muted)
-        
-      });
+      // api.addEventListener("audioMuteStatusChanged", (event) => {
+      //   console.log("mute audio => ",event);
+      //   setMuteAudio(event.muted)
+      // });
       
-      api.addEventListener("videoMuteStatusChanged", (event) => {
-        // setVideoMuteStatusDB(event.muted, sessionId);
-        setMuteVideo(event.muted);
-      });
+      // api.addEventListener("videoMuteStatusChanged", (event) => {
+      //   // console.log("mute video",event);
+      //   setMuteVideo(event.muted);
+      // });
 
 
       if (muteAudio) {
         api.executeCommand("toggleAudio");
       }
-      // if false set
+
       if (muteVideo) {
         api.executeCommand("toggleVideo");
       }
@@ -203,7 +198,21 @@ export default () => {
       //   jitsiApi.dispose();
       // }
     };
-  }, [loaded, eventSessionDetails, user, handleCallEnded, jitsiApi, lastRoomLoaded, setJitsiApi, sessionId, removeJitsiLogoFeature, muteAudio, muteVideo, setMuteAudio, setMuteVideo]);
+  }, [
+    loaded,
+    eventSessionDetails,
+    user,
+    handleCallEnded,
+    jitsiApi,
+    lastRoomLoaded,
+    setJitsiApi,
+    sessionId,
+    removeJitsiLogoFeature,
+    muteAudio,
+    muteVideo,
+    setMuteAudio,
+    setMuteVideo
+  ]);
 
   if (error) {
     console.log(error);
