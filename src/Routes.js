@@ -58,18 +58,14 @@ const routesConfig = [
         exact: true,
         path: routes.EVENT_SESSION_LIVE(),
         component: lazy(() =>
-          import(
-            "./Containers/EventSession/PasswordProtectedEventSessionContainer"
-          )
+          import("./Containers/EventSession/EventSessionContainerAuthWrapper")
         )
       },
       {
         exact: true,
         path: routes.EVENT_SESSION_LIVE_CODE(),
         component: lazy(() =>
-          import(
-            "./Containers/EventSession/PasswordProtectedEventSessionContainer"
-          )
+          import("./Containers/EventSession/EventSessionContainerAuthWrapper")
         )
       },
       {

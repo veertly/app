@@ -1,12 +1,13 @@
 const functions = require("firebase-functions");
-const admin = require("firebase-admin");
-admin.initializeApp();
 
-const firestore = admin.firestore();
+const { firestore, admin } = require("./modules/firebase");
+
 const moment = require("moment");
 
 const sendgrid = require("./modules/sendgrid");
 const slack = require("./modules/slack");
+
+const authFunctions = require("./services/auth");
 
 const leaveCall = async (sessionId, myUserId) => {
   var eventSessionRef = firestore.collection("eventSessions").doc(sessionId);
@@ -276,38 +277,4 @@ exports.onUserRegisteredEvent = functions.firestore
 // This is a callable function. We can directly call it from app.
 // It will check the eventSessionsPrivateDetails and verify the password
 // If password matches => set loggedIn to true in userSession Object.
-exports.loginInEvent = functions.https.onCall(async (data, context) => {
-  const { password, eventSessionId } = data;
-  const { uid } = context.auth;
-  // console.log(`password=${password}, eventSessionId=${eventSessionId}, uid=${uid}`)
-  const eventSessionPrivateRef = firestore
-    .collection("eventSessionsPrivateDetails")
-    .doc(eventSessionId);
-  const eventSessionDataDoc = await eventSessionPrivateRef.get();
-
-  const passwordEvent = eventSessionDataDoc.exists
-    ? eventSessionDataDoc.data().password
-    : "";
-  // console.log("password in db", passwordEvent);
-  if (passwordEvent && password === passwordEvent) {
-    // set logged in parameter to event session object
-    const userRef = firestore
-      .collection("eventSessions")
-      .doc(eventSessionId)
-      .collection("participantsJoined")
-      .doc(uid);
-    userRef.set(
-      {
-        isAuthenticated: true
-      },
-      { merge: true }
-    );
-    return {
-      success: true
-    };
-  } else {
-    return {
-      success: false
-    };
-  }
-});
+exports.loginInEvent = functions.https.onCall(authFunctions.loginInEvent);

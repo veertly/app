@@ -47,3 +47,5 @@ node_modules
 firebase-debug.log
 public/.DS_Store
 package-lock.json
+functions/ui-debug.log
+ui-debug.log
