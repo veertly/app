@@ -16,6 +16,7 @@ import SplashScreen from "../../Components/Misc/SplashScreen";
 import CompatibilityDialog from "../../Components/Shared/CompatibilityDialog";
 import EventSessionContainerWrapper from "./EventSessionContainerWrapper";
 import AudioVideoCheckDialog from "../../Components/EventSession/AudioVideoCheckDialog";
+import useShowTechCheck from "../../Hooks/useShowTechCheck";
 // import { Switch } from "@material-ui/core";
 // import VideocamIcon from "@material-ui/icons/Videocam";
 // import VideocamOffIcon from "@material-ui/icons/VideocamOff";
@@ -211,8 +212,8 @@ const ProtectedEventSessionContainer = () => {
   const { sessionId, code } = useParams();
 
   const { showDialog, loading } = useAuth();
-  const [showAudioVideoCheck, setShowAudioVideoCheck] = React.useState(true);
-
+  const { showAudioVideoCheck, setShowAudioVideoCheck, devicesPermissionGiven, enterWithoutPermissions } = useShowTechCheck(sessionId);
+  console.log(devicesPermissionGiven);
   // const [muteVideo, setMuteVideo] = useState(false);
   // const [muteAudio, setMuteAudio] = useState(false);
   // const classes = useStyles();
@@ -231,8 +232,6 @@ const ProtectedEventSessionContainer = () => {
       loginInEventFn(password);
     }
   };
-
-
 
   useEffect(() => {
     if (code && !codeCheckedOnce) {
@@ -263,6 +262,8 @@ const ProtectedEventSessionContainer = () => {
       handleSubmit={handleClickPreview}
       sessionId={sessionId}
       setShowAudioVideoCheck={(showTechCheck) => setShowAudioVideoCheck(showTechCheck)}
+      devicesPermissionGiven={devicesPermissionGiven}
+      enterWithoutPermissions={enterWithoutPermissions}
     />
    )
   }else {

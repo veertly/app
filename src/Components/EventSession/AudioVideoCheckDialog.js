@@ -10,7 +10,7 @@ import { makeStyles } from "@material-ui/core/styles";
 // import { useSnackbar } from "material-ui-snackbar-provider";
 import Webcam from "react-webcam";
 // import { Paper } from "@material-ui/core";
-import { Switch } from "@material-ui/core";
+import { Switch, Paper } from "@material-ui/core";
 import VideocamIcon from "@material-ui/icons/Videocam";
 import VideocamOffIcon from "@material-ui/icons/VideocamOff";
 import MicIcon from "@material-ui/icons/Mic";
@@ -20,6 +20,7 @@ import MicOffIcon from "@material-ui/icons/MicOff";
 // import firebase from "../../Modules/firebaseApp";
 import { getButtonText } from "../../Utils";
 import useMuteAudioVideo from "../../Hooks/useMuteAudioVideo";
+import MarginProvider from "../Shared/MarginProvider";
 // import { useMediaDevices } from "react-use";
 
 const useStyles = makeStyles((theme) => ({
@@ -51,7 +52,8 @@ const useStyles = makeStyles((theme) => ({
   cameraContainer: {
     height: "100%",
     width: "100%",
-    backgroundColor: "gray",
+    maxHeight: 270,
+    // backgroundColor: "gray",
     padding: 0,
   },
   switchesContainer: {
@@ -67,12 +69,12 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center"
   },
   alert: {
-    marginTop: theme.spacing(4),
+    marginTop: theme.spacing(2),
     textAlign: "center",
   }
 }));
 
-const AudioVideoCheckDialog = ({ handleSubmit, sessionId, setShowAudioVideoCheck }) => {
+const AudioVideoCheckDialog = ({ handleSubmit, sessionId, setShowAudioVideoCheck, devicesPermissionGiven, enterWithoutPermissions }) => {
   const styles = useStyles();
   // const mediaDevices = useMediaDevices();
   // const [eventSessionData] = useDocumentData(
@@ -143,20 +145,25 @@ const AudioVideoCheckDialog = ({ handleSubmit, sessionId, setShowAudioVideoCheck
           You are about to join {sessionId}
         </DialogTitle>
         <DialogContent className={styles.dialogContent}>
-          
-          <div className={styles.cameraContainer}>
-            <Webcam
-              onUserMediaError={() => setShowAlert(true)}
-              height="100%"
-              width="100%"
-            />
-          </div>
+            <Paper className={styles.cameraContainer}>
+              <Webcam
+                onUserMediaError={() => setShowAlert(true)}
+                height="100%"
+                width="100%"
+              />
+            </Paper>
 
           {
             showAlert && 
-            <Alert severity="warning" className={styles.alert}>
-              Audio and Video permissions are required by Veertly. Please make sure to give those permissions
-            </Alert>
+            <>
+              <MarginProvider top={8}>
+                <Alert severity="error">Permissions not provided</Alert>
+              </MarginProvider>
+              <Alert severity="info" className={styles.alert}>
+                Veertly require audio and video permissions. Please refresh, and select "Allow" when prompted
+              </Alert>
+            </>
+
           }
 
           <div className={styles.switchesContainer}>
@@ -164,17 +171,32 @@ const AudioVideoCheckDialog = ({ handleSubmit, sessionId, setShowAudioVideoCheck
             <AudioSwitch />
           </div>
           
-          <Button
+          {
+            devicesPermissionGiven && 
+            <Button
             className={styles.button}
             onClick={handleSubmit}
             // type="submit"
             variant="contained"
             color="primary"
+            >
+              {
+                getButtonText({ muteAudio, muteVideo, devicesPermissionGiven })
+              }
+            </Button>
+          }
+
+          { !devicesPermissionGiven &&
+            <Button
+            className={styles.button}
+            onClick={enterWithoutPermissions}
+            // type="submit"
+            variant="outlined"
+            color="primary"
           >
-            {
-              getButtonText({ muteAudio, muteVideo })
-            }
+            Enter without permissions
           </Button>
+          }
 
         </DialogContent>
       </Dialog>
