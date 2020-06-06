@@ -3,7 +3,9 @@ import {
   makeStyles,
   Switch,
   FormControlLabel,
-  Tooltip
+  Tooltip,
+  Box,
+  Typography
 } from "@material-ui/core";
 import { useSelector } from "react-redux";
 import {
@@ -16,10 +18,11 @@ import { setUserAvailableForCall } from "../../Modules/userOperations";
 import useIsMobile from "../../Hooks/useIsMobile";
 
 const useStyles = makeStyles((theme) => ({
-  lable: {
-    color: "white"
-  }
+  label: {
+    opacity:0.5,
+  },
 }));
+
 const PresenceSwitch = () => {
   const classes = useStyles();
   const sessionId = useSelector(getSessionId);
@@ -61,14 +64,18 @@ const PresenceSwitch = () => {
       )}
       {!canNetwork && (
         <Tooltip title="While in a conversation, you will not be interrupted">
-          <FormControlLabel
+          <Box display="flex" flex="row" alignItems="center">
+            <Typography className={classes.label} variant="subtitle1">{switchValue ? "Available" : "Do not disturb"}</Typography>
+            <Switch checked={switchValue} onChange={handleChange} disabled />
+          </Box>
+          {/* <FormControlLabel
             // label={"In a conversation"}
             className={classes.label}
             label={switchValue ? "Available" : "Do not disturb"}
             control={<Switch checked={switchValue} onChange={handleChange} />}
             labelPlacement="start"
             disabled
-          />
+          /> */}
         </Tooltip>
       )}
     </div>
