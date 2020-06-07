@@ -234,7 +234,7 @@ export const joinConversation = (
 
   if (currentGroupId !== null) {
     let participantsKeysCurrentGroup = Object.keys(
-      liveGroups[currentGroupId].participants
+      liveGroups[currentGroupId].participants // TODO:  this may lead to the error: Cannot read property 'participants' of undefined. Will be fixed with the more reliable data model
     );
 
     for (let i = 0; i < participantsKeysCurrentGroup.length; i++) {
@@ -550,49 +550,26 @@ export const archiveRoom = async (
   snackbar.showMessage("Room archived successfully");
 };
 
-export const createNewRoom = (
+export const createNewRoom = async (
   originalSessionId,
   roomName,
   myUserId,
   currentUserGroup,
   snackbar
 ) => {
-  let currentGroupId = currentUserGroup ? currentUserGroup.id : null;
-  // participantsJoined[myUserId] && participantsJoined[myUserId].groupId
-  //   ? participantsJoined[myUserId].groupId
-  //   : null;
-
   const groupId = `r_${uuidv1()}`;
 
   let db = firebase.firestore();
   const sessionId = originalSessionId.toLowerCase();
   let eventSessionRef = db.collection("eventSessions").doc(sessionId);
 
-  let myUserRef = db
-    .collection("eventSessions")
-    .doc(sessionId)
-    .collection("participantsJoined")
-    .doc(myUserId);
-  // let otherUserRef = db.collection(`eventSessions`).doc(sessionId).collection("participantsJoined").doc(otherUserId);
-
-  var currentGroupRef =
-    currentGroupId !== null
-      ? eventSessionRef.collection("liveGroups").doc(currentGroupId)
-      : null;
   var newGroupRef = eventSessionRef.collection("liveGroups").doc(groupId);
-
-  let groupParticipantsObj = {};
-  groupParticipantsObj[myUserId] = {
-    joinedTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
-    leftTimestamp: null,
-    id: myUserId
-  };
 
   let groupObj = {
     id: groupId,
     startTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
     videoConferenceAddress: getVideoConferenceAddress(groupId),
-    participants: groupParticipantsObj,
+    participants: {},
     isLive: true,
     isRoom: true,
     roomName,
@@ -600,121 +577,7 @@ export const createNewRoom = (
     roomOwner: myUserId
   };
 
-  let participantsRefCurrentGroup = {};
-
-  if (currentGroupId !== null) {
-    let participantsKeysCurrentGroup = Object.keys(
-      currentUserGroup.participants
-    );
-
-    for (let i = 0; i < participantsKeysCurrentGroup.length; i++) {
-      let userId = participantsKeysCurrentGroup[i];
-      participantsRefCurrentGroup[userId] = db
-        .collection("eventSessions")
-        .doc(sessionId)
-        .collection("participantsJoined")
-        .doc(userId);
-    }
-  }
-  /*
-  1. check if other user is not in a group
-  2. create live group
-  3. add my user to the live group
-  4. add other user to the live group
-  5. update my user group id
-  6. update other user group id
-  */
-  return db
-    .runTransaction(async function (transaction) {
-      let myUserSnapshot = await transaction.get(myUserRef);
-      let myUser = myUserSnapshot.data();
-      if (myUser.groupId !== currentGroupId) {
-        throw new Error(
-          "Oops, it was not possible to create this conversation because someone else invited you for another conversation"
-        );
-      }
-
-      // 2. if user is on a group, remove from that call
-      if (currentGroupId !== null) {
-        // 2.1. check if live group still exists
-        let currentGroupSnapshot = await transaction.get(currentGroupRef);
-        if (!currentGroupSnapshot.exists) {
-          throw new Error("Your current group no longer exists");
-        }
-
-        // 2.2. check if myUser is in the group
-        let currentGroup = currentGroupSnapshot.data();
-        if (
-          currentGroup.participants[myUserId] === null ||
-          currentGroup.participants[myUserId].leftTimestamp !== null
-        ) {
-          throw new Error("Oops, you are no longer part of your current group");
-        }
-
-        // list the active participants on the current group
-        let activeParticipantsCurrentGroup = [];
-        let participantsIdsCurrentGroup = Object.keys(
-          currentGroup.participants
-        );
-        let participantsValuesCurrentGroup = Object.values(
-          currentGroup.participants
-        );
-        for (let i = 0; i < participantsValuesCurrentGroup.length; i++) {
-          let userId = participantsIdsCurrentGroup[i];
-          if (userId === myUserId) {
-            continue;
-          }
-
-          let value = participantsValuesCurrentGroup[i];
-          if (value.leftTimestamp === null) {
-            activeParticipantsCurrentGroup.push({
-              userId,
-              ...value
-            });
-          }
-        }
-
-        // 2.3. set leftTimestamp on my participant of the current group
-        let updateObj = {};
-        updateObj[
-          `participants.${myUserId}.leftTimestamp`
-        ] = firebase.firestore.FieldValue.serverTimestamp();
-        transaction.update(currentGroupRef, updateObj);
-
-        // 2.4. check if only one participant remaining on the current group (if not room)
-        if (
-          !currentGroup.isRoom &&
-          activeParticipantsCurrentGroup.length === 1
-        ) {
-          //5.1 set the remaining participant group to null
-          let participant = activeParticipantsCurrentGroup[0];
-          transaction.update(participantsRefCurrentGroup[participant.userId], {
-            groupId: null
-          });
-
-          //5.2 set the leftTimestamp on the remaining participant in the current group
-          updateObj = {};
-          updateObj[
-            `participants.${participant.userId}.leftTimestamp`
-          ] = firebase.firestore.FieldValue.serverTimestamp();
-          transaction.update(currentGroupRef, updateObj);
-        }
-      }
-
-      // add new group to the db
-      transaction.set(newGroupRef, groupObj);
-
-      // update my user group id
-      transaction.update(myUserRef, { groupId });
-    })
-    .then(function () {
-      // console.log("Transaction successfully committed!");
-    })
-    .catch(function (error) {
-      console.log("Transaction failed: ", error);
-      snackbar.showMessage(error.message);
-      // throw error;
-    });
+  await newGroupRef.set(groupObj);
 };
 
 export const updateInNetworkingRoom = async (
@@ -837,3 +700,45 @@ export const createConference = async (
       throw error;
     });
 };
+
+// // set video mute status
+// export const setVideoMuteStatusDB = async (muteVideo, originalSessionId) => {
+//   const sessionId = originalSessionId.toLowerCase();
+//   await firebase
+//   .firestore()
+//   .collection("eventSessions")
+//   .doc(sessionId)
+//   .set({
+//     muteVideo: muteVideo
+//   }, {
+//     merge: true
+//   })
+// }
+
+// // set audio mute status
+// export const setAudioMuteStatusDB = async (muteAudio, originalSessionId) => {
+//   const sessionId = originalSessionId.toLowerCase();
+//   await firebase
+//   .firestore()
+//   .collection("eventSessions")
+//   .doc(sessionId)
+//   .set({
+//     muteAudio: muteAudio
+//   }, {
+//     merge: true
+//   })
+// }
+
+// // set technical check shown for event session
+// export const setTechnicalCheckShowDB = async (technicalCheckShown, originalSessionId) => {
+//   const sessionId = originalSessionId.toLowerCase();
+//   await firebase
+//   .firestore()
+//   .collection("eventSessions")
+//   .doc(sessionId)
+//   .set({
+//     technicalCheckShown: technicalCheckShown
+//   }, {
+//     merge: true
+//   })
+// }

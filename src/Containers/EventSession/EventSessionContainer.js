@@ -9,6 +9,7 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme } from "@material-ui/core/styles";
 import { useSelector, shallowEqual } from "react-redux";
 import NetworkingRoomContainer from "./NetworkingRoomContainer";
+import PoweredByVeertly from "../../Assets/powered_by_veertly.svg";
 
 import EventSessionTopbar from "../../Components/EventSession/EventSessionTopbar";
 import ConferenceRoomContainer from "./ConferenceRoomContainer";
@@ -19,6 +20,7 @@ import {
   DEFAULT_EVENT_CLOSES_MINUTES
 } from "../../Config/constants";
 import EditProfileDialog from "../../Components/EditProfile/EditProfileDialog";
+import FeedbackDialog from "../../Components/EventSession/FeedbackDialog";
 import RoomArchivedDialog from "../../Components/EventSession/RoomArchivedDialog";
 import {
   getEventSessionDetails,
@@ -40,7 +42,8 @@ import { VERTICAL_NAV_OPTIONS } from "../../Contexts/VerticalNavBarContext";
 import VerticalNavPane from "../../Components/EventSession/VerticalNavPane";
 import EventPage from "../../Components/Event/EventPage";
 import { Box } from "@material-ui/core";
-import CurrentCallActionsVertical from "../../Components/EventSession/CurrentCallActionsVertical";
+import { setUserCurrentLocation } from "../../Modules/userOperations";
+// import CurrentCallActionsVertical from "../../Components/EventSession/CurrentCallActionsVertical";
 
 export const SIDE_PANE_WIDTH = 0;
 export const VERTICAL_NAV_WIDTH = 85;
@@ -78,7 +81,8 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down("xs")]: {
       right: 0,
       left: 0,
-      top: TOP_BAR_MOBILE
+      top: TOP_BAR_MOBILE,
+      backgroundSize: "50%"
     }
   }),
   noCall: {
@@ -156,8 +160,10 @@ const useStyles = makeStyles((theme) => ({
     bottom: 0,
     top: 0,
     overflow: "auto",
-    paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(4)
+    padding: theme.spacing(2, 2),
+    [theme.breakpoints.up("sm")]: {
+      padding: theme.spacing(4, 2)
+    }
   },
   callActionsContainer: {
     position: "absolute",
@@ -170,6 +176,13 @@ const useStyles = makeStyles((theme) => ({
     // backgroundColor: theme.palette.background.default,
     // padding: theme.spacing(1, 0),
     borderRadius: "0 16px 0 0"
+  },
+  poweredByVeertly: {
+    position: "absolute",
+    bottom: 8,
+    left: 8,
+    width: 120,
+    cursor: "pointer"
   }
 }));
 
@@ -293,8 +306,8 @@ const EventSessionContainer = (props) => {
     >
       <Page title={`Veertly | ${eventSessionDetails.title}`}> </Page>
       <EditProfileDialog />
-      {/* <ShareEventDialog />
-      <FeedbackDialog /> */}
+      {/* <ShareEventDialog /> */}
+      <FeedbackDialog />
       <JoinParticipantDialog />
       <JoinRoomDialog />
       <CreateRoomDialog />
@@ -315,6 +328,21 @@ const EventSessionContainer = (props) => {
           <div className={classes.mainPane}>
             {userCurrentLocation === VERTICAL_NAV_OPTIONS.lobby && (
               <Box className={classes.mainPaneScroll}>
+                <div style={{ width: "100%", textAlign: "center" }}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() =>
+                      setUserCurrentLocation(
+                        sessionId,
+                        VERTICAL_NAV_OPTIONS.mainStage
+                      )
+                    }
+                    style={{ marginBottom: 24 }}
+                  >
+                    Enter Main Stage
+                  </Button>
+                </div>
                 <EventPage
                   event={eventSessionDetails}
                   hideButtons={true}
@@ -332,9 +360,9 @@ const EventSessionContainer = (props) => {
                   jitsiApi={jitsiApi}
                   setJitsiApi={setJitsiApi}
                 />
-                <Box className={classes.callActionsContainer}>
+                {/* <Box className={classes.callActionsContainer}>
                   <CurrentCallActionsVertical />
-                </Box>
+                </Box> */}
               </>
             )}
             {!userGroup &&
@@ -355,6 +383,22 @@ const EventSessionContainer = (props) => {
                     to!
                   </Typography>
                 </div>
+              )}
+            {!userGroup &&
+              (userCurrentLocation === VERTICAL_NAV_OPTIONS.networking ||
+                userCurrentLocation === VERTICAL_NAV_OPTIONS.rooms ||
+                userCurrentLocation === VERTICAL_NAV_OPTIONS.lobby) && (
+                <a
+                  href="https://veertly.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <img
+                    alt="Powered by Veertly"
+                    src={PoweredByVeertly}
+                    className={classes.poweredByVeertly}
+                  />
+                </a>
               )}
           </div>
           <SmallPlayerContainer bounds={smallPlayerBounds} />

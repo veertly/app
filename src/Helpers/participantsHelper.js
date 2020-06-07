@@ -17,7 +17,7 @@ export const isParticipantLobby = (participantSession) => {
 export const isParticipantAvailableForCall = (participantSession) => {
   return (
     participantSession &&
-    participantSession.availableForCall &&
+    participantSession.availableForCall !== false &&
     !participantSession.groupId &&
     participantSession.currentLocation !== VERTICAL_NAV_OPTIONS.mainStage
   );

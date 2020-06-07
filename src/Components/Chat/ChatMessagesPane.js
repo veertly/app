@@ -1,11 +1,12 @@
 import React, { useRef, useEffect, useState, useCallback } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { Grid } from "@material-ui/core";
+import { Grid, Box, Typography } from "@material-ui/core";
 import ChatMessage from "./ChatMessage";
-import { useScroll, useUpdate, useScrolling } from "react-use";
+import { useScroll, useUpdate, useScrolling, useDebounce } from "react-use";
 import ChatUnreadMessages from "./ChatUnreadMessages";
 import { useSelector } from "react-redux";
 import { isEventOwner, getUserId } from "../../Redux/eventSession";
+import NoChatMessagesImg from "../../Assets/illustrations/undraw_Group_chat_unwm.svg";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -23,6 +24,14 @@ const useStyles = makeStyles((theme) => ({
   shadowElement: {
     float: "left",
     clear: "both"
+  },
+  emptyPane: {
+    marginTop: theme.spacing(4),
+    textAlign: "center"
+  },
+  emptyImage: {
+    width: "55%",
+    marginBottom: theme.spacing(1)
   }
 }));
 
@@ -30,8 +39,27 @@ export default ({ user, users, messages }) => {
   const chatEnd = useRef(null);
   const scrollRef = React.useRef(null);
 
-  const { y: scrollY } = useScroll(scrollRef);
-  const scrolling = useScrolling(scrollRef);
+  const { y } = useScroll(scrollRef);
+  const [scrollY, setScrollY] = useState(y);
+  useDebounce(
+    () => {
+      setScrollY(y);
+      // console.log("Stopped debouncing y: " + y);
+    },
+    1000,
+    [y]
+  );
+
+  const scrollingOriginal = useScrolling(scrollRef);
+  const [scrolling, setScrolling] = useState(false);
+  useDebounce(
+    () => {
+      setScrolling(scrollingOriginal);
+      // console.log("Stopped debouncing scrollingOriginal: " + scrollingOriginal);
+    },
+    1000,
+    [scrollingOriginal]
+  );
 
   const isScrollAtBottom = !!(
     scrollRef.current &&
@@ -44,7 +72,6 @@ export default ({ user, users, messages }) => {
     messages ? JSON.stringify(messages) : null
   );
 
-  const [isForcingScroll, setIsForcingScroll] = useState(true);
   const [lastScrollingState, setLastScrollingState] = useState(false);
   const [countNewMessages, setCountNewMessages] = useState(0);
 
@@ -60,23 +87,31 @@ export default ({ user, users, messages }) => {
 
   // handle new messages
   useEffect(() => {
+    // console.log("useEffect: handle new messages");
     const currentMessagesJson = JSON.stringify(messages);
     if (currentMessagesJson !== lastTrackedMessagesJson) {
-      if (isForcingScroll) {
+      if (isScrollAtBottom) {
         scrollToBottom();
         setCountNewMessages(0);
       } else {
         const lastMessages = JSON.parse(lastTrackedMessagesJson);
         const diff = messages.length - lastMessages.length;
-
-        setCountNewMessages(diff > 0 ? diff : 0);
+        // console.log({ prev: lastMessages.length, new: messages.length, diff });
+        setCountNewMessages(diff > 0 ? countNewMessages + diff : 0);
       }
       setLastTrackedMessagesJson(currentMessagesJson);
     }
-  }, [isForcingScroll, lastTrackedMessagesJson, messages, scrollToBottom]);
+  }, [
+    countNewMessages,
+    isScrollAtBottom,
+    lastTrackedMessagesJson,
+    messages,
+    scrollToBottom
+  ]);
 
   // force update of timestamps
   useEffect(() => {
+    // console.log("useEffect: force update of timestamps");
     const intervalId = setInterval(() => {
       // setMessages((mess) => [...mess]);
       forceRender();
@@ -86,6 +121,7 @@ export default ({ user, users, messages }) => {
 
   // initial scroll to bottom
   useEffect(() => {
+    // console.log("useEffect: initial scroll to bottom");
     if (
       messages &&
       messages.length > 0 &&
@@ -99,12 +135,8 @@ export default ({ user, users, messages }) => {
 
   // detect scroll changed
   useEffect(() => {
+    // console.log("useEffect: detect scroll changed");
     if (scrolling !== lastScrollingState) {
-      if (scrolling) {
-        setIsForcingScroll(false);
-      } else {
-        setIsForcingScroll(isScrollAtBottom);
-      }
       if (isScrollAtBottom) {
         setCountNewMessages(0);
       }
@@ -119,6 +151,13 @@ export default ({ user, users, messages }) => {
     scrollToBottom();
   }, [scrollToBottom]);
 
+  // console.log({
+  //   scrolling,
+  //   isScrollAtBottom,
+  //   scrollY,
+  //   countNewMessages,
+  //   isForcingScroll
+  // });
   return (
     <div className={classes.root} ref={scrollRef}>
       <div ref={scrollRef}>
@@ -146,6 +185,7 @@ export default ({ user, users, messages }) => {
                 />
               </Grid>
             ))}
+
           {/* {loadingMore && (
           <Grid item className={classes.messageContainer}>
             <Typography variant="caption" display="block" align="center">
@@ -161,6 +201,18 @@ export default ({ user, users, messages }) => {
           numMessages={countNewMessages}
           onClickUnread={onClickNewMessages}
         />
+      )}
+      {(!messages || messages.length === 0) && (
+        <Box className={classes.emptyPane}>
+          <img
+            className={classes.emptyImage}
+            src={NoChatMessagesImg}
+            alt="Polls coming soon"
+          />
+          <Typography variant="body2" color="textSecondary" display="block">
+            No messages sent yet. Say hi to everyone...
+          </Typography>
+        </Box>
       )}
     </div>
   );

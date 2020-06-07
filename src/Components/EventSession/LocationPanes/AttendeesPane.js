@@ -6,7 +6,6 @@ import LinkedinIcon from "../../../Assets/Icons/Linkedin";
 import TwitterIcon from "../../../Assets/Icons/Twitter";
 // import KeybaseIcon from "../../Assets/Icons/Keybase";
 import Button from "@material-ui/core/Button";
-import JoinParticipantDialog from "../JoinParticipantDialog";
 import Badge from "@material-ui/core/Badge";
 import { Tooltip } from "@material-ui/core";
 import FilterAttendeesDialog from "../FilterAttendeesDialog";
@@ -107,8 +106,8 @@ const useStyles = makeStyles((theme) => ({
 
 const AvailableBadge = withStyles((theme) => ({
   badge: {
-    backgroundColor: theme.palette.secondary.main, //"#44b700",
-    color: theme.palette.secondary.main, //"#44b700",
+    backgroundColor: "#44b700",
+    color: "#44b700",
     boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
     "&::after": {
       position: "absolute",
@@ -162,7 +161,7 @@ export default function ({
     shallowEqual
   );
 
-  const filteredParticipants = React.useMemo(() => {
+  const scopedParticipants = React.useMemo(() => {
     const result = allParticipantsList.filter((participantSession) => {
       const participant = users[participantSession.id];
       const isMyUser = participantSession.id === myUserId;
@@ -181,7 +180,17 @@ export default function ({
         isFiltered = true; // show all attendees
       }
 
-      if (showFilter && isFiltered) {
+      return isFiltered;
+    });
+    return result;
+  }, [allParticipantsList, users, myUserId, paneFilter]);
+
+  const filteredParticipants = React.useMemo(() => {
+    const result = scopedParticipants.filter((participantSession) => {
+      const participant = users[participantSession.id];
+
+      let isFiltered = true;
+      if (showFilter) {
         // check interests
         if (_.size(filters) !== 0) {
           const { interestsChips } = participant;
@@ -200,25 +209,17 @@ export default function ({
 
       return isFiltered;
     });
-    setTotalUsers(result.length);
     return result;
-  }, [
-    allParticipantsList,
-    setTotalUsers,
-    users,
-    myUserId,
-    paneFilter,
-    showFilter,
-    filters
-  ]);
+  }, [scopedParticipants, users, showFilter, filters]);
 
   React.useEffect(() => {
     setIsEmptyPane(filteredParticipants.length === 0);
-  }, [filteredParticipants.length, setIsEmptyPane]);
+    setTotalUsers(filteredParticipants.length);
+  }, [filteredParticipants.length, setIsEmptyPane, setTotalUsers]);
 
   const feelingLucky = React.useCallback(() => {
     let selectedParticipantSession = _.sample(filteredParticipants);
-    console.log({ selectedParticipantSession });
+    // console.log({ selectedParticipantSession });
     let participant = selectedParticipantSession
       ? users[selectedParticipantSession.id]
       : null;
@@ -230,7 +231,7 @@ export default function ({
 
   return (
     <div className={classes.root}>
-      <JoinParticipantDialog />
+      {/* <JoinParticipantDialog /> */}
       {showFilter && (
         <FilterAttendeesDialog
           open={filterDialog}
@@ -240,7 +241,7 @@ export default function ({
       )}
 
       {(showFilter || showStartConversation || showSearch) &&
-        ((hideButtonsIfEmpty && filteredParticipants.length > 0) ||
+        ((hideButtonsIfEmpty && scopedParticipants.length > 0) ||
           !hideButtonsIfEmpty) && (
           <div className={classes.buttonContainer}>
             {showStartConversation && (

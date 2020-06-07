@@ -5,7 +5,6 @@ import {
   Button,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle
 } from "@material-ui/core";
 import Alert from "@material-ui/lab/Alert";
@@ -27,11 +26,9 @@ const LeaveCurrentCallDialog = ({ open, setOpen, onConfirmation }) => {
       </DialogTitle>
 
       <DialogContent>
-        <DialogContentText>
-          <Alert severity="warning">
-            You are about to leave your current conversation.
-          </Alert>
-        </DialogContentText>
+        <Alert severity="warning">
+          You are about to leave your current conversation.
+        </Alert>
       </DialogContent>
       <DialogActions>
         <Button

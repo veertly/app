@@ -21,6 +21,9 @@ import {
   isMeetJitsi
 } from "../../Modules/jitsi";
 import { FEATURES } from "../../Modules/features";
+import { usePrevious } from "react-use";
+import TechnicalCheckContext from "./TechnicalCheckContext";
+// import TechnicalCheckContext from "./TechnicalCheckContext";
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
@@ -31,7 +34,12 @@ const useStyles = makeStyles((theme) => ({
 const NetworkingRoomContainer = () => {
   const classes = useStyles();
   const { jitsiApi, setJitsiApi } = useContext(JitsiContext);
+  // const { showAudioVideoCheck } = useContext(TechnicalCheckContext);
+  const { muteVideo, muteAudio, setMuteAudio, setMuteVideo } = useContext(TechnicalCheckContext);
+
   const [lastRoomLoaded, setLastRoomLoaded] = useState(null);
+  const previousMuteVideo = usePrevious(muteVideo);
+  const previousMuteAudio = usePrevious(muteAudio);
 
   const userId = useSelector(getUserId);
   const user = useSelector(getUser);
@@ -105,6 +113,22 @@ const NetworkingRoomContainer = () => {
         api.executeCommand("subject", "Networking Conversation");
       }
 
+      if (muteAudio) {
+        api.executeCommand("toggleAudio");
+      }
+
+      if (muteVideo) {
+        api.executeCommand("toggleVideo");
+      }
+
+      // api.addEventListener("audioMuteStatusChanged", (event) => {
+      //   setMuteAudio(event.muted)  
+      // });
+      
+      // api.addEventListener("videoMuteStatusChanged", (event) => {
+      //   setMuteVideo(event.muted);
+      // });
+
       if (user.avatarUrl) {
         api.executeCommand("avatarUrl", user.avatarUrl);
       }
@@ -140,6 +164,7 @@ const NetworkingRoomContainer = () => {
       // }
     };
   }, [
+    // showAudioVideoCheck,
     loaded,
     currentGroup,
     sessionId,
@@ -149,8 +174,38 @@ const NetworkingRoomContainer = () => {
     setJitsiApi,
     user,
     eventSessionDetails,
-    removeJitsiLogoFeature
+    removeJitsiLogoFeature,
+    muteAudio,
+    muteVideo,
+    setMuteAudio,
+    setMuteVideo
   ]);
+
+
+  useEffect(() => {
+    if (jitsiApi) {   
+      if (previousMuteVideo !== muteVideo) {
+        jitsiApi.executeCommand("toggleVideo");
+      } 
+    }
+  }, [
+    jitsiApi,
+    muteVideo,
+    previousMuteVideo
+  ]);
+
+  useEffect(() => {
+    if (jitsiApi) {  
+      if (previousMuteAudio !== muteAudio) {
+        jitsiApi.executeCommand("toggleAudio");   
+      }  
+    }
+  }, [
+    jitsiApi,
+    muteAudio,
+    previousMuteAudio
+  ]);
+
 
   if (error) {
     console.log(error);

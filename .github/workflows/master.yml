@@ -1,4 +1,4 @@
-# This is a basic workflow to help you get started with Actions
+# Workflow to deploy Veertly on the production environment
 
 name: CI - Master
 
@@ -41,7 +41,7 @@ jobs:
 
       - name: Deploy hosting
         run: |
-          firebase use --token ${{ secrets.PROD_FIREBASE_DEPLOY_KEY }} veertly
+          firebase use --token ${{ secrets.PROD_FIREBASE_DEPLOY_KEY }} ${{ secrets.PROD_REACT_APP_FIREBASE_PROJECT_ID }}
           firebase deploy -m "Deployed from github actions (${{ github.run_id }}) by ${{ github.actor }}" --token ${{ secrets.PROD_FIREBASE_DEPLOY_KEY }} --only hosting
 
   functions:
@@ -64,11 +64,10 @@ jobs:
         working-directory: ./functions
 
       - name: Select firebase project
-        run: firebase use --token ${{ secrets.STAGE_FIREBASE_DEPLOY_KEY }} veertly
+        run: firebase use --token ${{ secrets.PROD_FIREBASE_DEPLOY_KEY }} ${{ secrets.PROD_REACT_APP_FIREBASE_PROJECT_ID }}
 
-      # - name: Set firebase config
-      #   run: firebase functions:config:set  global.base_url="https://app.veertly.com"
+      - name: Set firebase config
+        run: firebase --token ${{ secrets.PROD_FIREBASE_DEPLOY_KEY }} functions:config:set global.base_url="${{ secrets.PROD_FIREBASE_BASE_URL }}" slack.webhook="${{ secrets.PROD_SLACK_WEBHOOK }}" sendgrid.key="${{ secrets.PROD_SENDGRID_KEY }}"
 
-      #sendgrid.key="${{ secrets.SENDGRID_KEY }}"
       - name: Deploy functions
-        run: firebase deploy --token ${{ secrets.STAGE_FIREBASE_DEPLOY_KEY }} --only functions
+        run: firebase deploy --token ${{ secrets.PROD_FIREBASE_DEPLOY_KEY }} --only functions

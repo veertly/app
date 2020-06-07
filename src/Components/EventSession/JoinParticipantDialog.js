@@ -85,8 +85,6 @@ export default function (props) {
   const snackbar = useSnackbar();
   const dispatch = useDispatch();
 
-  const { setIsInConferenceRoom } = props;
-
   const open = useSelector(isJoinParticipantOpen);
   const participant = useSelector(getJoinParticipantEntity, shallowEqual);
   const sessionId = useSelector(getSessionId);
@@ -228,9 +226,6 @@ export default function (props) {
   const handleJoinConversation = (e) => {
     e.preventDefault();
     if (liveGroup) {
-      if (userInConferenceRoom) {
-        setIsInConferenceRoom(false);
-      }
       joinConversation(
         sessionId,
         participantsJoined,
@@ -402,7 +397,8 @@ export default function (props) {
           {participantSession &&
             !isMyUser &&
             !participantAvailableForCall &&
-            !participantInConversation && (
+            !participantInConversation &&
+            !participantInConferenceRoom && (
               <div className={classes.buttonContainer}>
                 <Alert severity="info" className={classes.alert}>
                   {participant.firstName} is not available to talk

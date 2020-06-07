@@ -4,7 +4,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import { leaveCall } from "../../Modules/eventSessionOperations";
 import NoVideoImage from "../../Assets/illustrations/undraw_video_call_kxyp.svg";
 import { Typography } from "@material-ui/core";
-import { ANNOUNCEMENT_HEIGHT } from "../../Components/EventSession/Announcements";
 import { useSelector, shallowEqual } from "react-redux";
 import {
   getUser,
@@ -12,7 +11,7 @@ import {
   getSessionId,
   getUserId,
   getEventSessionDetails,
-  getFeatureDetails
+  getFeatureDetails,
 } from "../../Redux/eventSession";
 import ReactPlayer from "react-player";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -31,6 +30,8 @@ import {
 // import { useHistory } from "react-router-dom";
 import { FEATURES } from "../../Modules/features";
 import { VERTICAL_NAV_OPTIONS } from "../../Contexts/VerticalNavBarContext";
+import { usePrevious } from "react-use";
+import TechnicalCheckContext from "./TechnicalCheckContext";
 
 const useStyles = makeStyles((theme) => ({
   videoContainer: {
@@ -75,6 +76,10 @@ export default () => {
   const classes = useStyles();
 
   const { jitsiApi, setJitsiApi } = useContext(JitsiContext);
+  const { showAudioVideoCheck, muteVideo, muteAudio, setMuteAudio, setMuteVideo } = useContext(TechnicalCheckContext);
+
+  const previousMuteVideo = usePrevious(muteVideo);
+  const previousMuteAudio = usePrevious(muteAudio);
 
   const [lastRoomLoaded, setLastRoomLoaded] = useState(null);
   const [loadingPlayer, setLoadingPlayer] = useState(true);
@@ -84,6 +89,17 @@ export default () => {
   const userGroup = useSelector(getUserGroup, shallowEqual);
   const sessionId = useSelector(getSessionId);
   const eventSessionDetails = useSelector(getEventSessionDetails, shallowEqual);
+
+  // const history = useHistory();
+  // const [eventSessionData] = useDocumentDataOnce(
+  //   firebase
+  //   .firestore()
+  //   .collection("eventSessions")
+  //   .doc(sessionId)
+  // )
+
+  // const muteVideo = useSelector(getMuteVideoOnEnter)
+  // const muteAudio = useSelector(getMuteAudioOnEnter);
 
   // const history = useHistory();
 
@@ -109,6 +125,9 @@ export default () => {
 
   useEffect(() => {
     if (!user) {
+      return;
+    }
+    if (showAudioVideoCheck) {
       return;
     }
     let prefix = process.env.REACT_APP_JITSI_ROOM_PREFIX;
@@ -145,7 +164,7 @@ export default () => {
       const api = new JitsiMeetExternalAPI(domain, options);
       /*eslint-enable no-undef*/
       api.executeCommand("displayName", user.firstName + " " + user.lastName);
-      api.executeCommand("subject", `Veertly | ${eventSessionDetails.title}`);
+      api.executeCommand("subject", "Main Stage");
 
       if (user.avatarUrl) {
         api.executeCommand("avatarUrl", user.avatarUrl);
@@ -158,6 +177,25 @@ export default () => {
         // console.log("readyToClose: ", event);
         handleCallEnded();
       });
+
+      // api.addEventListener("audioMuteStatusChanged", (event) => {
+      //   console.log("mute audio => ",event);
+      //   setMuteAudio(event.muted)
+      // });
+      
+      // api.addEventListener("videoMuteStatusChanged", (event) => {
+      //   // console.log("mute video",event);
+      //   setMuteVideo(event.muted);
+      // });
+
+
+      if (muteAudio) {
+        api.executeCommand("toggleAudio");
+      }
+
+      if (muteVideo) {
+        api.executeCommand("toggleVideo");
+      }
 
       setLastRoomLoaded(roomName);
       setJitsiApi(api);
@@ -178,17 +216,39 @@ export default () => {
     lastRoomLoaded,
     setJitsiApi,
     sessionId,
-    removeJitsiLogoFeature
+    removeJitsiLogoFeature,
+    muteAudio,
+    muteVideo,
+    setMuteAudio,
+    setMuteVideo,
+    showAudioVideoCheck,
   ]);
 
-  const hasAnnouncement = React.useMemo(
-    () =>
-      eventSessionDetails &&
-      eventSessionDetails.announcements &&
-      eventSessionDetails.announcements.conference &&
-      eventSessionDetails.announcements.conference.trim() !== "",
-    [eventSessionDetails]
-  );
+  useEffect(() => {
+    if (jitsiApi) {   
+      if (previousMuteVideo !== muteVideo) {
+        jitsiApi.executeCommand("toggleVideo");
+      } 
+    }
+  }, [
+    jitsiApi,
+    muteVideo,
+    previousMuteVideo
+  ]);
+
+  useEffect(() => {
+    if (jitsiApi) {  
+      if (previousMuteAudio !== muteAudio) {
+        jitsiApi.executeCommand("toggleAudio");   
+      }  
+    }
+  }, [
+    jitsiApi,
+    muteAudio,
+    previousMuteAudio
+  ]);
+
+
   if (error) {
     console.log(error);
     return <p>Error :(</p>;
@@ -198,10 +258,7 @@ export default () => {
     const getYoutubeFrame = () => {
       let videoId = eventSessionDetails.conferenceRoomYoutubeVideoId;
       return (
-        <div
-          className={classes.root}
-          style={{ top: hasAnnouncement ? ANNOUNCEMENT_HEIGHT : 0 }}
-        >
+        <div className={classes.root}>
           <iframe
             className={classes.videoContainer}
             src={`https://www.youtube.com/embed/${videoId}?autoplay=1&fs=0&modestbranding=0`}
@@ -221,10 +278,7 @@ export default () => {
         ? facebookUrl
         : `https://www.facebook.com/facebook/videos/${facebookVideoId}`;
       return (
-        <div
-          className={classes.root}
-          style={{ top: hasAnnouncement ? ANNOUNCEMENT_HEIGHT : 0 }}
-        >
+        <div className={classes.root}>
           <div className={classes.reactPlayerContainer}>
             <ReactPlayer
               url={url}

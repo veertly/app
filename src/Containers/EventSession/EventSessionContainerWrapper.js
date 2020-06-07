@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useContext } from "react";
 import {
   useCollectionData,
   useDocumentData
@@ -48,6 +48,9 @@ import { VerticalNavBarContextWrapper } from "../../Contexts/VerticalNavBarConte
 import EventSessionContainer from "./EventSessionContainer";
 import { openRoomArchived } from "../../Redux/dialogs";
 import { ChatMessagesContextWrapper } from "../../Contexts/ChatMessagesContext";
+import EventSessionContainerTheme from "./EventSessionContainerTheme";
+import TechnicalCheckContext from "./TechnicalCheckContext";
+import AudioVideoCheckDialog from "../../Components/EventSession/AudioVideoCheckDialog";
 
 const EventSessionContainerWrapper = (props) => {
   const dispatch = useDispatch();
@@ -336,6 +339,8 @@ const EventSessionContainerWrapper = (props) => {
     dispatch(crossCheckKeepAlives(keepALivesDB));
   }, DEFAULT_KEEP_ALIVE_CHECK_INTERVAL);
 
+  const { showAudioVideoCheck} = useContext(TechnicalCheckContext);
+
   // --- loading screen ---
   if (
     loadingUsersDB ||
@@ -369,12 +374,20 @@ const EventSessionContainerWrapper = (props) => {
         setJitsiApi,
         showSmallPlayer,
         setShowSmallPlayer,
-        miniPlayerEnabled
+        miniPlayerEnabled,
       }}
     >
       <VerticalNavBarContextWrapper>
         <ChatMessagesContextWrapper>
-          <EventSessionContainer />
+          <EventSessionContainerTheme>
+            <EventSessionContainer />
+            {
+              showAudioVideoCheck && 
+              <AudioVideoCheckDialog
+                sessionId={sessionId}
+              />
+            }
+          </EventSessionContainerTheme>
         </ChatMessagesContextWrapper>
       </VerticalNavBarContextWrapper>
     </JitsiContext.Provider>
