@@ -6,10 +6,6 @@ const JitsiContext = React.createContext({
   showSmallPayer: true,
   setShowSmallPlayer: () => {},
   miniPlayerEnabled: false,
-  muteAudio: false,
-  muteVideo: false,
-  setMuteAudio: () => {},
-  setMuteVideo: () => {},
 });
 
 export default JitsiContext;

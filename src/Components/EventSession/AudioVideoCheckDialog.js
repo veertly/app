@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 
 import Alert from "@material-ui/lab/Alert";
 import Button from "@material-ui/core/Button";
@@ -19,8 +19,8 @@ import MicOffIcon from "@material-ui/icons/MicOff";
 // import { useDocumentData } from "react-firebase-hooks/firestore";
 // import firebase from "../../Modules/firebaseApp";
 import { getButtonText } from "../../Utils";
-import useMuteAudioVideo from "../../Hooks/useMuteAudioVideo";
 import MarginProvider from "../Shared/MarginProvider";
+import TechnicalCheckContext from "../../Containers/EventSession/TechnicalCheckContext";
 // import { useMediaDevices } from "react-use";
 
 const useStyles = makeStyles((theme) => ({
@@ -74,7 +74,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const AudioVideoCheckDialog = ({ handleSubmit, sessionId, setShowAudioVideoCheck, devicesPermissionGiven, enterWithoutPermissions }) => {
+const AudioVideoCheckDialog = ({ sessionId }) => {
   const styles = useStyles();
   // const mediaDevices = useMediaDevices();
   // const [eventSessionData] = useDocumentData(
@@ -83,10 +83,9 @@ const AudioVideoCheckDialog = ({ handleSubmit, sessionId, setShowAudioVideoCheck
   //   .collection("eventSessions")
   //   .doc(sessionId)
   // )
+  const { setShowAudioVideoCheck, devicesPermissionGiven, enterWithoutPermissions,setAudioVideoPermissionFromOutside, muteVideo, muteAudio, setMuteAudio, setMuteVideo } = useContext(TechnicalCheckContext);
 
   const [showAlert, setShowAlert] = useState(false);
-
-  const { muteVideo, muteAudio, setMuteAudio, setMuteVideo } = useMuteAudioVideo(sessionId);
 
   // const muteVideo = useSelector(getMuteVideoOnEnter)
   // const muteAudio = useSelector(getMuteAudioOnEnter);
@@ -103,6 +102,10 @@ const AudioVideoCheckDialog = ({ handleSubmit, sessionId, setShowAudioVideoCheck
     // dispatch(setMuteAudio(sessionId))
     // setAudioMuteStatusDB(!muteAudio, sessionId);
     setMuteAudio(!muteAudio)
+  }
+
+  const handleClickPreview = () => {
+    setShowAudioVideoCheck(false);
   }
 
   const VideoSwitch = () => {
@@ -147,7 +150,13 @@ const AudioVideoCheckDialog = ({ handleSubmit, sessionId, setShowAudioVideoCheck
         <DialogContent className={styles.dialogContent}>
             <Paper className={styles.cameraContainer}>
               <Webcam
-                onUserMediaError={() => setShowAlert(true)}
+                onUserMedia={() => {
+                  setAudioVideoPermissionFromOutside(true);
+                }}
+                onUserMediaError={() => {
+                  setAudioVideoPermissionFromOutside(false);
+                  setShowAlert(true);
+                }}
                 height="100%"
                 width="100%"
               />
@@ -175,7 +184,7 @@ const AudioVideoCheckDialog = ({ handleSubmit, sessionId, setShowAudioVideoCheck
             devicesPermissionGiven && 
             <Button
             className={styles.button}
-            onClick={handleSubmit}
+            onClick={handleClickPreview}
             // type="submit"
             variant="contained"
             color="primary"

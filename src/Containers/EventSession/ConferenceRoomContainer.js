@@ -30,6 +30,8 @@ import {
 // import { useHistory } from "react-router-dom";
 import { FEATURES } from "../../Modules/features";
 import { VERTICAL_NAV_OPTIONS } from "../../Contexts/VerticalNavBarContext";
+import { usePrevious } from "react-use";
+import TechnicalCheckContext from "./TechnicalCheckContext";
 
 const useStyles = makeStyles((theme) => ({
   videoContainer: {
@@ -73,7 +75,11 @@ const useStyles = makeStyles((theme) => ({
 export default () => {
   const classes = useStyles();
 
-  const { jitsiApi, setJitsiApi,muteVideo, muteAudio, setMuteAudio, setMuteVideo } = useContext(JitsiContext);
+  const { jitsiApi, setJitsiApi } = useContext(JitsiContext);
+  const { showAudioVideoCheck, muteVideo, muteAudio, setMuteAudio, setMuteVideo } = useContext(TechnicalCheckContext);
+
+  const previousMuteVideo = usePrevious(muteVideo);
+  const previousMuteAudio = usePrevious(muteAudio);
 
   const [lastRoomLoaded, setLastRoomLoaded] = useState(null);
   const [loadingPlayer, setLoadingPlayer] = useState(true);
@@ -119,6 +125,9 @@ export default () => {
 
   useEffect(() => {
     if (!user) {
+      return;
+    }
+    if (showAudioVideoCheck) {
       return;
     }
     let prefix = process.env.REACT_APP_JITSI_ROOM_PREFIX;
@@ -219,8 +228,34 @@ export default () => {
     muteAudio,
     muteVideo,
     setMuteAudio,
-    setMuteVideo
+    setMuteVideo,
+    showAudioVideoCheck,
   ]);
+
+  useEffect(() => {
+    if (jitsiApi) {   
+      if (previousMuteVideo !== muteVideo) {
+        jitsiApi.executeCommand("toggleVideo");
+      } 
+    }
+  }, [
+    jitsiApi,
+    muteVideo,
+    previousMuteVideo
+  ]);
+
+  useEffect(() => {
+    if (jitsiApi) {  
+      if (previousMuteAudio !== muteAudio) {
+        jitsiApi.executeCommand("toggleAudio");   
+      }  
+    }
+  }, [
+    jitsiApi,
+    muteAudio,
+    previousMuteAudio
+  ]);
+
 
   if (error) {
     console.log(error);

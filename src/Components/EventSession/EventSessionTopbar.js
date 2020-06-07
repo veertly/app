@@ -15,8 +15,7 @@ import {
   Typography,
   Divider,
   Box,
-  IconButton,
-  Tooltip
+  Tooltip,
   // Hidden,
   // IconButton
 } from "@material-ui/core";
@@ -43,7 +42,7 @@ import { logout } from "../../Redux/account";
 import PresenceSwitch from "./PresenceSwitch";
 import { trackEvent } from "../../Modules/analytics";
 import { FEATURES } from "../../Modules/features";
-import JitsiContext from "../../Containers/EventSession/JitsiContext";
+import TechnicalCheckContext from "../../Containers/EventSession/TechnicalCheckContext";
 
 // import routes from "../../Config/routes";
 const useStyles = makeStyles((theme) => ({
@@ -158,7 +157,7 @@ const EventSessionTopbar = () => {
   const sessionId = useSelector(getSessionId);
   const eventSessionDetails = useSelector(getEventSessionDetails, shallowEqual);
 
-  const { muteVideo, muteAudio, setMuteAudio, setMuteVideo } = useContext(JitsiContext);
+  const { muteVideo, muteAudio, setMuteAudio, setMuteVideo } = useContext(TechnicalCheckContext);
 
   const customThemeFeature = useSelector(
     getFeatureDetails(FEATURES.CUSTOM_THEME)
@@ -260,7 +259,7 @@ const EventSessionTopbar = () => {
           </div>
           {/* </Hidden> */}
 
-          <Box paddingLeft={0} paddingRight={0}>
+          {/* <Box paddingLeft={0} paddingRight={0}>
             <Tooltip title="Enter call with video On or Off">
               <IconButton aria-label="toggle video" color="secondary" onClick={handleVideoToggle}>
                 {!muteVideo && <VideocamIcon />}
@@ -275,7 +274,7 @@ const EventSessionTopbar = () => {
                 {!muteAudio && <MicIcon />}
               </IconButton>
             </Tooltip>
-          </Box>
+          </Box> */}
 
           <div className={classes.avatarContainer}>
             {/* <AvatarLogin eventSession={eventSession} /> */}
@@ -296,6 +295,35 @@ const EventSessionTopbar = () => {
               onClose={handleMenuClose}
             >
               <MenuItem onClick={handleEditProfileClick}>Edit profile</MenuItem>
+              
+              <MenuItem >
+                <Tooltip title="Always enter call with video On or Off">
+                  <Box width="100%" display="flex" flexDirection="row" alignItems="center" justifyContent="space-between" onClick={handleVideoToggle}>
+                      <Box marginRight={1}>
+                        <Typography>
+                          Toggle Video
+                        </Typography>
+                      </Box>
+                      {!muteVideo && <VideocamIcon />}
+                      {muteVideo && <VideocamOffIcon />}
+                  </Box>
+                </Tooltip>
+              </MenuItem>
+              
+              <MenuItem onClick={handleAudioToggle}>
+                <Tooltip title="Always enter call with mic On or Off">
+                  <Box width="100%" display="flex" flexDirection="row" alignItems="center" justifyContent="space-between">
+                    <Box marginRight={1}>
+                      <Typography>
+                        Toggle mic
+                      </Typography>
+                    </Box>
+                    {muteAudio && <MicOffIcon />}
+                    {!muteAudio && <MicIcon />}
+                  </Box>
+                </Tooltip>
+              </MenuItem>
+
               {isOwner && <Divider />}
               {isOwner && (
                 <MenuItem onClick={handleEditEventClick}>Edit event</MenuItem>

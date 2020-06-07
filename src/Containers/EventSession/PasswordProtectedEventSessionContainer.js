@@ -15,8 +15,10 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import SplashScreen from "../../Components/Misc/SplashScreen";
 import CompatibilityDialog from "../../Components/Shared/CompatibilityDialog";
 import EventSessionContainerWrapper from "./EventSessionContainerWrapper";
-import AudioVideoCheckDialog from "../../Components/EventSession/AudioVideoCheckDialog";
+// import AudioVideoCheckDialog from "../../Components/EventSession/AudioVideoCheckDialog";
 import useShowTechCheck from "../../Hooks/useShowTechCheck";
+import TechnicalCheckContext from "./TechnicalCheckContext";
+import useMuteAudioVideo from "../../Hooks/useMuteAudioVideo";
 // import { Switch } from "@material-ui/core";
 // import VideocamIcon from "@material-ui/icons/Videocam";
 // import VideocamOffIcon from "@material-ui/icons/VideocamOff";
@@ -212,7 +214,7 @@ const ProtectedEventSessionContainer = () => {
   const { sessionId, code } = useParams();
 
   const { showDialog, loading } = useAuth();
-  const { showAudioVideoCheck, setShowAudioVideoCheck, devicesPermissionGiven, enterWithoutPermissions } = useShowTechCheck(sessionId);
+  const { showAudioVideoCheck, setShowAudioVideoCheck, devicesPermissionGiven, enterWithoutPermissions, setAudioVideoPermissionFromOutside } = useShowTechCheck(sessionId);
   // const [muteVideo, setMuteVideo] = useState(false);
   // const [muteAudio, setMuteAudio] = useState(false);
   // const classes = useStyles();
@@ -238,9 +240,11 @@ const ProtectedEventSessionContainer = () => {
     }
   }, [code, codeCheckedOnce, loginInEventFn]);
 
-  const handleClickPreview = () => {
-    setShowAudioVideoCheck(false);
-  }
+  // const handleClickPreview = () => {
+  //   setShowAudioVideoCheck(false);
+  // }
+
+  const { muteVideo, muteAudio, setMuteAudio, setMuteVideo } = useMuteAudioVideo(sessionId);
 
   if (loading || (code && !codeCheckedOnce)) {
     return <SplashScreen />;
@@ -255,22 +259,37 @@ const ProtectedEventSessionContainer = () => {
         code={code}
       />
     );
-  } else if (showAudioVideoCheck) {
-   return (
-    <AudioVideoCheckDialog 
-      handleSubmit={handleClickPreview}
-      sessionId={sessionId}
-      setShowAudioVideoCheck={(showTechCheck) => setShowAudioVideoCheck(showTechCheck)}
-      devicesPermissionGiven={devicesPermissionGiven}
-      enterWithoutPermissions={enterWithoutPermissions}
-    />
-   )
-  }else {
+  } 
+  // else if (showAudioVideoCheck) {
+  //  return (
+  //   <AudioVideoCheckDialog 
+  //     handleSubmit={handleClickPreview}
+  //     sessionId={sessionId}
+  //     setShowAudioVideoCheck={(showTechCheck) => setShowAudioVideoCheck(showTechCheck)}
+  //     devicesPermissionGiven={devicesPermissionGiven}
+  //     enterWithoutPermissions={enterWithoutPermissions}
+  //   />
+  //  )
+  // }
+  else {
     return (
-      <>
-        <EventSessionContainerWrapper />
-        <CompatibilityDialog />
-      </>
+      <TechnicalCheckContext.Provider
+        value={{
+          showAudioVideoCheck,
+          setShowAudioVideoCheck,
+          devicesPermissionGiven,
+          enterWithoutPermissions,
+          setAudioVideoPermissionFromOutside,
+          muteVideo,
+          muteAudio,
+          setMuteAudio,
+          setMuteVideo,
+        }}
+      > <>
+          <EventSessionContainerWrapper />
+          <CompatibilityDialog />
+        </>
+      </TechnicalCheckContext.Provider>
     );
   }
 };

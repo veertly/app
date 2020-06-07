@@ -21,6 +21,9 @@ import {
   isMeetJitsi
 } from "../../Modules/jitsi";
 import { FEATURES } from "../../Modules/features";
+import { usePrevious } from "react-use";
+import TechnicalCheckContext from "./TechnicalCheckContext";
+// import TechnicalCheckContext from "./TechnicalCheckContext";
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
@@ -30,8 +33,13 @@ const useStyles = makeStyles((theme) => ({
 
 const NetworkingRoomContainer = () => {
   const classes = useStyles();
-  const { jitsiApi, setJitsiApi, muteVideo, muteAudio, setMuteAudio, setMuteVideo } = useContext(JitsiContext);
+  const { jitsiApi, setJitsiApi } = useContext(JitsiContext);
+  // const { showAudioVideoCheck } = useContext(TechnicalCheckContext);
+  const { muteVideo, muteAudio, setMuteAudio, setMuteVideo } = useContext(TechnicalCheckContext);
+
   const [lastRoomLoaded, setLastRoomLoaded] = useState(null);
+  const previousMuteVideo = usePrevious(muteVideo);
+  const previousMuteAudio = usePrevious(muteAudio);
 
   const userId = useSelector(getUserId);
   const user = useSelector(getUser);
@@ -155,7 +163,49 @@ const NetworkingRoomContainer = () => {
       //   jitsiApi.dispose();
       // }
     };
-  }, [loaded, currentGroup, sessionId, handleCallEnded, jitsiApi, lastRoomLoaded, setJitsiApi, user, eventSessionDetails, removeJitsiLogoFeature, muteAudio, muteVideo, setMuteAudio, setMuteVideo]);
+  }, [
+    // showAudioVideoCheck,
+    loaded,
+    currentGroup,
+    sessionId,
+    handleCallEnded,
+    jitsiApi,
+    lastRoomLoaded,
+    setJitsiApi,
+    user,
+    eventSessionDetails,
+    removeJitsiLogoFeature,
+    muteAudio,
+    muteVideo,
+    setMuteAudio,
+    setMuteVideo
+  ]);
+
+
+  useEffect(() => {
+    if (jitsiApi) {   
+      if (previousMuteVideo !== muteVideo) {
+        jitsiApi.executeCommand("toggleVideo");
+      } 
+    }
+  }, [
+    jitsiApi,
+    muteVideo,
+    previousMuteVideo
+  ]);
+
+  useEffect(() => {
+    if (jitsiApi) {  
+      if (previousMuteAudio !== muteAudio) {
+        jitsiApi.executeCommand("toggleAudio");   
+      }  
+    }
+  }, [
+    jitsiApi,
+    muteAudio,
+    previousMuteAudio
+  ]);
+
 
   if (error) {
     console.log(error);

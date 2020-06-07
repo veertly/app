@@ -1,7 +1,8 @@
 import { useLocalStorage, useMediaDevices } from "react-use";
 import { useState, useEffect } from "react";
 
-// 15 Minutes
+// Time after which the page refresh will show the preview dialog 
+// TODO: increase it. right now its 15 minutes
 const TECH_CHECK_EXPIRATION = 15 * 60 * 1000;
 
 const isVideoPermissionGiven = (devices) => {
@@ -33,17 +34,25 @@ const useShowTechCheck = (sessionId) => {
   // const microphone = usePermission({ name: "microphone" });
   // const camera = usePermission({ name: "camera" });
   const devicesObj = useMediaDevices();
-
+  // console.log(devicesObj);
+  // const {stream, error} = useMediaStream();
   const [blockForMediaPermission, setBlockForAudioPermission] = useState(true);
   const [showTechCheckForSession, setShowTechCheckForSession] = useState(false);
   // const [blockForVideoPermission, setBlockForVideoPermission] = useState(false);
   // const [blockForAudioPermission, setBlockForAudioPermission] = useState(false);
 
-
-  const videoPermission = isVideoPermissionGiven(devicesObj.devices);
-  const audioPermission = isAudioPermissionGiven(devicesObj.devices);
+  const [videoPermission, setVideoPermission] = useState(true);
+  const [audioPermission, setAudioPermission] = useState(true);
  
-  
+
+  useEffect(() => {
+    setVideoPermission(isVideoPermissionGiven(devicesObj.devices));
+    setAudioPermission(isAudioPermissionGiven(devicesObj.devices));
+  }, [devicesObj])
+
+  // const videoPermission = !error && stream;
+  // const audioPermission = !error && stream;
+ 
   useEffect(() => {
     let showTechCheckForSessionTemp = true;
     if (techCheckState[sessionId] && techCheckState[sessionId].lastUpdate + TECH_CHECK_EXPIRATION > Date.now()) {
@@ -82,12 +91,20 @@ const useShowTechCheck = (sessionId) => {
     setBlockForAudioPermission(false);
   }
 
+  // Using it when we are actually getting stream in webcam.
+  // This helps us to update the permission given variable in realtime when permission is given by user after asking
+  const setAudioVideoPermissionFromOutside = (mediaPermission) => {
+    setAudioPermission(mediaPermission);
+    setVideoPermission(mediaPermission);
+  }  
+
   return {
     showAudioVideoCheck: showTechCheckForSession,
     setShowAudioVideoCheck: setTechCheckForSession,
     // is devices permission given
     devicesPermissionGiven: videoPermission && audioPermission,
     enterWithoutPermissions,
+    setAudioVideoPermissionFromOutside,
   } 
 };
 
