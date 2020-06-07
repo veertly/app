@@ -44,6 +44,7 @@
     "react-device-detect": "^1.12.1",
     "react-dom": "^16.8.0",
     "react-draggable": "^4.2.0",
+    "react-feather": "^2.0.8",
     "react-firebase-file-uploader": "^2.4.3",
     "react-firebase-hooks": "^2.1.0",
     "react-google-button": "^0.7.1",

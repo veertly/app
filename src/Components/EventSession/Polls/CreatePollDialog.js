@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import Button from "@material-ui/core/Button";
 import { makeStyles } from "@material-ui/core/styles";
 // import { createNewRoom } from "../../Modules/eventSessionOperations";
 // import { useSnackbar } from "material-ui-snackbar-provider";
-// import { v1 as uuidv1 } from "uuid";
+import { v1 as uuidv1 } from "uuid";
+import { HelpCircle as InfoIcon } from "react-feather";
 
 // import { useSelector, shallowEqual } from "react-redux";
 // import {
@@ -17,15 +18,24 @@ import {
   TextField,
   DialogTitle,
   DialogActions,
-  DialogContent
+  DialogContent,
+  Box,
+  FormControlLabel,
+  Checkbox,
+  Tooltip,
+  SvgIcon,
+  Typography
 } from "@material-ui/core";
-import DialogClose from "../Misc/DialogClose";
+import DialogClose from "../../Misc/DialogClose";
 const useStyles = makeStyles((theme) => ({
   content: {
     position: "relative"
     // width: theme.breakpoints.values.sm
     // padding: theme.spacing(6),
     // textAlign: "center"
+  },
+  dialog: {
+    width: theme.breakpoints.width.sm
   },
   closeContainer: {
     position: "absolute"
@@ -59,45 +69,73 @@ const useStyles = makeStyles((theme) => ({
   avatar: {
     margin: theme.spacing(0.5)
   },
-  dialogTitle: { color: theme.palette.primary.main },
-  button: { margin: theme.spacing(2) }
+  dialogTitle: {
+    color: theme.palette.primary.main
+  },
+  button: {
+    margin: theme.spacing(2)
+  },
+  optionField: {
+    marginTop: theme.spacing(2)
+  },
+  infoIcon: {
+    marginTop: theme.spacing(1.5)
+  }
 }));
 
-// const getPollOptionData = (value) => {
-//   const optionId = uuidv1();
-//   return {
-//     optionId,
-//     value
-//   };
-// };
+const getPollOptionData = (value) => {
+  const id = uuidv1();
+  return {
+    id,
+    value
+  };
+};
 
 export const CreatePollDialog = ({ open, setOpen }) => {
   const classes = useStyles();
   // const snackbar = useSnackbar();
-  let [title, setTitle] = React.useState("");
-  // let [options, setOptions] = React.useState([]);
-
+  let [title, setTitle] = useState("");
+  let [options, setOptions] = useState([
+    getPollOptionData(""),
+    getPollOptionData("")
+  ]);
+  const [checkedAnonymous, setCheckedAnonymous] = useState(false);
+  const [checkedNotification, setCheckedNotification] = useState(false);
   // const userGroup = useSelector(getUserLiveGroup, shallowEqual);
   // const sessionId = useSelector(getSessionId);
   // const userId = useSelector(getUserId);
 
   const handleClose = () => {
+    setOptions([getPollOptionData(), getPollOptionData()]);
+    setTitle("");
     setOpen(false);
   };
 
-  const handleCreateRoom = (e) => {
+  const handleCreatePoll = (e) => {
     e.preventDefault();
-
+    console.log(options);
     // createNewRoom(sessionId, roomName, userId, userGroup, snackbar);
     handleClose();
   };
 
+  const handleOptionChange = (index) => (e) => {
+    const value = e.target.value;
+    let values = [...options];
+    values[index].value = value;
+    setOptions(values);
+  };
+
+  const handleNewOption = () => {
+    setOptions((v) => [...v, getPollOptionData("")]);
+  };
   return (
     <div>
       <DialogClose
         open={open}
         onClose={handleClose}
         aria-labelledby="draggable-dialog-title"
+        fullWidth
+        maxWidth="xs"
       >
         <DialogTitle className={classes.dialogTitle}>
           Create new poll
@@ -123,6 +161,80 @@ export const CreatePollDialog = ({ open, setOpen }) => {
               required
               fullWidth
             />
+            <Box pl={3}>
+              {options.map((option, index) => (
+                <TextField
+                  key={option.id}
+                  label={"Option " + (index + 1)}
+                  name={"option" + index}
+                  // variant="outlined"
+                  value={option.value}
+                  // style={{ width: "50%" }}
+                  // onChange={(e) => setTitle(e.target.value)}
+                  onChange={handleOptionChange(index)}
+                  required
+                  fullWidth
+                  className={classes.optionField}
+                />
+              ))}
+            </Box>
+            <Box textAlign="center">
+              <Button color="primary" onClick={handleNewOption}>
+                New option
+              </Button>
+            </Box>
+            <Box>
+              <Box display="flex">
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={checkedAnonymous}
+                      onChange={(e) => setCheckedAnonymous(e.target.checked)}
+                      name="checkedAnonymous"
+                      color="primary"
+                    />
+                  }
+                  label={
+                    <Typography variant="body2">Anonymous poll</Typography>
+                  }
+                />
+                <Tooltip title="The individual votes of attendees will not be tracked">
+                  <SvgIcon
+                    fontSize="small"
+                    color="action"
+                    className={classes.infoIcon}
+                  >
+                    <InfoIcon />
+                  </SvgIcon>
+                </Tooltip>
+              </Box>
+              <Box display="flex">
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={checkedNotification}
+                      onChange={(e) => setCheckedNotification(e.target.checked)}
+                      name="checkedNotification"
+                      color="primary"
+                    />
+                  }
+                  label={
+                    <Typography variant="body2">
+                      Notify all attendees
+                    </Typography>
+                  }
+                />
+                <Tooltip title="A notification dialog will be shown to all attendees with the new poll">
+                  <SvgIcon
+                    fontSize="small"
+                    color="action"
+                    className={classes.infoIcon}
+                  >
+                    <InfoIcon />
+                  </SvgIcon>
+                </Tooltip>
+              </Box>
+            </Box>
             {/* <div className={classes.buttonContainer}>
             <Button
               variant="contained"
@@ -154,12 +266,20 @@ export const CreatePollDialog = ({ open, setOpen }) => {
             Cancel
           </Button>
           <Button
-            onClick={handleCreateRoom}
+            onClick={handleCreatePoll}
+            className={classes.button}
+            color="primary"
+            variant="outlined"
+          >
+            Save draft
+          </Button>
+          <Button
+            onClick={handleCreatePoll}
             className={classes.button}
             color="primary"
             variant="contained"
           >
-            Create
+            Publish
           </Button>
         </DialogActions>
       </DialogClose>
