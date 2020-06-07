@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useContext } from "react";
 import {
   useCollectionData,
   useDocumentData
@@ -49,7 +49,8 @@ import EventSessionContainer from "./EventSessionContainer";
 import { openRoomArchived } from "../../Redux/dialogs";
 import { ChatMessagesContextWrapper } from "../../Contexts/ChatMessagesContext";
 import EventSessionContainerTheme from "./EventSessionContainerTheme";
-import useMuteAudioVideo from "../../Hooks/useMuteAudioVideo";
+import TechnicalCheckContext from "./TechnicalCheckContext";
+import AudioVideoCheckDialog from "../../Components/EventSession/AudioVideoCheckDialog";
 
 const EventSessionContainerWrapper = (props) => {
   const dispatch = useDispatch();
@@ -71,8 +72,6 @@ const EventSessionContainerWrapper = (props) => {
     () => (originalSessionId ? originalSessionId.toLowerCase() : null),
     [originalSessionId]
   );
-
-  const { muteVideo, muteAudio, setMuteAudio, setMuteVideo } = useMuteAudioVideo(sessionId);
 
   const userId = useMemo(() => (userAuth ? userAuth.uid : null), [userAuth]);
 
@@ -340,6 +339,8 @@ const EventSessionContainerWrapper = (props) => {
     dispatch(crossCheckKeepAlives(keepALivesDB));
   }, DEFAULT_KEEP_ALIVE_CHECK_INTERVAL);
 
+  const { showAudioVideoCheck} = useContext(TechnicalCheckContext);
+
   // --- loading screen ---
   if (
     loadingUsersDB ||
@@ -374,16 +375,18 @@ const EventSessionContainerWrapper = (props) => {
         showSmallPlayer,
         setShowSmallPlayer,
         miniPlayerEnabled,
-        muteVideo,
-        muteAudio,
-        setMuteAudio,
-        setMuteVideo,
       }}
     >
       <VerticalNavBarContextWrapper>
         <ChatMessagesContextWrapper>
           <EventSessionContainerTheme>
             <EventSessionContainer />
+            {
+              showAudioVideoCheck && 
+              <AudioVideoCheckDialog
+                sessionId={sessionId}
+              />
+            }
           </EventSessionContainerTheme>
         </ChatMessagesContextWrapper>
       </VerticalNavBarContextWrapper>
