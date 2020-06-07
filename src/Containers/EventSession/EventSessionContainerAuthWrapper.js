@@ -229,6 +229,7 @@ const EventSessionContainerAuthWrapper = () => {
     }
   };
 
+  console.log("on auth wrapper");
   useEffect(() => {
     if (!loading && !passwordProtectedEvent && !codeCheckedOnce) {
       loginInEventFn(""); // logs user in if code is not required

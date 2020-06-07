@@ -36,7 +36,6 @@ const CenteredTopBar = (props) => {
   const { className } = props;
 
   const classes = useStyles();
-
   return (
     <AppBar className={clsx(classes.root, className)}>
       <Container maxWidth="lg">

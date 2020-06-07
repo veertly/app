@@ -105,10 +105,11 @@ export function loginAnonymously() {
 
       const { user } = result;
       const isNewUser = result.additionalUserInfo.isNewUser;
-
+      console.log({ isNewUser });
       const userDb = isNewUser
         ? await registerNewUser(result.user)
         : await getUserDb(user.uid);
+      console.log("result userDb: ", userDb);
       if (!userDb) {
         await firebase.auth().signOut();
         dispatch({
@@ -117,6 +118,7 @@ export function loginAnonymously() {
         });
         return false;
       }
+      console.log({ userDb });
       dispatch({
         type: LOGIN_SUCCESS,
         payload: {
@@ -249,7 +251,6 @@ export const accountReducer = (state = initialState, action) => {
 
     case SILENT_LOGIN: {
       const { user } = action.payload;
-
       return produce(state, (draft) => {
         draft.user = user;
         draft.error = null;

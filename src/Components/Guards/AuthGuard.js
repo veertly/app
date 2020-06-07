@@ -8,7 +8,6 @@ function AuthGuard({ children }) {
   const account = useSelector((state) => state.account);
 
   const location = useLocation();
-
   if (!account.user) {
     return (
       <Redirect to={{ pathname: routes.LOGIN(), state: { from: location } }} />

@@ -53,14 +53,15 @@ const EventPageContainer = (props) => {
       .doc(sessionId)
   );
 
-  if (loadingSessionDetails || loadingEventSessionsEnabledFeatures) {
-    return <SplashScreen />;
-  }
+  console.log({ loadingSessionDetails, loadingEventSessionsEnabledFeatures });
+
   if (errorSessionDetails || errorEventSessionsEnabledFeatures) {
     console.error(errorSessionDetails);
     return <p>Error :(</p>;
   }
-
+  if (loadingSessionDetails || loadingEventSessionsEnabledFeatures) {
+    return <SplashScreen />;
+  }
   if (!eventSessionDetails) {
     return <Error404View />;
     // return (

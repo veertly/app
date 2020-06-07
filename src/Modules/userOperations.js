@@ -3,7 +3,7 @@ import { trackEvent } from "./analytics";
 import { leaveCall } from "./eventSessionOperations";
 
 export const registerNewUser = async (userAuth) => {
-  // console.log("on: registerNewUser");
+  console.log("on: registerNewUser");
   let {
     displayName,
     email,
@@ -39,13 +39,14 @@ export const registerNewUser = async (userAuth) => {
     location: "",
     locationDetails: null
   };
+  console.log("calling add user on firestore");
 
-  firebase
+  await firebase
     .firestore()
     .collection("users")
     .doc(uid)
     .set(userDb, { merge: true });
-
+  console.log("Added new user to the DB");
   var userAuth2 = firebase.auth().currentUser;
   await userAuth2.updateProfile({
     displayName
@@ -142,8 +143,23 @@ export const updateUser = async (userId, sessionId, userDb) => {
 };
 
 export const getUserDb = async (uid) => {
-  let userDoc = await firebase.firestore().collection("users").doc(uid).get();
-  return await userDoc.data();
+  console.log("On getUserDb: " + uid);
+  try {
+    var userId = firebase.auth().currentUser.uid;
+
+    console.log("my firebase user: " + userId);
+
+    let userDoc = await firebase.firestore().collection("users").doc(uid).get();
+
+    console.log("Done!");
+
+    return await userDoc.data();
+  } catch (e) {
+    console.log("exception raised on getUserDb: " + uid);
+    console.error(e);
+    debugger;
+    throw e;
+  }
 };
 
 export const getUserSessionDb = async (sessionId, uid) => {
