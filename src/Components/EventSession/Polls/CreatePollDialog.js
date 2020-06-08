@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import Button from "@material-ui/core/Button";
 import { makeStyles } from "@material-ui/core/styles";
+import _ from "lodash";
 // import { createNewRoom } from "../../Modules/eventSessionOperations";
 // import { useSnackbar } from "material-ui-snackbar-provider";
 import { v1 as uuidv1 } from "uuid";
 import { HelpCircle as InfoIcon } from "react-feather";
-
+import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 // import { useSelector, shallowEqual } from "react-redux";
 // import {
 //   getSessionId,
@@ -13,7 +14,7 @@ import { HelpCircle as InfoIcon } from "react-feather";
 //   getUserLiveGroup
 // } from "../../Redux/eventSession";
 // import Alert from "@material-ui/lab/Alert";
-// import { isCreateRoomOpen, closeCreateRoom } from "../../Redux/dialogs";
+import DeleteIcon from "@material-ui/icons/Delete";
 import {
   TextField,
   DialogTitle,
@@ -24,7 +25,8 @@ import {
   Checkbox,
   Tooltip,
   SvgIcon,
-  Typography
+  Typography,
+  IconButton
 } from "@material-ui/core";
 import DialogClose from "../../Misc/DialogClose";
 const useStyles = makeStyles((theme) => ({
@@ -75,11 +77,8 @@ const useStyles = makeStyles((theme) => ({
   button: {
     margin: theme.spacing(2)
   },
-  optionField: {
-    marginTop: theme.spacing(2)
-  },
   infoIcon: {
-    marginTop: theme.spacing(1.5)
+    marginTop: theme.spacing(1.25)
   }
 }));
 
@@ -99,7 +98,7 @@ export const CreatePollDialog = ({ open, setOpen }) => {
     getPollOptionData(""),
     getPollOptionData("")
   ]);
-  const [checkedAnonymous, setCheckedAnonymous] = useState(false);
+  const [checkedAnonymous, setCheckedAnonymous] = useState(true);
   const [checkedNotification, setCheckedNotification] = useState(false);
   // const userGroup = useSelector(getUserLiveGroup, shallowEqual);
   // const sessionId = useSelector(getSessionId);
@@ -128,6 +127,16 @@ export const CreatePollDialog = ({ open, setOpen }) => {
   const handleNewOption = () => {
     setOptions((v) => [...v, getPollOptionData("")]);
   };
+
+  const handleDeleteOption = (index) => () => {
+    let newValues = _.remove(options, (v, i) => {
+      console.log({ i, index });
+      return i !== index;
+    });
+    setOptions(newValues);
+  };
+
+  // Reorder tutorial: https://codesandbox.io/s/4qp6vjp319?file=/index.js:0-3573
   return (
     <div>
       <DialogClose
@@ -136,6 +145,8 @@ export const CreatePollDialog = ({ open, setOpen }) => {
         aria-labelledby="draggable-dialog-title"
         fullWidth
         maxWidth="xs"
+        disableBackdropClick
+        disableEscapeKeyDown
       >
         <DialogTitle className={classes.dialogTitle}>
           Create new poll
@@ -163,23 +174,36 @@ export const CreatePollDialog = ({ open, setOpen }) => {
             />
             <Box pl={3}>
               {options.map((option, index) => (
-                <TextField
-                  key={option.id}
-                  label={"Option " + (index + 1)}
-                  name={"option" + index}
-                  // variant="outlined"
-                  value={option.value}
-                  // style={{ width: "50%" }}
-                  // onChange={(e) => setTitle(e.target.value)}
-                  onChange={handleOptionChange(index)}
-                  required
-                  fullWidth
-                  className={classes.optionField}
-                />
+                <Box display="flex" mt={2} key={option.id}>
+                  <TextField
+                    label={"Option " + (index + 1)}
+                    name={"option" + index}
+                    // variant="outlined"
+                    value={option.value}
+                    // style={{ width: "50%" }}
+                    // onChange={(e) => setTitle(e.target.value)}
+                    onChange={handleOptionChange(index)}
+                    required
+                    fullWidth
+                  />
+                  {index > 1 && (
+                    <IconButton
+                      aria-label="delete"
+                      onClick={handleDeleteOption(index)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  )}
+                </Box>
               ))}
             </Box>
-            <Box textAlign="center">
-              <Button color="primary" onClick={handleNewOption}>
+            <Box textAlign="center" m={2}>
+              <Button
+                color="primary"
+                variant="outlined"
+                onClick={handleNewOption}
+                startIcon={<AddCircleOutlineIcon />}
+              >
                 New option
               </Button>
             </Box>
@@ -192,13 +216,14 @@ export const CreatePollDialog = ({ open, setOpen }) => {
                       onChange={(e) => setCheckedAnonymous(e.target.checked)}
                       name="checkedAnonymous"
                       color="primary"
+                      disabled
                     />
                   }
                   label={
                     <Typography variant="body2">Anonymous poll</Typography>
                   }
                 />
-                <Tooltip title="The individual votes of attendees will not be tracked">
+                <Tooltip title="The individual votes of attendees will not be tracked. Not yet available, all votes are anonymous so far.">
                   <SvgIcon
                     fontSize="small"
                     color="action"
@@ -216,6 +241,7 @@ export const CreatePollDialog = ({ open, setOpen }) => {
                       onChange={(e) => setCheckedNotification(e.target.checked)}
                       name="checkedNotification"
                       color="primary"
+                      disabled
                     />
                   }
                   label={
@@ -224,7 +250,7 @@ export const CreatePollDialog = ({ open, setOpen }) => {
                     </Typography>
                   }
                 />
-                <Tooltip title="A notification dialog will be shown to all attendees with the new poll">
+                <Tooltip title="A notification dialog will be shown to all attendees with the new poll. Not yet available, active polls are visible on the polls pane so far.">
                   <SvgIcon
                     fontSize="small"
                     color="action"
