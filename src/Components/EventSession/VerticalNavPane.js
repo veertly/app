@@ -12,7 +12,7 @@ import RoomsTab from "./RoomsTab";
 import ChatPane from "../Chat/ChatPane";
 import MainStagePane from "./LocationPanes/MainStagePane";
 import LobbyPane from "./LocationPanes/LobbyPane";
-import PollsPane from "./LocationPanes/PollsPane";
+import PollsPane from "./Polls/PollsPane";
 import QnAPane from "./LocationPanes/QnAPane";
 import HelpPane from "./LocationPanes/HelpPane";
 import SplashScreen from "../Misc/SplashScreen";

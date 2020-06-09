@@ -8,11 +8,7 @@ import { v1 as uuidv1 } from "uuid";
 import { HelpCircle as InfoIcon } from "react-feather";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 // import { useSelector, shallowEqual } from "react-redux";
-// import {
-//   getSessionId,
-//   getUserId,
-//   getUserLiveGroup
-// } from "../../Redux/eventSession";
+import { getSessionId, getUserId } from "../../../Redux/eventSession";
 // import Alert from "@material-ui/lab/Alert";
 import DeleteIcon from "@material-ui/icons/Delete";
 import {
@@ -29,6 +25,8 @@ import {
   IconButton
 } from "@material-ui/core";
 import DialogClose from "../../Misc/DialogClose";
+import { createPoll } from "../../../Modules/pollsOperations";
+import { useSelector } from "react-redux";
 const useStyles = makeStyles((theme) => ({
   content: {
     position: "relative"
@@ -100,20 +98,57 @@ export const CreatePollDialog = ({ open, setOpen }) => {
   ]);
   const [checkedAnonymous, setCheckedAnonymous] = useState(true);
   const [checkedNotification, setCheckedNotification] = useState(false);
+
+  const [formErrors, setFormErrors] = useState({ options: {} });
+
   // const userGroup = useSelector(getUserLiveGroup, shallowEqual);
-  // const sessionId = useSelector(getSessionId);
-  // const userId = useSelector(getUserId);
+  const sessionId = useSelector(getSessionId);
+  const userId = useSelector(getUserId);
 
   const handleClose = () => {
     setOptions([getPollOptionData(), getPollOptionData()]);
     setTitle("");
+    setFormErrors({ options: {} });
     setOpen(false);
   };
 
+  const checkFormErrors = React.useCallback(() => {
+    const errors = { options: {} };
+    let hasErrors = false;
+    if (title.trim() === "") {
+      errors.title = "Title can't be empty";
+      hasErrors = true;
+    }
+    _.forEach(options, (o, i) => {
+      if (i <= 1 && o.value.trim() === "") {
+        errors.options[o.id] = `Option ${i + 1} can't be empty`;
+        hasErrors = true;
+      }
+    });
+    setFormErrors(errors);
+    return hasErrors;
+  }, [options, title]);
+
   const handleCreatePoll = (e) => {
     e.preventDefault();
-    console.log(options);
-    // createNewRoom(sessionId, roomName, userId, userGroup, snackbar);
+
+    if (checkFormErrors()) {
+      return;
+    }
+
+    let newOptions = _.remove(options, (o) => o.value.trim() !== "");
+
+    console.log(newOptions);
+
+    createPoll(
+      sessionId,
+      userId,
+      title,
+      newOptions,
+      checkedAnonymous,
+      checkedNotification
+    );
+
     handleClose();
   };
 
@@ -148,120 +183,119 @@ export const CreatePollDialog = ({ open, setOpen }) => {
         disableBackdropClick
         disableEscapeKeyDown
       >
-        <DialogTitle className={classes.dialogTitle}>
-          Create new poll
-        </DialogTitle>
-        <DialogContent>
-          <div className={classes.content}>
-            {/* <Typography
-            color="primary"
-            variant="h4"
-            align="center"
-            style={{ marginBottom: 16 }}
-          >
-            Create new room
-          </Typography> */}
-            <TextField
-              autoFocus
-              label="Title"
-              name="title"
-              variant="outlined"
-              value={title}
-              // style={{ width: "50%" }}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-              fullWidth
-            />
-            <Box pl={3}>
-              {options.map((option, index) => (
-                <Box display="flex" mt={2} key={option.id}>
-                  <TextField
-                    label={"Option " + (index + 1)}
-                    name={"option" + index}
-                    // variant="outlined"
-                    value={option.value}
-                    // style={{ width: "50%" }}
-                    // onChange={(e) => setTitle(e.target.value)}
-                    onChange={handleOptionChange(index)}
-                    required
-                    fullWidth
-                  />
-                  {index > 1 && (
-                    <IconButton
-                      aria-label="delete"
-                      onClick={handleDeleteOption(index)}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  )}
-                </Box>
-              ))}
-            </Box>
-            <Box textAlign="center" m={2}>
-              <Button
-                color="primary"
+        <form onSubmit={handleCreatePoll}>
+          <DialogTitle className={classes.dialogTitle}>
+            Create new poll
+          </DialogTitle>
+          <DialogContent>
+            <div className={classes.content}>
+              <TextField
+                autoFocus
+                label="Title"
+                name="title"
                 variant="outlined"
-                onClick={handleNewOption}
-                startIcon={<AddCircleOutlineIcon />}
-              >
-                New option
-              </Button>
-            </Box>
-            <Box>
-              <Box display="flex">
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={checkedAnonymous}
-                      onChange={(e) => setCheckedAnonymous(e.target.checked)}
-                      name="checkedAnonymous"
-                      color="primary"
-                      disabled
+                value={title}
+                // style={{ width: "50%" }}
+                onChange={(e) => setTitle(e.target.value)}
+                required
+                fullWidth
+                error={Boolean(formErrors.title)}
+                helperText={formErrors.title}
+              />
+              <Box pl={3}>
+                {options.map((option, index) => (
+                  <Box display="flex" mt={2} key={option.id}>
+                    <TextField
+                      label={"Option " + (index + 1)}
+                      name={"option" + index}
+                      // variant="outlined"
+                      value={option.value}
+                      // style={{ width: "50%" }}
+                      // onChange={(e) => setTitle(e.target.value)}
+                      onChange={handleOptionChange(index)}
+                      required={index <= 1}
+                      fullWidth
+                      error={Boolean(formErrors.options[option.id])}
+                      helperText={formErrors.options[option.id]}
                     />
-                  }
-                  label={
-                    <Typography variant="body2">Anonymous poll</Typography>
-                  }
-                />
-                <Tooltip title="The individual votes of attendees will not be tracked. Not yet available, all votes are anonymous so far.">
-                  <SvgIcon
-                    fontSize="small"
-                    color="action"
-                    className={classes.infoIcon}
-                  >
-                    <InfoIcon />
-                  </SvgIcon>
-                </Tooltip>
+                    {index > 1 && (
+                      <IconButton
+                        aria-label="delete"
+                        onClick={handleDeleteOption(index)}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    )}
+                  </Box>
+                ))}
               </Box>
-              <Box display="flex">
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={checkedNotification}
-                      onChange={(e) => setCheckedNotification(e.target.checked)}
-                      name="checkedNotification"
-                      color="primary"
-                      disabled
-                    />
-                  }
-                  label={
-                    <Typography variant="body2">
-                      Notify all attendees
-                    </Typography>
-                  }
-                />
-                <Tooltip title="A notification dialog will be shown to all attendees with the new poll. Not yet available, active polls are visible on the polls pane so far.">
-                  <SvgIcon
-                    fontSize="small"
-                    color="action"
-                    className={classes.infoIcon}
-                  >
-                    <InfoIcon />
-                  </SvgIcon>
-                </Tooltip>
+              <Box textAlign="center" m={2}>
+                <Button
+                  color="primary"
+                  variant="outlined"
+                  onClick={handleNewOption}
+                  startIcon={<AddCircleOutlineIcon />}
+                >
+                  New option
+                </Button>
               </Box>
-            </Box>
-            {/* <div className={classes.buttonContainer}>
+              <Box>
+                <Box display="flex">
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={checkedAnonymous}
+                        onChange={(e) => setCheckedAnonymous(e.target.checked)}
+                        name="checkedAnonymous"
+                        color="primary"
+                        disabled
+                      />
+                    }
+                    label={
+                      <Typography variant="body2">Anonymous poll</Typography>
+                    }
+                  />
+                  <Tooltip title="The individual votes of attendees will not be tracked. Not yet available, all votes are anonymous so far.">
+                    <SvgIcon
+                      fontSize="small"
+                      color="action"
+                      className={classes.infoIcon}
+                    >
+                      <InfoIcon />
+                    </SvgIcon>
+                  </Tooltip>
+                </Box>
+                <Box display="flex">
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={checkedNotification}
+                        onChange={(e) =>
+                          setCheckedNotification(e.target.checked)
+                        }
+                        name="checkedNotification"
+                        color="primary"
+                        disabled
+                      />
+                    }
+                    label={
+                      <Typography variant="body2">
+                        Notify all attendees
+                      </Typography>
+                    }
+                  />
+                  <Tooltip title="A notification dialog will be shown to all attendees with the new poll. Not yet available, active polls are visible on the polls pane so far.">
+                    <SvgIcon
+                      fontSize="small"
+                      color="action"
+                      className={classes.infoIcon}
+                    >
+                      <InfoIcon />
+                    </SvgIcon>
+                  </Tooltip>
+                </Box>
+              </Box>
+              {/* <div className={classes.buttonContainer}>
             <Button
               variant="contained"
               color="primary"
@@ -272,42 +306,44 @@ export const CreatePollDialog = ({ open, setOpen }) => {
               Create
             </Button>
           </div> */}
-            {/* <Alert severity="info" className={classes.alert}>
+              {/* <Alert severity="info" className={classes.alert}>
               A room will be created with this name and any attendee will be
               able to join it
             </Alert> */}
-            {/* {userGroup && (
+              {/* {userGroup && (
             <Alert severity="warning" className={classes.alert}>
               You will leave your current call
             </Alert>
           )} */}
-          </div>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={handleClose}
-            color="primary"
-            className={classes.button}
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={handleCreatePoll}
-            className={classes.button}
-            color="primary"
-            variant="outlined"
-          >
-            Save draft
-          </Button>
-          <Button
-            onClick={handleCreatePoll}
-            className={classes.button}
-            color="primary"
-            variant="contained"
-          >
-            Publish
-          </Button>
-        </DialogActions>
+            </div>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={handleClose}
+              color="primary"
+              className={classes.button}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleCreatePoll}
+              className={classes.button}
+              color="primary"
+              variant="outlined"
+            >
+              Save draft
+            </Button>
+            <Button
+              onClick={handleCreatePoll}
+              className={classes.button}
+              color="primary"
+              variant="contained"
+              type="submit"
+            >
+              Publish
+            </Button>
+          </DialogActions>
+        </form>
       </DialogClose>
     </div>
   );
