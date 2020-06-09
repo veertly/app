@@ -32,6 +32,7 @@ import { FEATURES } from "../../Modules/features";
 import { VERTICAL_NAV_OPTIONS } from "../../Contexts/VerticalNavBarContext";
 import { usePrevious } from "react-use";
 import TechnicalCheckContext from "./TechnicalCheckContext";
+import AudioVideoCheckDialog from "../../Components/EventSession/AudioVideoCheckDialog";
 
 const useStyles = makeStyles((theme) => ({
   videoContainer: {
@@ -314,22 +315,27 @@ export default () => {
       case "FACEBOOK":
         return getFacebookFrame();
       case "JITSI":
-        return <div id="conference-container" className={classes.root} />;
+        return (
+          <>
+            <div id="conference-container" className={classes.root} />
+            <AudioVideoCheckDialog sessionId={sessionId} />
+          </>
+        )
       default:
         return (
-          <div className={classes.videoContainer}>
-            <Typography align="center" gutterBottom style={{ marginTop: 64 }}>
-              Livestream not correctly configured...
-            </Typography>
-            <Typography variant="caption" display="block" align="center">
-              Please contact the event organizer or Veertly team
-            </Typography>
-            <img
-              alt="No Video available"
-              src={NoVideoImage}
-              className={classes.noVideoImage}
-            />
-          </div>
+            <div className={classes.videoContainer}>
+              <Typography align="center" gutterBottom style={{ marginTop: 64 }}>
+                Livestream not correctly configured...
+              </Typography>
+              <Typography variant="caption" display="block" align="center">
+                Please contact the event organizer or Veertly team
+              </Typography>
+              <img
+                alt="No Video available"
+                src={NoVideoImage}
+                className={classes.noVideoImage}
+              />
+            </div>
         );
     }
   }

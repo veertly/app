@@ -23,6 +23,7 @@ import {
 import { FEATURES } from "../../Modules/features";
 import { usePrevious } from "react-use";
 import TechnicalCheckContext from "./TechnicalCheckContext";
+import AudioVideoCheckDialog from "../../Components/EventSession/AudioVideoCheckDialog";
 // import TechnicalCheckContext from "./TechnicalCheckContext";
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -222,7 +223,12 @@ const NetworkingRoomContainer = () => {
     //     </Typography>
     //   </div>
     // );
-    return <div id="conference-container" className={classes.root} />;
+    return (
+      <>
+        <div id="conference-container" className={classes.root} />;)
+        <AudioVideoCheckDialog sessionId={sessionId} />
+      </>
+    )
   }
 };
 // NetworkingRoomContainer.whyDidYouRender = true;

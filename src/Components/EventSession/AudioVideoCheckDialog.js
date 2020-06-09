@@ -10,7 +10,7 @@ import { makeStyles } from "@material-ui/core/styles";
 // import { useSnackbar } from "material-ui-snackbar-provider";
 import Webcam from "react-webcam";
 // import { Paper } from "@material-ui/core";
-import { Switch, Paper } from "@material-ui/core";
+import { Switch, Paper, Box, Typography } from "@material-ui/core";
 import VideocamIcon from "@material-ui/icons/Videocam";
 import VideocamOffIcon from "@material-ui/icons/VideocamOff";
 import MicIcon from "@material-ui/icons/Mic";
@@ -18,8 +18,7 @@ import MicOffIcon from "@material-ui/icons/MicOff";
 // import { setVideoMuteStatusDB, setAudioMuteStatusDB } from "../../Modules/eventSessionOperations";
 // import { useDocumentData } from "react-firebase-hooks/firestore";
 // import firebase from "../../Modules/firebaseApp";
-import { getButtonText } from "../../Utils";
-import MarginProvider from "../Shared/MarginProvider";
+// import { getButtonText } from "../../Utils";
 import TechnicalCheckContext from "../../Containers/EventSession/TechnicalCheckContext";
 // import { useMediaDevices } from "react-use";
 
@@ -49,12 +48,24 @@ const useStyles = makeStyles((theme) => ({
     alignSelf: "center",
     marginTop: theme.spacing(4)
   }),
+  tryAgainButton: {
+    opacity: 1,
+    width: "90%",
+    alignSelf: "center",
+    marginTop: theme.spacing(4)
+  },
+  enterWithoutButton : {
+    width: "90%",
+    alignSelf: "center",
+    marginTop: theme.spacing(2)
+  },
   cameraContainer: {
     height: "100%",
     width: "100%",
     maxHeight: 270,
     // backgroundColor: "gray",
     padding: 0,
+    position: "relative"
   },
   switchesContainer: {
     display: "flex",
@@ -74,6 +85,22 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+const PERMISSION_ERROR_STATUS = {
+  BLOCKED: "BLOCKED",
+  DISMISSED: "DISMISSED",
+  UNKNOWN: "UNKNOWN"
+};
+
+const getPermissionStatusForError = (error="") => {
+  if (error.toLowerCase().indexOf("denied")) {
+    return PERMISSION_ERROR_STATUS.BLOCKED;
+  } else if (error.toLowerCase().indexOf("dismissed")) {
+    return PERMISSION_ERROR_STATUS.DISMISSED;
+  } else {
+    return PERMISSION_ERROR_STATUS.UNKNOWN;
+  }
+};
+
 const AudioVideoCheckDialog = ({ sessionId }) => {
   const styles = useStyles();
   // const mediaDevices = useMediaDevices();
@@ -83,9 +110,10 @@ const AudioVideoCheckDialog = ({ sessionId }) => {
   //   .collection("eventSessions")
   //   .doc(sessionId)
   // )
-  const { setShowAudioVideoCheck, devicesPermissionGiven, enterWithoutPermissions,setAudioVideoPermissionFromOutside, muteVideo, muteAudio, setMuteAudio, setMuteVideo } = useContext(TechnicalCheckContext);
+  const { showAudioVideoCheck, setShowAudioVideoCheck, devicesPermissionGiven, enterWithoutPermissions,setAudioVideoPermissionFromOutside, muteVideo, muteAudio, setMuteAudio, setMuteVideo } = useContext(TechnicalCheckContext);
 
   const [showAlert, setShowAlert] = useState(false);
+  const [errorState, setErrorState] = useState(PERMISSION_ERROR_STATUS.UNKNOWN);
 
   // const muteVideo = useSelector(getMuteVideoOnEnter)
   // const muteAudio = useSelector(getMuteAudioOnEnter);
@@ -95,17 +123,22 @@ const AudioVideoCheckDialog = ({ sessionId }) => {
     // dispatch(setMuteVideo(sessionId))
     // setVideoMuteStatusDB(!muteVideo, sessionId);
     setMuteVideo(!muteVideo);
-  }
+  };
 
   const handleAudioToggle = () => {
     // setMuteAudio(!muteAudio)
     // dispatch(setMuteAudio(sessionId))
     // setAudioMuteStatusDB(!muteAudio, sessionId);
     setMuteAudio(!muteAudio)
-  }
+  };
 
   const handleClickPreview = () => {
     setShowAudioVideoCheck(false);
+  };
+
+
+  const handleTryAgain = () => {
+    window.location.reload();
   }
 
   const VideoSwitch = () => {
@@ -122,7 +155,7 @@ const AudioVideoCheckDialog = ({ sessionId }) => {
         </Switch>
       </div>
     )
-  }
+  };
 
   const AudioSwitch = () => {
     return (
@@ -138,14 +171,17 @@ const AudioVideoCheckDialog = ({ sessionId }) => {
         </Switch>
       </div>
     )
+  };
+
+  if (!showAudioVideoCheck) {
+    return null;
   }
 
   return (
     // <Paper>
       <Dialog open className={styles.dialog} fullWidth maxWidth="xs">
-        <DialogTitle className={styles.dialogTitle} id="form-dialog-title">
-
-          You are about to join {sessionId}
+        <DialogTitle className={styles.dialogTitle} id="dialog-title">
+          Audio/Video Settings
         </DialogTitle>
         <DialogContent className={styles.dialogContent}>
             <Paper className={styles.cameraContainer}>
@@ -153,24 +189,69 @@ const AudioVideoCheckDialog = ({ sessionId }) => {
                 onUserMedia={() => {
                   setAudioVideoPermissionFromOutside(true);
                 }}
-                onUserMediaError={() => {
+                onUserMediaError={(e) => {
+                  console.log("error", e.message, typeof e);
                   setAudioVideoPermissionFromOutside(false);
                   setShowAlert(true);
+                  setErrorState(getPermissionStatusForError(e.message));
                 }}
                 height="100%"
                 width="100%"
               />
+
+              { showAlert &&
+                <Box top="0" left="0" position="absolute" bgcolor="#EEEEEE" height="100%" width="100%" display="flex" flexDirection="row" justifyContent="center" alignItems="center">
+                  <VideocamOffIcon style={{fontSize: 32}} color="error" />
+                </Box>
+              }
+
             </Paper>
 
           {
             showAlert && 
             <>
-              <MarginProvider top={8}>
-                <Alert severity="error">Permissions not provided</Alert>
-              </MarginProvider>
-              <Alert severity="info" className={styles.alert}>
+              <Box marginTop={2}>
+                <Alert severity="error">Woops! Access denied</Alert>
+              </Box>
+              
+              <Box marginTop={1} padding={1} display="flex" flexDirection="column" alignItems="center">
+                {
+                 errorState === PERMISSION_ERROR_STATUS.BLOCKED && 
+                 (
+                   <>
+                    <Typography variant="subtitle1">
+                      Allow access to your camera by adjusting your settings on clicking the video icon in the URL bar.
+                      Then refresh the page.
+                    </Typography>
+                   </>
+                 )
+                }
+                {
+                 errorState === PERMISSION_ERROR_STATUS.DISMISSED && 
+                 (
+                   <>
+                    <Typography variant="subtitle1">
+                      Please refresh the page and select "Allow" when prompted
+                    </Typography>
+                   </>
+                 )
+                }
+                {
+                 errorState === PERMISSION_ERROR_STATUS.DISMISSED && 
+                 (
+                   <>
+                    <Typography variant="subtitle1">
+                      Unable to get camera/mic access. Please check you settings
+                    </Typography>
+                   </>
+                 )
+                }
+              </Box>
+              
+              {/* <Alert severity="info" className={styles.alert}>
+                
                 Veertly require audio and video permissions. Please refresh, and select "Allow" when prompted
-              </Alert>
+              </Alert> */}
             </>
 
           }
@@ -189,28 +270,40 @@ const AudioVideoCheckDialog = ({ sessionId }) => {
             variant="contained"
             color="primary"
             >
-              {
-                getButtonText({ muteAudio, muteVideo, devicesPermissionGiven })
-              }
+              Join Event
             </Button>
           }
 
           { !devicesPermissionGiven &&
-            <Button
-            className={styles.button}
-            onClick={enterWithoutPermissions}
-            // type="submit"
-            variant="outlined"
-            color="primary"
-          >
-            Enter without permissions
-          </Button>
+
+            <>
+              <Button
+              className={styles.tryAgainButton}
+              onClick={handleTryAgain}
+              // type="submit"
+              variant="contained"
+              color="primary"
+              >
+                Try Again
+              </Button>
+
+              <Button
+                className={styles.enterWithoutButton}
+                onClick={enterWithoutPermissions}
+                // type="submit"
+                variant="outlined"
+                color="primary"
+              >
+                Enter without devices 
+              </Button>
+            </>
+            
           }
 
         </DialogContent>
       </Dialog>
     // </Paper>
   )
-}
+};
 
 export default AudioVideoCheckDialog;
