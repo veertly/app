@@ -49,6 +49,7 @@ import EventSessionContainer from "./EventSessionContainer";
 import { openRoomArchived } from "../../Redux/dialogs";
 import { ChatMessagesContextWrapper } from "../../Contexts/ChatMessagesContext";
 import EventSessionContainerTheme from "./EventSessionContainerTheme";
+import { PollsContextWrapper } from "../../Contexts/PollsContext";
 
 const EventSessionContainerWrapper = (props) => {
   const dispatch = useDispatch();
@@ -375,9 +376,11 @@ const EventSessionContainerWrapper = (props) => {
     >
       <VerticalNavBarContextWrapper>
         <ChatMessagesContextWrapper>
-          <EventSessionContainerTheme>
-            <EventSessionContainer />
-          </EventSessionContainerTheme>
+          <PollsContextWrapper>
+            <EventSessionContainerTheme>
+              <EventSessionContainer />
+            </EventSessionContainerTheme>
+          </PollsContextWrapper>
         </ChatMessagesContextWrapper>
       </VerticalNavBarContextWrapper>
     </JitsiContext.Provider>
