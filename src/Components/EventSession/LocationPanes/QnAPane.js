@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(1)
   }
 }));
-const PollsPane = () => {
+const QnAPane = () => {
   const classes = useStyles();
 
   return (
@@ -31,4 +31,4 @@ const PollsPane = () => {
   );
 };
 
-export default PollsPane;
+export default QnAPane;
