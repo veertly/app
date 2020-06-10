@@ -10,7 +10,8 @@ import {
   getUsers,
   getLiveGroups,
   getUser,
-  getEventSessionDetails
+  getEventSessionDetails,
+  isEventOwner as isEventOwnerSelector
 } from "../../Redux/eventSession";
 import RoomCard from "./RoomCard";
 import _ from "lodash";
@@ -118,9 +119,16 @@ export default function ({ setRoomsCount }) {
   const handleCreateRoom = React.useCallback(() => dispatch(openCreateRoom()), [
     dispatch
   ]);
+
+  const isEventOwner = useSelector(isEventOwnerSelector);
+
+  console.log({ isEventOwner });
   const isRoomCreationAllowed = React.useMemo(
-    () => !eventSessionDetails || eventSessionDetails.denyRoomCreation !== true,
-    [eventSessionDetails]
+    () =>
+      !eventSessionDetails ||
+      isEventOwner ||
+      eventSessionDetails.denyRoomCreation !== true,
+    [eventSessionDetails, isEventOwner]
   );
   const { rooms } = React.useMemo(() => {
     let rooms = [];
