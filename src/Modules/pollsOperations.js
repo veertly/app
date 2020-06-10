@@ -40,7 +40,6 @@ export const createPoll = async (
     state
   };
 
-  console.log({ pollDb });
   await db
     .collection("eventSessions")
     .doc(sessionId.toLowerCase())
