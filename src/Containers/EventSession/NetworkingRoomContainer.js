@@ -36,7 +36,7 @@ const NetworkingRoomContainer = () => {
   const classes = useStyles();
   const { jitsiApi, setJitsiApi } = useContext(JitsiContext);
   // const { showAudioVideoCheck } = useContext(TechnicalCheckContext);
-  const { muteVideo, muteAudio, setMuteAudio, setMuteVideo } = useContext(TechnicalCheckContext);
+  const { showAudioVideoCheck, muteVideo, muteAudio, setMuteAudio, setMuteVideo } = useContext(TechnicalCheckContext);
 
   const [lastRoomLoaded, setLastRoomLoaded] = useState(null);
   const previousMuteVideo = usePrevious(muteVideo);
@@ -74,6 +74,10 @@ const NetworkingRoomContainer = () => {
   useEffect(() => {
     let prefix = process.env.REACT_APP_JITSI_ROOM_PREFIX;
     let prefixStr = prefix !== undefined ? `${prefix}-` : "";
+
+    if (showAudioVideoCheck) {
+      return;
+    }
 
     const roomName = currentGroup.videoConferenceAddress.includes("http")
       ? prefixStr +
@@ -179,7 +183,8 @@ const NetworkingRoomContainer = () => {
     muteAudio,
     muteVideo,
     setMuteAudio,
-    setMuteVideo
+    setMuteVideo,
+    showAudioVideoCheck
   ]);
 
 
@@ -226,7 +231,13 @@ const NetworkingRoomContainer = () => {
     return (
       <>
         <div id="conference-container" className={classes.root} />;)
-        <AudioVideoCheckDialog sessionId={sessionId} />
+        <AudioVideoCheckDialog
+          title={currentGroup.isRoom ? `${currentGroup.roomName} Room` : "Networking Conference call"}
+          subtitle={"You are going into video call. Please ensure that mic and camera are working properly."}
+          sessionId={sessionId}
+          showClose
+          onCloseClicked={handleCallEnded}
+        />
       </>
     )
   }

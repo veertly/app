@@ -2,9 +2,9 @@ import React, { useState, useContext } from "react";
 
 import Alert from "@material-ui/lab/Alert";
 import Button from "@material-ui/core/Button";
+import IconButton from "@material-ui/core/IconButton";
 import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
-import DialogTitle from "@material-ui/core/DialogTitle";
 import { makeStyles } from "@material-ui/core/styles";
 // import { createNewRoom } from "../../Modules/eventSessionOperations";
 // import { useSnackbar } from "material-ui-snackbar-provider";
@@ -15,6 +15,7 @@ import VideocamIcon from "@material-ui/icons/Videocam";
 import VideocamOffIcon from "@material-ui/icons/VideocamOff";
 import MicIcon from "@material-ui/icons/Mic";
 import MicOffIcon from "@material-ui/icons/MicOff";
+import CloseIcon from "@material-ui/icons/Close";
 // import { setVideoMuteStatusDB, setAudioMuteStatusDB } from "../../Modules/eventSessionOperations";
 // import { useDocumentData } from "react-firebase-hooks/firestore";
 // import firebase from "../../Modules/firebaseApp";
@@ -101,7 +102,7 @@ const getPermissionStatusForError = (error="") => {
   }
 };
 
-const AudioVideoCheckDialog = ({ sessionId }) => {
+const AudioVideoCheckDialog = ({ sessionId, subtitle="", title="Audio/Video Settings", showClose=false, onCloseClicked=()=>{} }) => {
   const styles = useStyles();
   // const mediaDevices = useMediaDevices();
   // const [eventSessionData] = useDocumentData(
@@ -180,10 +181,28 @@ const AudioVideoCheckDialog = ({ sessionId }) => {
   return (
     // <Paper>
       <Dialog open className={styles.dialog} fullWidth maxWidth="xs">
-        <DialogTitle className={styles.dialogTitle} id="dialog-title">
-          Audio/Video Settings
-        </DialogTitle>
+        
         <DialogContent className={styles.dialogContent}>
+          <Box marginBottom={1} position="relative" display="flex"  flexDirection="column" alignItems="center" id="dialog-title">
+            <Box marginBottom={1} display="flex" flexDirection="row" width="100%" justifyContent="space-between" alignItems="center">
+              <Typography variant="h5">
+                {title}
+              </Typography>
+              {
+                showClose && 
+                <IconButton onClick={onCloseClicked}>
+                  <CloseIcon />
+                </IconButton>
+              }
+            </Box>
+            { subtitle && 
+              <Typography variant="subtitle2" gutterBottom>
+                {subtitle}
+              </Typography>
+            }          
+          </Box>
+
+
             <Paper className={styles.cameraContainer}>
               <Webcam
                 onUserMedia={() => {
@@ -284,7 +303,7 @@ const AudioVideoCheckDialog = ({ sessionId }) => {
               variant="contained"
               color="primary"
               >
-                Try Again
+                Reload
               </Button>
 
               <Button

@@ -318,7 +318,15 @@ export default () => {
         return (
           <>
             <div id="conference-container" className={classes.root} />
-            <AudioVideoCheckDialog sessionId={sessionId} />
+            <AudioVideoCheckDialog
+              title="Main Stage conference call"
+              subtitle="You are about enter to the main stage conference call. Please ensure that mic and camera are working properly."
+              sessionId={sessionId} 
+              showClose
+              onCloseClicked={() => {
+                setUserCurrentLocation(sessionId, VERTICAL_NAV_OPTIONS.lobby)
+              }}
+            />
           </>
         )
       default:
