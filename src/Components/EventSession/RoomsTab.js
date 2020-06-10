@@ -122,7 +122,6 @@ export default function ({ setRoomsCount }) {
 
   const isEventOwner = useSelector(isEventOwnerSelector);
 
-  console.log({ isEventOwner });
   const isRoomCreationAllowed = React.useMemo(
     () =>
       !eventSessionDetails ||
