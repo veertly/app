@@ -29,24 +29,23 @@ const PollResults = ({ poll }) => {
     poll.votesCounter
   ]);
 
-  const winnerId = useMemo(() => {
-    let winner = null;
-    let winnerVotes = 0;
-    _.forEach(poll.votesCounter, (numVotes, id) => {
-      if (numVotes > winnerVotes) {
-        winner = id;
-        winnerVotes = numVotes;
-      }
-    });
-    return winner;
-  }, [poll.votesCounter]);
+  // const winnerId = useMemo(() => {
+  //   let winner = null;
+  //   let winnerVotes = 0;
+  //   _.forEach(poll.votesCounter, (numVotes, id) => {
+  //     if (numVotes > winnerVotes) {
+  //       winner = id;
+  //       winnerVotes = numVotes;
+  //     }
+  //   });
+  //   return winner;
+  // }, [poll.votesCounter]);
   const calculatePercentage = useCallback(
     (numVotes) =>
       totalVotes > 0 ? Math.round((numVotes / totalVotes) * 100) : 0,
     [totalVotes]
   );
 
-  console.log(winnerId);
   // const totalCalculated = useMemo(
   //   () =>
   //     _.reduce(

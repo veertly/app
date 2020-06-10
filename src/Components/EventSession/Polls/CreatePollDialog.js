@@ -119,12 +119,20 @@ export const CreatePollDialog = ({ open, setOpen }) => {
       errors.title = "Title can't be empty";
       hasErrors = true;
     }
+
+    let duplicated = {};
     _.forEach(options, (o, i) => {
       if (i <= 1 && o.value.trim() === "") {
         errors.options[o.id] = `Option ${i + 1} can't be empty`;
         hasErrors = true;
+      } else if (duplicated[o.value.trim()]) {
+        let prevDuplicated = duplicated[o.value.trim()];
+        errors.options[o.id] = "This field is duplicated";
+        errors.options[prevDuplicated] = "This field is duplicated";
       }
+      duplicated[o.value.trim()] = o.id;
     });
+
     setFormErrors(errors);
     return hasErrors;
   }, [options, title]);
@@ -137,8 +145,6 @@ export const CreatePollDialog = ({ open, setOpen }) => {
     }
 
     let newOptions = _.remove(options, (o) => o.value.trim() !== "");
-
-    console.log(newOptions);
 
     createPoll(
       sessionId,
@@ -165,7 +171,6 @@ export const CreatePollDialog = ({ open, setOpen }) => {
 
   const handleDeleteOption = (index) => () => {
     let newValues = _.remove(options, (v, i) => {
-      console.log({ i, index });
       return i !== index;
     });
     setOptions(newValues);

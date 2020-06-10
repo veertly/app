@@ -10,6 +10,7 @@ import { usePrevious } from "react-use";
 
 // import { atomFamily } from "recoil";
 import { POLLS_NAMESPACES } from "../Modules/pollsOperations";
+import _ from "lodash";
 
 const initialContext = {
   polls: { [POLLS_NAMESPACES.GLOBAL]: [] },
@@ -61,10 +62,11 @@ export const PollsContextWrapper = ({ children }) => {
       // const newMsgs = pollsDb.filter(
       //   (m) => m.status !== "ARCHIVED"
       // );
+      const sortedPolls = _.reverse(pollsDb);
 
       setPolls((v) => ({
         ...v,
-        [POLLS_NAMESPACES.GLOBAL]: pollsDb
+        [POLLS_NAMESPACES.GLOBAL]: sortedPolls
       }));
     }
   }, [pollsDb, prevPollsDb, sessionId]);
