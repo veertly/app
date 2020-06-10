@@ -326,10 +326,11 @@ export const CreatePollDialog = ({ open, setOpen }) => {
               Cancel
             </Button>
             <Button
-              onClick={handleCreatePoll}
+              // onClick={handleCreatePoll}
               className={classes.button}
               color="primary"
               variant="outlined"
+              disabled
             >
               Save draft
             </Button>

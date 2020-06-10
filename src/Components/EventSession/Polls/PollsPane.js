@@ -18,7 +18,10 @@ import {
 } from "../../../Modules/pollsOperations";
 import PollForm from "./PollForm";
 import PollResults from "./PollResults";
-import { getEventSessionDetails } from "../../../Redux/eventSession";
+import {
+  getEventSessionDetails,
+  isEventOwner as isEventOwnerSelector
+} from "../../../Redux/eventSession";
 import { useSelector, shallowEqual } from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
@@ -40,14 +43,21 @@ const PollsPane = () => {
   const classes = useStyles();
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const eventSessionDetails = useSelector(getEventSessionDetails, shallowEqual);
+  const isEventOwner = useSelector(isEventOwnerSelector);
 
   const isPollCreationAllowed = React.useMemo(
-    () => eventSessionDetails && eventSessionDetails.allowPollCreation === true,
-    [eventSessionDetails]
+    () =>
+      isEventOwner ||
+      (eventSessionDetails && eventSessionDetails.allowPollCreation === true),
+    [eventSessionDetails, isEventOwner]
   );
 
   const { polls, myVotes } = React.useContext(PollsContext);
-  console.log({ myVotes });
+
+  // const hasDraft = useMemo(() => {
+  //   isEventOwner && _.findIndex(polls, (p) => p.state === POLLS_STATES.DRAFT);
+  // }, [isEventOwner, polls]);
+
   return (
     <div>
       <CreatePollDialog open={createDialogOpen} setOpen={setCreateDialogOpen} />
@@ -87,7 +97,7 @@ const PollsPane = () => {
         return null;
       })}
       {isPollCreationAllowed && (
-        <Box textAlign="center" mt={2}>
+        <Box textAlign="center" mt={2} mb={2}>
           <Button
             variant="outlined"
             color="primary"
