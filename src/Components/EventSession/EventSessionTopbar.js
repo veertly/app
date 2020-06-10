@@ -1,21 +1,15 @@
-import React, { useMemo, useContext } from "react";
+import React, { useMemo } from "react";
 import { useHistory } from "react-router-dom";
 import clsx from "clsx";
 // import Button from "@material-ui/core/Button";
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
-import VideocamIcon from "@material-ui/icons/Videocam";
-import VideocamOffIcon from "@material-ui/icons/VideocamOff";
-import MicIcon from "@material-ui/icons/Mic";
-import MicOffIcon from "@material-ui/icons/MicOff";
 import { makeStyles } from "@material-ui/styles";
 import {
   AppBar,
   Toolbar,
   Typography,
   Divider,
-  Box,
-  Tooltip,
   // Hidden,
   // IconButton
 } from "@material-ui/core";
@@ -42,7 +36,7 @@ import { logout } from "../../Redux/account";
 import PresenceSwitch from "./PresenceSwitch";
 import { trackEvent } from "../../Modules/analytics";
 import { FEATURES } from "../../Modules/features";
-import TechnicalCheckContext from "../../Containers/EventSession/TechnicalCheckContext";
+import AudioVideoCheckDialog from "./AudioVideoCheckDialog";
 
 // import routes from "../../Config/routes";
 const useStyles = makeStyles((theme) => ({
@@ -157,7 +151,7 @@ const EventSessionTopbar = () => {
   const sessionId = useSelector(getSessionId);
   const eventSessionDetails = useSelector(getEventSessionDetails, shallowEqual);
 
-  const { muteVideo, muteAudio, setMuteAudio, setMuteVideo } = useContext(TechnicalCheckContext);
+  const [showTechCheckModal, setShowTechCheckModal] = React.useState(false);
 
   const customThemeFeature = useSelector(
     getFeatureDetails(FEATURES.CUSTOM_THEME)
@@ -210,15 +204,10 @@ const EventSessionTopbar = () => {
     trackEvent("Cockpit clicked", { sessionId });
     window.open("https://cockpit.veertly.com/event/" + sessionId, "_blank");
   };
-
-  const handleVideoToggle = () => {
-    setMuteVideo(!muteVideo);
+  
+  const handleShowTechCheckClicked = () => {
+    setShowTechCheckModal(!showTechCheckModal);
   }
-
-  const handleAudioToggle = () => {
-    setMuteAudio(!muteAudio)
-  }
-
 
   const logo = useMemo(() => {
     return customThemeFeature && customThemeFeature.logo
@@ -296,32 +285,8 @@ const EventSessionTopbar = () => {
             >
               <MenuItem onClick={handleEditProfileClick}>Edit profile</MenuItem>
               
-              <MenuItem >
-                <Tooltip title="Always enter call with video On or Off">
-                  <Box width="100%" display="flex" flexDirection="row" alignItems="center" justifyContent="space-between" onClick={handleVideoToggle}>
-                      <Box marginRight={1}>
-                        <Typography>
-                          Toggle Video
-                        </Typography>
-                      </Box>
-                      {!muteVideo && <VideocamIcon />}
-                      {muteVideo && <VideocamOffIcon />}
-                  </Box>
-                </Tooltip>
-              </MenuItem>
-              
-              <MenuItem onClick={handleAudioToggle}>
-                <Tooltip title="Always enter call with mic On or Off">
-                  <Box width="100%" display="flex" flexDirection="row" alignItems="center" justifyContent="space-between">
-                    <Box marginRight={1}>
-                      <Typography>
-                        Toggle mic
-                      </Typography>
-                    </Box>
-                    {muteAudio && <MicOffIcon />}
-                    {!muteAudio && <MicIcon />}
-                  </Box>
-                </Tooltip>
+              <MenuItem onClick={handleShowTechCheckClicked}>
+                  Devices Settings
               </MenuItem>
 
               {isOwner && <Divider />}
@@ -338,6 +303,12 @@ const EventSessionTopbar = () => {
           </div>
         </Toolbar>
       </AppBar>
+      <AudioVideoCheckDialog 
+        overrideShow={true}
+        showModal={showTechCheckModal}
+        showClose={true}
+        onCloseClicked={handleShowTechCheckClicked}
+      />
     </React.Fragment>
   );
 };

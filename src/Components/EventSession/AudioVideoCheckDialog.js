@@ -93,16 +93,16 @@ const PERMISSION_ERROR_STATUS = {
 };
 
 const getPermissionStatusForError = (error="") => {
-  if (error.toLowerCase().indexOf("denied")) {
+  if (error.toLowerCase().indexOf("denied") !== -1) {
     return PERMISSION_ERROR_STATUS.BLOCKED;
-  } else if (error.toLowerCase().indexOf("dismissed")) {
+  } else if (error.toLowerCase().indexOf("dismissed") !== -1) {
     return PERMISSION_ERROR_STATUS.DISMISSED;
   } else {
     return PERMISSION_ERROR_STATUS.UNKNOWN;
   }
 };
 
-const AudioVideoCheckDialog = ({ sessionId, subtitle="", title="Audio/Video Settings", showClose=false, onCloseClicked=()=>{} }) => {
+const AudioVideoCheckDialog = ({ sessionId, subtitle="", title="Audio/Video Settings", showClose=false, onCloseClicked=()=>{}, overrideShow=false, showModal }) => {
   const styles = useStyles();
   // const mediaDevices = useMediaDevices();
   // const [eventSessionData] = useDocumentData(
@@ -174,16 +174,16 @@ const AudioVideoCheckDialog = ({ sessionId, subtitle="", title="Audio/Video Sett
     )
   };
 
-  if (!showAudioVideoCheck) {
+  if (!overrideShow&& !showAudioVideoCheck) {
     return null;
   }
 
   return (
     // <Paper>
-      <Dialog open className={styles.dialog} fullWidth maxWidth="xs">
+      <Dialog open={overrideShow ? showModal : true} className={styles.dialog} fullWidth maxWidth="xs">
         
         <DialogContent className={styles.dialogContent}>
-          <Box marginBottom={1} position="relative" display="flex"  flexDirection="column" alignItems="center" id="dialog-title">
+          <Box marginBottom={1} position="relative" display="flex" width="100%" flexDirection="column" alignItems="center" id="dialog-title">
             <Box marginBottom={1} display="flex" flexDirection="row" width="100%" justifyContent="space-between" alignItems="center">
               <Typography variant="h5">
                 {title}
@@ -196,7 +196,7 @@ const AudioVideoCheckDialog = ({ sessionId, subtitle="", title="Audio/Video Sett
               }
             </Box>
             { subtitle && 
-              <Typography variant="subtitle2" gutterBottom>
+              <Typography variant="subtitle1" gutterBottom>
                 {subtitle}
               </Typography>
             }          
@@ -256,7 +256,7 @@ const AudioVideoCheckDialog = ({ sessionId, subtitle="", title="Audio/Video Sett
                  )
                 }
                 {
-                 errorState === PERMISSION_ERROR_STATUS.DISMISSED && 
+                 errorState === PERMISSION_ERROR_STATUS.UNKNOWN && 
                  (
                    <>
                     <Typography variant="subtitle1">
