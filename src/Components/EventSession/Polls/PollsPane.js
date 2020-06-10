@@ -8,7 +8,7 @@ import {
   ExpansionPanelDetails,
   Box
 } from "@material-ui/core";
-// import NoPollsImg from "../../../Assets/illustrations/polls.svg";
+import NoPollsImg from "../../../Assets/illustrations/polls.svg";
 import { CreatePollDialog } from "./CreatePollDialog";
 import PollsContext from "../../../Contexts/PollsContext";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -61,17 +61,28 @@ const PollsPane = () => {
   return (
     <div>
       <CreatePollDialog open={createDialogOpen} setOpen={setCreateDialogOpen} />
-
-      {/* <Box className={classes.emptyPane}>
-        <img
-          className={classes.emptyImage}
-          src={NoPollsImg}
-          alt="Polls coming soon"
-        />
-        <Typography variant="body2" color="textSecondary" display="block">
-          Coming soon...
-        </Typography>
-      </Box> */}
+      {polls[POLLS_NAMESPACES.GLOBAL].length === 0 && (
+        <Box className={classes.emptyPane}>
+          <img
+            className={classes.emptyImage}
+            src={NoPollsImg}
+            alt="Polls coming soon"
+          />
+          {isPollCreationAllowed && (
+            <Typography variant="body2" color="textSecondary" display="block">
+              There are no polls available yet.
+              <br />
+              Create a poll and start gathering feedback...
+            </Typography>
+          )}
+          {!isPollCreationAllowed && (
+            <Typography variant="body2" color="textSecondary" display="block">
+              The organizer hasn't created any poll yet. <br />
+              Check again later.
+            </Typography>
+          )}
+        </Box>
+      )}
       {polls[POLLS_NAMESPACES.GLOBAL].map((poll) => {
         if (poll.state === POLLS_STATES.PUBLISHED) {
           return (
