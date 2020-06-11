@@ -20,9 +20,12 @@ import PollForm from "./PollForm";
 import PollResults from "./PollResults";
 import {
   getEventSessionDetails,
-  isEventOwner as isEventOwnerSelector
+  isEventOwner as isEventOwnerSelector,
+  getUserId
 } from "../../../Redux/eventSession";
 import { useSelector, shallowEqual } from "react-redux";
+import PollsMenu from "./PollsMenu";
+import _ from "lodash";
 
 const useStyles = makeStyles((theme) => ({
   emptyPane: {
@@ -51,9 +54,37 @@ const PollsPane = () => {
       (eventSessionDetails && eventSessionDetails.allowPollCreation === true),
     [eventSessionDetails, isEventOwner]
   );
+  const myUserId = useSelector(getUserId);
 
   const { polls, myVotes } = React.useContext(PollsContext);
 
+  const publishedPolls = React.useMemo(() => {
+    let result = _.filter(
+      polls[POLLS_NAMESPACES.GLOBAL],
+      (p) => p.state === POLLS_STATES.PUBLISHED
+    );
+    return result;
+  }, [polls]);
+
+  const draftPolls = React.useMemo(() => {
+    let result = _.filter(
+      polls[POLLS_NAMESPACES.GLOBAL],
+      (p) => p.state === POLLS_STATES.DRAFT && p.owner === myUserId
+    );
+    return result;
+  }, [myUserId, polls]);
+
+  const stoppedPolls = React.useMemo(() => {
+    let result = _.filter(
+      polls[POLLS_NAMESPACES.GLOBAL],
+      (p) =>
+        p.state === POLLS_STATES.TERMINATED &&
+        (p.owner === myUserId || isEventOwner)
+    );
+    return result;
+  }, [isEventOwner, myUserId, polls]);
+
+  console.log({ publishedPolls, draftPolls, stoppedPolls });
   // const hasDraft = useMemo(() => {
   //   isEventOwner && _.findIndex(polls, (p) => p.state === POLLS_STATES.DRAFT);
   // }, [isEventOwner, polls]);
@@ -61,12 +92,12 @@ const PollsPane = () => {
   return (
     <div>
       <CreatePollDialog open={createDialogOpen} setOpen={setCreateDialogOpen} />
-      {polls[POLLS_NAMESPACES.GLOBAL].length === 0 && (
+      {publishedPolls.length === 0 && (
         <Box className={classes.emptyPane}>
           <img
             className={classes.emptyImage}
             src={NoPollsImg}
-            alt="Polls coming soon"
+            alt="No polls available"
           />
           {isPollCreationAllowed && (
             <Typography variant="body2" color="textSecondary" display="block">
@@ -83,30 +114,34 @@ const PollsPane = () => {
           )}
         </Box>
       )}
-      {polls[POLLS_NAMESPACES.GLOBAL].map((poll) => {
-        if (poll.state === POLLS_STATES.PUBLISHED) {
-          return (
-            <ExpansionPanel key={poll.id}>
-              <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography className={classes.heading}>
-                  {poll.title}
-                </Typography>
-              </ExpansionPanelSummary>
-              <ExpansionPanelDetails style={{ paddingTop: 0 }}>
-                {(!myVotes[POLLS_NAMESPACES.GLOBAL][poll.id] ||
-                  myVotes[POLLS_NAMESPACES.GLOBAL][poll.id].voted !== true) && (
-                  <PollForm poll={poll} />
-                )}
-                {myVotes[POLLS_NAMESPACES.GLOBAL][poll.id] &&
-                  myVotes[POLLS_NAMESPACES.GLOBAL][poll.id].voted === true && (
-                    <PollResults poll={poll} />
-                  )}
-              </ExpansionPanelDetails>
-            </ExpansionPanel>
-          );
-        }
-        return null;
-      })}
+      {publishedPolls.length > 0 && (
+        <>
+          <Typography variant="button">Live Polls</Typography>
+          {publishedPolls.map((poll) => {
+            const canManagePoll = poll.owner === myUserId || isEventOwner;
+            return (
+              <ExpansionPanel key={poll.id}>
+                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                  <Typography className={classes.heading}>
+                    {poll.title}
+                  </Typography>
+                </ExpansionPanelSummary>
+                <ExpansionPanelDetails
+                  style={{ paddingTop: 0, display: "block" }}
+                >
+                  {(!myVotes[POLLS_NAMESPACES.GLOBAL][poll.id] ||
+                    myVotes[POLLS_NAMESPACES.GLOBAL][poll.id].voted !==
+                      true) && <PollForm poll={poll} />}
+                  {myVotes[POLLS_NAMESPACES.GLOBAL][poll.id] &&
+                    myVotes[POLLS_NAMESPACES.GLOBAL][poll.id].voted ===
+                      true && <PollResults poll={poll} />}
+                  {canManagePoll && <PollsMenu poll={poll} />}
+                </ExpansionPanelDetails>
+              </ExpansionPanel>
+            );
+          })}
+        </>
+      )}
       {isPollCreationAllowed && (
         <Box textAlign="center" mt={2} mb={2}>
           <Button
@@ -120,6 +155,52 @@ const PollsPane = () => {
             Create poll
           </Button>
         </Box>
+      )}
+      {draftPolls.length > 0 && (
+        <>
+          <Typography variant="button">Draft Polls</Typography>
+          {draftPolls.map((poll) => {
+            const canManagePoll = poll.owner === myUserId || isEventOwner;
+            return (
+              <ExpansionPanel key={poll.id}>
+                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                  <Typography className={classes.heading}>
+                    {poll.title}
+                  </Typography>
+                </ExpansionPanelSummary>
+                <ExpansionPanelDetails
+                  style={{ paddingTop: 0, display: "block" }}
+                >
+                  <PollForm poll={poll} />
+                  {canManagePoll && <PollsMenu poll={poll} />}
+                </ExpansionPanelDetails>
+              </ExpansionPanel>
+            );
+          })}
+        </>
+      )}
+      {stoppedPolls.length > 0 && (
+        <>
+          <Typography variant="button">Ended Polls</Typography>
+          {stoppedPolls.map((poll) => {
+            const canManagePoll = poll.owner === myUserId || isEventOwner;
+            return (
+              <ExpansionPanel key={poll.id}>
+                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                  <Typography className={classes.heading}>
+                    {poll.title}
+                  </Typography>
+                </ExpansionPanelSummary>
+                <ExpansionPanelDetails
+                  style={{ paddingTop: 0, display: "block" }}
+                >
+                  <PollResults poll={poll} />
+                  {canManagePoll && <PollsMenu poll={poll} />}
+                </ExpansionPanelDetails>
+              </ExpansionPanel>
+            );
+          })}
+        </>
       )}
     </div>
   );
