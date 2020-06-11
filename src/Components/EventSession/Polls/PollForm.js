@@ -11,7 +11,7 @@ import {
 } from "@material-ui/core";
 import { getUserId, getSessionId } from "../../../Redux/eventSession";
 import { useSelector } from "react-redux";
-import { votePoll } from "../../../Modules/pollsOperations";
+import { votePoll, POLLS_STATES } from "../../../Modules/pollsOperations";
 
 const PollForm = ({ poll }) => {
   const [value, setValue] = useState(null);
@@ -32,8 +32,7 @@ const PollForm = ({ poll }) => {
   return (
     <Box width="100%">
       <FormControl component="fieldset">
-        {/* <FormLabel component="legend">Gender</FormLabel> */}
-        <RadioGroup name="gender1" value={value} onChange={handleChange}>
+        <RadioGroup name="options" value={value} onChange={handleChange}>
           {poll.options.map((option) => (
             <FormControlLabel
               value={option.id}
@@ -45,7 +44,7 @@ const PollForm = ({ poll }) => {
           ))}
         </RadioGroup>
       </FormControl>
-      {value && (
+      {value && poll.state === POLLS_STATES.PUBLISHED && (
         <Box textAlign="center" mt={2} mb={2} width="100%">
           <Button
             variant="contained"

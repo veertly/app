@@ -25,7 +25,7 @@ import {
   IconButton
 } from "@material-ui/core";
 import DialogClose from "../../Misc/DialogClose";
-import { createPoll } from "../../../Modules/pollsOperations";
+import { createPoll, POLLS_STATES } from "../../../Modules/pollsOperations";
 import { useSelector } from "react-redux";
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -153,6 +153,28 @@ export const CreatePollDialog = ({ open, setOpen }) => {
       newOptions,
       checkedAnonymous,
       checkedNotification
+    );
+
+    handleClose();
+  };
+
+  const handleDraftPoll = (e) => {
+    e.preventDefault();
+
+    if (checkFormErrors()) {
+      return;
+    }
+
+    let newOptions = _.remove(options, (o) => o.value.trim() !== "");
+
+    createPoll(
+      sessionId,
+      userId,
+      title,
+      newOptions,
+      checkedAnonymous,
+      checkedNotification,
+      POLLS_STATES.DRAFT
     );
 
     handleClose();
@@ -300,26 +322,6 @@ export const CreatePollDialog = ({ open, setOpen }) => {
                   </Tooltip>
                 </Box>
               </Box>
-              {/* <div className={classes.buttonContainer}>
-            <Button
-              variant="contained"
-              color="primary"
-              className={classes.button}
-              onClick={handleCreateRoom}
-              disabled={roomName.trim() === ""}
-            >
-              Create
-            </Button>
-          </div> */}
-              {/* <Alert severity="info" className={classes.alert}>
-              A room will be created with this name and any attendee will be
-              able to join it
-            </Alert> */}
-              {/* {userGroup && (
-            <Alert severity="warning" className={classes.alert}>
-              You will leave your current call
-            </Alert>
-          )} */}
             </div>
           </DialogContent>
           <DialogActions>
@@ -331,11 +333,10 @@ export const CreatePollDialog = ({ open, setOpen }) => {
               Cancel
             </Button>
             <Button
-              // onClick={handleCreatePoll}
+              onClick={handleDraftPoll}
               className={classes.button}
               color="primary"
               variant="outlined"
-              disabled
             >
               Save draft
             </Button>
