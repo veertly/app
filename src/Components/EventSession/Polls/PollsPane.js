@@ -6,7 +6,8 @@ import {
   ExpansionPanelSummary,
   Typography,
   ExpansionPanelDetails,
-  Box
+  Box,
+  SvgIcon
 } from "@material-ui/core";
 import NoPollsImg from "../../../Assets/illustrations/polls.svg";
 import { CreatePollDialog } from "./CreatePollDialog";
@@ -26,6 +27,9 @@ import {
 import { useSelector, shallowEqual } from "react-redux";
 import PollsMenu from "./PollsMenu";
 import _ from "lodash";
+import LiveIcon from "../../../Assets/Icons/Live";
+import DraftIcon from "../../../Assets/Icons/Draft";
+import { Archive as ArchiveIcon } from "react-feather";
 
 const useStyles = makeStyles((theme) => ({
   emptyPane: {
@@ -54,6 +58,15 @@ const PollsPane = () => {
       (eventSessionDetails && eventSessionDetails.allowPollCreation === true),
     [eventSessionDetails, isEventOwner]
   );
+
+  const canSeePreviousPolls = React.useMemo(
+    () =>
+      isEventOwner ||
+      (eventSessionDetails &&
+        eventSessionDetails.canSeePreviousPolls !== false),
+    [eventSessionDetails, isEventOwner]
+  );
+
   const myUserId = useSelector(getUserId);
 
   const { polls, myVotes } = React.useContext(PollsContext);
@@ -79,12 +92,11 @@ const PollsPane = () => {
       polls[POLLS_NAMESPACES.GLOBAL],
       (p) =>
         p.state === POLLS_STATES.TERMINATED &&
-        (p.owner === myUserId || isEventOwner)
+        (p.owner === myUserId || isEventOwner || canSeePreviousPolls)
     );
     return result;
-  }, [isEventOwner, myUserId, polls]);
+  }, [canSeePreviousPolls, isEventOwner, myUserId, polls]);
 
-  console.log({ publishedPolls, draftPolls, stoppedPolls });
   // const hasDraft = useMemo(() => {
   //   isEventOwner && _.findIndex(polls, (p) => p.state === POLLS_STATES.DRAFT);
   // }, [isEventOwner, polls]);
@@ -116,7 +128,12 @@ const PollsPane = () => {
       )}
       {publishedPolls.length > 0 && (
         <>
-          <Typography variant="button">Live Polls</Typography>
+          <Box m={2} display="flex">
+            <LiveIcon color="primary" style={{ marginRight: 8 }} />
+            <Typography variant="button" color="primary">
+              Live Polls
+            </Typography>
+          </Box>
           {publishedPolls.map((poll) => {
             const canManagePoll = poll.owner === myUserId || isEventOwner;
             return (
@@ -143,7 +160,7 @@ const PollsPane = () => {
         </>
       )}
       {isPollCreationAllowed && (
-        <Box textAlign="center" mt={2} mb={2}>
+        <Box textAlign="center" mt={3} mb={3}>
           <Button
             variant="outlined"
             color="primary"
@@ -158,7 +175,14 @@ const PollsPane = () => {
       )}
       {draftPolls.length > 0 && (
         <>
-          <Typography variant="button">Draft Polls</Typography>
+          <Box m={2} mt={6} display="flex">
+            <SvgIcon color="primary" style={{ marginRight: 8 }}>
+              <DraftIcon />
+            </SvgIcon>
+            <Typography variant="button" color="primary">
+              Draft Polls
+            </Typography>
+          </Box>
           {draftPolls.map((poll) => {
             const canManagePoll = poll.owner === myUserId || isEventOwner;
             return (
@@ -181,7 +205,14 @@ const PollsPane = () => {
       )}
       {stoppedPolls.length > 0 && (
         <>
-          <Typography variant="button">Ended Polls</Typography>
+          <Box m={2} mt={6} display="flex">
+            <SvgIcon color="primary" style={{ marginRight: 8 }}>
+              <ArchiveIcon />
+            </SvgIcon>
+            <Typography variant="button" color="primary">
+              Previous Polls
+            </Typography>
+          </Box>
           {stoppedPolls.map((poll) => {
             const canManagePoll = poll.owner === myUserId || isEventOwner;
             return (
@@ -202,6 +233,7 @@ const PollsPane = () => {
           })}
         </>
       )}
+      <div></div>
     </div>
   );
 };

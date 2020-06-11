@@ -32,8 +32,7 @@ const PollForm = ({ poll }) => {
   return (
     <Box width="100%">
       <FormControl component="fieldset">
-        {/* <FormLabel component="legend">Gender</FormLabel> */}
-        <RadioGroup name="gender1" value={value} onChange={handleChange}>
+        <RadioGroup name="options" value={value} onChange={handleChange}>
           {poll.options.map((option) => (
             <FormControlLabel
               value={option.id}
@@ -45,20 +44,18 @@ const PollForm = ({ poll }) => {
           ))}
         </RadioGroup>
       </FormControl>
-      {value &&
-        !poll.state ===
-          POLLS_STATES.DRAFT(
-            <Box textAlign="center" mt={2} mb={2} width="100%">
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleVote}
-                disabled={disabled}
-              >
-                Vote
-              </Button>
-            </Box>
-          )}
+      {value && poll.state === POLLS_STATES.PUBLISHED && (
+        <Box textAlign="center" mt={2} mb={2} width="100%">
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleVote}
+            disabled={disabled}
+          >
+            Vote
+          </Button>
+        </Box>
+      )}
     </Box>
   );
 };

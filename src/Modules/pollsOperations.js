@@ -137,17 +137,13 @@ export const setPollState = async (
     .collection("polls")
     .doc(pollId);
 
-  batch.set(pollRef, {
+  batch.update(pollRef, {
     state: newState,
     changedBy: userId,
     changedAt: firebase.firestore.FieldValue.serverTimestamp()
   });
 
-  let auditTrailRef = db
-    .collection("eventSessions")
-    .doc(sessionId.toLowerCase())
-    .collection("polls")
-    .doc(namespace)
+  let auditTrailRef = pollRef
     .collection("auditTrail")
     .doc(String(new Date().getTime()));
 
@@ -161,4 +157,45 @@ export const setPollState = async (
   });
 
   await batch.commit();
+};
+
+export const deletePoll = async (
+  sessionId,
+  pollId,
+  namespace = POLLS_NAMESPACES.GLOBAL
+) => {
+  let db = firebase.firestore();
+
+  // var batch = db.batch();
+
+  let pollRef = db
+    .collection("eventSessions")
+    .doc(sessionId.toLowerCase())
+    .collection("polls")
+    .doc(namespace)
+    .collection("polls")
+    .doc(pollId);
+
+  await pollRef.delete();
+
+  // batch.delete(pollRef, {
+  //   state: newState,
+  //   changedBy: userId,
+  //   changedAt: firebase.firestore.FieldValue.serverTimestamp()
+  // });
+
+  // let auditTrailRef = pollRef
+  //   .collection("auditTrail")
+  //   .doc(String(new Date().getTime()));
+
+  // batch.set(auditTrailRef, {
+  //   action: "updateState",
+  //   actionParams: {
+  //     newState
+  //   },
+  //   by: userId,
+  //   at: firebase.firestore.FieldValue.serverTimestamp()
+  // });
+
+  // await batch.commit();
 };

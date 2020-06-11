@@ -5,7 +5,8 @@ import {
   Button,
   DialogActions,
   DialogContent,
-  DialogTitle
+  DialogTitle,
+  Box
 } from "@material-ui/core";
 import Alert from "@material-ui/lab/Alert";
 
@@ -28,16 +29,20 @@ const ConfirmationDialog = ({
   const [error, setError] = useState(null);
   const [confirming, setConfirming] = useState(false);
 
-  const handleOnConfirm = async () => {
-    try {
-      setConfirming(true);
-      await onConfirm();
+  const handleOnConfirm = () => {
+    const execute = async () => {
+      try {
+        setConfirming(true);
+        setError(null);
+        await onConfirm();
+        closeDialog();
+      } catch (error) {
+        setError(error);
+        console.error(error);
+      }
       setConfirming(false);
-      closeDialog();
-    } catch (error) {
-      setError(error);
-      console.error(error);
-    }
+    };
+    execute();
   };
   return (
     <Dialog open={open} onClose={closeDialog}>
@@ -45,7 +50,11 @@ const ConfirmationDialog = ({
 
       <DialogContent>
         <Alert severity={severity}>{alertMessage}</Alert>
-        {error && <Alert severity="error">{error}</Alert>}
+        {error && (
+          <Box mt={2}>
+            <Alert severity="error">{error.message}</Alert>
+          </Box>
+        )}
       </DialogContent>
       <DialogActions>
         <Button
