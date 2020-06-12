@@ -26,6 +26,7 @@ import { getFeatureDetails } from "../../Redux/eventSession";
 import { FEATURES } from "../../Modules/features";
 import _ from "lodash";
 import { DEAFULT_NAV_BAR } from "./VerticalNavBar";
+import { PollsContextWrapper } from "../../Contexts/PollsContext";
 
 // import { Badge } from "@material-ui/core";
 const useStyles = makeStyles((theme) => ({
@@ -141,84 +142,74 @@ const VerticalNavPane = (props) => {
     currentNavBarSelection === VERTICAL_NAV_OPTIONS.rooms;
 
   return (
-    <div className={classes.root}>
-      <Box className={classes.titleBox}>
-        <Typography color="secondary" className={classes.paneTitle}>
-          {getTitle()}
-          {showCount && titleCount > 0 && (
-            <span className={classes.counter}>{` (${titleCount})`}</span>
-          )}
-        </Typography>
-        {/* <InfoIcon className={classes.infoIcon} /> */}
+    <Suspense fallback={<SplashScreen />}>
+      <div className={classes.root}>
+        <Box className={classes.titleBox}>
+          <Typography color="secondary" className={classes.paneTitle}>
+            {getTitle()}
+            {showCount && titleCount > 0 && (
+              <span className={classes.counter}>{` (${titleCount})`}</span>
+            )}
+          </Typography>
+          {/* <InfoIcon className={classes.infoIcon} /> */}
 
-        <div style={{ flexGrow: 1 }}></div>
-        <Tooltip title="Collapse">
-          <IconButton
-            className={classes.collapseButton}
-            size="small"
-            onClick={collapsePane}
-          >
-            <DoubleArrowIcon
-              fontSize="inherit"
-              className={classes.rotateIcon}
-            />
-          </IconButton>
-        </Tooltip>
-      </Box>
+          <div style={{ flexGrow: 1 }}></div>
+          <Tooltip title="Collapse">
+            <IconButton
+              className={classes.collapseButton}
+              size="small"
+              onClick={collapsePane}
+            >
+              <DoubleArrowIcon
+                fontSize="inherit"
+                className={classes.rotateIcon}
+              />
+            </IconButton>
+          </Tooltip>
+        </Box>
 
-      <Box className={classes.paneContent}>
-        <Suspense fallback={<SplashScreen />}>
-          {currentNavBarSelection === VERTICAL_NAV_OPTIONS.mainStage && (
-            <MainStagePane setTotalUsers={setTitleCount} />
-          )}
-          {currentNavBarSelection === VERTICAL_NAV_OPTIONS.lobby && (
-            <LobbyPane />
-          )}
-          {currentNavBarSelection === VERTICAL_NAV_OPTIONS.rooms && (
-            <RoomsTab setRoomsCount={setTitleCount} />
-          )}
+        <Box className={classes.paneContent}>
+          <Suspense fallback={<SplashScreen />}>
+            {currentNavBarSelection === VERTICAL_NAV_OPTIONS.mainStage && (
+              <MainStagePane setTotalUsers={setTitleCount} />
+            )}
+            {currentNavBarSelection === VERTICAL_NAV_OPTIONS.lobby && (
+              <LobbyPane />
+            )}
+            {currentNavBarSelection === VERTICAL_NAV_OPTIONS.rooms && (
+              <RoomsTab setRoomsCount={setTitleCount} />
+            )}
 
-          {currentNavBarSelection === VERTICAL_NAV_OPTIONS.networking && (
-            <ConversationsPane />
-          )}
+            {currentNavBarSelection === VERTICAL_NAV_OPTIONS.networking && (
+              <ConversationsPane />
+            )}
 
-          {currentNavBarSelection === VERTICAL_NAV_OPTIONS.attendees && (
-            <AttendeesPane
-              paneFilter={ATTENDEES_PANE_FILTER.all}
-              showFilter={true}
-              setTotalUsers={setTitleCount}
-            />
-          )}
+            {currentNavBarSelection === VERTICAL_NAV_OPTIONS.attendees && (
+              <AttendeesPane
+                paneFilter={ATTENDEES_PANE_FILTER.all}
+                showFilter={true}
+                setTotalUsers={setTitleCount}
+              />
+            )}
 
-          {currentNavBarSelection === VERTICAL_NAV_OPTIONS.chat && <ChatPane />}
+            {currentNavBarSelection === VERTICAL_NAV_OPTIONS.chat && (
+              <ChatPane />
+            )}
+            <PollsContextWrapper>
+              {currentNavBarSelection === VERTICAL_NAV_OPTIONS.polls && (
+                <PollsPane />
+              )}
+            </PollsContextWrapper>
 
-          {currentNavBarSelection === VERTICAL_NAV_OPTIONS.polls && (
-            <PollsPane />
-          )}
+            {currentNavBarSelection === VERTICAL_NAV_OPTIONS.qna && <QnAPane />}
 
-          {currentNavBarSelection === VERTICAL_NAV_OPTIONS.qna && <QnAPane />}
-
-          {currentNavBarSelection === VERTICAL_NAV_OPTIONS.help && <HelpPane />}
-        </Suspense>
-      </Box>
-      {/* <MenuIconContainer icon={ChatIcon} label="Chat" /> */}
-
-      {/* <List>
-        <Tooltip title="Exit Event">
-          <ListItem
-            button
-            onClick={() => {
-              logout();
-              history.push(routes.EVENT_SESSION(sessionId));
-            }}
-          >
-            <ListItemIcon>
-              <ExitToAppIcon color="primary" />
-            </ListItemIcon>
-          </ListItem>
-        </Tooltip>
-      </List> */}
-    </div>
+            {currentNavBarSelection === VERTICAL_NAV_OPTIONS.help && (
+              <HelpPane />
+            )}
+          </Suspense>
+        </Box>
+      </div>
+    </Suspense>
   );
 };
 
