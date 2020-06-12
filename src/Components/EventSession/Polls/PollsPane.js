@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   makeStyles,
   /* Typography, Box , */ Button,
@@ -10,8 +10,9 @@ import {
   SvgIcon
 } from "@material-ui/core";
 import NoPollsImg from "../../../Assets/illustrations/polls.svg";
-import { CreatePollDialog } from "./CreatePollDialog";
 import PollsContext from "../../../Contexts/PollsContext";
+import PollsDialogsContext from "../../../Contexts/PollsDialogsContext";
+
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import {
   POLLS_NAMESPACES,
@@ -48,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
 
 const PollsPane = () => {
   const classes = useStyles();
-  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+
   const eventSessionDetails = useSelector(getEventSessionDetails, shallowEqual);
   const isEventOwner = useSelector(isEventOwnerSelector);
 
@@ -70,6 +71,7 @@ const PollsPane = () => {
   const myUserId = useSelector(getUserId);
 
   const { polls, myVotes } = React.useContext(PollsContext);
+  const { setOpenCreateDialogPoll } = React.useContext(PollsDialogsContext);
 
   const publishedPolls = React.useMemo(() => {
     let result = _.filter(
@@ -103,7 +105,6 @@ const PollsPane = () => {
 
   return (
     <div>
-      <CreatePollDialog open={createDialogOpen} setOpen={setCreateDialogOpen} />
       {publishedPolls.length === 0 && (
         <Box className={classes.emptyPane}>
           <img
@@ -166,7 +167,7 @@ const PollsPane = () => {
             color="primary"
             size="small"
             className={classes.roomButton}
-            onClick={() => setCreateDialogOpen(true)}
+            onClick={() => setOpenCreateDialogPoll(true)}
             // disabled={participantsAvailable.length <= 1}
           >
             Create poll
@@ -182,6 +183,16 @@ const PollsPane = () => {
             <Typography variant="button" color="primary">
               Draft Polls
             </Typography>
+
+            {/* <Box textAlign="right" flexGrow={1}>
+              <IconButton
+                size="small"
+                style={{ marginTop: -4, padding: 0 }}
+                color="primary"
+              >
+                <ExpandMoreIcon />
+              </IconButton> 
+            </Box>*/}
           </Box>
           {draftPolls.map((poll) => {
             const canManagePoll = poll.owner === myUserId || isEventOwner;
@@ -237,5 +248,13 @@ const PollsPane = () => {
     </div>
   );
 };
+
+// const PollsPane = () => {
+//   return (
+//     <PollsContextWrapper>
+//       <PollsPaneContent />
+//     </PollsContextWrapper>
+//   );
+// };
 
 export default PollsPane;

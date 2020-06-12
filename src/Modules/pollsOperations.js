@@ -1,5 +1,6 @@
 import firebase from "./firebaseApp";
 import _ from "lodash";
+import differenceObject from "../Helpers/differenceObject";
 
 export const POLLS_STATES = {
   DRAFT: "draft",
@@ -48,6 +49,98 @@ export const createPoll = async (
     .collection("polls")
     .doc(pollId)
     .set(pollDb);
+};
+
+export const updatePoll = async (
+  sessionId,
+  userId,
+  originalPoll,
+  newTitle,
+  newOptions,
+  newCheckedAnonymous,
+  newCheckedNotification,
+  newState = POLLS_STATES.PUBLISHED,
+  namespace = POLLS_NAMESPACES.GLOBAL
+) => {
+  let pollId = originalPoll.id;
+
+  console.log({
+    newTitle,
+    newOptions,
+    newCheckedAnonymous,
+    newCheckedNotification,
+    newState,
+    pollId
+  });
+
+  let db = firebase.firestore();
+  if (!originalPoll) {
+    throw new Error("Original poll is not defined");
+  }
+
+  let pollDb = {
+    changedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    changedBy: userId,
+    title: newTitle,
+    options: newOptions,
+    // votesCounter,
+    checkedAnonymous: newCheckedAnonymous,
+    checkedNotification: newCheckedNotification,
+    state: newState
+  };
+  const originalVotesCounter = originalPoll.votesCounter;
+
+  _.forEach(newOptions, (o) => {
+    if (originalVotesCounter[o.id] === undefined) {
+      pollDb[`votesCounter.${o.id}`] = 0;
+    }
+  });
+
+  const diff = differenceObject(
+    {
+      title: originalPoll.title,
+      options: originalPoll.options,
+      checkedAnonymous: originalPoll.checkedAnonymous,
+      checkedNotification: originalPoll.checkedNotification,
+      state: originalPoll.state
+    },
+    {
+      title: newTitle,
+      options: newOptions,
+      checkedAnonymous: newCheckedAnonymous,
+      checkedNotification: newCheckedNotification,
+      state: newState
+    }
+  );
+  console.log({ diff });
+  var batch = db.batch();
+  console.log({ sessionId, namespace, pollId });
+  const pollRef = db
+    .collection("eventSessions")
+    .doc(sessionId.toLowerCase())
+    .collection("polls")
+    .doc(namespace)
+    .collection("polls")
+    .doc("" + pollId);
+
+  console.log("will update poll...");
+
+  batch.update(pollRef, pollDb);
+
+  const auditTrailRef = pollRef
+    .collection("auditTrail")
+    .doc(String(new Date().getTime()));
+  console.log("will update audit trail...");
+  batch.set(auditTrailRef, {
+    action: "pollEdited",
+    actionParams: {
+      ...diff
+    },
+    by: userId,
+    at: firebase.firestore.FieldValue.serverTimestamp()
+  });
+
+  await batch.commit();
 };
 
 export const votePoll = (
