@@ -4,20 +4,8 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
 import MenuIcon from "@material-ui/icons/SettingsOutlined";
 import { IconButton, Box } from "@material-ui/core";
-// import ConfirmationDialog from "../../Misc/ConfirmationDialog";
-// import { setPollState, POLLS_STATES } from "../../../Modules/pollsOperations";
-// import { useSelector } from "react-redux";
-// import { getSessionId, getUserId } from "../../../Redux/eventSession";
-import PollsContext from "../../../Contexts/PollsContext";
 import { POLLS_STATES } from "../../../Modules/pollsOperations";
-// import { Settings as MenuIcon } from "react-feather";
-// const useStyles = makeStyles((theme) => ({
-//   menuContainer: {
-//     position: "absolute",
-//     right: 0,
-//     top: theme.spacing(-2)
-//   }
-// }));
+import PollsDialogsContext from "../../../Contexts/PollsDialogsContext";
 
 const PollsMenu = ({ poll }) => {
   const { state } = poll;
@@ -26,10 +14,11 @@ const PollsMenu = ({ poll }) => {
   const openMenu = Boolean(menuAnchorEl);
 
   const {
+    setOpenUpdateDialogPoll,
     setOpenLaunchDialogPoll,
     setOpenStopDialogPoll,
     setOpenDeleteDialogPoll
-  } = React.useContext(PollsContext);
+  } = React.useContext(PollsDialogsContext);
 
   const closeMenu = () => {
     setMenuAnchorEl(null);
@@ -45,6 +34,11 @@ const PollsMenu = ({ poll }) => {
     setMenuAnchorEl(e.currentTarget);
   };
 
+  const handleUpdatePollClick = (e) => {
+    e.stopPropagation();
+    closeMenu();
+    setOpenUpdateDialogPoll(poll);
+  };
   const handleLaunchPollClick = (e) => {
     e.stopPropagation();
     closeMenu();
@@ -76,7 +70,7 @@ const PollsMenu = ({ poll }) => {
         onClose={handleMenuClose}
       >
         {state !== POLLS_STATES.TERMINATED && (
-          <MenuItem disabled>Edit</MenuItem>
+          <MenuItem onClick={handleUpdatePollClick}>Edit</MenuItem>
         )}
         {state === POLLS_STATES.DRAFT && (
           <MenuItem onClick={handleLaunchPollClick}>Launch</MenuItem>

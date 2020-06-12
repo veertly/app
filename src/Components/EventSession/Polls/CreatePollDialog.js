@@ -25,8 +25,13 @@ import {
   IconButton
 } from "@material-ui/core";
 import DialogClose from "../../Misc/DialogClose";
-import { createPoll, POLLS_STATES } from "../../../Modules/pollsOperations";
+import {
+  createPoll,
+  POLLS_STATES,
+  updatePoll
+} from "../../../Modules/pollsOperations";
 import { useSelector } from "react-redux";
+import { Alert } from "@material-ui/lab";
 const useStyles = makeStyles((theme) => ({
   content: {
     position: "relative"
@@ -88,16 +93,22 @@ const getPollOptionData = (value) => {
   };
 };
 
-export const CreatePollDialog = ({ open, setOpen }) => {
+export const CreatePollDialog = ({ open, setOpen, poll = null }) => {
   const classes = useStyles();
   // const snackbar = useSnackbar();
-  let [title, setTitle] = useState("");
-  let [options, setOptions] = useState([
-    getPollOptionData(""),
-    getPollOptionData("")
-  ]);
-  const [checkedAnonymous, setCheckedAnonymous] = useState(true);
-  const [checkedNotification, setCheckedNotification] = useState(false);
+  let [title, setTitle] = useState(poll ? poll.title : "");
+  let [options, setOptions] = useState(
+    poll ? poll.options : [getPollOptionData(""), getPollOptionData("")]
+  );
+  const [checkedAnonymous, setCheckedAnonymous] = useState(
+    poll ? poll.checkedAnonymous : true
+  );
+  const [checkedNotification, setCheckedNotification] = useState(
+    poll ? poll.checkedNotification : false
+  );
+
+  const [creationError, setCreationError] = useState(null);
+  const [executingAction, setExecutingAction] = useState(false);
 
   const [formErrors, setFormErrors] = useState({ options: {} });
 
@@ -109,6 +120,8 @@ export const CreatePollDialog = ({ open, setOpen }) => {
     setOptions([getPollOptionData(), getPollOptionData()]);
     setTitle("");
     setFormErrors({ options: {} });
+    setCreationError(null);
+    setExecutingAction(false);
     setOpen(false);
   };
 
@@ -137,7 +150,7 @@ export const CreatePollDialog = ({ open, setOpen }) => {
     return hasErrors;
   }, [options, title]);
 
-  const handleCreatePoll = (e) => {
+  const handleCreatePoll = async (e) => {
     e.preventDefault();
 
     if (checkFormErrors()) {
@@ -145,20 +158,41 @@ export const CreatePollDialog = ({ open, setOpen }) => {
     }
 
     let newOptions = _.remove(options, (o) => o.value.trim() !== "");
+    setExecutingAction(true);
+    try {
+      if (poll) {
+        await updatePoll(
+          sessionId,
+          userId,
+          poll,
+          title,
+          newOptions,
+          checkedAnonymous,
+          checkedNotification,
+          poll.state === POLLS_STATES.DRAFT
+            ? POLLS_STATES.PUBLISHED
+            : poll.state
+        );
+      } else {
+        await createPoll(
+          sessionId,
+          userId,
+          title,
+          newOptions,
+          checkedAnonymous,
+          checkedNotification
+        );
+      }
 
-    createPoll(
-      sessionId,
-      userId,
-      title,
-      newOptions,
-      checkedAnonymous,
-      checkedNotification
-    );
-
-    handleClose();
+      handleClose();
+    } catch (error) {
+      console.error(error);
+      setCreationError(error.message);
+    }
+    setExecutingAction(false);
   };
 
-  const handleDraftPoll = (e) => {
+  const handleDraftPoll = async (e) => {
     e.preventDefault();
 
     if (checkFormErrors()) {
@@ -166,18 +200,37 @@ export const CreatePollDialog = ({ open, setOpen }) => {
     }
 
     let newOptions = _.remove(options, (o) => o.value.trim() !== "");
+    setExecutingAction(true);
+    try {
+      if (poll) {
+        await updatePoll(
+          sessionId,
+          userId,
+          poll,
+          title,
+          newOptions,
+          checkedAnonymous,
+          checkedNotification,
+          POLLS_STATES.DRAFT
+        );
+      } else {
+        await createPoll(
+          sessionId,
+          userId,
+          title,
+          newOptions,
+          checkedAnonymous,
+          checkedNotification,
+          POLLS_STATES.DRAFT
+        );
+      }
 
-    createPoll(
-      sessionId,
-      userId,
-      title,
-      newOptions,
-      checkedAnonymous,
-      checkedNotification,
-      POLLS_STATES.DRAFT
-    );
-
-    handleClose();
+      handleClose();
+    } catch (error) {
+      console.error(error);
+      setCreationError(error.message);
+    }
+    setExecutingAction(false);
   };
 
   const handleOptionChange = (index) => (e) => {
@@ -212,7 +265,7 @@ export const CreatePollDialog = ({ open, setOpen }) => {
       >
         <form onSubmit={handleCreatePoll}>
           <DialogTitle className={classes.dialogTitle}>
-            Create new poll
+            {poll ? "Edit poll" : "New poll"}
           </DialogTitle>
           <DialogContent>
             <div className={classes.content}>
@@ -322,6 +375,7 @@ export const CreatePollDialog = ({ open, setOpen }) => {
                   </Tooltip>
                 </Box>
               </Box>
+              {creationError && <Alert severity="error">{creationError}</Alert>}
             </div>
           </DialogContent>
           <DialogActions>
@@ -332,22 +386,29 @@ export const CreatePollDialog = ({ open, setOpen }) => {
             >
               Cancel
             </Button>
-            <Button
-              onClick={handleDraftPoll}
-              className={classes.button}
-              color="primary"
-              variant="outlined"
-            >
-              Save draft
-            </Button>
+            {(!poll || (poll && poll.state === POLLS_STATES.DRAFT)) && (
+              <Button
+                onClick={handleDraftPoll}
+                className={classes.button}
+                color="primary"
+                variant="outlined"
+                disabled={executingAction}
+                // disabled={poll && poll.state !== POLLS_STATES.DRAFT}
+              >
+                Save draft
+              </Button>
+            )}
             <Button
               onClick={handleCreatePoll}
               className={classes.button}
               color="primary"
               variant="contained"
               type="submit"
+              disabled={executingAction}
             >
-              Publish
+              {poll && poll.state === POLLS_STATES.DRAFT
+                ? "Launch Poll"
+                : "Save"}
             </Button>
           </DialogActions>
         </form>
