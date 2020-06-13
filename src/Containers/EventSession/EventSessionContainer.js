@@ -21,7 +21,7 @@ import {
 } from "../../Config/constants";
 import EditProfileDialog from "../../Components/EditProfile/EditProfileDialog";
 import FeedbackDialog from "../../Components/EventSession/FeedbackDialog";
-import RoomArchivedDialog from "../../Components/EventSession/RoomArchivedDialog";
+import RoomArchivedDialog from "../../Components/EventSession/Rooms/RoomArchivedDialog";
 import {
   getEventSessionDetails,
   getUserGroup,

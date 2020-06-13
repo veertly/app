@@ -8,11 +8,23 @@
   display: flex;
   flex-direction: column;
 }
-.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list {
+.react-datepicker__time-container
+  .react-datepicker__time
+  .react-datepicker__time-box
+  ul.react-datepicker__time-list {
   padding-left: 0;
   padding-right: 0;
 }
 
-.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box {
+.react-datepicker__time-container
+  .react-datepicker__time
+  .react-datepicker__time-box {
   width: 80px;
+}
+
+.drag-handle {
+  cursor: move !important; /* fallback if grab cursor is unsupported */
+  cursor: grab !important;
+  cursor: -moz-grab !important;
+  cursor: -webkit-grab !important;
 }

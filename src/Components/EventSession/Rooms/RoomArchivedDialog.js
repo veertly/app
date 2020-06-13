@@ -10,7 +10,7 @@ import {
   isRoomArchivedOpen,
   closeRoomArchived,
   getRoomArchivedEntity
-} from "../../Redux/dialogs";
+} from "../../../Redux/dialogs";
 
 const useStyles = makeStyles((theme) => ({
   button: { margin: theme.spacing(2) },
