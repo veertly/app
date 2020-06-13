@@ -3,22 +3,26 @@ import { makeStyles } from "@material-ui/core/styles";
 import AvatarGroup from "@material-ui/lab/AvatarGroup";
 import RoomIcon from "@material-ui/icons/LocalOffer";
 import { useDispatch, useSelector } from "react-redux";
-import { openJoinRoom } from "../../Redux/dialogs";
-import ParticipantAvatar from "../Misc/ParticipantAvatar";
+import { openJoinRoom, openRoomReorder } from "../../../Redux/dialogs";
+import ParticipantAvatar from "../../Misc/ParticipantAvatar";
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import { IconButton } from "@material-ui/core";
-import { getUserId, getEventSessionDetails } from "../../Redux/eventSession";
+import {
+  getUserId,
+  getEventSessionDetails,
+  isEventOwner
+} from "../../../Redux/eventSession";
 import { Typography } from "@material-ui/core";
-import EditRoomDialog from "./EditRoomDialog";
-import ArchiveRoomDialog from "./ArchiveRoomDialog";
+import EditRoomDialog from "../EditRoomDialog";
+import ArchiveRoomDialog from "../ArchiveRoomDialog";
 
 const useStyles = makeStyles((theme) => ({
-  participantContainer: {
+  participantContainer: ({ previewOnly }) => ({
     marginRight: theme.spacing(2),
-    cursor: "pointer"
-  },
+    cursor: previewOnly ? null : "pointer"
+  }),
   participantDetails: {
     flexGrow: 1,
     textAlign: "center",
@@ -36,17 +40,19 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: "auto",
     marginRight: "auto"
   },
-  roomContainer: {
+  roomContainer: ({ previewOnly }) => ({
     margin: theme.spacing(1),
-    padding: theme.spacing(1),
+    padding: theme.spacing(previewOnly ? 0 : 1),
     position: "relative",
-    "&:hover": {
-      backgroundColor: "rgba(28, 71, 98, 0.08)", //"#e0f3ff", //"#e4ffe4",
-      cursor: "pointer",
-      borderRadius: 0
-    },
-    cursor: "pointer"
-  },
+    "&:hover": previewOnly
+      ? {}
+      : {
+          backgroundColor: "rgba(28, 71, 98, 0.08)", //"#e0f3ff", //"#e4ffe4",
+          cursor: "pointer",
+          borderRadius: 0
+        },
+    cursor: previewOnly ? null : "pointer"
+  }),
   roomParticipants: {
     display: "flex",
     marginTop: 4,
@@ -72,18 +78,18 @@ const useStyles = makeStyles((theme) => ({
   })
 }));
 
-export default function (props) {
+export default function ({ room, previewOnly = false }) {
   const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
   const openMenu = Boolean(menuAnchorEl);
   const [renameRoomOpen, setRenameRoomOpen] = React.useState(false);
   const [archiveRoomOpen, setArchiveRoomOpen] = React.useState(false);
   const [mouseHover, setMouseHover] = React.useState(false);
 
-  const { room } = props;
-
   const dispatch = useDispatch();
   const myUserId = useSelector(getUserId);
   const eventDetails = useSelector(getEventSessionDetails);
+
+  const isOwner = useSelector(isEventOwner);
 
   const canManageRoom = React.useMemo(
     () => room.roomOwner === myUserId || eventDetails.owner === myUserId,
@@ -95,10 +101,12 @@ export default function (props) {
     [myUserId, room.participants]
   );
   // console.log({ name: room.roomName, isMyRoom });
-  const classes = useStyles({ isMyRoom });
+  const classes = useStyles({ isMyRoom, previewOnly });
 
   const handleJoinRoom = () => {
-    dispatch(openJoinRoom(room));
+    if (!previewOnly) {
+      dispatch(openJoinRoom(room));
+    }
   };
 
   const closeMenu = () => {
@@ -112,7 +120,9 @@ export default function (props) {
 
   const handleMenu = (e) => {
     e.stopPropagation();
-    setMenuAnchorEl(e.currentTarget);
+    if (!previewOnly) {
+      setMenuAnchorEl(e.currentTarget);
+    }
   };
 
   const handleRenameClick = (e) => {
@@ -127,6 +137,12 @@ export default function (props) {
     closeMenu();
   };
 
+  const handleReorderClick = (e) => {
+    e.stopPropagation();
+    dispatch(openRoomReorder());
+    closeMenu();
+  };
+
   if (!room || !room.isRoom) {
     return null;
   }
@@ -137,10 +153,14 @@ export default function (props) {
         className={classes.roomContainer}
         onClick={handleJoinRoom}
         onMouseEnter={() => {
-          setMouseHover(true);
+          if (!previewOnly) {
+            setMouseHover(true);
+          }
         }}
         onMouseLeave={() => {
-          setMouseHover(false);
+          if (!previewOnly) {
+            setMouseHover(false);
+          }
         }}
       >
         <Typography className={classes.roomName}>
@@ -175,7 +195,7 @@ export default function (props) {
             <Typography color="textSecondary">This room is empty</Typography>
           )}
         </div>
-        {mouseHover && canManageRoom && (
+        {!previewOnly && mouseHover && canManageRoom && (
           <div className={classes.roomMenu}>
             <IconButton
               color="primary"
@@ -185,24 +205,18 @@ export default function (props) {
             >
               <MoreVertIcon />
             </IconButton>
-            {/* </Tooltip> */}
             <Menu
               id="menu-appbar"
               anchorEl={menuAnchorEl}
-              // anchorOrigin={{
-              //   vertical: "center",
-              //   horizontal: "right"
-              // }}
-              // transformOrigin={{
-              //   vertical: "bottom",
-              //   horizontal: "center"
-              // }}
               keepMounted
               open={openMenu}
               onClose={handleMenuClose}
             >
               <MenuItem onClick={handleRenameClick}>Rename</MenuItem>
               <MenuItem onClick={handleArchiveClick}>Archive</MenuItem>
+              {isOwner && (
+                <MenuItem onClick={handleReorderClick}>Reorder</MenuItem>
+              )}
             </Menu>
           </div>
         )}

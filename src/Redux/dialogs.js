@@ -18,6 +18,9 @@ const CLOSE_JOIN_ROOM = "dialogs.CLOSE_JOIN_ROOM";
 const OPEN_ROOM_ARCHIVED = "dialogs.OPEN_ROOM_ARCHIVED";
 const CLOSE_ROOM_ARCHIVED = "dialogs.CLOSE_ROOM_ARCHIVED";
 
+const OPEN_ROOM_REORDER = "dialogs.OPEN_ROOM_REORDER";
+const CLOSE_ROOM_REORDER = "dialogs.CLOSE_ROOM_REORDER";
+
 const initialState = {
   editProfileOpen: false,
   eventDetailsOpen: false,
@@ -29,7 +32,8 @@ const initialState = {
   joinRoomOpen: false,
   joinRoomEntity: null,
   roomArchivedOpen: false,
-  roomArchivedEntity: null
+  roomArchivedEntity: null,
+  roomsReorderOpen: false
 };
 
 export const dialogsReducer = (state = initialState, action) => {
@@ -143,6 +147,18 @@ export const dialogsReducer = (state = initialState, action) => {
         roomArchivedEntity: null
       };
     }
+    case OPEN_ROOM_REORDER: {
+      return {
+        ...state,
+        roomReorderOpen: true
+      };
+    }
+    case CLOSE_ROOM_REORDER: {
+      return {
+        ...state,
+        roomReorderOpen: false
+      };
+    }
 
     default:
       return state;
@@ -177,6 +193,9 @@ export const isRoomArchivedOpen = (store) =>
 
 export const getRoomArchivedEntity = (store) =>
   store.dialogs.roomArchivedEntity;
+
+export const isRoomReorderOpen = (store) =>
+  store.dialogs.roomReorderOpen === true;
 
 export const openEditProfile = () => ({
   type: OPEN_EDIT_PROFILE
@@ -243,4 +262,13 @@ export const openRoomArchived = (room) => ({
 
 export const closeRoomArchived = () => ({
   type: CLOSE_ROOM_ARCHIVED
+});
+
+export const openRoomReorder = (room) => ({
+  type: OPEN_ROOM_REORDER,
+  room
+});
+
+export const closeRoomReorder = () => ({
+  type: CLOSE_ROOM_REORDER
 });

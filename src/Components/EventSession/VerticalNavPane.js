@@ -8,7 +8,7 @@ import VerticalNavBarContext, {
   VERTICAL_NAV_OPTIONS
 } from "../../Contexts/VerticalNavBarContext";
 import ConversationsPane from "./LocationPanes/NetworkingPane";
-import RoomsTab from "./RoomsTab";
+import RoomsTab from "./Rooms/RoomsTab";
 import ChatPane from "../Chat/ChatPane";
 import MainStagePane from "./LocationPanes/MainStagePane";
 import LobbyPane from "./LocationPanes/LobbyPane";

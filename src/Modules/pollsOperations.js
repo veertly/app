@@ -112,9 +112,7 @@ export const updatePoll = async (
       state: newState
     }
   );
-  console.log({ diff });
   var batch = db.batch();
-  console.log({ sessionId, namespace, pollId });
   const pollRef = db
     .collection("eventSessions")
     .doc(sessionId.toLowerCase())
@@ -123,14 +121,12 @@ export const updatePoll = async (
     .collection("polls")
     .doc("" + pollId);
 
-  console.log("will update poll...");
-
   batch.update(pollRef, pollDb);
 
   const auditTrailRef = pollRef
     .collection("auditTrail")
     .doc(String(new Date().getTime()));
-  console.log("will update audit trail...");
+
   batch.set(auditTrailRef, {
     action: "pollEdited",
     actionParams: {

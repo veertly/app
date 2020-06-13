@@ -75,6 +75,7 @@ export default function (props) {
   const userId = useSelector(getUserId);
 
   const handleClose = () => {
+    setRoomName("");
     dispatch(closeCreateRoom());
   };
 
@@ -92,12 +93,13 @@ export default function (props) {
         onClose={handleClose}
         aria-labelledby="draggable-dialog-title"
       >
-        <DialogTitle className={classes.dialogTitle}>
-          Create new room
-        </DialogTitle>
-        <DialogContent>
-          <div className={classes.content}>
-            {/* <Typography
+        <form onSubmit={handleCreateRoom}>
+          <DialogTitle className={classes.dialogTitle}>
+            Create new room
+          </DialogTitle>
+          <DialogContent>
+            <div className={classes.content}>
+              {/* <Typography
             color="primary"
             variant="h4"
             align="center"
@@ -105,18 +107,18 @@ export default function (props) {
           >
             Create new room
           </Typography> */}
-            <TextField
-              autoFocus
-              label="Room Name"
-              name="roomName"
-              variant="outlined"
-              value={roomName}
-              // style={{ width: "50%" }}
-              onChange={(e) => setRoomName(e.target.value)}
-              required
-              fullWidth
-            />
-            {/* <div className={classes.buttonContainer}>
+              <TextField
+                autoFocus
+                label="Room Name"
+                name="roomName"
+                variant="outlined"
+                value={roomName}
+                // style={{ width: "50%" }}
+                onChange={(e) => setRoomName(e.target.value)}
+                required
+                fullWidth
+              />
+              {/* <div className={classes.buttonContainer}>
             <Button
               variant="contained"
               color="primary"
@@ -127,34 +129,36 @@ export default function (props) {
               Create
             </Button>
           </div> */}
-            <Alert severity="info" className={classes.alert}>
-              A room will be created with this name and any attendee will be
-              able to join it
-            </Alert>
-            {/* {userGroup && (
+              <Alert severity="info" className={classes.alert}>
+                A room will be created with this name and any attendee will be
+                able to join it
+              </Alert>
+              {/* {userGroup && (
             <Alert severity="warning" className={classes.alert}>
               You will leave your current call
             </Alert>
           )} */}
-          </div>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={handleClose}
-            color="primary"
-            className={classes.button}
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={handleCreateRoom}
-            className={classes.button}
-            color="primary"
-            variant="contained"
-          >
-            Create
-          </Button>
-        </DialogActions>
+            </div>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={handleClose}
+              color="primary"
+              className={classes.button}
+            >
+              Cancel
+            </Button>
+            <Button
+              // onClick={handleCreateRoom}
+              className={classes.button}
+              color="primary"
+              variant="contained"
+              type="submit"
+            >
+              Create
+            </Button>
+          </DialogActions>
+        </form>
       </DialogClose>
     </div>
   );

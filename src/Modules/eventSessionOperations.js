@@ -2,6 +2,7 @@ import firebase from "./firebaseApp";
 import { v1 as uuidv1 } from "uuid";
 import { MAX_PARTICIPANTS_GROUP } from "../Config/constants";
 import { VERTICAL_NAV_OPTIONS } from "../Contexts/VerticalNavBarContext";
+import _ from "lodash";
 
 const getVideoConferenceAddress = (groupId) => `veertly-${groupId}`;
 
@@ -699,4 +700,28 @@ export const createConference = async (
       // snackbar.showMessage(error.message);
       throw error;
     });
+};
+export const reorderRooms = async (
+  originalSessionId,
+  orderedRooms,
+  // myUserId,
+  // currentUserGroup,
+  snackbar
+) => {
+  let db = firebase.firestore();
+
+  var batch = db.batch();
+
+  const sessionId = originalSessionId.toLowerCase();
+
+  let eventSessionRef = db.collection("eventSessions").doc(sessionId);
+
+  var liveGroupsCollectionRef = eventSessionRef.collection("liveGroups");
+
+  _.forEach(orderedRooms, (room, index) => {
+    const roomRef = liveGroupsCollectionRef.doc(room.id);
+    batch.update(roomRef, { order: index });
+  });
+
+  await batch.commit();
 };
