@@ -9,7 +9,11 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import { IconButton } from "@material-ui/core";
-import { getUserId, getEventSessionDetails } from "../../../Redux/eventSession";
+import {
+  getUserId,
+  getEventSessionDetails,
+  isEventOwner
+} from "../../../Redux/eventSession";
 import { Typography } from "@material-ui/core";
 import EditRoomDialog from "../EditRoomDialog";
 import ArchiveRoomDialog from "../ArchiveRoomDialog";
@@ -84,6 +88,8 @@ export default function ({ room, previewOnly = false }) {
   const dispatch = useDispatch();
   const myUserId = useSelector(getUserId);
   const eventDetails = useSelector(getEventSessionDetails);
+
+  const isOwner = useSelector(isEventOwner);
 
   const canManageRoom = React.useMemo(
     () => room.roomOwner === myUserId || eventDetails.owner === myUserId,
@@ -208,7 +214,9 @@ export default function ({ room, previewOnly = false }) {
             >
               <MenuItem onClick={handleRenameClick}>Rename</MenuItem>
               <MenuItem onClick={handleArchiveClick}>Archive</MenuItem>
-              <MenuItem onClick={handleReorderClick}>Reorder</MenuItem>
+              {isOwner && (
+                <MenuItem onClick={handleReorderClick}>Reorder</MenuItem>
+              )}
             </Menu>
           </div>
         )}
