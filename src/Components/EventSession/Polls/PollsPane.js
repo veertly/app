@@ -137,12 +137,20 @@ const PollsPane = () => {
           </Box>
           {publishedPolls.map((poll) => {
             const canManagePoll = poll.owner === myUserId || isEventOwner;
+            const totalVotes = _.sum(Object.values(poll.votesCounter));
             return (
               <ExpansionPanel key={poll.id}>
                 <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                  <Typography className={classes.heading}>
-                    {poll.title}
-                  </Typography>
+                  <div>
+                    <Typography className={classes.heading}>
+                      {poll.title}
+                    </Typography>
+                    {totalVotes > 0 && (
+                      <Typography variant="caption" color="textSecondary">
+                        {totalVotes} vote{totalVotes > 1 ? "s" : ""}
+                      </Typography>
+                    )}
+                  </div>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails
                   style={{ paddingTop: 0, display: "block" }}
@@ -226,12 +234,20 @@ const PollsPane = () => {
           </Box>
           {stoppedPolls.map((poll) => {
             const canManagePoll = poll.owner === myUserId || isEventOwner;
+            const totalVotes = _.sum(Object.values(poll.votesCounter));
             return (
               <ExpansionPanel key={poll.id}>
                 <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                  <Typography className={classes.heading}>
-                    {poll.title}
-                  </Typography>
+                  <div>
+                    <Typography className={classes.heading}>
+                      {poll.title}
+                    </Typography>
+                    {totalVotes > 0 && (
+                      <Typography variant="caption" color="textSecondary">
+                        {totalVotes} vote{totalVotes > 1 ? "s" : ""}
+                      </Typography>
+                    )}
+                  </div>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails
                   style={{ paddingTop: 0, display: "block" }}
