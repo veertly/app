@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useContext } from "react";
 import { makeStyles /* , useTheme */ } from "@material-ui/core/styles";
 import { TextField, IconButton } from "@material-ui/core";
 import SendIcon from "@material-ui/icons/Send";
+import ChatDraftMessageContext from "../../Contexts/ChatDraftMessageContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -20,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
 export default (props) => {
   const { onMessageSendClicked } = props;
   const classes = useStyles();
-  const [message, setMessage] = React.useState("");
+  const { message, setMessage } = useContext(ChatDraftMessageContext);
 
   const handleSubmit = (e) => {
     e.preventDefault();

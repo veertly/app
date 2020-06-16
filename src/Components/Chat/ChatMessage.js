@@ -32,7 +32,8 @@ const useStyles = makeStyles((theme) => ({
     width: "calc(100% - 56px)"
   },
   messageText: {
-    wordWrap: "break-word"
+    wordWrap: "break-word",
+    fontSize: "1rem",
   },
   avatar: {
     margin: theme.spacing(0, 1, 0, 0)
@@ -40,7 +41,8 @@ const useStyles = makeStyles((theme) => ({
   userName: {
     padding: 0,
     "text-transform": "none",
-    fontSize: "1rem",
+    fontSize: "1.1rem",
+    fontWeight: "600",
     "&:hover": {
       cursor: "pointer"
     }
@@ -135,10 +137,11 @@ export default ({ message, users, previewOnly = false, isOwner, userId }) => {
       </Grid>
       <Grid item className={classes.messageContainer}>
         <Typography
+          color="textPrimary"
           className={classes.userName}
           onClick={handleAvatarClick}
         >{`${firstName} ${lastName}`}</Typography>
-        <Typography className={classes.messageText} color="textSecondary">
+        <Typography className={classes.messageText} color="textPrimary">
           <Linkify componentDecorator={componentDecorator}>
             {message.message}
           </Linkify>
