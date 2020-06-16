@@ -383,6 +383,13 @@ const EventSessionContainer = (props) => {
                     to!
                   </Typography>
                 </div>
+                // <iframe
+                //   src="https://streamyard.com/nfpe3fxb54"
+                //   width="100%"
+                //   height="100%"
+                //   allow="camera;microphone"
+                //   title="streamyard"
+                // />
               )}
             {!userGroup &&
               (userCurrentLocation === VERTICAL_NAV_OPTIONS.networking ||

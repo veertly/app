@@ -103,6 +103,13 @@ export const DEAFULT_NAV_BAR = {
     order: 9,
     visible: true
   }
+  // [VERTICAL_NAV_OPTIONS.backstage]: {
+  //   id: VERTICAL_NAV_OPTIONS.backstage,
+  //   label: "Backstage",
+  //   icon: PollsIcon,
+  //   order: 9,
+  //   visible: true
+  // }
 };
 
 const useStyles = makeStyles((theme) => ({
