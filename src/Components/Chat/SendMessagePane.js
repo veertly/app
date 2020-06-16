@@ -36,13 +36,19 @@ export default (props) => {
   const { onMessageSendClicked } = props;
   const classes = useStyles();
   const { message, setMessage } = useContext(ChatDraftMessageContext);
-
+  const [internalMessage, setInternalMessage] = useState(message);
 //  const [message, setMessage] = useState("");
   const [emojisShown, setEmojisShow] = useState(false);
 
   const pickerRef = useRef(null);
   const theme = useTheme();
   const textFieldRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      setMessage(internalMessage);
+    }
+  }, [internalMessage, setMessage]);
 
   const [pickerRect, setPickerRect] = useState({
     top: 0,
@@ -54,7 +60,8 @@ export default (props) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     onMessageSendClicked(message);
-    setMessage("");
+    // setMessage("");
+    setInternalMessage("");
   };
 
   const handleEmoticonClicked = (event) => {
@@ -78,11 +85,15 @@ export default (props) => {
   }, [ pickerRef, setPickerRect])
 
   const handleEmojiSelect = (emoji) => {
-    setMessage(`${message}${emoji.native}`);
+    setMessage(`${internalMessage}${emoji.native}`);
     setEmojisShow(false);
     if (textFieldRef && textFieldRef.current) {
       textFieldRef.current.focus();
     }
+  }
+
+  const handleMessageChange = (event) => {
+    setInternalMessage(event.target.value);
   }
 
   return (
@@ -91,8 +102,8 @@ export default (props) => {
       <div className={classes.message}>
         <Input
           inputRef={textFieldRef}
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
+          value={internalMessage}
+          onChange={handleMessageChange}
           fullWidth
           endAdornment={
               <InputAdornment position="end">
