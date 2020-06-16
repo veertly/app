@@ -135,7 +135,7 @@ const PollsPane = () => {
               Live Polls
             </Typography>
           </Box>
-          {publishedPolls.map((poll) => {
+          {publishedPolls.map((poll, index) => {
             const canManagePoll = poll.owner === myUserId || isEventOwner;
             const totalVotes = _.sum(Object.values(poll.votesCounter));
             return (
@@ -145,11 +145,11 @@ const PollsPane = () => {
                     <Typography className={classes.heading}>
                       {poll.title}
                     </Typography>
-                    {totalVotes > 0 && (
-                      <Typography variant="caption" color="textSecondary">
-                        {totalVotes} vote{totalVotes > 1 ? "s" : ""}
-                      </Typography>
-                    )}
+
+                    <Typography variant="caption" color="textSecondary">
+                      {totalVotes} vote{totalVotes !== 1 ? "s" : ""}
+                      {/* {totalVotes === 0 ? " | Be the first one to vote" : ""} */}
+                    </Typography>
                   </div>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails
@@ -242,11 +242,10 @@ const PollsPane = () => {
                     <Typography className={classes.heading}>
                       {poll.title}
                     </Typography>
-                    {totalVotes > 0 && (
-                      <Typography variant="caption" color="textSecondary">
-                        {totalVotes} vote{totalVotes > 1 ? "s" : ""}
-                      </Typography>
-                    )}
+
+                    <Typography variant="caption" color="textSecondary">
+                      {totalVotes} vote{totalVotes !== 1 ? "s" : ""}
+                    </Typography>
                   </div>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails
