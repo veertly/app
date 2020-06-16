@@ -135,14 +135,22 @@ const PollsPane = () => {
               Live Polls
             </Typography>
           </Box>
-          {publishedPolls.map((poll) => {
+          {publishedPolls.map((poll, index) => {
             const canManagePoll = poll.owner === myUserId || isEventOwner;
+            const totalVotes = _.sum(Object.values(poll.votesCounter));
             return (
               <ExpansionPanel key={poll.id}>
                 <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                  <Typography className={classes.heading}>
-                    {poll.title}
-                  </Typography>
+                  <div>
+                    <Typography className={classes.heading}>
+                      {poll.title}
+                    </Typography>
+
+                    <Typography variant="caption" color="textSecondary">
+                      {totalVotes} vote{totalVotes !== 1 ? "s" : ""}
+                      {/* {totalVotes === 0 ? " | Be the first one to vote" : ""} */}
+                    </Typography>
+                  </div>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails
                   style={{ paddingTop: 0, display: "block" }}
@@ -226,12 +234,19 @@ const PollsPane = () => {
           </Box>
           {stoppedPolls.map((poll) => {
             const canManagePoll = poll.owner === myUserId || isEventOwner;
+            const totalVotes = _.sum(Object.values(poll.votesCounter));
             return (
               <ExpansionPanel key={poll.id}>
                 <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                  <Typography className={classes.heading}>
-                    {poll.title}
-                  </Typography>
+                  <div>
+                    <Typography className={classes.heading}>
+                      {poll.title}
+                    </Typography>
+
+                    <Typography variant="caption" color="textSecondary">
+                      {totalVotes} vote{totalVotes !== 1 ? "s" : ""}
+                    </Typography>
+                  </div>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails
                   style={{ paddingTop: 0, display: "block" }}
