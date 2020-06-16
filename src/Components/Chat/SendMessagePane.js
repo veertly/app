@@ -12,6 +12,7 @@ import ChatDraftMessageContext from "../../Contexts/ChatDraftMessageContext";
 import "emoji-mart/css/emoji-mart.css";
 import { Picker } from "emoji-mart";
 import InsertEmoticonIcon from "@material-ui/icons/InsertEmoticon";
+import { useTimeoutFn } from "react-use";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -44,6 +45,15 @@ export default (props) => {
   const theme = useTheme();
   const textFieldRef = useRef(null);
 
+  const [initializePicker, setInitializePicker] = useState(false);
+
+  const setInitializePickerTrue = () => {
+    setInitializePicker(true)
+  }
+
+ useTimeoutFn(setInitializePickerTrue, 0);
+
+  // save the message to context api
   useEffect(() => {
     return () => {
       setMessage(internalMessage);
@@ -59,12 +69,12 @@ export default (props) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onMessageSendClicked(message);
+    onMessageSendClicked(internalMessage);
     // setMessage("");
     setInternalMessage("");
   };
 
-  const handleEmoticonClicked = (event) => {
+  const handleEmoticonClicked = () => {
     setEmojisShow(!emojisShown);
   }
 
@@ -85,7 +95,7 @@ export default (props) => {
   }, [ pickerRef, setPickerRect])
 
   const handleEmojiSelect = (emoji) => {
-    setMessage(`${internalMessage}${emoji.native}`);
+    setInternalMessage(`${internalMessage}${emoji.native}`);
     setEmojisShow(false);
     if (textFieldRef && textFieldRef.current) {
       textFieldRef.current.focus();
@@ -142,11 +152,14 @@ export default (props) => {
             bottom={20}
             left={40}
           >
-            <Picker
-              title="Select Emojis"
-              color={theme.palette.secondary.main}
-              onSelect={handleEmojiSelect}
-            />
+            {
+              initializePicker && 
+              <Picker
+                title="Select Emojis"
+                color={theme.palette.secondary.main}
+                onSelect={handleEmojiSelect}
+              />
+            }
           </Box>
       </Box>
     </>
