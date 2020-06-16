@@ -32,8 +32,9 @@ const useStyles = makeStyles((theme) => ({
     width: "calc(100% - 56px)"
   },
   messageText: {
-    wordWrap: "break-word",
-    fontSize: "1rem",
+    wordWrap: "break-word"
+    // fontSize: "1rem",
+    // color: "rgba(0, 0, 0, 0.87)"
   },
   avatar: {
     margin: theme.spacing(0, 1, 0, 0)
@@ -41,8 +42,8 @@ const useStyles = makeStyles((theme) => ({
   userName: {
     padding: 0,
     "text-transform": "none",
-    fontSize: "1.1rem",
-    fontWeight: "600",
+    fontSize: "1rem",
+    fontWeight: "500",
     "&:hover": {
       cursor: "pointer"
     }
@@ -137,16 +138,20 @@ export default ({ message, users, previewOnly = false, isOwner, userId }) => {
       </Grid>
       <Grid item className={classes.messageContainer}>
         <Typography
-          color="textPrimary"
+          color="textSecondary"
           className={classes.userName}
           onClick={handleAvatarClick}
         >{`${firstName} ${lastName}`}</Typography>
-        <Typography className={classes.messageText} color="textPrimary">
+        <Typography className={classes.messageText}>
           <Linkify componentDecorator={componentDecorator}>
             {message.message}
           </Linkify>
         </Typography>
-        <Typography variant="caption" className={classes.sentDate}>
+        <Typography
+          variant="caption"
+          className={classes.sentDate}
+          color="textSecondary"
+        >
           {sentDate && sentDate.fromNow()}
           {!sentDate && <EllipsisLoader />}
         </Typography>
