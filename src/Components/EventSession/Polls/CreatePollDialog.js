@@ -406,7 +406,7 @@ export const CreatePollDialog = ({ open, setOpen, poll = null }) => {
               type="submit"
               disabled={executingAction}
             >
-              {poll && poll.state === POLLS_STATES.DRAFT
+              {!poll || poll.state === POLLS_STATES.DRAFT
                 ? "Launch Poll"
                 : "Save"}
             </Button>
