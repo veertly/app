@@ -1,17 +1,16 @@
-import React from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { makeStyles /* , useTheme */ } from "@material-ui/core/styles";
 import {
-  // TextField,
   IconButton,
   InputAdornment,
   Input,
   Box,
-  // Popover
+  useTheme
 } from "@material-ui/core";
 import SendIcon from "@material-ui/icons/Send";
-import Picker from "emoji-picker-react";
+// import Picker from "emoji-picker-react";
 import "emoji-mart/css/emoji-mart.css";
-// import { Picker } from "emoji-mart";
+import { Picker } from "emoji-mart";
 import InsertEmoticonIcon from "@material-ui/icons/InsertEmoticon";
 
 const useStyles = makeStyles((theme) => ({
@@ -36,9 +35,19 @@ const useStyles = makeStyles((theme) => ({
 export default (props) => {
   const { onMessageSendClicked } = props;
   const classes = useStyles();
-  const [message, setMessage] = React.useState("");
-  const [emojisShown, setEmojisShow] = React.useState(false);
-  // const [anchorEl, setAnchorEl] = React.useState(null);
+  const [message, setMessage] = useState("");
+  const [emojisShown, setEmojisShow] = useState(false);
+
+  const pickerRef = useRef(null);
+  const theme = useTheme();
+  const textFieldRef = useRef(null);
+
+  const [pickerRect, setPickerRect] = useState({
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0
+  });
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -48,30 +57,46 @@ export default (props) => {
 
   const handleEmoticonClicked = (event) => {
     setEmojisShow(!emojisShown);
-    // setAnchorEl(event.target);
   }
 
-  // const handleClose = () => {
-  //   setAnchorEl(null);
-  // };
+  const handleCancel  = (event) =>  {
+    if (event.clientX > pickerRect.left && event.clientX < pickerRect.right && event.clientY > pickerRect.top && event.clientY < pickerRect.bottom) {
+      return;
+    } else {
+      setEmojisShow(false);
+    }
+  }
 
-  // const open = Boolean(anchorEl);
-  // const id = open ? "simple-popover" : undefined;
+  useEffect(() => {
+    if (pickerRef && pickerRef.current) {
+      const pickerRect = pickerRef.current.getBoundingClientRect();
+      setPickerRect(pickerRect, pickerRef);
+    };
+    
+  }, [ pickerRef, setPickerRect])
+
+  const handleEmojiSelect = (emoji) => {
+    setMessage(`${message}${emoji.native}`);
+    setEmojisShow(false);
+    if (textFieldRef && textFieldRef.current) {
+      textFieldRef.current.focus();
+    }
+  }
 
   return (
     <>
     <form onSubmit={handleSubmit} className={classes.root}>
       <div className={classes.message}>
         <Input
+          inputRef={textFieldRef}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           fullWidth
           endAdornment={
               <InputAdornment position="end">
                 <IconButton
-                  aria-label="toggle password visibility"
+                  aria-label="toggle emojis keyboard"
                   onClick={handleEmoticonClicked}
-                  // onMouseDown={handleMouseDownPassword}
                 >
                   <InsertEmoticonIcon />
                 </IconButton>
@@ -85,28 +110,32 @@ export default (props) => {
           <SendIcon />
         </IconButton>
       </div>
-
-      <Box position="absolute" bottom={30} display={emojisShown ? "block" : "none"}>
-        {/* <Popover
-          id={id}
-          open={true}
-          anchorEl={anchorEl}
-          onClose={handleClose}
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "center",
-          }}
-          transformOrigin={{
-            vertical: "top",
-            horizontal: "center",
-          }}
-        >  */}
-            <Picker  />
-        {/* </Popover> */}
-      </Box>
-      
     </form>
 
+    <Box
+        position="fixed"
+        zIndex={4}
+        bottom={30}
+        height="100%"
+        width="100%"
+        bgcolor="transparent"
+        visibility={emojisShown ? "visible" : "hidden"}
+        onClick={handleCancel}>
+          <Box
+            ref={pickerRef}
+            visibility={emojisShown ? "visible" : "hidden"}
+            zIndex={4}
+            position="absolute"
+            bottom={20}
+            left={40}
+          >
+            <Picker
+              title="Select Emojis"
+              color={theme.palette.secondary.main}
+              onSelect={handleEmojiSelect}
+            />
+          </Box>
+      </Box>
     </>
   );
 };
