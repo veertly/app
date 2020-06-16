@@ -147,8 +147,9 @@ const PollsPane = () => {
                     </Typography>
 
                     <Typography variant="caption" color="textSecondary">
-                      {totalVotes} vote{totalVotes !== 1 ? "s" : ""}
-                      {/* {totalVotes === 0 ? " | Be the first one to vote" : ""} */}
+                      {totalVotes > 0
+                        ? `${totalVotes} vote${totalVotes !== 1 ? "s" : ""}`
+                        : "Be the first one to vote"}
                     </Typography>
                   </div>
                 </ExpansionPanelSummary>
