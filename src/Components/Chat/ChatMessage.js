@@ -33,6 +33,8 @@ const useStyles = makeStyles((theme) => ({
   },
   messageText: {
     wordWrap: "break-word"
+    // fontSize: "1rem",
+    // color: "rgba(0, 0, 0, 0.87)"
   },
   avatar: {
     margin: theme.spacing(0, 1, 0, 0)
@@ -41,6 +43,7 @@ const useStyles = makeStyles((theme) => ({
     padding: 0,
     "text-transform": "none",
     fontSize: "1rem",
+    fontWeight: "500",
     "&:hover": {
       cursor: "pointer"
     }
@@ -135,15 +138,20 @@ export default ({ message, users, previewOnly = false, isOwner, userId }) => {
       </Grid>
       <Grid item className={classes.messageContainer}>
         <Typography
+          color="textSecondary"
           className={classes.userName}
           onClick={handleAvatarClick}
         >{`${firstName} ${lastName}`}</Typography>
-        <Typography className={classes.messageText} color="textSecondary">
+        <Typography className={classes.messageText}>
           <Linkify componentDecorator={componentDecorator}>
             {message.message}
           </Linkify>
         </Typography>
-        <Typography variant="caption" className={classes.sentDate}>
+        <Typography
+          variant="caption"
+          className={classes.sentDate}
+          color="textSecondary"
+        >
           {sentDate && sentDate.fromNow()}
           {!sentDate && <EllipsisLoader />}
         </Typography>

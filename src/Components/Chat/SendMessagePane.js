@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useContext , useRef, useEffect, useState } from "react";
 import { makeStyles /* , useTheme */ } from "@material-ui/core/styles";
 import {
   IconButton,
@@ -8,9 +8,11 @@ import {
   useTheme
 } from "@material-ui/core";
 import SendIcon from "@material-ui/icons/Send";
+import ChatDraftMessageContext from "../../Contexts/ChatDraftMessageContext";
 import "emoji-mart/css/emoji-mart.css";
 import { Picker } from "emoji-mart";
 import InsertEmoticonIcon from "@material-ui/icons/InsertEmoticon";
+import { useTimeoutFn } from "react-use";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -34,12 +36,29 @@ const useStyles = makeStyles((theme) => ({
 export default (props) => {
   const { onMessageSendClicked } = props;
   const classes = useStyles();
-  const [message, setMessage] = useState("");
+  const { message, setMessage } = useContext(ChatDraftMessageContext);
+  const [internalMessage, setInternalMessage] = useState(message);
+//  const [message, setMessage] = useState("");
   const [emojisShown, setEmojisShow] = useState(false);
 
   const pickerRef = useRef(null);
   const theme = useTheme();
   const textFieldRef = useRef(null);
+
+  const [initializePicker, setInitializePicker] = useState(false);
+
+  const setInitializePickerTrue = () => {
+    setInitializePicker(true)
+  }
+
+ useTimeoutFn(setInitializePickerTrue, 0);
+
+  // save the message to context api
+  useEffect(() => {
+    return () => {
+      setMessage(internalMessage);
+    }
+  }, [internalMessage, setMessage]);
 
   const [pickerRect, setPickerRect] = useState({
     top: 0,
@@ -50,11 +69,12 @@ export default (props) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onMessageSendClicked(message);
-    setMessage("");
+    onMessageSendClicked(internalMessage);
+    // setMessage("");
+    setInternalMessage("");
   };
 
-  const handleEmoticonClicked = (event) => {
+  const handleEmoticonClicked = () => {
     setEmojisShow(!emojisShown);
   }
 
@@ -75,11 +95,15 @@ export default (props) => {
   }, [ pickerRef, setPickerRect])
 
   const handleEmojiSelect = (emoji) => {
-    setMessage(`${message}${emoji.native}`);
+    setInternalMessage(`${internalMessage}${emoji.native}`);
     setEmojisShow(false);
     if (textFieldRef && textFieldRef.current) {
       textFieldRef.current.focus();
     }
+  }
+
+  const handleMessageChange = (event) => {
+    setInternalMessage(event.target.value);
   }
 
   return (
@@ -88,8 +112,8 @@ export default (props) => {
       <div className={classes.message}>
         <Input
           inputRef={textFieldRef}
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
+          value={internalMessage}
+          onChange={handleMessageChange}
           fullWidth
           endAdornment={
               <InputAdornment position="end">
@@ -128,11 +152,14 @@ export default (props) => {
             bottom={20}
             left={40}
           >
-            <Picker
-              title="Select Emojis"
-              color={theme.palette.secondary.main}
-              onSelect={handleEmojiSelect}
-            />
+            {
+              initializePicker && 
+              <Picker
+                title="Select Emojis"
+                color={theme.palette.secondary.main}
+                onSelect={handleEmojiSelect}
+              />
+            }
           </Box>
       </Box>
     </>
