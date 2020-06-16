@@ -8,7 +8,6 @@ import {
   useTheme
 } from "@material-ui/core";
 import SendIcon from "@material-ui/icons/Send";
-// import Picker from "emoji-picker-react";
 import "emoji-mart/css/emoji-mart.css";
 import { Picker } from "emoji-mart";
 import InsertEmoticonIcon from "@material-ui/icons/InsertEmoticon";
