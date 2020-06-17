@@ -47,9 +47,10 @@ const LobbyPane = () => {
     userSession
   ]);
 
-  const isUserInCall = useMemo(() => isParticipantOnCall(userSession), [
-    userSession
-  ]);
+  const isUserInCall = useMemo(
+    () => isParticipantOnCall(userSession, eventSessionDetails),
+    [eventSessionDetails, userSession]
+  );
 
   const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
 

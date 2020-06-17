@@ -1,9 +1,19 @@
-import React, { useState, useMemo } from "react";
-import { makeStyles, Button, Typography, Box } from "@material-ui/core";
+import React, { useState, useMemo, useContext } from "react";
+import {
+  makeStyles,
+  Button,
+  Typography,
+  Box,
+  IconButton,
+  Tooltip
+} from "@material-ui/core";
 import AttendeesPane, { ATTENDEES_PANE_FILTER } from "./AttendeesPane";
 import { VERTICAL_NAV_OPTIONS } from "../../../Contexts/VerticalNavBarContext";
 import { setUserCurrentLocation } from "../../../Modules/userOperations";
 import { getSessionId, getUserSession } from "../../../Redux/eventSession";
+import SmallPlayerIcon from "../../../Assets/Icons/PiP";
+import FullscreenPlayerIcon from "../../../Assets/Icons/FullScreen";
+
 import { useSelector } from "react-redux";
 import {
   isParticipantMainStage,
@@ -11,6 +21,7 @@ import {
 } from "../../../Helpers/participantsHelper";
 import LeaveCurrentCallDialog from "./LeaveCurrentCallDialog";
 import EmptyPaneImg from "../../../Assets/illustrations/emptyPane.svg";
+import SmallPlayerContext from "../../../Contexts/SmallPlayerContext";
 
 const useStyles = makeStyles((theme) => ({
   buttonContainer: {
@@ -48,6 +59,10 @@ const MainStagePane = ({ setTotalUsers }) => {
   ]);
   const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
 
+  const { showSmallPlayer, openPlayer, miniPlayerEnabled } = useContext(
+    SmallPlayerContext
+  );
+
   const enterMainStage = () => {
     setUserCurrentLocation(sessionId, VERTICAL_NAV_OPTIONS.mainStage);
     setConfirmationDialogOpen(false);
@@ -70,13 +85,39 @@ const MainStagePane = ({ setTotalUsers }) => {
       />
       {!isUserInMainStage && (
         <div className={classes.buttonContainer}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={checkAndEnterMainStage}
-          >
-            Enter Main Stage
-          </Button>
+          {!miniPlayerEnabled && (
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={checkAndEnterMainStage}
+            >
+              Enter Main Stage
+            </Button>
+          )}
+          {miniPlayerEnabled && (
+            <>
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={checkAndEnterMainStage}
+                startIcon={<FullscreenPlayerIcon />}
+              >
+                Open Main Stage
+              </Button>
+
+              {miniPlayerEnabled && !showSmallPlayer && (
+                <Tooltip title="View main stage in a small player">
+                  <IconButton
+                    /* size="small" */ color="primary"
+                    onClick={openPlayer}
+                    style={{ marginLeft: 16 }}
+                  >
+                    <SmallPlayerIcon />
+                  </IconButton>
+                </Tooltip>
+              )}
+            </>
+          )}
         </div>
       )}
       <AttendeesPane

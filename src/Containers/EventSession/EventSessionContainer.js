@@ -28,7 +28,7 @@ import {
   getUserCurrentLocation
 } from "../../Redux/eventSession";
 import JoinParticipantDialog from "../../Components/EventSession/JoinParticipantDialog";
-import JitsiContext from "./JitsiContext";
+import JitsiContext from "../../Contexts/JitsiContext";
 import SmallPlayerContainer from "./SmallPlayerContainer";
 import {
   SMALL_PLAYER_INITIAL_HEIGHT,
