@@ -15,7 +15,7 @@ import {
 } from "../../Redux/eventSession";
 import ReactPlayer from "react-player";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import JitsiContext from "./JitsiContext";
+import JitsiContext from "../../Contexts/JitsiContext";
 import { trackPage } from "../../Modules/analytics";
 import {
   getJistiServer,
