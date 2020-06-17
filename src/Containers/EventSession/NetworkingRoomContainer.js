@@ -12,7 +12,7 @@ import {
   getEventSessionDetails,
   getFeatureDetails
 } from "../../Redux/eventSession";
-import JitsiContext from "./JitsiContext";
+import JitsiContext from "../../Contexts/JitsiContext";
 import { trackPage, trackEvent } from "../../Modules/analytics";
 import {
   getJistiServer,

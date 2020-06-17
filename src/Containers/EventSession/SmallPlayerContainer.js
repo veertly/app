@@ -1,9 +1,13 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useMemo } from "react";
 // import useScript from "../../Hooks/useScript";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Typography from "@material-ui/core/Typography";
 import { useSelector, shallowEqual } from "react-redux";
-import { getEventSessionDetails } from "../../Redux/eventSession";
+import {
+  getEventSessionDetails,
+  getSessionId,
+  getFeatureDetails
+} from "../../Redux/eventSession";
 import VideoPlayer from "../../Components/EventSession/VideoPlayer";
 // import VolumeDownIcon from '@material-ui/icons/VolumeDown';
 // import VolumeUpIcon from '@material-ui/icons/VolumeUp';
@@ -12,14 +16,16 @@ import CloseIcon from "@material-ui/icons/Remove";
 import { Rnd } from "react-rnd";
 import {
   SMALL_PLAYER_INITIAL_HEIGHT,
-  SMALL_PLAYER_INITIAL_WIDTH,
-  TOPBAR_HEIGHT
+  SMALL_PLAYER_INITIAL_WIDTH
 } from "../../Utils";
-import JitsiContext from "./JitsiContext";
 import { SIDE_PANE_WIDTH } from "./EventSessionContainer";
 import useWindowSize from "../../Hooks/useWindowSize";
 import { Tooltip } from "@material-ui/core";
 import { trackEvent } from "../../Modules/analytics";
+import SmallPlayerContext from "../../Contexts/SmallPlayerContext";
+import { useLocalStorage } from "react-use";
+import { FEATURES } from "../../Modules/features";
+import { VERTICAL_NAV_OPTIONS } from "../../Contexts/VerticalNavBarContext";
 
 const useStyles = makeStyles((theme) => ({
   videoContainer: {
@@ -59,12 +65,12 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     // flex: 0.15,
     // backgroundColor: theme.palette.primary.main,
-    backgroundColor: "#486981",
-    color: "white",
+    backgroundColor: theme.palette.primary.light, //"#486981",
+    color: theme.palette.getContrastText(theme.palette.primary.light), //"white",
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
-    alignItems: "center",
+    alignItems: "center"
     // paddingLeft: theme.spacing(1),
     // paddingRight: theme.spacing(1),
     // paddingTop: theme.spacing(1.5),
@@ -72,7 +78,7 @@ const useStyles = makeStyles((theme) => ({
   },
   dragInitiater: {
     height: "100%",
-    width:"100%",
+    width: "100%",
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
@@ -84,7 +90,7 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: theme.spacing(0.7)
   },
   divider: {
-    width: "100%",
+    width: "100%"
   },
   playerContainer: {
     width: "100%",
@@ -92,7 +98,7 @@ const useStyles = makeStyles((theme) => ({
     position: "relative",
     borderStyle: "solid",
     borderWidth: theme.spacing(0.5),
-    borderColor: "#486981",
+    borderColor: theme.palette.primary.light //"#486981"
   },
   volumeControlContainer: {
     flex: 1,
@@ -153,12 +159,18 @@ export const SmallPlayerContainer = ({ bounds = "" }) => {
   //   "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.2"
   // );
 
+  const sessionId = useSelector(getSessionId);
+
   const [volume] = useState(50);
 
-  const [playerPosition, setPlayerPosition] = useState({
-    x: window.innerWidth - SMALL_PLAYER_INITIAL_WIDTH - SIDE_PANE_WIDTH,
-    y: TOPBAR_HEIGHT // window.innerHeight - SMALL_PLAYER_INITIAL_HEIGHT,
-  });
+  const [playerPosition, setPlayerPosition] = useLocalStorage(
+    `veertly/${sessionId}/player-position`,
+    {
+      x: window.innerWidth - SMALL_PLAYER_INITIAL_WIDTH - SIDE_PANE_WIDTH,
+      y:
+        /* TOPBAR_HEIGHT //  */ window.innerHeight - SMALL_PLAYER_INITIAL_HEIGHT
+    }
+  );
 
   const [playerSize, setPlayerSize] = useState({
     width: SMALL_PLAYER_INITIAL_WIDTH,
@@ -168,9 +180,9 @@ export const SmallPlayerContainer = ({ bounds = "" }) => {
   const windowSize = useWindowSize();
 
   // HACK: Controlling position from dragCallback Coordinates
-  // As YTPlayer was intercepts all the events it was causing issues because cancel 
+  // As YTPlayer was intercepts all the events it was causing issues because cancel
   // event was not being passed to react-draggable.
-  // This is a hack: which set disableDragging to false when player wrapper receives 
+  // This is a hack: which set disableDragging to false when player wrapper receives
   // move event.
   // At this point we keep the previous value in dragCallCoordinates and
   // set these values in onDragEnd.
@@ -181,7 +193,10 @@ export const SmallPlayerContainer = ({ bounds = "" }) => {
 
   const [isDragging, setIsDragging] = useState(false);
 
-  const [dragCallbackCoordinates, setDragCallbackCoordinates] = useState({ x: -1, y: -1 });
+  const [dragCallbackCoordinates, setDragCallbackCoordinates] = useState({
+    x: -1,
+    y: -1
+  });
 
   useEffect(() => {
     let { width, height } = playerSize;
@@ -194,15 +209,15 @@ export const SmallPlayerContainer = ({ bounds = "" }) => {
     if (y + height > windowSize.height) {
       setPlayerPosition({ ...playerPosition, y: windowSize.height - height });
     }
-  }, [windowSize, playerSize, playerPosition]);
+  }, [windowSize, playerSize, playerPosition, setPlayerPosition]);
 
   // const userId = useSelector(getUserId);
   // const user = useSelector(getUser);
   // const userGroup = useSelector(getUserGroup, shallowEqual);
   const eventSessionDetails = useSelector(getEventSessionDetails, shallowEqual);
 
-  const { showSmallPlayer, setShowSmallPlayer, miniPlayerEnabled } = useContext(
-    JitsiContext
+  const { showSmallPlayer, minimizePlayer, miniPlayerEnabled } = useContext(
+    SmallPlayerContext
   );
 
   const vol = React.useMemo(() => Math.floor((volume * 10) / 100) / 10, [
@@ -237,51 +252,68 @@ export const SmallPlayerContainer = ({ bounds = "" }) => {
         height: ref.style.height
       });
     },
-    []
+    [setPlayerPosition]
   );
 
-  const handleDragStop = React.useCallback((e, d) => {
-    // console.log("drag stop");
-    // if (dragCallbackCoordinates.x > 0 && dragCallbackCoordinates.y > 0) {
-    setPlayerPosition({ x: dragCallbackCoordinates.x, y: dragCallbackCoordinates.y });
-    // }
-    setIsDragging(false);
-    setDisableDragging(false);
-  }, [setIsDragging, dragCallbackCoordinates]);
-
-
-  const handleDrag = React.useCallback((e, d) => {
-    if (d.x >= 0 && d.y >= 0) {
-      // setPlayerPosition({ x: d.x, y: d.y });
-      setDragCallbackCoordinates({
-        x: d.x,
-        y: d.y
-      })
-    } 
-    
-    // console.log(disableDragging, isDragging);
-    if (disableDragging) {
-      return false;
-    }
-  }, [setDragCallbackCoordinates, disableDragging])
-
-  const handleDragStart = React.useCallback(
-    () => {
-      setIsDragging(true);
-        // console.log("drag start")
-    }, 
-    [setIsDragging]
-  )
-
-  const handleMouseDown = React.useCallback(
-    () => {
-      if (disableDragging) {
-        setDisableDragging(false)
-      }
-      // console.log("mouse down rnd")
+  const handleDragStop = React.useCallback(
+    (e, d) => {
+      // console.log("drag stop");
+      // if (dragCallbackCoordinates.x > 0 && dragCallbackCoordinates.y > 0) {
+      setPlayerPosition({
+        x: dragCallbackCoordinates.x,
+        y: dragCallbackCoordinates.y
+      });
+      // }
+      setIsDragging(false);
+      setDisableDragging(false);
     },
-    [disableDragging, setDisableDragging]
-  )
+    [setPlayerPosition, dragCallbackCoordinates.x, dragCallbackCoordinates.y]
+  );
+
+  const handleDrag = React.useCallback(
+    (e, d) => {
+      if (d.x >= 0 && d.y >= 0) {
+        // setPlayerPosition({ x: d.x, y: d.y });
+        setDragCallbackCoordinates({
+          x: d.x,
+          y: d.y
+        });
+      }
+
+      // console.log(disableDragging, isDragging);
+      if (disableDragging) {
+        return false;
+      }
+    },
+    [setDragCallbackCoordinates, disableDragging]
+  );
+
+  const handleDragStart = React.useCallback(() => {
+    setIsDragging(true);
+    // console.log("drag start")
+  }, [setIsDragging]);
+
+  const handleMouseDown = React.useCallback(() => {
+    if (disableDragging) {
+      setDisableDragging(false);
+    }
+    // console.log("mouse down rnd")
+  }, [disableDragging, setDisableDragging]);
+
+  const customNavBarFeature = useSelector(
+    getFeatureDetails(FEATURES.CUSTOM_NAV_BAR),
+    shallowEqual
+  );
+
+  const mainStageTitle = useMemo(() => {
+    if (
+      customNavBarFeature &&
+      customNavBarFeature[VERTICAL_NAV_OPTIONS.mainStage]
+    ) {
+      return customNavBarFeature[VERTICAL_NAV_OPTIONS.mainStage].label;
+    }
+    return "Main Stage";
+  }, [customNavBarFeature]);
 
   // console.log("disable dragging => ", disableDragging)
   // console.log(classes.toolbar);
@@ -308,12 +340,11 @@ export const SmallPlayerContainer = ({ bounds = "" }) => {
         dragHandleClassName={classes.dragInitiater}
         cancel={`.${classes.playerContainer}, .body, ${bounds}, .${classes.divider}`}
       >
-        <div 
-        className={classes.playerOuterContainer}>
+        <div className={classes.playerOuterContainer}>
           <div className={classes.toolbar}>
-            <div className={classes.dragInitiater}>   
+            <div className={classes.dragInitiater}>
               <div className={classes.toolbarTitle}>
-                <Typography variant="subtitle1">Main Stage</Typography>
+                <Typography variant="subtitle1">{mainStageTitle}</Typography>
               </div>
               <div className={classes.volumeControlContainer}>
                 {/* <VolumeDownIcon className={classes.icon} />
@@ -323,7 +354,7 @@ export const SmallPlayerContainer = ({ bounds = "" }) => {
                   <CloseIcon
                     className={classes.icon}
                     onClick={() => {
-                      setShowSmallPlayer(false);
+                      minimizePlayer();
                       trackEvent("Mini player minimized", {});
                     }}
                   />
@@ -333,12 +364,15 @@ export const SmallPlayerContainer = ({ bounds = "" }) => {
             {/* <hr className={classes.divider}></hr> */}
           </div>
           <div
-          onMouseMoveCapture={(e) => {
-            if (isDragging) {
-              setDisableDragging(true);
-            }
-          }}
-          className={classes.playerContainer}>{player}</div>
+            onMouseMoveCapture={(e) => {
+              if (isDragging) {
+                setDisableDragging(true);
+              }
+            }}
+            className={classes.playerContainer}
+          >
+            {player}
+          </div>
         </div>
       </Rnd>
     ),
@@ -356,13 +390,13 @@ export const SmallPlayerContainer = ({ bounds = "" }) => {
       classes.toolbarTitle,
       classes.volumeControlContainer,
       classes.icon,
+      handleDrag,
       handleDragStop,
       handleResizeStop,
+      mainStageTitle,
       player,
-      setShowSmallPlayer,
-      setDisableDragging,
-      isDragging,
-      handleDrag,
+      minimizePlayer,
+      isDragging
     ]
   );
 
@@ -372,9 +406,9 @@ export const SmallPlayerContainer = ({ bounds = "" }) => {
 
   if (!showSmallPlayer) return null;
 
-  if (eventSessionDetails.conferenceVideoType === "JITSI") {
-    return null;
-  }
+  // if (eventSessionDetails.conferenceVideoType === "JITSI") {
+  //   return null;
+  // }
   // if (loaded) {
 
   return miniPlayer;

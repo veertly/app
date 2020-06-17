@@ -31,11 +31,16 @@ export const participantCanNetwork = (participantSession) => {
   );
 };
 
-export const isParticipantOnCall = (participantSession) => {
+export const isParticipantOnCall = (
+  participantSession,
+  eventSessionDetails = null
+) => {
   return (
     participantSession &&
     (participantSession.groupId ||
-      participantSession.currentLocation === VERTICAL_NAV_OPTIONS.mainStage) // TODO: check if not a jitsi conference
+      (participantSession.currentLocation === VERTICAL_NAV_OPTIONS.mainStage &&
+        (!eventSessionDetails ||
+          eventSessionDetails.conferenceVideoType === "JITSI"))) // TODO: check if not a jitsi conference
   );
 };
 

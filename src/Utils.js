@@ -9,7 +9,7 @@ export const nearestMinutes = (interval, someMoment) => {
 export const nearest15min = () => nearestMinutes(15, moment.utc());
 
 export const SMALL_PLAYER_INITIAL_HEIGHT = Math.floor(
-  0.40 * window.innerHeight
+  0.33 * window.innerHeight
 );
 export const SMALL_PLAYER_INITIAL_WIDTH =
   (SMALL_PLAYER_INITIAL_HEIGHT * 14) / 9;

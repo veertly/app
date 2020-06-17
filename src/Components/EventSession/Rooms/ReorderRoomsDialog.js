@@ -65,7 +65,7 @@ const ReorderRoomsDialog = ({ rooms }) => {
   };
 
   const handleReorderClick = async () => {
-    console.log("Reorder clicked");
+    // console.log("Reorder clicked");
     setReordering(true);
     try {
       await reorderRooms(sessionId, orderedRooms);
