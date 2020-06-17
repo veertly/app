@@ -40,9 +40,8 @@ import VerticalNavBar from "../../Components/EventSession/VerticalNavBar";
 import VerticalNavBarContext from "../../Contexts/VerticalNavBarContext";
 import { VERTICAL_NAV_OPTIONS } from "../../Contexts/VerticalNavBarContext";
 import VerticalNavPane from "../../Components/EventSession/VerticalNavPane";
-import EventPage from "../../Components/Event/EventPage";
 import { Box } from "@material-ui/core";
-import { setUserCurrentLocation } from "../../Modules/userOperations";
+import { LobbyContainer } from "./LobbyContainer";
 // import CurrentCallActionsVertical from "../../Components/EventSession/CurrentCallActionsVertical";
 
 export const SIDE_PANE_WIDTH = 0;
@@ -328,26 +327,7 @@ const EventSessionContainer = (props) => {
           <div className={classes.mainPane}>
             {userCurrentLocation === VERTICAL_NAV_OPTIONS.lobby && (
               <Box className={classes.mainPaneScroll}>
-                <div style={{ width: "100%", textAlign: "center" }}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() =>
-                      setUserCurrentLocation(
-                        sessionId,
-                        VERTICAL_NAV_OPTIONS.mainStage
-                      )
-                    }
-                    style={{ marginBottom: 24 }}
-                  >
-                    Enter Main Stage
-                  </Button>
-                </div>
-                <EventPage
-                  event={eventSessionDetails}
-                  hideButtons={true}
-                  isPreview={true}
-                />
+                <LobbyContainer />
               </Box>
             )}
 

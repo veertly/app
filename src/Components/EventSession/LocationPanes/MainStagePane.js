@@ -10,11 +10,15 @@ import {
 import AttendeesPane, { ATTENDEES_PANE_FILTER } from "./AttendeesPane";
 import { VERTICAL_NAV_OPTIONS } from "../../../Contexts/VerticalNavBarContext";
 import { setUserCurrentLocation } from "../../../Modules/userOperations";
-import { getSessionId, getUserSession } from "../../../Redux/eventSession";
+import {
+  getSessionId,
+  getUserSession,
+  getFeatureDetails
+} from "../../../Redux/eventSession";
 import SmallPlayerIcon from "../../../Assets/Icons/PiP";
 import FullscreenPlayerIcon from "../../../Assets/Icons/FullScreen";
 
-import { useSelector } from "react-redux";
+import { useSelector, shallowEqual } from "react-redux";
 import {
   isParticipantMainStage,
   isParticipantOnCall
@@ -22,6 +26,7 @@ import {
 import LeaveCurrentCallDialog from "./LeaveCurrentCallDialog";
 import EmptyPaneImg from "../../../Assets/illustrations/emptyPane.svg";
 import SmallPlayerContext from "../../../Contexts/SmallPlayerContext";
+import { FEATURES } from "../../../Modules/features";
 
 const useStyles = makeStyles((theme) => ({
   buttonContainer: {
@@ -63,6 +68,21 @@ const MainStagePane = ({ setTotalUsers }) => {
     SmallPlayerContext
   );
 
+  const customNavBarFeature = useSelector(
+    getFeatureDetails(FEATURES.CUSTOM_NAV_BAR),
+    shallowEqual
+  );
+
+  const mainStageTitle = useMemo(() => {
+    if (
+      customNavBarFeature &&
+      customNavBarFeature[VERTICAL_NAV_OPTIONS.mainStage]
+    ) {
+      return customNavBarFeature[VERTICAL_NAV_OPTIONS.mainStage].label;
+    }
+    return "Main Stage";
+  }, [customNavBarFeature]);
+
   const enterMainStage = () => {
     setUserCurrentLocation(sessionId, VERTICAL_NAV_OPTIONS.mainStage);
     setConfirmationDialogOpen(false);
@@ -91,7 +111,7 @@ const MainStagePane = ({ setTotalUsers }) => {
               color="primary"
               onClick={checkAndEnterMainStage}
             >
-              Enter Main Stage
+              Enter {mainStageTitle}
             </Button>
           )}
           {miniPlayerEnabled && (
@@ -102,11 +122,11 @@ const MainStagePane = ({ setTotalUsers }) => {
                 onClick={checkAndEnterMainStage}
                 startIcon={<FullscreenPlayerIcon />}
               >
-                Open Main Stage
+                Open {mainStageTitle}
               </Button>
 
               {miniPlayerEnabled && !showSmallPlayer && (
-                <Tooltip title="View main stage in a small player">
+                <Tooltip title={`View ${mainStageTitle} in a small player`}>
                   <IconButton
                     /* size="small" */ color="primary"
                     onClick={openPlayer}
@@ -133,7 +153,7 @@ const MainStagePane = ({ setTotalUsers }) => {
             alt="Empty Main Stage"
           />
           <Typography variant="body2" color="textSecondary" display="block">
-            There's no one on the main stage
+            There's no one on the {mainStageTitle}
           </Typography>
         </Box>
       )}

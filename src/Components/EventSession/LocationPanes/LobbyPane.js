@@ -7,15 +7,17 @@ import { setUserCurrentLocation } from "../../../Modules/userOperations";
 import {
   getSessionId,
   getUserSession,
-  getEventSessionDetails
+  getEventSessionDetails,
+  getFeatureDetails
 } from "../../../Redux/eventSession";
-import { useSelector } from "react-redux";
+import { useSelector, shallowEqual } from "react-redux";
 import {
   isParticipantLobby,
   isParticipantOnCall
 } from "../../../Helpers/participantsHelper";
 import EventPage from "../../Event/EventPage";
 import LeaveCurrentCallDialog from "./LeaveCurrentCallDialog";
+import { FEATURES } from "../../../Modules/features";
 
 const useStyles = makeStyles((theme) => ({
   buttonContainer: {
@@ -52,6 +54,21 @@ const LobbyPane = () => {
     [eventSessionDetails, userSession]
   );
 
+  const customNavBarFeature = useSelector(
+    getFeatureDetails(FEATURES.CUSTOM_NAV_BAR),
+    shallowEqual
+  );
+
+  const lobyTitle = useMemo(() => {
+    if (
+      customNavBarFeature &&
+      customNavBarFeature[VERTICAL_NAV_OPTIONS.lobby]
+    ) {
+      return customNavBarFeature[VERTICAL_NAV_OPTIONS.lobby].label;
+    }
+    return "Lobby";
+  }, [customNavBarFeature]);
+
   const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
 
   const { setHasNavBarPaneOpen } = React.useContext(VerticalNavBarContext);
@@ -84,7 +101,7 @@ const LobbyPane = () => {
             color="primary"
             onClick={checkAndEnterLobby}
           >
-            Enter Lobby
+            Enter {lobyTitle}
           </Button>
         </div>
       )}

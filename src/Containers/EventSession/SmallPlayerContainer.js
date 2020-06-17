@@ -1,9 +1,13 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useMemo } from "react";
 // import useScript from "../../Hooks/useScript";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Typography from "@material-ui/core/Typography";
 import { useSelector, shallowEqual } from "react-redux";
-import { getEventSessionDetails, getSessionId } from "../../Redux/eventSession";
+import {
+  getEventSessionDetails,
+  getSessionId,
+  getFeatureDetails
+} from "../../Redux/eventSession";
 import VideoPlayer from "../../Components/EventSession/VideoPlayer";
 // import VolumeDownIcon from '@material-ui/icons/VolumeDown';
 // import VolumeUpIcon from '@material-ui/icons/VolumeUp';
@@ -20,6 +24,8 @@ import { Tooltip } from "@material-ui/core";
 import { trackEvent } from "../../Modules/analytics";
 import SmallPlayerContext from "../../Contexts/SmallPlayerContext";
 import { useLocalStorage } from "react-use";
+import { FEATURES } from "../../Modules/features";
+import { VERTICAL_NAV_OPTIONS } from "../../Contexts/VerticalNavBarContext";
 
 const useStyles = makeStyles((theme) => ({
   videoContainer: {
@@ -294,6 +300,21 @@ export const SmallPlayerContainer = ({ bounds = "" }) => {
     // console.log("mouse down rnd")
   }, [disableDragging, setDisableDragging]);
 
+  const customNavBarFeature = useSelector(
+    getFeatureDetails(FEATURES.CUSTOM_NAV_BAR),
+    shallowEqual
+  );
+
+  const mainStageTitle = useMemo(() => {
+    if (
+      customNavBarFeature &&
+      customNavBarFeature[VERTICAL_NAV_OPTIONS.mainStage]
+    ) {
+      return customNavBarFeature[VERTICAL_NAV_OPTIONS.mainStage].label;
+    }
+    return "Main Stage";
+  }, [customNavBarFeature]);
+
   // console.log("disable dragging => ", disableDragging)
   // console.log(classes.toolbar);
   const miniPlayer = React.useMemo(
@@ -323,7 +344,7 @@ export const SmallPlayerContainer = ({ bounds = "" }) => {
           <div className={classes.toolbar}>
             <div className={classes.dragInitiater}>
               <div className={classes.toolbarTitle}>
-                <Typography variant="subtitle1">Main Stage</Typography>
+                <Typography variant="subtitle1">{mainStageTitle}</Typography>
               </div>
               <div className={classes.volumeControlContainer}>
                 {/* <VolumeDownIcon className={classes.icon} />
@@ -372,6 +393,7 @@ export const SmallPlayerContainer = ({ bounds = "" }) => {
       handleDrag,
       handleDragStop,
       handleResizeStop,
+      mainStageTitle,
       player,
       minimizePlayer,
       isDragging
