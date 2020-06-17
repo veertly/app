@@ -78,10 +78,17 @@ export default (props) => {
     setEmojisShow(!emojisShown);
   }
 
+  const focusOnTextField = () => {
+    if (textFieldRef && textFieldRef.current) {
+      textFieldRef.current.focus();
+    }
+  }
+
   const handleCancel  = (event) =>  {
     if (event.clientX > pickerRect.left && event.clientX < pickerRect.right && event.clientY > pickerRect.top && event.clientY < pickerRect.bottom) {
       return;
     } else {
+      focusOnTextField();
       setEmojisShow(false);
     }
   }
@@ -89,17 +96,15 @@ export default (props) => {
   useEffect(() => {
     if (pickerRef && pickerRef.current) {
       const pickerRect = pickerRef.current.getBoundingClientRect();
-      setPickerRect(pickerRect, pickerRef);
+      setPickerRect(pickerRect);
     };
     
-  }, [ pickerRef, setPickerRect])
+  }, [ pickerRef, setPickerRect, initializePicker]);
 
   const handleEmojiSelect = (emoji) => {
     setInternalMessage(`${internalMessage}${emoji.native}`);
     setEmojisShow(false);
-    if (textFieldRef && textFieldRef.current) {
-      textFieldRef.current.focus();
-    }
+    focusOnTextField();
   }
 
   const handleMessageChange = (event) => {
