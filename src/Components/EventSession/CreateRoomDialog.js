@@ -1,8 +1,9 @@
-import React from "react";
+import React /* , { useState }  */ from "react";
 import Button from "@material-ui/core/Button";
 import { makeStyles } from "@material-ui/core/styles";
 import { createNewRoom } from "../../Modules/eventSessionOperations";
 import { useSnackbar } from "material-ui-snackbar-provider";
+import { createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles";
 
 import { useSelector, shallowEqual, useDispatch } from "react-redux";
 import {
@@ -16,9 +17,47 @@ import {
   TextField,
   DialogTitle,
   DialogActions,
-  DialogContent
+  DialogContent,
+  Box
 } from "@material-ui/core";
 import DialogClose from "../Misc/DialogClose";
+import MUIRichTextEditor from "mui-rte";
+import OutlinedDiv from "../Misc/OutlinedDiv";
+
+const defaultTheme = createMuiTheme();
+
+Object.assign(defaultTheme, {
+  overrides: {
+    MUIRichTextEditor: {
+      // root: {
+      //   backgroundColor: "#ebebeb"
+      // },
+      // container: {
+      //   display: "flex",
+      //   flexDirection: "column-reverse"
+      // },
+      // editor: {
+      //   backgroundColor: "#ebebeb",
+      //   padding: "20px",
+      //   height: "200px",
+      //   maxHeight: "200px",
+      //   overflow: "auto"
+      // },
+      // toolbar: {
+      //   borderTop: "1px solid gray",
+      //   backgroundColor: "#ebebeb"
+      // },
+      placeHolder: {
+        // backgroundColor: "#ebebeb",
+        // paddingLeft: 20
+        // width: "inherit",
+        position: "relative"
+        // top: "20px"
+      }
+    }
+  }
+});
+
 const useStyles = makeStyles((theme) => ({
   content: {
     position: "relative"
@@ -67,7 +106,7 @@ export default function (props) {
   const snackbar = useSnackbar();
   const dispatch = useDispatch();
   let [roomName, setRoomName] = React.useState("");
-
+  // const [roomDescription, setRoomDescription] = useState(null);
   const open = useSelector(isCreateRoomOpen);
 
   const userGroup = useSelector(getUserLiveGroup, shallowEqual);
@@ -85,6 +124,12 @@ export default function (props) {
     createNewRoom(sessionId, roomName, userId, userGroup, snackbar);
     handleClose();
   };
+
+  // const handleDescriptionUpdate = (editorState) => {
+  //   // setRoomDescription(
+  //   //   JSON.stringify(convertToRaw(editorState.getCurrentContent()))
+  //   // );
+  // };
 
   return (
     <div>
@@ -118,6 +163,59 @@ export default function (props) {
                 required
                 fullWidth
               />
+
+              {/* <InputLabel variant="outlined">ABC</InputLabel> */}
+              <Box mt={2}>
+                <OutlinedDiv label="Room description" fullWidth>
+                  {/* <Box pb={2}> */}
+                  <MuiThemeProvider theme={defaultTheme}>
+                    <MUIRichTextEditor
+                      style={{ minHeight: 100 }}
+                      label="Start typing..."
+                      controls={[
+                        "title",
+                        "bold",
+                        "italic",
+                        "underline",
+                        // "strikethrough",
+                        "link",
+                        "media",
+                        "numberList",
+                        "bulletList",
+                        "quote",
+                        // "code",
+                        "clear"
+                        // "undo",
+                        // "redo",
+                      ]}
+                      // onChange={handleDescriptionUpdate}
+                      inlineToolbar={true}
+                      // maxLength={5000}
+                      // value={
+                      //   !isNewEvent && eventSession
+                      //     ? eventSession.description
+                      //     : null
+                      // }
+                      inlineToolbarControls={[
+                        "title",
+                        "bold",
+                        "italic",
+                        "underline",
+                        "strikethrough",
+                        "link",
+                        "media",
+                        "numberList",
+                        "bulletList",
+                        "quote",
+                        "code",
+                        "clear"
+                      ]}
+                      // toolbarButtonSize="small"
+                    />
+                    {/* </Box> */}
+                  </MuiThemeProvider>
+                </OutlinedDiv>
+              </Box>
               {/* <div className={classes.buttonContainer}>
             <Button
               variant="contained"
