@@ -83,16 +83,19 @@ export default (props) => {
       return;
     } else {
       setEmojisShow(false);
+      if (textFieldRef && textFieldRef.current) {
+        textFieldRef.current.focus();
+      }
     }
   }
 
   useEffect(() => {
     if (pickerRef && pickerRef.current) {
       const pickerRect = pickerRef.current.getBoundingClientRect();
-      setPickerRect(pickerRect, pickerRef);
+      setPickerRect(pickerRect);
     };
     
-  }, [ pickerRef, setPickerRect])
+  }, [ pickerRef, setPickerRect, initializePicker]);
 
   const handleEmojiSelect = (emoji) => {
     setInternalMessage(`${internalMessage}${emoji.native}`);
