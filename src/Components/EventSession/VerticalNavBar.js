@@ -38,6 +38,7 @@ import ChatMessagesContext, {
   CHAT_GLOBAL_NS
 } from "../../Contexts/ChatMessagesContext";
 import { FEATURES } from "../../Modules/features";
+import PerfectScrollbar from "react-perfect-scrollbar";
 
 export const DEAFULT_NAV_BAR = {
   [VERTICAL_NAV_OPTIONS.lobby]: {
@@ -348,34 +349,38 @@ const VerticalNavBar = (props) => {
   };
 
   return (
-    <div className={classes.root}>
-      {navBarOptions.map(({ icon, label, id, visible }) => {
-        if (id === "divider" && visible) {
-          return <Divider key="divider" />;
-        } else if (visible) {
-          return (
-            <MenuIconContainer
-              key={id}
-              icon={icon}
-              label={label}
-              selected={currentNavBarSelection === id}
-              onClick={handleClick(id)}
-              isCurrentLocation={currentLocation === id}
-              hasBadge={id === VERTICAL_NAV_OPTIONS.chat ? hasChatBadge : false}
-            />
-          );
-        }
-        return null;
-      })}
+    <PerfectScrollbar>
+      <div className={classes.root}>
+        {navBarOptions.map(({ icon, label, id, visible }) => {
+          if (id === "divider" && visible) {
+            return <Divider key="divider" />;
+          } else if (visible) {
+            return (
+              <MenuIconContainer
+                key={id}
+                icon={icon}
+                label={label}
+                selected={currentNavBarSelection === id}
+                onClick={handleClick(id)}
+                isCurrentLocation={currentLocation === id}
+                hasBadge={
+                  id === VERTICAL_NAV_OPTIONS.chat ? hasChatBadge : false
+                }
+              />
+            );
+          }
+          return null;
+        })}
 
-      <div style={{ flexGrow: 1 }}></div>
-      <MenuIconContainer
-        icon={HelpIcon}
-        label="Help"
-        selected={currentNavBarSelection === VERTICAL_NAV_OPTIONS.help}
-        onClick={handleClick(VERTICAL_NAV_OPTIONS.help)}
-      />
-    </div>
+        <div style={{ flexGrow: 1 }}></div>
+        <MenuIconContainer
+          icon={HelpIcon}
+          label="Help"
+          selected={currentNavBarSelection === VERTICAL_NAV_OPTIONS.help}
+          onClick={handleClick(VERTICAL_NAV_OPTIONS.help)}
+        />
+      </div>{" "}
+    </PerfectScrollbar>
   );
 };
 

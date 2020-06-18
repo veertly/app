@@ -12,11 +12,12 @@ function EventSessionContainerTheme({ children }) {
 
   const theme = useMemo(() => {
     if (customThemeFeature) {
-      const { primary, secondary } = customThemeFeature;
+      const { topbar, primary, secondary } = customThemeFeature;
       return createMuiTheme({
         palette: {
           primary: { main: primary },
-          secondary: { main: secondary }
+          secondary: { main: secondary },
+          topbar: { main: topbar ? topbar : primary }
         }
       });
     }

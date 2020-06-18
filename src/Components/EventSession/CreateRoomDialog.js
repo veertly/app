@@ -236,8 +236,8 @@ export default function () {
                   onClick={handleAddRemoveDescription}
                 >
                   {descriptionExpanded
-                    ? "Remove room description"
-                    : "Add room description"}
+                    ? "- Remove room description"
+                    : "+ Add room description"}
                 </Link>
               </Box>
 
