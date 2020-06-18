@@ -39,7 +39,7 @@ aws-exports.js
 awsconfiguration.json
 .DS_Store
 .firebase/hosting*
-yarn.lock
+#yarn.lock
 node_modules
 functions/node_modules
 node_modules
