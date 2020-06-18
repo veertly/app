@@ -15,3 +15,4 @@
 - [Rainbow Designs](https://thenounproject.com/iahmadali26/) from the [Noun Project(https://thenounproject.com)]
 - [Larea](https://thenounproject.com/lareadesign) from the [Noun Project(https://thenounproject.com)]
 - [Anil](https://thenounproject.com/kiranshastry15) from the [Noun Project(https://thenounproject.com)]
+- [Amy Chiang](https://thenounproject.com/amyc) from the [Noun Project(https://thenounproject.com)]
