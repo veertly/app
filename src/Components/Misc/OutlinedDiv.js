@@ -13,8 +13,10 @@ const OutlinedDiv = ({ children, label, ...rest }) => {
       InputProps={{
         inputComponent: InputComponent
       }}
+      margin="dense"
       inputProps={{ children: children }}
       {...rest}
+      style={{ paddingTop: 0 }}
     />
   );
 };
