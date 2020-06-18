@@ -109,14 +109,16 @@ export default function () {
   let [roomName, setRoomName] = React.useState(room ? room.roomName : "");
 
   const [roomDescription, setRoomDescription] = useState(
-    room ? room.roomDescription : null
+    room && room.roomDescription ? room.roomDescription : null
   );
 
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
 
   useEffect(() => {
     setRoomName(room ? room.roomName : "");
-    setRoomDescription(room ? room.roomDescription : null);
+    setRoomDescription(
+      room && room.roomDescription ? room.roomDescription : null
+    );
     setDescriptionExpanded(
       room && room.roomDescription && room.roomDescription.trim() !== ""
     );

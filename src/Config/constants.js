@@ -1,4 +1,4 @@
-export const MAX_PARTICIPANTS_GROUP = 3;
+export const MAX_PARTICIPANTS_GROUP = 4;
 export const DEFAULT_EVENT_OPEN_MINUTES = 30;
 export const DEFAULT_EVENT_CLOSES_MINUTES = 60;
 
