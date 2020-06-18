@@ -21,7 +21,6 @@ import HelpIcon from "../../Assets/Icons/Help";
 
 import { useHover } from "react-use";
 import { leaveCall } from "../../Modules/eventSessionOperations";
-import { setUserCurrentLocation } from "../../Modules/userOperations";
 import { Box, Typography, Divider, Badge } from "@material-ui/core";
 import VerticalNavBarContext, {
   VERTICAL_NAV_OPTIONS
@@ -332,12 +331,12 @@ const VerticalNavBar = (props) => {
       }
       setCurrentNavBarSelection(location);
 
-      if (
-        userCurrentLocation === VERTICAL_NAV_OPTIONS.lobby &&
-        location === VERTICAL_NAV_OPTIONS.mainStage
-      ) {
-        setUserCurrentLocation(sessionId, VERTICAL_NAV_OPTIONS.mainStage);
-      }
+      // if (
+      //   userCurrentLocation === VERTICAL_NAV_OPTIONS.lobby &&
+      //   location === VERTICAL_NAV_OPTIONS.mainStage
+      // ) {
+      //   setUserCurrentLocation(sessionId, VERTICAL_NAV_OPTIONS.mainStage);
+      // }
 
       // }
     } else {
