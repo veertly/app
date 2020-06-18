@@ -11,6 +11,7 @@ const CLOSE_JOIN_PARTICIPANT = "dialogs.CLOSE_JOIN_PARTICIPANT";
 
 const OPEN_CREATE_ROOM = "dialogs.OPEN_CREATE_ROOM";
 const CLOSE_CREATE_ROOM = "dialogs.CLOSE_CREATE_ROOM";
+const OPEN_EDIT_ROOM = "dialogs.OPEN_EDIT_ROOM";
 
 const OPEN_JOIN_ROOM = "dialogs.OPEN_JOIN_ROOM";
 const CLOSE_JOIN_ROOM = "dialogs.CLOSE_JOIN_ROOM";
@@ -29,6 +30,7 @@ const initialState = {
   joinParticipantOpen: false,
   joinParticipantEntity: null,
   createRoomOpen: false,
+  editRoomEntity: null,
   joinRoomOpen: false,
   joinRoomEntity: null,
   roomArchivedOpen: false,
@@ -101,7 +103,7 @@ export const dialogsReducer = (state = initialState, action) => {
       return {
         ...state,
         joinParticipantOpen: false,
-        joinRoomEntity: null
+        joinParticipantEntity: null
       };
     }
 
@@ -114,7 +116,15 @@ export const dialogsReducer = (state = initialState, action) => {
     case CLOSE_CREATE_ROOM: {
       return {
         ...state,
-        createRoomOpen: false
+        createRoomOpen: false,
+        editRoomEntity: null
+      };
+    }
+    case OPEN_EDIT_ROOM: {
+      return {
+        ...state,
+        createRoomOpen: true,
+        editRoomEntity: action.room
       };
     }
 
@@ -183,7 +193,7 @@ export const getJoinParticipantEntity = (store) =>
 
 export const isCreateRoomOpen = (store) =>
   store.dialogs.createRoomOpen === true;
-
+export const getEditRoomEntity = (store) => store.dialogs.editRoomEntity;
 export const isJoinRoomOpen = (store) => store.dialogs.joinRoomOpen === true;
 
 export const getJoinRoomEntity = (store) => store.dialogs.joinRoomEntity;
@@ -244,6 +254,11 @@ export const openCreateRoom = () => ({
 
 export const closeCreateRoom = () => ({
   type: CLOSE_CREATE_ROOM
+});
+
+export const openEditRoom = (room) => ({
+  type: OPEN_EDIT_ROOM,
+  room
 });
 
 export const openJoinRoom = (room) => ({

@@ -499,6 +499,7 @@ export const editRoom = async (
   originalSessionId,
   roomId,
   roomName,
+  roomDescription,
   userId,
   snackbar
 ) => {
@@ -517,6 +518,7 @@ export const editRoom = async (
   }
   await roomRef.update({
     roomName,
+    roomDescription,
     updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
     updatedBy: userId
   });
@@ -554,9 +556,8 @@ export const archiveRoom = async (
 export const createNewRoom = async (
   originalSessionId,
   roomName,
-  myUserId,
-  currentUserGroup,
-  snackbar
+  roomDescription,
+  myUserId
 ) => {
   const groupId = `r_${uuidv1()}`;
 
@@ -574,6 +575,7 @@ export const createNewRoom = async (
     isLive: true,
     isRoom: true,
     roomName,
+    roomDescription,
     roomCreatedAt: firebase.firestore.FieldValue.serverTimestamp(),
     roomOwner: myUserId
   };
