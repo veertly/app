@@ -149,6 +149,14 @@ export default function () {
     );
   };
 
+  const handleAddRemoveDescription = (e) => {
+    e.preventDefault();
+    if (descriptionExpanded) {
+      setRoomDescription(null);
+    }
+    setDescriptionExpanded(!descriptionExpanded);
+  };
+
   return (
     <div>
       <DialogClose
@@ -172,19 +180,6 @@ export default function () {
                 required
                 fullWidth
               />
-              {!descriptionExpanded && (
-                <Box mt={1}>
-                  <Link
-                    component="button"
-                    variant="body2"
-                    onClick={() => {
-                      setDescriptionExpanded(true);
-                    }}
-                  >
-                    Add room description
-                  </Link>
-                </Box>
-              )}
               <Collapse in={descriptionExpanded}>
                 <Box mt={2}>
                   <OutlinedDiv label="Room description" fullWidth>
@@ -234,6 +229,18 @@ export default function () {
                   </OutlinedDiv>
                 </Box>
               </Collapse>
+              <Box mt={1}>
+                <Link
+                  component="button"
+                  variant="body2"
+                  onClick={handleAddRemoveDescription}
+                >
+                  {descriptionExpanded
+                    ? "Remove room description"
+                    : "Add room description"}
+                </Link>
+              </Box>
+
               {/* <div className={classes.buttonContainer}>
             <Button
               variant="contained"
