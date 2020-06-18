@@ -3,7 +3,11 @@ import { makeStyles } from "@material-ui/core/styles";
 import AvatarGroup from "@material-ui/lab/AvatarGroup";
 import RoomIcon from "@material-ui/icons/LocalOffer";
 import { useDispatch, useSelector } from "react-redux";
-import { openJoinRoom, openRoomReorder } from "../../../Redux/dialogs";
+import {
+  openJoinRoom,
+  openRoomReorder,
+  openEditRoom
+} from "../../../Redux/dialogs";
 import ParticipantAvatar from "../../Misc/ParticipantAvatar";
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
@@ -15,7 +19,6 @@ import {
   isEventOwner
 } from "../../../Redux/eventSession";
 import { Typography } from "@material-ui/core";
-import EditRoomDialog from "../EditRoomDialog";
 import ArchiveRoomDialog from "../ArchiveRoomDialog";
 
 const useStyles = makeStyles((theme) => ({
@@ -81,7 +84,6 @@ const useStyles = makeStyles((theme) => ({
 export default function ({ room, previewOnly = false }) {
   const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
   const openMenu = Boolean(menuAnchorEl);
-  const [renameRoomOpen, setRenameRoomOpen] = React.useState(false);
   const [archiveRoomOpen, setArchiveRoomOpen] = React.useState(false);
   const [mouseHover, setMouseHover] = React.useState(false);
 
@@ -100,6 +102,7 @@ export default function ({ room, previewOnly = false }) {
     () => room.participants.findIndex((p) => p.id === myUserId) !== -1,
     [myUserId, room.participants]
   );
+
   // console.log({ name: room.roomName, isMyRoom });
   const classes = useStyles({ isMyRoom, previewOnly });
 
@@ -125,9 +128,9 @@ export default function ({ room, previewOnly = false }) {
     }
   };
 
-  const handleRenameClick = (e) => {
+  const handleEditClick = (e) => {
     e.stopPropagation();
-    setRenameRoomOpen(true);
+    dispatch(openEditRoom(room));
     closeMenu();
   };
 
@@ -212,7 +215,7 @@ export default function ({ room, previewOnly = false }) {
               open={openMenu}
               onClose={handleMenuClose}
             >
-              <MenuItem onClick={handleRenameClick}>Rename</MenuItem>
+              <MenuItem onClick={handleEditClick}>Edit</MenuItem>
               <MenuItem onClick={handleArchiveClick}>Archive</MenuItem>
               {isOwner && (
                 <MenuItem onClick={handleReorderClick}>Reorder</MenuItem>
@@ -221,11 +224,11 @@ export default function ({ room, previewOnly = false }) {
           </div>
         )}
       </div>
-      <EditRoomDialog
+      {/* <CreateRoomDialog
         open={renameRoomOpen}
         setOpen={setRenameRoomOpen}
         room={room}
-      />
+      /> */}
       <ArchiveRoomDialog
         open={archiveRoomOpen}
         setOpen={setArchiveRoomOpen}
