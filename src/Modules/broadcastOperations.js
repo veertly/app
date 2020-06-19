@@ -1,9 +1,9 @@
-import firebase from "./firebaseApp";
+import firebase, { launchBroadcastMessageFirebaseFunction } from "./firebaseApp";
 
 export const BROADCAST_MESSAGE_STATES = {
   DRAFT: "draft",
   PUBLISHED: "published",
-  TERMINATED: "terminated"
+  ACTIVE: "active"
 };
 
 export const BROADCAST_MESSAGE_NAMESPACES = {
@@ -28,15 +28,18 @@ export const createBroadcastMessage  = async ({
     message,
     state,
   };
-
-  await db
-    .collection("eventSessions")
-    .doc(sessionId.toLowerCase())
-    .collection("broadcasts")
-    .doc(namespace)
-    .collection("broadcastsMessages")
-    .doc(broadcastMessageId)
-    .set(broadcastMessageToBeSaved);
+  try {
+    await db
+      .collection("eventSessions")
+      .doc(sessionId.toLowerCase())
+      .collection("broadcasts")
+      .doc(namespace)
+      .collection("broadcastsMessages")
+      .doc(broadcastMessageId)
+      .set(broadcastMessageToBeSaved);
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 export const updateBroadcastMessage = async ({
@@ -77,19 +80,53 @@ export const updateBroadcastMessage = async ({
   await batch.commit();
 };
 
-export const setBroadcastState = async (
+// export const setBroadcastState = async ({
+//   sessionId,
+//   userId,
+//   originalBroadcast,
+//   newState,
+//   namespace = BROADCAST_MESSAGE_NAMESPACES.GLOBAL
+// }) => {
+//   updateBroadcastMessage({
+//     sessionId,
+//     userId,
+//     originalBroadcast,
+//     newMessage: originalBroadcast.message,
+//     newState,
+//     namespace
+//   });
+// };
+
+export const launchBroadcastMessage = async ({
   sessionId,
   userId,
-  originalBroadcast,
-  newState,
-  namespace = BROADCAST_MESSAGE_NAMESPACES.GLOBAL
-) => {
-  updateBroadcastMessage({
+  message,
+  namespace = BROADCAST_MESSAGE_NAMESPACES.GLOBAL,
+}) => {
+
+  await launchBroadcastMessageFirebaseFunction({
     sessionId,
     userId,
-    originalBroadcast,
-    newMessage: originalBroadcast.message,
-    newState,
+    message,
+    state: BROADCAST_MESSAGE_STATES.ACTIVE,
     namespace
-  });
+  });  
+}
+
+export const deleteBroadcastMessage = async ({
+  sessionId,
+  broadcastMessageId,
+  namespace=BROADCAST_MESSAGE_NAMESPACES.GLOBAL,
+}) => {
+  const db = firebase.firestore();
+
+  const broadcastRef = db
+    .collection("eventSessions")
+    .doc(sessionId.toLowerCase())
+    .collection("broadcasts")
+    .doc(namespace)
+    .collection("broadcastsMessages")
+    .doc(`${broadcastMessageId}`);
+
+  await broadcastRef.delete();
 };

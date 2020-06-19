@@ -311,3 +311,51 @@ exports.loginInEvent = functions.https.onCall(async (data, context) => {
     };
   }
 });
+
+exports.createBroadcastMessage = functions.https.onCall(async (data, context) => {
+  const {
+    sessionId,
+    userId,
+    message,
+    state,
+    namespace,
+  } = data;
+
+  const broadcastMessageId = String(new Date().getTime());
+
+  const broadcastMessageToBeSaved = {
+    id: broadcastMessageId,
+    owner: userId,
+    creationDate: firestore.FieldValue.serverTimestamp(),
+    message,
+    state,
+  };
+
+  try {
+    await firestore
+      .collection("eventSessions")
+      .doc(sessionId.toLowerCase())
+      .collection("broadcasts")
+      .doc(namespace)
+      .collection("broadcastsMessages")
+      .doc(broadcastMessageId)
+      .set(broadcastMessageToBeSaved);
+
+    setTimeout(() => {
+      // set it to published now
+      const broadcastRef = firestore
+        .collection("eventSessions")
+        .doc(sessionId.toLowerCase())
+        .collection("broadcasts")
+        .doc(namespace)
+        .collection("broadcastsMessages")
+        .doc(`${broadcastMessageId}`);
+
+      broadcastRef.update({
+        state: "published"
+      });
+    }, 40000)
+  } catch (error) {
+    console.log(error);
+  }
+});

@@ -29,13 +29,13 @@ const perf = firebase.performance();
 
 const functionsApp = functions();
 const loginInEvent = functionsApp.httpsCallable("loginInEvent");
-
-// if (process.env.NODE_ENV === "development") {
-//   functionsApp.useFunctionsEmulator("http://localhost:5001")
-// }
+const launchBroadcastMessageFirebaseFunction = functionsApp.httpsCallable("createBroadcastMessage");
+if (process.env.NODE_ENV === "development") {
+  functionsApp.useFunctionsEmulator("http://localhost:5001")
+}
 
 const getTimestampFromDate = (date) => {
   return firebaseApp.firestore.Timestamp.fromDate(date);
 };
 
-export { loginInEvent, getTimestampFromDate, perf };
+export { loginInEvent, getTimestampFromDate, perf, launchBroadcastMessageFirebaseFunction };
