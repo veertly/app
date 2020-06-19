@@ -103,14 +103,17 @@ export const launchBroadcastMessage = async ({
   message,
   namespace = BROADCAST_MESSAGE_NAMESPACES.GLOBAL,
 }) => {
-
-  await launchBroadcastMessageFirebaseFunction({
-    sessionId,
-    userId,
-    message,
-    state: BROADCAST_MESSAGE_STATES.ACTIVE,
-    namespace
-  });  
+  try {
+    await launchBroadcastMessageFirebaseFunction({
+      sessionId,
+      userId,
+      message,
+      state: BROADCAST_MESSAGE_STATES.ACTIVE,
+      namespace
+    });  
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 export const deleteBroadcastMessage = async ({
