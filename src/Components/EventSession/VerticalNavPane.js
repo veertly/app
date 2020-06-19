@@ -8,15 +8,13 @@ import VerticalNavBarContext, {
   VERTICAL_NAV_OPTIONS
 } from "../../Contexts/VerticalNavBarContext";
 import ConversationsPane from "./LocationPanes/NetworkingPane";
-import RoomsTab from "./RoomsTab";
+import RoomsTab from "./Rooms/RoomsTab";
 import ChatPane from "../Chat/ChatPane";
 import MainStagePane from "./LocationPanes/MainStagePane";
 import LobbyPane from "./LocationPanes/LobbyPane";
-import PollsPane from "./LocationPanes/PollsPane";
 import QnAPane from "./LocationPanes/QnAPane";
 import HelpPane from "./LocationPanes/HelpPane";
 import SplashScreen from "../Misc/SplashScreen";
-
 // import InfoIcon from "../../Assets/Icons/Info";
 import AttendeesPane, {
   ATTENDEES_PANE_FILTER
@@ -26,7 +24,7 @@ import { getFeatureDetails } from "../../Redux/eventSession";
 import { FEATURES } from "../../Modules/features";
 import _ from "lodash";
 import { DEAFULT_NAV_BAR } from "./VerticalNavBar";
-
+import BroadcastMessagePane from "./BroadcastMessages/BroadcastMessagesPane";
 // import { Badge } from "@material-ui/core";
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -121,6 +119,9 @@ const VerticalNavPane = (props) => {
 
       case VERTICAL_NAV_OPTIONS.qna:
         return navBarItem ? navBarItem.label : "Q&A";
+      
+      case VERTICAL_NAV_OPTIONS.broadcasts:
+        return navBarItem ? navBarItem.label : "Broadcast";
 
       case VERTICAL_NAV_OPTIONS.help:
         return "Help";
@@ -141,84 +142,76 @@ const VerticalNavPane = (props) => {
     currentNavBarSelection === VERTICAL_NAV_OPTIONS.rooms;
 
   return (
-    <div className={classes.root}>
-      <Box className={classes.titleBox}>
-        <Typography color="secondary" className={classes.paneTitle}>
-          {getTitle()}
-          {showCount && titleCount > 0 && (
-            <span className={classes.counter}>{` (${titleCount})`}</span>
-          )}
-        </Typography>
-        {/* <InfoIcon className={classes.infoIcon} /> */}
+    <Suspense fallback={<SplashScreen />}>
+      <div className={classes.root}>
+        <Box className={classes.titleBox}>
+          <Typography color="secondary" className={classes.paneTitle}>
+            {getTitle()}
+            {showCount && titleCount > 0 && (
+              <span className={classes.counter}>{` (${titleCount})`}</span>
+            )}
+          </Typography>
+          {/* <InfoIcon className={classes.infoIcon} /> */}
 
-        <div style={{ flexGrow: 1 }}></div>
-        <Tooltip title="Collapse">
-          <IconButton
-            className={classes.collapseButton}
-            size="small"
-            onClick={collapsePane}
-          >
-            <DoubleArrowIcon
-              fontSize="inherit"
-              className={classes.rotateIcon}
-            />
-          </IconButton>
-        </Tooltip>
-      </Box>
+          <div style={{ flexGrow: 1 }}></div>
+          <Tooltip title="Collapse">
+            <IconButton
+              className={classes.collapseButton}
+              size="small"
+              onClick={collapsePane}
+            >
+              <DoubleArrowIcon
+                fontSize="inherit"
+                className={classes.rotateIcon}
+              />
+            </IconButton>
+          </Tooltip>
+        </Box>
 
-      <Box className={classes.paneContent}>
-        <Suspense fallback={<SplashScreen />}>
-          {currentNavBarSelection === VERTICAL_NAV_OPTIONS.mainStage && (
-            <MainStagePane setTotalUsers={setTitleCount} />
-          )}
-          {currentNavBarSelection === VERTICAL_NAV_OPTIONS.lobby && (
-            <LobbyPane />
-          )}
-          {currentNavBarSelection === VERTICAL_NAV_OPTIONS.rooms && (
-            <RoomsTab setRoomsCount={setTitleCount} />
-          )}
+        <Box className={classes.paneContent}>
+          <Suspense fallback={<SplashScreen />}>
+            {currentNavBarSelection === VERTICAL_NAV_OPTIONS.mainStage && (
+              <MainStagePane setTotalUsers={setTitleCount} />
+            )}
+            {currentNavBarSelection === VERTICAL_NAV_OPTIONS.lobby && (
+              <LobbyPane />
+            )}
+            {currentNavBarSelection === VERTICAL_NAV_OPTIONS.rooms && (
+              <RoomsTab setRoomsCount={setTitleCount} />
+            )}
 
-          {currentNavBarSelection === VERTICAL_NAV_OPTIONS.networking && (
-            <ConversationsPane />
-          )}
+            {currentNavBarSelection === VERTICAL_NAV_OPTIONS.networking && (
+              <ConversationsPane />
+            )}
 
-          {currentNavBarSelection === VERTICAL_NAV_OPTIONS.attendees && (
-            <AttendeesPane
-              paneFilter={ATTENDEES_PANE_FILTER.all}
-              showFilter={true}
-              setTotalUsers={setTitleCount}
-            />
-          )}
+            {currentNavBarSelection === VERTICAL_NAV_OPTIONS.attendees && (
+              <AttendeesPane
+                paneFilter={ATTENDEES_PANE_FILTER.all}
+                showFilter={true}
+                setTotalUsers={setTitleCount}
+              />
+            )}
 
-          {currentNavBarSelection === VERTICAL_NAV_OPTIONS.chat && <ChatPane />}
+            {currentNavBarSelection === VERTICAL_NAV_OPTIONS.chat && (
+              <ChatPane />
+            )}
+            {/* <PollsContextWrapper>
+              {currentNavBarSelection === VERTICAL_NAV_OPTIONS.polls && (
+                <PollsPane />
+              )}
+            </PollsContextWrapper> */}
 
-          {currentNavBarSelection === VERTICAL_NAV_OPTIONS.polls && (
-            <PollsPane />
-          )}
+            {currentNavBarSelection === VERTICAL_NAV_OPTIONS.broadcasts && <BroadcastMessagePane />}
+            
+            {currentNavBarSelection === VERTICAL_NAV_OPTIONS.qna && <QnAPane />}
 
-          {currentNavBarSelection === VERTICAL_NAV_OPTIONS.qna && <QnAPane />}
-
-          {currentNavBarSelection === VERTICAL_NAV_OPTIONS.help && <HelpPane />}
-        </Suspense>
-      </Box>
-      {/* <MenuIconContainer icon={ChatIcon} label="Chat" /> */}
-
-      {/* <List>
-        <Tooltip title="Exit Event">
-          <ListItem
-            button
-            onClick={() => {
-              logout();
-              history.push(routes.EVENT_SESSION(sessionId));
-            }}
-          >
-            <ListItemIcon>
-              <ExitToAppIcon color="primary" />
-            </ListItemIcon>
-          </ListItem>
-        </Tooltip>
-      </List> */}
-    </div>
+            {currentNavBarSelection === VERTICAL_NAV_OPTIONS.help && (
+              <HelpPane />
+            )}
+          </Suspense>
+        </Box>
+      </div>
+    </Suspense>
   );
 };
 

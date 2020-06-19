@@ -2,6 +2,7 @@ import firebase from "./firebaseApp";
 import { v1 as uuidv1 } from "uuid";
 import { MAX_PARTICIPANTS_GROUP } from "../Config/constants";
 import { VERTICAL_NAV_OPTIONS } from "../Contexts/VerticalNavBarContext";
+import _ from "lodash";
 
 const getVideoConferenceAddress = (groupId) => `veertly-${groupId}`;
 
@@ -701,44 +702,27 @@ export const createConference = async (
     });
 };
 
-// // set video mute status
-// export const setVideoMuteStatusDB = async (muteVideo, originalSessionId) => {
-//   const sessionId = originalSessionId.toLowerCase();
-//   await firebase
-//   .firestore()
-//   .collection("eventSessions")
-//   .doc(sessionId)
-//   .set({
-//     muteVideo: muteVideo
-//   }, {
-//     merge: true
-//   })
-// }
+export const reorderRooms = async (
+  originalSessionId,
+  orderedRooms,
+  // myUserId,
+  // currentUserGroup,
+  snackbar
+) => {
+  let db = firebase.firestore();
 
-// // set audio mute status
-// export const setAudioMuteStatusDB = async (muteAudio, originalSessionId) => {
-//   const sessionId = originalSessionId.toLowerCase();
-//   await firebase
-//   .firestore()
-//   .collection("eventSessions")
-//   .doc(sessionId)
-//   .set({
-//     muteAudio: muteAudio
-//   }, {
-//     merge: true
-//   })
-// }
+  var batch = db.batch();
 
-// // set technical check shown for event session
-// export const setTechnicalCheckShowDB = async (technicalCheckShown, originalSessionId) => {
-//   const sessionId = originalSessionId.toLowerCase();
-//   await firebase
-//   .firestore()
-//   .collection("eventSessions")
-//   .doc(sessionId)
-//   .set({
-//     technicalCheckShown: technicalCheckShown
-//   }, {
-//     merge: true
-//   })
-// }
+  const sessionId = originalSessionId.toLowerCase();
+
+  let eventSessionRef = db.collection("eventSessions").doc(sessionId);
+
+  var liveGroupsCollectionRef = eventSessionRef.collection("liveGroups");
+
+  _.forEach(orderedRooms, (room, index) => {
+    const roomRef = liveGroupsCollectionRef.doc(room.id);
+    batch.update(roomRef, { order: index });
+  });
+
+  await batch.commit();
+};

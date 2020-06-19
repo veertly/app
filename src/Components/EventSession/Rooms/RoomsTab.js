@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
-import JoinConversationDialog from "./JoinConversationDialog";
-import NoRoomsImg from "../../Assets/illustrations/undraw_group_hangout_5gmq.svg";
+import JoinConversationDialog from "../JoinConversationDialog";
+import NoRoomsImg from "../../../Assets/illustrations/undraw_group_hangout_5gmq.svg";
 // undraw_group_hangout_5gmq
 // conference_call
 import { useSelector, shallowEqual, useDispatch } from "react-redux";
@@ -10,12 +10,14 @@ import {
   getUsers,
   getLiveGroups,
   getUser,
-  getEventSessionDetails
-} from "../../Redux/eventSession";
+  getEventSessionDetails,
+  isEventOwner as isEventOwnerSelector
+} from "../../../Redux/eventSession";
 import RoomCard from "./RoomCard";
 import _ from "lodash";
-import { openCreateRoom } from "../../Redux/dialogs";
+import { openCreateRoom } from "../../../Redux/dialogs";
 import { Box, Typography } from "@material-ui/core";
+import ReorderRoomsDialog from "./ReorderRoomsDialog";
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -118,9 +120,15 @@ export default function ({ setRoomsCount }) {
   const handleCreateRoom = React.useCallback(() => dispatch(openCreateRoom()), [
     dispatch
   ]);
+
+  const isEventOwner = useSelector(isEventOwnerSelector);
+
   const isRoomCreationAllowed = React.useMemo(
-    () => !eventSessionDetails || eventSessionDetails.denyRoomCreation !== true,
-    [eventSessionDetails]
+    () =>
+      !eventSessionDetails ||
+      isEventOwner ||
+      eventSessionDetails.denyRoomCreation !== true,
+    [eventSessionDetails, isEventOwner]
   );
   const { rooms } = React.useMemo(() => {
     let rooms = [];
@@ -141,7 +149,9 @@ export default function ({ setRoomsCount }) {
         conversations.push(extendedGroup);
       }
     });
-    return { rooms, conversations };
+
+    const sortedRooms = _.sortBy(rooms, "order");
+    return { rooms: sortedRooms, conversations };
   }, [liveGroups, user, users]);
 
   useEffect(() => {
@@ -156,6 +166,7 @@ export default function ({ setRoomsCount }) {
         group={selectedGroup}
         groupId={selectedGroupId}
       />
+      <ReorderRoomsDialog rooms={rooms} />
       <div className={classes.relativeContainer}>
         {rooms.length === 0 && (
           <Box className={classes.emptyPane}>

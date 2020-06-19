@@ -11,6 +11,7 @@ import _ from "lodash";
 
 import LobbyIcon from "@material-ui/icons/Weekend";
 import MainStageIcon from "@material-ui/icons/DesktopMac";
+import AnnouncementSharpIcon from "@material-ui/icons/AnnouncementSharp";
 import RoomsIcon from "../../Assets/Icons/Rooms";
 import AttendeesIcon from "../../Assets/Icons/Person";
 import NetworkingIcon from "../../Assets/Icons/Conversation1-1";
@@ -32,7 +33,8 @@ import {
   getSessionId,
   getUserGroup,
   getUserId,
-  getFeatureDetails
+  getFeatureDetails,
+  isEventOwner
 } from "../../Redux/eventSession";
 import ChatMessagesContext, {
   CHAT_GLOBAL_NS
@@ -102,6 +104,13 @@ export const DEAFULT_NAV_BAR = {
     icon: PollsIcon,
     order: 9,
     visible: true
+  },
+  [VERTICAL_NAV_OPTIONS.broadcasts] : {
+    id: VERTICAL_NAV_OPTIONS.broadcasts,
+    label: "Broadcast",
+    icon: AnnouncementSharpIcon,
+    order: 10,
+    visible: false,
   }
 };
 
@@ -208,6 +217,8 @@ const VerticalNavBar = (props) => {
     userCurrentLocation
   );
   const [lastCurrentSelection, setLastCurrentSelection] = React.useState(null);
+
+  const isOwner = useSelector(isEventOwner);
 
   const [lastGlobalChatOpenCount, setLastGlobalChatOpenCount] = useLocalStorage(
     `veertly/chat/${CHAT_GLOBAL_NS}/${sessionId}/${userId}/count`,
@@ -352,6 +363,20 @@ const VerticalNavBar = (props) => {
       {navBarOptions.map(({ icon, label, id, visible }) => {
         if (id === "divider" && visible) {
           return <Divider key="divider" />;
+        } else if (id === VERTICAL_NAV_OPTIONS.broadcasts) {
+          if (isOwner) {
+            return (
+              <MenuIconContainer
+                key={id}
+                icon={icon}
+                label={label}
+                selected={currentNavBarSelection === id}
+                onClick={handleClick(id)}
+                isCurrentLocation={currentLocation === id}
+                hasBadge={false}
+              />
+            );
+          }
         } else if (visible) {
           return (
             <MenuIconContainer

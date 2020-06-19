@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useContext } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import {
   useCollectionData,
   useDocumentData
@@ -49,8 +49,10 @@ import EventSessionContainer from "./EventSessionContainer";
 import { openRoomArchived } from "../../Redux/dialogs";
 import { ChatMessagesContextWrapper } from "../../Contexts/ChatMessagesContext";
 import EventSessionContainerTheme from "./EventSessionContainerTheme";
-import TechnicalCheckContext from "./TechnicalCheckContext";
-import AudioVideoCheckDialog from "../../Components/EventSession/AudioVideoCheckDialog";
+// import TechnicalCheckContext from "./TechnicalCheckContext";
+import ChatDraftMessageProvider from "../../Providers/ChatDraftMessageProvider";
+import { BroadcastMessagesProvider } from "../../Contexts/BroadcastMessagesContext";
+import ParticipantBroadcastDialogContainer from "../../Components/EventSession/ParticipantBroadcastDialogContainer";
 
 const EventSessionContainerWrapper = (props) => {
   const dispatch = useDispatch();
@@ -339,7 +341,7 @@ const EventSessionContainerWrapper = (props) => {
     dispatch(crossCheckKeepAlives(keepALivesDB));
   }, DEFAULT_KEEP_ALIVE_CHECK_INTERVAL);
 
-  const { showAudioVideoCheck} = useContext(TechnicalCheckContext);
+  // const { showAudioVideoCheck} = useContext(TechnicalCheckContext);
 
   // --- loading screen ---
   if (
@@ -380,13 +382,14 @@ const EventSessionContainerWrapper = (props) => {
       <VerticalNavBarContextWrapper>
         <ChatMessagesContextWrapper>
           <EventSessionContainerTheme>
-            <EventSessionContainer />
-            {
-              showAudioVideoCheck && 
-              <AudioVideoCheckDialog
-                sessionId={sessionId}
-              />
-            }
+            <ChatDraftMessageProvider>
+              <BroadcastMessagesProvider>
+                <>
+                  <EventSessionContainer />
+                  <ParticipantBroadcastDialogContainer />
+                </>
+              </BroadcastMessagesProvider>
+            </ChatDraftMessageProvider>
           </EventSessionContainerTheme>
         </ChatMessagesContextWrapper>
       </VerticalNavBarContextWrapper>

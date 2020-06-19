@@ -9,7 +9,8 @@ export const VERTICAL_NAV_OPTIONS = {
   chat: "CHAT",
   polls: "POLLS",
   qna: "QNA",
-  help: "HELP"
+  help: "HELP",
+  broadcasts: "BROADCASTS",
 };
 
 const VerticalNavBarContext = React.createContext({

@@ -34,6 +34,7 @@ import store from "./Redux/store";
 import Routes from "./Routes";
 import Auth from "./Components/Guards/Auth";
 import AppMetaTags from "./Components/Shared/AppMetaTags";
+import { RecoilRoot } from "recoil";
 
 const theme = createMuiTheme({
   palette: {
@@ -75,27 +76,29 @@ const history = createBrowserHistory();
 const App = () => {
   return (
     <Provider store={store}>
-      {/* <PersistGate loading={null} persistor={persistor}> */}
-      <ThemeProvider theme={theme}>
-        <SnackbarProvider
-          SnackbarProps={{ autoHideDuration: 10000 }}
-          SnackbarComponent={ClosableSnackbar}
-        >
-          <AppMetaTags />
+      <RecoilRoot>
+        {/* <PersistGate loading={null} persistor={persistor}> */}
+        <ThemeProvider theme={theme}>
+          <SnackbarProvider
+            SnackbarProps={{ autoHideDuration: 10000 }}
+            SnackbarComponent={ClosableSnackbar}
+          >
+            <AppMetaTags />
 
-          <CssBaseline />
-          <Router history={history}>
-            <Auth>
-              {/* <ScrollReset /> */}
-              {/* <GoogleAnalytics /> */}
-              {/* <CookiesNotification /> */}
-              {/* <SettingsNotification /> */}
-              <Routes />
-            </Auth>
-          </Router>
-        </SnackbarProvider>
-      </ThemeProvider>
-      {/* </PersistGate> */}
+            <CssBaseline />
+            <Router history={history}>
+              <Auth>
+                {/* <ScrollReset /> */}
+                {/* <GoogleAnalytics /> */}
+                {/* <CookiesNotification /> */}
+                {/* <SettingsNotification /> */}
+                <Routes />
+              </Auth>
+            </Router>
+          </SnackbarProvider>
+        </ThemeProvider>
+        {/* </PersistGate> */}
+      </RecoilRoot>
     </Provider>
   );
 };
