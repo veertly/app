@@ -50,6 +50,8 @@ import { openRoomArchived } from "../../Redux/dialogs";
 import { ChatMessagesContextWrapper } from "../../Contexts/ChatMessagesContext";
 import EventSessionContainerTheme from "./EventSessionContainerTheme";
 import ChatDraftMessageProvider from "../../Providers/ChatDraftMessageProvider";
+import { BroadcastMessagesProvider } from "../../Contexts/BroadcastMessagesContext";
+import ParticipantBroadcastDialogContainer from "../../Components/EventSession/ParticipantBroadcastDialogContainer";
 
 const EventSessionContainerWrapper = (props) => {
   const dispatch = useDispatch();
@@ -378,7 +380,12 @@ const EventSessionContainerWrapper = (props) => {
         <ChatMessagesContextWrapper>
           <EventSessionContainerTheme>
             <ChatDraftMessageProvider>
-              <EventSessionContainer />
+              <BroadcastMessagesProvider>
+                <>
+                  <EventSessionContainer />
+                  <ParticipantBroadcastDialogContainer />
+                </>
+              </BroadcastMessagesProvider>
             </ChatDraftMessageProvider>
           </EventSessionContainerTheme>
         </ChatMessagesContextWrapper>
