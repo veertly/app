@@ -326,7 +326,7 @@ exports.createBroadcastMessage = functions.https.onCall(async (data, context) =>
   const broadcastMessageToBeSaved = {
     id: broadcastMessageId,
     owner: userId,
-    creationDate: firestore.FieldValue.serverTimestamp(),
+    creationDate: admin.firestore.FieldValue.serverTimestamp(),
     message,
     state,
   };
