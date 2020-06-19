@@ -19,7 +19,8 @@ import {
   getLiveGroups,
   getUsers,
   getParticipantsJoined,
-  getLiveGroupsOriginal
+  getLiveGroupsOriginal,
+  getFeatureDetails
 } from "../../Redux/eventSession";
 import {
   isJoinParticipantOpen,
@@ -38,6 +39,8 @@ import {
   isParticipantAvailableForCall
 } from "../../Helpers/participantsHelper";
 import DialogClose from "../Misc/DialogClose";
+import { FEATURES } from "../../Modules/features";
+import { VERTICAL_NAV_OPTIONS } from "../../Contexts/VerticalNavBarContext";
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -176,6 +179,21 @@ export default function (props) {
     userSession
   ]);
 
+  const customNavBarFeature = useSelector(
+    getFeatureDetails(FEATURES.CUSTOM_NAV_BAR),
+    shallowEqual
+  );
+
+  const mainStageTitle = useMemo(() => {
+    if (
+      customNavBarFeature &&
+      customNavBarFeature[VERTICAL_NAV_OPTIONS.mainStage]
+    ) {
+      return customNavBarFeature[VERTICAL_NAV_OPTIONS.mainStage].label;
+    }
+    return "Main Stage";
+  }, [customNavBarFeature]);
+
   // console.log({
   //   participantSession,
   //   participantInConversation,
@@ -196,10 +214,10 @@ export default function (props) {
           <div className={classes.content}>
             <Alert severity="info">
               Sorry no attendee is available for a conversation at the moment.
-              Either they are on the ‘Main Stage’ or busy talking to others
+              {/* Either they are on the ‘Main Stage’ or busy talking to others
               already on the ‘Networking Area’. <br />
               Check out the ‘Conversations’ tab to join an existing
-              conversation.
+              conversation. */}
             </Alert>
           </div>
         </Dialog>
@@ -379,7 +397,7 @@ export default function (props) {
             <div className={classes.buttonContainer}>
               <Alert severity="info" className={classes.alert}>
                 {participant.firstName} is currently watching the presentation
-                on the main stage and is not available to talk
+                on the {mainStageTitle} and is not available to talk
               </Alert>
             </div>
           )}

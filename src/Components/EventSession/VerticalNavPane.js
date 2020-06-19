@@ -28,6 +28,40 @@ import _ from "lodash";
 import { DEAFULT_NAV_BAR } from "./VerticalNavBar";
 import { PollsContextWrapper } from "../../Contexts/PollsContext";
 
+export const getSectionTitle = (currentNavBarSelection, navBarItem) => {
+  switch (currentNavBarSelection) {
+    case VERTICAL_NAV_OPTIONS.lobby:
+      return navBarItem ? navBarItem.label : "Lobby";
+
+    case VERTICAL_NAV_OPTIONS.mainStage:
+      return `${navBarItem ? navBarItem.label : "Main Stage"} Attendees`;
+
+    case VERTICAL_NAV_OPTIONS.rooms:
+      return navBarItem ? navBarItem.label : "Rooms";
+
+    case VERTICAL_NAV_OPTIONS.networking:
+      return navBarItem ? navBarItem.label : "Networking";
+
+    case VERTICAL_NAV_OPTIONS.attendees:
+      return `All ${navBarItem ? navBarItem.label : "Attendees"}`;
+
+    case VERTICAL_NAV_OPTIONS.chat:
+      return `Global ${navBarItem ? navBarItem.label : "Chat"}`;
+
+    case VERTICAL_NAV_OPTIONS.polls:
+      return navBarItem ? navBarItem.label : "Polls";
+
+    case VERTICAL_NAV_OPTIONS.qna:
+      return navBarItem ? navBarItem.label : "Q&A";
+
+    case VERTICAL_NAV_OPTIONS.help:
+      return "Help";
+
+    default:
+      return "";
+  }
+};
+
 // import { Badge } from "@material-ui/core";
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -98,37 +132,7 @@ const VerticalNavPane = (props) => {
 
   const getTitle = () => {
     let navBarItem = navBarOptions[currentNavBarSelection];
-    switch (currentNavBarSelection) {
-      case VERTICAL_NAV_OPTIONS.lobby:
-        return navBarItem ? navBarItem.label : "Lobby";
-
-      case VERTICAL_NAV_OPTIONS.mainStage:
-        return `${navBarItem ? navBarItem.label : "Main Stage"} Attendees`;
-
-      case VERTICAL_NAV_OPTIONS.rooms:
-        return navBarItem ? navBarItem.label : "Rooms";
-
-      case VERTICAL_NAV_OPTIONS.networking:
-        return navBarItem ? navBarItem.label : "Networking";
-
-      case VERTICAL_NAV_OPTIONS.attendees:
-        return `All ${navBarItem ? navBarItem.label : "Attendees"}`;
-
-      case VERTICAL_NAV_OPTIONS.chat:
-        return `Global ${navBarItem ? navBarItem.label : "Chat"}`;
-
-      case VERTICAL_NAV_OPTIONS.polls:
-        return navBarItem ? navBarItem.label : "Polls";
-
-      case VERTICAL_NAV_OPTIONS.qna:
-        return navBarItem ? navBarItem.label : "Q&A";
-
-      case VERTICAL_NAV_OPTIONS.help:
-        return "Help";
-
-      default:
-        return "";
-    }
+    return getSectionTitle(currentNavBarSelection, navBarItem);
   };
 
   const collapsePane = () => {

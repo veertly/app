@@ -1,16 +1,32 @@
-import React, { useState, useMemo } from "react";
-import { makeStyles, Button, Typography, Box } from "@material-ui/core";
+import React, { useState, useMemo, useContext } from "react";
+import {
+  makeStyles,
+  Button,
+  Typography,
+  Box,
+  IconButton,
+  Tooltip
+} from "@material-ui/core";
 import AttendeesPane, { ATTENDEES_PANE_FILTER } from "./AttendeesPane";
 import { VERTICAL_NAV_OPTIONS } from "../../../Contexts/VerticalNavBarContext";
 import { setUserCurrentLocation } from "../../../Modules/userOperations";
-import { getSessionId, getUserSession } from "../../../Redux/eventSession";
-import { useSelector } from "react-redux";
+import {
+  getSessionId,
+  getUserSession,
+  getFeatureDetails
+} from "../../../Redux/eventSession";
+import SmallPlayerIcon from "../../../Assets/Icons/PiP";
+import FullscreenPlayerIcon from "../../../Assets/Icons/FullScreen";
+
+import { useSelector, shallowEqual } from "react-redux";
 import {
   isParticipantMainStage,
   isParticipantOnCall
 } from "../../../Helpers/participantsHelper";
 import LeaveCurrentCallDialog from "./LeaveCurrentCallDialog";
 import EmptyPaneImg from "../../../Assets/illustrations/emptyPane.svg";
+import SmallPlayerContext from "../../../Contexts/SmallPlayerContext";
+import { FEATURES } from "../../../Modules/features";
 
 const useStyles = makeStyles((theme) => ({
   buttonContainer: {
@@ -48,6 +64,25 @@ const MainStagePane = ({ setTotalUsers }) => {
   ]);
   const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
 
+  const { showSmallPlayer, openPlayer, miniPlayerEnabled } = useContext(
+    SmallPlayerContext
+  );
+
+  const customNavBarFeature = useSelector(
+    getFeatureDetails(FEATURES.CUSTOM_NAV_BAR),
+    shallowEqual
+  );
+
+  const mainStageTitle = useMemo(() => {
+    if (
+      customNavBarFeature &&
+      customNavBarFeature[VERTICAL_NAV_OPTIONS.mainStage]
+    ) {
+      return customNavBarFeature[VERTICAL_NAV_OPTIONS.mainStage].label;
+    }
+    return "Main Stage";
+  }, [customNavBarFeature]);
+
   const enterMainStage = () => {
     setUserCurrentLocation(sessionId, VERTICAL_NAV_OPTIONS.mainStage);
     setConfirmationDialogOpen(false);
@@ -70,13 +105,39 @@ const MainStagePane = ({ setTotalUsers }) => {
       />
       {!isUserInMainStage && (
         <div className={classes.buttonContainer}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={checkAndEnterMainStage}
-          >
-            Enter Main Stage
-          </Button>
+          {!miniPlayerEnabled && (
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={checkAndEnterMainStage}
+            >
+              Enter {mainStageTitle}
+            </Button>
+          )}
+          {miniPlayerEnabled && (
+            <>
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={checkAndEnterMainStage}
+                startIcon={<FullscreenPlayerIcon />}
+              >
+                Open {mainStageTitle}
+              </Button>
+
+              {miniPlayerEnabled && !showSmallPlayer && (
+                <Tooltip title={`View ${mainStageTitle} in a small player`}>
+                  <IconButton
+                    /* size="small" */ color="primary"
+                    onClick={openPlayer}
+                    style={{ marginLeft: 16 }}
+                  >
+                    <SmallPlayerIcon />
+                  </IconButton>
+                </Tooltip>
+              )}
+            </>
+          )}
         </div>
       )}
       <AttendeesPane
@@ -92,7 +153,7 @@ const MainStagePane = ({ setTotalUsers }) => {
             alt="Empty Main Stage"
           />
           <Typography variant="body2" color="textSecondary" display="block">
-            There's no one on the main stage
+            There's no one on the {mainStageTitle}
           </Typography>
         </Box>
       )}

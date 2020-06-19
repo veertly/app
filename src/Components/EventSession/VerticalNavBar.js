@@ -21,7 +21,6 @@ import HelpIcon from "../../Assets/Icons/Help";
 
 import { useHover } from "react-use";
 import { leaveCall } from "../../Modules/eventSessionOperations";
-import { setUserCurrentLocation } from "../../Modules/userOperations";
 import { Box, Typography, Divider, Badge } from "@material-ui/core";
 import VerticalNavBarContext, {
   VERTICAL_NAV_OPTIONS
@@ -38,6 +37,7 @@ import ChatMessagesContext, {
   CHAT_GLOBAL_NS
 } from "../../Contexts/ChatMessagesContext";
 import { FEATURES } from "../../Modules/features";
+import PerfectScrollbar from "react-perfect-scrollbar";
 
 export const DEAFULT_NAV_BAR = {
   [VERTICAL_NAV_OPTIONS.lobby]: {
@@ -338,12 +338,12 @@ const VerticalNavBar = (props) => {
       }
       setCurrentNavBarSelection(location);
 
-      if (
-        userCurrentLocation === VERTICAL_NAV_OPTIONS.lobby &&
-        location === VERTICAL_NAV_OPTIONS.mainStage
-      ) {
-        setUserCurrentLocation(sessionId, VERTICAL_NAV_OPTIONS.mainStage);
-      }
+      // if (
+      //   userCurrentLocation === VERTICAL_NAV_OPTIONS.lobby &&
+      //   location === VERTICAL_NAV_OPTIONS.mainStage
+      // ) {
+      //   setUserCurrentLocation(sessionId, VERTICAL_NAV_OPTIONS.mainStage);
+      // }
 
       // }
     } else {
@@ -355,34 +355,38 @@ const VerticalNavBar = (props) => {
   };
 
   return (
-    <div className={classes.root}>
-      {navBarOptions.map(({ icon, label, id, visible }) => {
-        if (id === "divider" && visible) {
-          return <Divider key="divider" />;
-        } else if (visible) {
-          return (
-            <MenuIconContainer
-              key={id}
-              icon={icon}
-              label={label}
-              selected={currentNavBarSelection === id}
-              onClick={handleClick(id)}
-              isCurrentLocation={currentLocation === id}
-              hasBadge={id === VERTICAL_NAV_OPTIONS.chat ? hasChatBadge : false}
-            />
-          );
-        }
-        return null;
-      })}
+    <PerfectScrollbar>
+      <div className={classes.root}>
+        {navBarOptions.map(({ icon, label, id, visible }) => {
+          if (id === "divider" && visible) {
+            return <Divider key="divider" />;
+          } else if (visible) {
+            return (
+              <MenuIconContainer
+                key={id}
+                icon={icon}
+                label={label}
+                selected={currentNavBarSelection === id}
+                onClick={handleClick(id)}
+                isCurrentLocation={currentLocation === id}
+                hasBadge={
+                  id === VERTICAL_NAV_OPTIONS.chat ? hasChatBadge : false
+                }
+              />
+            );
+          }
+          return null;
+        })}
 
-      <div style={{ flexGrow: 1 }}></div>
-      <MenuIconContainer
-        icon={HelpIcon}
-        label="Help"
-        selected={currentNavBarSelection === VERTICAL_NAV_OPTIONS.help}
-        onClick={handleClick(VERTICAL_NAV_OPTIONS.help)}
-      />
-    </div>
+        <div style={{ flexGrow: 1 }}></div>
+        <MenuIconContainer
+          icon={HelpIcon}
+          label="Help"
+          selected={currentNavBarSelection === VERTICAL_NAV_OPTIONS.help}
+          onClick={handleClick(VERTICAL_NAV_OPTIONS.help)}
+        />
+      </div>{" "}
+    </PerfectScrollbar>
   );
 };
 

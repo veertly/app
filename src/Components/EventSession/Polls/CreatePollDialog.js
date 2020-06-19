@@ -2,14 +2,10 @@ import React, { useState } from "react";
 import Button from "@material-ui/core/Button";
 import { makeStyles } from "@material-ui/core/styles";
 import _ from "lodash";
-// import { createNewRoom } from "../../Modules/eventSessionOperations";
-// import { useSnackbar } from "material-ui-snackbar-provider";
 import { v1 as uuidv1 } from "uuid";
 import { HelpCircle as InfoIcon } from "react-feather";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
-// import { useSelector, shallowEqual } from "react-redux";
 import { getSessionId, getUserId } from "../../../Redux/eventSession";
-// import Alert from "@material-ui/lab/Alert";
 import DeleteIcon from "@material-ui/icons/Delete";
 import {
   TextField,
@@ -406,7 +402,7 @@ export const CreatePollDialog = ({ open, setOpen, poll = null }) => {
               type="submit"
               disabled={executingAction}
             >
-              {poll && poll.state === POLLS_STATES.DRAFT
+              {!poll || poll.state === POLLS_STATES.DRAFT
                 ? "Launch Poll"
                 : "Save"}
             </Button>

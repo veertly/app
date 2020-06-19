@@ -36,19 +36,19 @@ import {
   setStateLoaded,
   isStateLoaded,
   crossCheckKeepAlives,
-  setEnabledFeatures,
-  getFeatureDetails
+  setEnabledFeatures
 } from "../../Redux/eventSession";
 import useInterval from "../../Hooks/useInterval";
 import SplashScreen from "../../Components/Misc/SplashScreen";
-import JitsiContext from "./JitsiContext";
+import { JitsiContextProvider } from "../../Contexts/JitsiContext";
 
-import { FEATURES } from "../../Modules/features";
 import { VerticalNavBarContextWrapper } from "../../Contexts/VerticalNavBarContext";
 import EventSessionContainer from "./EventSessionContainer";
 import { openRoomArchived } from "../../Redux/dialogs";
 import { ChatMessagesContextWrapper } from "../../Contexts/ChatMessagesContext";
 import EventSessionContainerTheme from "./EventSessionContainerTheme";
+import ChatDraftMessageProvider from "../../Providers/ChatDraftMessageProvider";
+import { SmallPlayerContextProvider } from "../../Contexts/SmallPlayerContext";
 
 const EventSessionContainerWrapper = (props) => {
   const dispatch = useDispatch();
@@ -56,9 +56,6 @@ const EventSessionContainerWrapper = (props) => {
   const [userAuth] = useAuthState(firebase.auth());
 
   const [initCompleted, setInitCompleted] = useState(false);
-  const [jitsiApi, setJitsiApi] = useState(null);
-  const [showSmallPlayer, setShowSmallPlayer] = useState(true);
-  const [miniPlayerEnabled, setMiniPlayerEnabled] = useState(false);
 
   const history = useHistory();
 
@@ -242,17 +239,6 @@ const EventSessionContainerWrapper = (props) => {
     setLastRoomArchivedInformed
   ] = React.useState(null);
 
-  // --- miniplayer ---
-  const miniPlayerFeature = useSelector(
-    getFeatureDetails(FEATURES.MINI_PLAYER),
-    shallowEqual
-  );
-  useEffect(() => {
-    if (miniPlayerFeature) {
-      setMiniPlayerEnabled(miniPlayerFeature.enabled);
-    }
-  }, [miniPlayerFeature]);
-
   // --- handle room archived snackbar ---
   useEffect(() => {
     const userGroupJson = JSON.stringify(userGroup);
@@ -364,23 +350,19 @@ const EventSessionContainerWrapper = (props) => {
   }
 
   return (
-    <JitsiContext.Provider
-      value={{
-        jitsiApi,
-        setJitsiApi,
-        showSmallPlayer,
-        setShowSmallPlayer,
-        miniPlayerEnabled
-      }}
-    >
-      <VerticalNavBarContextWrapper>
-        <ChatMessagesContextWrapper>
-          <EventSessionContainerTheme>
-            <EventSessionContainer />
-          </EventSessionContainerTheme>
-        </ChatMessagesContextWrapper>
-      </VerticalNavBarContextWrapper>
-    </JitsiContext.Provider>
+    <JitsiContextProvider>
+      <SmallPlayerContextProvider>
+        <VerticalNavBarContextWrapper>
+          <ChatMessagesContextWrapper>
+            <EventSessionContainerTheme>
+              <ChatDraftMessageProvider>
+                <EventSessionContainer />
+              </ChatDraftMessageProvider>
+            </EventSessionContainerTheme>
+          </ChatMessagesContextWrapper>
+        </VerticalNavBarContextWrapper>
+      </SmallPlayerContextProvider>
+    </JitsiContextProvider>
   );
 };
 

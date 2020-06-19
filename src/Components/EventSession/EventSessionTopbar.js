@@ -42,7 +42,16 @@ import { FEATURES } from "../../Modules/features";
 // import routes from "../../Config/routes";
 const useStyles = makeStyles((theme) => ({
   root: {
-    boxShadow: "none"
+    boxShadow: "none",
+    backgroundColor: theme.palette.topbar
+      ? theme.palette.topbar.main
+      : theme.palette.primary.main,
+    color: theme.palette.getContrastText(
+      theme.palette.topbar
+        ? theme.palette.topbar.main
+        : theme.palette.primary.main
+    ),
+    borderBottom: "1px solid rgba(0, 0, 0, 0.12)"
   },
   flexGrow: {
     flexGrow: 1,
