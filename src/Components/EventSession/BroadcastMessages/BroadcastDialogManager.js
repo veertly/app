@@ -31,7 +31,7 @@ const BroadcastDialogManager = ({ sessionId, userId }) => {
         message: launchBroadcastDialog.message
       })
     } else {
-      throw new Error("The poll hasn't been set correctly, please try again.");
+      throw new Error("The broadcast hasn't been set correctly, please try again.");
     }
   }, [launchBroadcastDialog, sessionId, userId]);
 
@@ -42,7 +42,7 @@ const BroadcastDialogManager = ({ sessionId, userId }) => {
         broadcastMessageId: deleteBroadcastDialog.id
       });
     } else {
-      throw new Error("The poll hasn't been set correctly, please try again.");
+      throw new Error("The broadcast hasn't been set correctly, please try again.");
     }
   }, [deleteBroadcastDialog, sessionId]);
 
@@ -70,8 +70,8 @@ const BroadcastDialogManager = ({ sessionId, userId }) => {
           <ConfirmationDialog
             open={!!deleteBroadcastDialog}
             closeDialog={() => setDeleteBroadcastDialog(null)}
-            title="Confirm deleting of this message"
-            alertMessage="This poll will now be live and attendees can start voting"
+            title="Confirm deleting of this broadcast message"
+            alertMessage="This broadcast message will be deleted"
             onConfirm={deletePoll}
             confirmationButtonLabel="Delete Message"
           />
@@ -82,10 +82,10 @@ const BroadcastDialogManager = ({ sessionId, userId }) => {
           <ConfirmationDialog
             open={!!launchBroadcastDialog}
             closeDialog={() => setLaunchBroadcastDialog(null)}
-            title="Confirm launching of this message"
-            alertMessage="This poll will now be live and attendees can start voting"
+            title="Confirm publishing of this broadcast message"
+            alertMessage="This broadcast will now be published and attendees will see it on their screen"
             onConfirm={launchBroadcastMessage}
-            confirmationButtonLabel="Launch Poll"
+            confirmationButtonLabel="Publish Poll"
           />
         )
       }

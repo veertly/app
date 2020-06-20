@@ -1,5 +1,5 @@
 import React, { useContext, useMemo } from "react";
-import { Box, Button, SvgIcon, Typography } from "@material-ui/core";
+import { Box, Button, SvgIcon, Typography, Divider, makeStyles } from "@material-ui/core";
 import { getUserId, getSessionId } from "../../../Redux/eventSession";
 import { useSelector } from "react-redux";
 import BroadcastDialogManager from "./BroadcastDialogManager";
@@ -8,15 +8,38 @@ import BroadcastMessagesContext from "../../../Contexts/BroadcastMessagesContext
 import { BROADCAST_MESSAGE_STATES } from "../../../Modules/broadcastOperations";
 import DraftIcon from "../../../Assets/Icons/Draft";
 import BroadcastMessagesMenu from "./BroadcastMessagesMenu";
+import { Archive as ArchiveIcon } from "react-feather";
+import LiveIcon from "../../../Assets/Icons/Live";
+
+const useStyles = makeStyles({
+  divider: {
+    marginTop: 12,
+    marginBottom: 12,
+    marginLeft: 16,
+    marginRight: 16,
+  }
+})
 
 const BroadcastMessageItem = ({ broadcastMessage }) => {
+
   return (
-    <Box width="100%" display="flex" flexDirection="row" alignItems="center">
-      {broadcastMessage.message}
-      <Box alignSelf="flex-end">
+    <Box width="100%" display="flex" flexDirection="row" justifyContent="space-between" alignItems="center" paddingLeft={2} paddingRight={2}>
+      <Typography>
+        {broadcastMessage.message}
+      </Typography>
+      <Box alignSelf="flex-start">
         <BroadcastMessagesMenu broadcastMessage={broadcastMessage} />
       </Box>
     </Box>
+  )
+}
+
+const LocalDivider = () => {
+  const classes = useStyles();
+  return (
+    <Divider className={classes.divider}>
+
+    </Divider>
   )
 }
 
@@ -27,7 +50,8 @@ const BroadcastMessagePane = () => {
   const sessionId = useSelector(getSessionId);
 
   const {
-    setCreateBroadcastDialog
+    setCreateBroadcastDialog,
+    activeBroadcastMessage
   } = useContext(BroadcastDialogContext)
 
   const {
@@ -48,9 +72,36 @@ const BroadcastMessagePane = () => {
     <>
       <BroadcastDialogManager sessionId={sessionId} userId={userId} />
       <Box>
-        <Button onClick={() => setCreateBroadcastDialog(true)}>
-          Create Broadcast Message
-        </Button>
+        
+        <>
+          <Box m={2} marginTop={1} display="flex">
+            <LiveIcon color="primary" style={{ marginRight: 8 }} />
+            <Typography variant="button" color="primary">
+              Live Messages
+            </Typography>
+          </Box> 
+          { 
+            activeBroadcastMessage && (
+              <BroadcastMessageItem key={activeBroadcastMessage.id} broadcastMessage={activeBroadcastMessage} />
+            )
+          }
+          {
+            !activeBroadcastMessage && (
+              <Box paddingLeft={2} paddingRight={2}>
+                <Typography>
+                  No active broadcast messages
+                </Typography>
+              </Box> 
+            )
+          }
+        </>
+        
+        <Box paddingLeft={2} paddingRight={2} marginTop={2} width="100%" display="flex" justifyContent="center" alignItems="center">
+          <Button onClick={() => setCreateBroadcastDialog(true)} variant="contained" color="primary">
+            Create Broadcast
+          </Button>
+        </Box> 
+        
 
         {draftMessages.length > 0 && (
           <>
@@ -59,12 +110,19 @@ const BroadcastMessagePane = () => {
                 <DraftIcon />
               </SvgIcon>
               <Typography variant="button" color="primary">
-                Draft Polls
+                Draft Messages
               </Typography>
             </Box>
-            {draftMessages.map((message) => {
+            {draftMessages.map((message, index) => {
               return (
-                <BroadcastMessageItem key={message.id} broadcastMessage={message} />
+                <>
+                  <BroadcastMessageItem key={message.id} broadcastMessage={message} />
+                  {
+                    index !== draftMessages.length - 1 && (
+                      <LocalDivider />
+                    )
+                  }
+                </>
               )
             })}
           </>
@@ -75,16 +133,23 @@ const BroadcastMessagePane = () => {
             <>
               <Box m={2} mt={6} display="flex">
                 <SvgIcon color="primary" style={{ marginRight: 8 }}>
-                  <DraftIcon />
+                   <ArchiveIcon />
                 </SvgIcon>
                 <Typography variant="button" color="primary">
                   Published Messages
                 </Typography>
               </Box>
-              {publishedMessages.map((message) => {
+              {publishedMessages.map((message, index) => {
                 return (
-                  <BroadcastMessageItem key={message.id}  broadcastMessage={message} />
-                )
+                <>
+                  <BroadcastMessageItem key={message.id} broadcastMessage={message} />
+                  {
+                    index !== publishedMessages.length - 1 && (
+                      <LocalDivider />
+                    )
+                  }
+                </>
+              )
               })}
             </>
           )

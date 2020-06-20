@@ -2,7 +2,8 @@ import React, { useContext } from "react";
 import PropTypes from "prop-types";
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
-import MenuIcon from "@material-ui/icons/SettingsOutlined";
+// import MenuIcon from "@material-ui/icons/SettingsOutlined";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
 import { IconButton, Box } from "@material-ui/core";
 import { POLLS_STATES } from "../../../Modules/pollsOperations";
 import BroadcastDialogContext from "../../../Contexts/BroadcastDialogContext";
@@ -57,8 +58,8 @@ const BroadcastMessagesMenu = ({ broadcastMessage }) => {
 
   return (
     <Box align="right">
-      <IconButton color="primary" aria-label="Call menu" onClick={handleMenu}>
-        <MenuIcon />
+      <IconButton color="primary" aria-label="Broadcast menu" onClick={handleMenu}>
+        <MoreVertIcon />
       </IconButton>
 
       <Menu
@@ -72,10 +73,10 @@ const BroadcastMessagesMenu = ({ broadcastMessage }) => {
         <MenuItem onClick={handleUpdatePollClick}>Edit</MenuItem>
         
         {state === POLLS_STATES.DRAFT && (
-          <MenuItem onClick={handleLaunchPollClick}>Launch</MenuItem>
+          <MenuItem onClick={handleLaunchPollClick}>Publish</MenuItem>
         )}
         {state === POLLS_STATES.PUBLISHED && (
-          <MenuItem onClick={handleLaunchPollClick}>Re-launch</MenuItem>
+          <MenuItem onClick={handleLaunchPollClick}>Republish</MenuItem>
         )}
         {/* {state === POLLS_STATES.PUBLISHED && (
           <MenuItem onClick={handleStopPollClick}>Stop</MenuItem>

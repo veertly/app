@@ -6,56 +6,15 @@ import { useSelector } from "react-redux";
 import { getSessionId, getUserId } from "../../../Redux/eventSession";
 
 const useStyles = makeStyles((theme) => ({
-  content: {
-    position: "relative"
-    // width: theme.breakpoints.values.sm
-    // padding: theme.spacing(6),
-    // textAlign: "center"
-  },
-  dialog: {
-    width: theme.breakpoints.width.sm
-  },
-  closeContainer: {
-    position: "absolute"
-  },
-  buttonContainer: {
-    width: "100%",
-    textAlign: "center",
-    paddingTop: theme.spacing(2)
-  },
-  hintText: {
-    marginBottom: theme.spacing(4),
-    display: "block",
-    width: 400,
-    textAlign: "center",
-    marginLeft: "auto",
-    marginRight: "auto",
-    marginTop: theme.spacing(2)
-  },
-  emptySpaceBottom: {
-    marginBottom: theme.spacing(4)
-  },
-  participantContainer: {
-    marginBottom: theme.spacing(3)
-  },
-  alert: {
-    marginTop: theme.spacing(2)
-  },
-  avatarsContainer: {
-    padding: theme.spacing(3)
-  },
-  avatar: {
-    margin: theme.spacing(0.5)
-  },
   dialogTitle: {
     color: theme.palette.primary.main
   },
   button: {
     margin: theme.spacing(2)
   },
-  infoIcon: {
-    marginTop: theme.spacing(1.25)
-  }
+  textField: {
+    width: "100%",
+  },
 }));
 
 
@@ -135,9 +94,10 @@ const CreateBroadcastDialog = ({ open, closeDialog, broadcastMessage = null }) =
             label="Enter your message"
             variant="outlined"
             value={message}
+            fullWidth
+            multiline
             onChange={handleChange}
           >
-
           </TextField>
         </DialogContent>
 
@@ -169,7 +129,7 @@ const CreateBroadcastDialog = ({ open, closeDialog, broadcastMessage = null }) =
             type="submit"
             disabled={executingAction}
           >
-            Launch
+            Publish
           </Button>
         </DialogActions>
       </form>
