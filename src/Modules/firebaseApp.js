@@ -34,8 +34,17 @@ const loginInEvent = functionsApp.httpsCallable("loginInEvent");
 //   functionsApp.useFunctionsEmulator("http://localhost:5001")
 // }
 
+const setUserRoleFunc = functionsApp.httpsCallable("setUserRole");
+const unsetUserRoleFunc = functionsApp.httpsCallable("unsetUserRole");
+
 const getTimestampFromDate = (date) => {
   return firebaseApp.firestore.Timestamp.fromDate(date);
 };
 
-export { loginInEvent, getTimestampFromDate, perf };
+export {
+  loginInEvent,
+  getTimestampFromDate,
+  perf,
+  setUserRoleFunc,
+  unsetUserRoleFunc
+};

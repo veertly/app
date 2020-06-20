@@ -16,6 +16,7 @@ import AttendeesIcon from "../../Assets/Icons/Person";
 import NetworkingIcon from "../../Assets/Icons/Conversation1-1";
 import ChatIcon from "../../Assets/Icons/Chat";
 import PollsIcon from "../../Assets/Icons/Polls";
+import BackstageIcon from "../../Assets/Icons/Backstage2";
 import QnAIcon from "../../Assets/Icons/QnA";
 import HelpIcon from "../../Assets/Icons/Help";
 
@@ -102,14 +103,14 @@ export const DEAFULT_NAV_BAR = {
     icon: PollsIcon,
     order: 9,
     visible: true
+  },
+  [VERTICAL_NAV_OPTIONS.backstage]: {
+    id: VERTICAL_NAV_OPTIONS.backstage,
+    label: "Backstage",
+    icon: BackstageIcon,
+    order: 10,
+    visible: true
   }
-  // [VERTICAL_NAV_OPTIONS.backstage]: {
-  //   id: VERTICAL_NAV_OPTIONS.backstage,
-  //   label: "Backstage",
-  //   icon: PollsIcon,
-  //   order: 9,
-  //   visible: true
-  // }
 };
 
 const useStyles = makeStyles((theme) => ({

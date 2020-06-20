@@ -30,6 +30,8 @@ import {
   participantHasSocials,
   participantHasSubtitle
 } from "../../../Helpers/participantsHelper";
+import Label from "../../Misc/Label";
+import { ROLES } from "../../../Modules/rolesOperations";
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -280,7 +282,9 @@ export default function ({
 
         const hasSubtitle = participantHasSubtitle(participant);
         const hasSocials = participantHasSocials(participant);
-        const hasFlag = participantHasFlag(participant);
+        const hasFlag =
+          participantHasFlag(participant) ||
+          (participant.roles && participant.roles.length > 0);
 
         const participantAvatar = participant.avatarUrl ? (
           <Avatar
@@ -294,6 +298,19 @@ export default function ({
             {participant.lastName.charAt(0).toUpperCase()}
           </Avatar>
         );
+
+        const getRole = () => {
+          if (participant.roles && participant.roles.length > 0) {
+            let roleKey = participant.roles[0];
+            if (participant.roles.includes(ROLES.SPEAKER.key)) {
+              roleKey = ROLES.SPEAKER.key;
+            } else if (participant.roles.includes(ROLES.HOST.key)) {
+              roleKey = ROLES.HOST.key;
+            }
+            return <Label color="primary">{ROLES[roleKey].label}</Label>;
+          }
+          return null;
+        };
 
         return (
           <div
@@ -360,6 +377,7 @@ export default function ({
               >
                 {/* <Typography> */}
                 <Flag locationDetails={participant.locationDetails} />
+                {getRole()}
                 {/* </Typography> */}
               </div>
             </div>
