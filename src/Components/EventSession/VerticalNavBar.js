@@ -11,7 +11,6 @@ import _ from "lodash";
 
 import LobbyIcon from "@material-ui/icons/Weekend";
 import MainStageIcon from "@material-ui/icons/DesktopMac";
-import AnnouncementSharpIcon from "@material-ui/icons/AnnouncementSharp";
 import RoomsIcon from "../../Assets/Icons/Rooms";
 import AttendeesIcon from "../../Assets/Icons/Person";
 import NetworkingIcon from "../../Assets/Icons/Conversation1-1";
@@ -19,6 +18,7 @@ import ChatIcon from "../../Assets/Icons/Chat";
 import PollsIcon from "../../Assets/Icons/Polls";
 import QnAIcon from "../../Assets/Icons/QnA";
 import HelpIcon from "../../Assets/Icons/Help";
+import Broadcast from "../../Assets/Icons/Broadcast";
 
 import { useHover } from "react-use";
 import { leaveCall } from "../../Modules/eventSessionOperations";
@@ -108,7 +108,7 @@ export const DEAFULT_NAV_BAR = {
   [VERTICAL_NAV_OPTIONS.broadcasts] : {
     id: VERTICAL_NAV_OPTIONS.broadcasts,
     label: "Broadcast",
-    icon: AnnouncementSharpIcon,
+    icon: Broadcast,
     order: 10,
     visible: false,
   }

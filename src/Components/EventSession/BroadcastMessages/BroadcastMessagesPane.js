@@ -20,16 +20,18 @@ const useStyles = makeStyles({
   }
 })
 
-const BroadcastMessageItem = ({ broadcastMessage }) => {
+const BroadcastMessageItem = ({ broadcastMessage, showMenu=true }) => {
 
   return (
     <Box width="100%" display="flex" flexDirection="row" justifyContent="space-between" alignItems="center" paddingLeft={2} paddingRight={2}>
       <Typography>
         {broadcastMessage.message}
       </Typography>
-      <Box alignSelf="flex-start">
-        <BroadcastMessagesMenu broadcastMessage={broadcastMessage} />
-      </Box>
+      {showMenu && (
+        <Box alignSelf="flex-start">
+          <BroadcastMessagesMenu broadcastMessage={broadcastMessage} />
+        </Box>
+      )}
     </Box>
   )
 }
@@ -80,7 +82,7 @@ const BroadcastMessagePane = () => {
           </Box> 
           { 
             activeBroadcastMessage && (
-              <BroadcastMessageItem key={activeBroadcastMessage.id} broadcastMessage={activeBroadcastMessage} />
+              <BroadcastMessageItem key={activeBroadcastMessage.id} broadcastMessage={activeBroadcastMessage} showMenu={false} />
             )
           }
           {
