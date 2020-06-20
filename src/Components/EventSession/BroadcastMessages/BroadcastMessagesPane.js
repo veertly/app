@@ -51,11 +51,11 @@ const BroadcastMessagePane = () => {
 
   const {
     setCreateBroadcastDialog,
-    activeBroadcastMessage
   } = useContext(BroadcastDialogContext)
 
   const {
     broadcastMessages,
+    activeBroadcastMessage
   } = useContext(BroadcastMessagesContext);
   
   const publishedMessages = useMemo(() => {
@@ -65,8 +65,6 @@ const BroadcastMessagePane = () => {
   const draftMessages = useMemo(() => {
     return broadcastMessages ? broadcastMessages.filter(message => message.state === BROADCAST_MESSAGE_STATES.DRAFT) : [];
   }, [broadcastMessages])
-
-  console.log(publishedMessages, draftMessages);
 
   return (
     <>
@@ -115,14 +113,14 @@ const BroadcastMessagePane = () => {
             </Box>
             {draftMessages.map((message, index) => {
               return (
-                <>
-                  <BroadcastMessageItem key={message.id} broadcastMessage={message} />
+                <Box key={message.id}>
+                  <BroadcastMessageItem broadcastMessage={message} />
                   {
                     index !== draftMessages.length - 1 && (
                       <LocalDivider />
                     )
                   }
-                </>
+                </Box>
               )
             })}
           </>
@@ -141,14 +139,14 @@ const BroadcastMessagePane = () => {
               </Box>
               {publishedMessages.map((message, index) => {
                 return (
-                <>
-                  <BroadcastMessageItem key={message.id} broadcastMessage={message} />
+                <Box key={message.id} >
+                  <BroadcastMessageItem broadcastMessage={message} />
                   {
                     index !== publishedMessages.length - 1 && (
                       <LocalDivider />
                     )
                   }
-                </>
+                </Box>
               )
               })}
             </>

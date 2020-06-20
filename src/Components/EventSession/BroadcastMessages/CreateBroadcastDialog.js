@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { makeStyles, DialogTitle, DialogContent, TextField, DialogActions, Button } from "@material-ui/core";
 import DialogClose from "../../Misc/DialogClose";
-import { createBroadcastMessage, updateBroadcastMessage, BROADCAST_MESSAGE_STATES, launchBroadcastMessage } from "../../../Modules/broadcastOperations";
+import { createBroadcastMessageDrafted, setBroadcastMessageToDrafted, launchBroadcastMessage } from "../../../Modules/broadcastOperations";
 import { useSelector } from "react-redux";
 import { getSessionId, getUserId } from "../../../Redux/eventSession";
 
@@ -32,7 +32,6 @@ const CreateBroadcastDialog = ({ open, closeDialog, broadcastMessage = null }) =
 
   const handleCreateBroadcast = async (event) => {
     event.preventDefault()
-    console.log("create broadcast");
     setExecutingAction(true);
     // await createBroadcastMessage({
     //   sessionId,
@@ -48,22 +47,19 @@ const CreateBroadcastDialog = ({ open, closeDialog, broadcastMessage = null }) =
   };
 
   const handleDraftBroadcast = async () => {
-    console.log("create draft broadcast");
 
     if (broadcastMessage) {
-      await updateBroadcastMessage({
+      await setBroadcastMessageToDrafted({
         sessionId,
         userId,
         originalBroadcast: broadcastMessage,
         newMessage: message,
-        newState: BROADCAST_MESSAGE_STATES.DRAFT,
       });
     } else {
-      await createBroadcastMessage({
+      await createBroadcastMessageDrafted({
         sessionId,
         userId,
         message,
-        state: BROADCAST_MESSAGE_STATES.DRAFT,
       });
     }
     handleClose();

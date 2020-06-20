@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import BroadcastDialogContext from "../../../Contexts/BroadcastDialogContext";
 import CreateBroadcastDialog from "./CreateBroadcastDialog";
 import ConfirmationDialog from "../../Misc/ConfirmationDialog";
-import { deleteBroadcastMessage, launchBroadcastMessage as launchBroadcastMessageDb } from "../../../Modules/broadcastOperations";
+import { deleteBroadcastMessage, launchDraftedMessage } from "../../../Modules/broadcastOperations";
 
 const BroadcastDialogManager = ({ sessionId, userId }) => {
 
@@ -25,11 +25,17 @@ const BroadcastDialogManager = ({ sessionId, userId }) => {
       //   originalBroadcast: launchBroadcastDialog,
       //   newState: BROADCAST_MESSAGE_STATES.PUBLISHED
       // });
-      await launchBroadcastMessageDb({
+      // await launchBroadcastMessageDb({
+      //   sessionId,
+      //   userId,
+      //   message: launchBroadcastDialog.message
+      // })
+      await launchDraftedMessage({
         sessionId,
         userId,
-        message: launchBroadcastDialog.message
-      })
+        message: launchBroadcastDialog.message,
+        originalBroadcast: launchBroadcastDialog,
+      });
     } else {
       throw new Error("The broadcast hasn't been set correctly, please try again.");
     }
@@ -85,7 +91,7 @@ const BroadcastDialogManager = ({ sessionId, userId }) => {
             title="Confirm publishing of this broadcast message"
             alertMessage="This broadcast will now be published and attendees will see it on their screen"
             onConfirm={launchBroadcastMessage}
-            confirmationButtonLabel="Publish Poll"
+            confirmationButtonLabel="Send Broadcast"
           />
         )
       }

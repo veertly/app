@@ -29,9 +29,8 @@ const ParticipantBroadcastDialogContainer = () => {
   }, [activeBroadcastMessage, setShowDialog])
 
   if (activeBroadcastMessage && !isOwner) {
-    console.log("show Dialog");
     return (
-      <Dialog open={showDialog} onClose={handleClose}>
+      <Dialog fullWidth open={showDialog} onClose={handleClose}>
         <DialogTitle className={classes.dialogTitle}>Announcement</DialogTitle>
         <DialogContent>
           <Typography variant="body1">
@@ -50,7 +49,6 @@ const ParticipantBroadcastDialogContainer = () => {
       </Dialog>
     )
   };
-  console.log("no active dialog")
   return null;
 };
 

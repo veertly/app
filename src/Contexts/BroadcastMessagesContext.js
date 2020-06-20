@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { BROADCAST_MESSAGE_STATES } from "../Modules/broadcastOperations";
 import { BroadcastDialogProvider } from "./BroadcastDialogContext";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { POLLS_NAMESPACES } from "../Modules/pollsOperations";
 import firebase from "../Modules/firebaseApp";
 import { useSelector } from "react-redux";
 import { getSessionId } from "../Redux/eventSession";
+import moment from "moment";
 
 const initialContext = {
   broadcastMessages: [],
@@ -39,11 +39,33 @@ export const BroadcastMessagesProvider = ({ children }) => {
   }, [broadcastMessagesDb]);
 
   React.useEffect(() => {
-    const activeMessages = broadcastMessages ? broadcastMessages.filter(message => message.state === BROADCAST_MESSAGE_STATES.ACTIVE) : null;
+    const activeMessages = broadcastMessages ? broadcastMessages.filter(message => {
+      // console.log(moment().diff(moment(message.creationDate)), moment(message.creationDate.seconds * 1000).calendar(), message.creationDate);
+      // console.log(message.creationDate);
+      if (!message.creationDate) {
+        return false;
+      }
+      const timeDiffInMillis = moment().diff(moment(message.creationDate.seconds * 1000));
+      // console.log(moment().diff(moment(message.creationDate)) < message.selfDestructTime);
+      if (timeDiffInMillis < message.selfDestructTime) {
+        return true;
+      }
+      return false;
+    }) : null;
+    // console.log(activeMessages);
+    let timeoutId;
     if (activeMessages && activeMessages[0]) {
       setActiveBroadcastMessage(activeMessages[0]);
+      timeoutId = setTimeout(() => {
+        setActiveBroadcastMessage(null);
+      }, activeMessages[0].selfDestructTime);
     } else {
       setActiveBroadcastMessage(null);
+    }
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
     }
   }, [broadcastMessages])
 
