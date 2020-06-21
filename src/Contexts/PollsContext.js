@@ -56,21 +56,20 @@ export const PollsContextWrapper = ({ children }) => {
     // .orderBy("sentDate", "desc")
     // .limit(LIMIT_NUM_MESSAGES_QUERY)
   );
-  const prevPollsDb = usePrevious(pollsDb);
+  // const prevPollsDb = usePrevious(pollsDb);
 
   useEffect(() => {
-    if (pollsDb && JSON.stringify(prevPollsDb) !== JSON.stringify(pollsDb)) {
-      // const newMsgs = pollsDb.filter(
-      //   (m) => m.status !== "ARCHIVED"
-      // );
-      const sortedPolls = _.reverse(pollsDb);
+    // if (pollsDb && JSON.stringify(prevPollsDb) !== JSON.stringify(pollsDb)) {
+    //   // const newMsgs = pollsDb.filter(
+    //   //   (m) => m.status !== "ARCHIVED"
+    //   // );
+    const sortedPolls = _.reverse(pollsDb);
 
-      setPolls((v) => ({
-        ...v,
-        [POLLS_NAMESPACES.GLOBAL]: sortedPolls
-      }));
-    }
-  }, [pollsDb, prevPollsDb, sessionId]);
+    setPolls((v) => ({
+      ...v,
+      [POLLS_NAMESPACES.GLOBAL]: sortedPolls
+    }));
+  }, [pollsDb, sessionId]);
 
   const [myVotesDb /* loading, error */] = useDocumentData(
     firebase
@@ -94,7 +93,7 @@ export const PollsContextWrapper = ({ children }) => {
         [POLLS_NAMESPACES.GLOBAL]: myVotesDb
       }));
     }
-  }, [myVotesDb, pollsDb, prevMyVotes, prevPollsDb, sessionId]);
+  }, [myVotesDb, pollsDb, prevMyVotes, sessionId]);
 
   return (
     <PollsContext.Provider

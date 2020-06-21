@@ -51,6 +51,7 @@ import ChatDraftMessageProvider from "../../Providers/ChatDraftMessageProvider";
 import { SmallPlayerContextProvider } from "../../Contexts/SmallPlayerContext";
 import { BroadcastMessagesProvider } from "../../Contexts/BroadcastMessagesContext";
 import ParticipantBroadcastDialogContainer from "../../Components/EventSession/ParticipantBroadcastDialogContainer";
+import { PollsContextWrapper } from "../../Contexts/PollsContext";
 
 const EventSessionContainerWrapper = (props) => {
   const dispatch = useDispatch();
@@ -359,10 +360,12 @@ const EventSessionContainerWrapper = (props) => {
             <EventSessionContainerTheme>
               <ChatDraftMessageProvider>
                 <BroadcastMessagesProvider>
-                  <>
-                    <EventSessionContainer />
-                    <ParticipantBroadcastDialogContainer />
-                  </>
+                  <PollsContextWrapper>
+                    <>
+                      <EventSessionContainer />
+                      <ParticipantBroadcastDialogContainer />
+                    </>
+                  </PollsContextWrapper>
                 </BroadcastMessagesProvider>
               </ChatDraftMessageProvider>
             </EventSessionContainerTheme>

@@ -15,6 +15,7 @@ import LobbyPane from "./LocationPanes/LobbyPane";
 import QnAPane from "./LocationPanes/QnAPane";
 import HelpPane from "./LocationPanes/HelpPane";
 import SplashScreen from "../Misc/SplashScreen";
+import PollsPane from "./Polls/PollsPane";
 // import InfoIcon from "../../Assets/Icons/Info";
 import AttendeesPane, {
   ATTENDEES_PANE_FILTER
@@ -200,11 +201,10 @@ const VerticalNavPane = (props) => {
             {currentNavBarSelection === VERTICAL_NAV_OPTIONS.chat && (
               <ChatPane />
             )}
-            {/* <PollsContextWrapper>
+            
               {currentNavBarSelection === VERTICAL_NAV_OPTIONS.polls && (
                 <PollsPane />
               )}
-            </PollsContextWrapper> */}
 
             {currentNavBarSelection === VERTICAL_NAV_OPTIONS.broadcasts && <BroadcastMessagePane />}
             
