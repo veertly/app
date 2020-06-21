@@ -10,6 +10,7 @@ import DraftIcon from "../../../Assets/Icons/Draft";
 import BroadcastMessagesMenu from "./BroadcastMessagesMenu";
 import { Archive as ArchiveIcon } from "react-feather";
 import LiveIcon from "../../../Assets/Icons/Live";
+import { Alert } from "@material-ui/lab";
 
 const useStyles = makeStyles({
   divider: {
@@ -17,10 +18,13 @@ const useStyles = makeStyles({
     marginBottom: 12,
     marginLeft: 16,
     marginRight: 16,
+  },
+  alert: {
+    marginTop: 16,
   }
 })
 
-const BroadcastMessageItem = ({ broadcastMessage, showMenu=true }) => {
+const BroadcastMessageItem = ({ broadcastMessage, showMenu=true, showPublish=true }) => {
 
   return (
     <Box width="100%" display="flex" flexDirection="row" justifyContent="space-between" alignItems="center" paddingLeft={2} paddingRight={2}>
@@ -29,7 +33,7 @@ const BroadcastMessageItem = ({ broadcastMessage, showMenu=true }) => {
       </Typography>
       {showMenu && (
         <Box alignSelf="flex-start">
-          <BroadcastMessagesMenu broadcastMessage={broadcastMessage} />
+          <BroadcastMessagesMenu showPublish={showPublish} broadcastMessage={broadcastMessage} />
         </Box>
       )}
     </Box>
@@ -68,6 +72,8 @@ const BroadcastMessagePane = () => {
     return broadcastMessages ? broadcastMessages.filter(message => message.state === BROADCAST_MESSAGE_STATES.DRAFT) : [];
   }, [broadcastMessages])
 
+  const classes = useStyles();
+
   return (
     <>
       <BroadcastDialogManager sessionId={sessionId} userId={userId} />
@@ -82,7 +88,14 @@ const BroadcastMessagePane = () => {
           </Box> 
           { 
             activeBroadcastMessage && (
-              <BroadcastMessageItem key={activeBroadcastMessage.id} broadcastMessage={activeBroadcastMessage} showMenu={false} />
+              <>
+                <BroadcastMessageItem 
+                  key={activeBroadcastMessage.id}
+                  broadcastMessage={activeBroadcastMessage}
+                  showMenu={false}
+                />
+                <LocalDivider />
+              </>
             )
           }
           {
@@ -96,10 +109,16 @@ const BroadcastMessagePane = () => {
           }
         </>
         
-        <Box paddingLeft={2} paddingRight={2} marginTop={2} width="100%" display="flex" justifyContent="center" alignItems="center">
-          <Button onClick={() => setCreateBroadcastDialog(true)} variant="contained" color="primary">
+        <Box paddingLeft={2} paddingRight={2} marginTop={2} width="100%" flexDirection="column" display="flex" justifyContent="center" alignItems="center">
+          <Button disabled={!!activeBroadcastMessage} onClick={() => setCreateBroadcastDialog(true)} variant="contained" color="primary">
             Create Broadcast
           </Button>
+          { 
+            !!activeBroadcastMessage &&
+            (
+              <Alert className={classes.alert} severity="info">Cannot publish while there is a live broadcast. Please wait 40 seconds</Alert>
+            )
+          }
         </Box> 
         
 
@@ -116,7 +135,7 @@ const BroadcastMessagePane = () => {
             {draftMessages.map((message, index) => {
               return (
                 <Box key={message.id}>
-                  <BroadcastMessageItem broadcastMessage={message} />
+                  <BroadcastMessageItem broadcastMessage={message} showPublish={!activeBroadcastMessage} />
                   {
                     index !== draftMessages.length - 1 && (
                       <LocalDivider />
@@ -142,7 +161,7 @@ const BroadcastMessagePane = () => {
               {publishedMessages.map((message, index) => {
                 return (
                 <Box key={message.id} >
-                  <BroadcastMessageItem broadcastMessage={message} />
+                  <BroadcastMessageItem broadcastMessage={message} showPublish={!activeBroadcastMessage} />
                   {
                     index !== publishedMessages.length - 1 && (
                       <LocalDivider />

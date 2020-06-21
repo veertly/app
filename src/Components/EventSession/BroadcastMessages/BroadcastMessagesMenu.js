@@ -8,7 +8,7 @@ import { IconButton, Box } from "@material-ui/core";
 import { POLLS_STATES } from "../../../Modules/pollsOperations";
 import BroadcastDialogContext from "../../../Contexts/BroadcastDialogContext";
 
-const BroadcastMessagesMenu = ({ broadcastMessage }) => {
+const BroadcastMessagesMenu = ({ broadcastMessage, showPublish=true }) => {
   const { state } = broadcastMessage;
 
   const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
@@ -72,10 +72,10 @@ const BroadcastMessagesMenu = ({ broadcastMessage }) => {
         
         <MenuItem onClick={handleUpdatePollClick}>Edit</MenuItem>
         
-        {state === POLLS_STATES.DRAFT && (
+        {state === POLLS_STATES.DRAFT && showPublish && (
           <MenuItem onClick={handleLaunchPollClick}>Publish</MenuItem>
         )}
-        {state === POLLS_STATES.PUBLISHED && (
+        {state === POLLS_STATES.PUBLISHED && showPublish && (
           <MenuItem onClick={handleLaunchPollClick}>Republish</MenuItem>
         )}
         {/* {state === POLLS_STATES.PUBLISHED && (
