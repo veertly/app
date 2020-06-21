@@ -10,7 +10,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-const ParticipantBroadcastDialogContainer = () => {
+const ParticipantBroadcastDialogContainer = React.memo(() => {
   const classes = useStyles();
   const {
     activeBroadcastMessage
@@ -50,6 +50,6 @@ const ParticipantBroadcastDialogContainer = () => {
     )
   };
   return null;
-};
+});
 
 export default ParticipantBroadcastDialogContainer;
