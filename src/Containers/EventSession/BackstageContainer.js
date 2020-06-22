@@ -60,7 +60,7 @@ const BackstageContainer = () => {
   if (!backstageFeature || !backstageFeature.enabled) {
     return (
       <div className={classes.videoContainer}>
-        <Typography align="center" gutterBottom style={{ marginTop: 100 }}>
+        <Typography align="center" gutterBottom style={{ paddingTop: 100 }}>
           {backstageStageTitle} not configured correctly...
         </Typography>
         <Typography variant="caption" display="block" align="center">

@@ -2,10 +2,12 @@ import React, { useContext } from "react";
 import BroadcastDialogContext from "../../../Contexts/BroadcastDialogContext";
 import CreateBroadcastDialog from "./CreateBroadcastDialog";
 import ConfirmationDialog from "../../Misc/ConfirmationDialog";
-import { deleteBroadcastMessage, launchDraftedMessage } from "../../../Modules/broadcastOperations";
+import {
+  deleteBroadcastMessage,
+  launchDraftedMessage
+} from "../../../Modules/broadcastOperations";
 
 const BroadcastDialogManager = ({ sessionId, userId }) => {
-
   const {
     createBroadcastDialog,
     updateBroadcastDialog,
@@ -14,7 +16,7 @@ const BroadcastDialogManager = ({ sessionId, userId }) => {
     setCreateBroadcastDialog,
     setUpdateBroadcastDialog,
     setDeleteBroadcastDialog,
-    setLaunchBroadcastDialog,
+    setLaunchBroadcastDialog
   } = useContext(BroadcastDialogContext);
 
   const launchBroadcastMessage = React.useCallback(async () => {
@@ -34,69 +36,65 @@ const BroadcastDialogManager = ({ sessionId, userId }) => {
         sessionId,
         userId,
         message: launchBroadcastDialog.message,
-        originalBroadcast: launchBroadcastDialog,
+        originalBroadcast: launchBroadcastDialog
       });
     } else {
-      throw new Error("The broadcast hasn't been set correctly, please try again.");
+      throw new Error(
+        "The broadcast hasn't been set correctly, please try again."
+      );
     }
   }, [launchBroadcastDialog, sessionId, userId]);
 
-  const deletePoll = React.useCallback(async () => {
+  const deleteBroadcast = React.useCallback(async () => {
     if (deleteBroadcastDialog) {
       await deleteBroadcastMessage({
         sessionId,
         broadcastMessageId: deleteBroadcastDialog.id
       });
     } else {
-      throw new Error("The broadcast hasn't been set correctly, please try again.");
+      throw new Error(
+        "The broadcast hasn't been set correctly, please try again."
+      );
     }
   }, [deleteBroadcastDialog, sessionId]);
 
-
   return (
     <>
-      {createBroadcastDialog && 
+      {createBroadcastDialog && (
         <CreateBroadcastDialog
           open={!!createBroadcastDialog}
           closeDialog={() => setCreateBroadcastDialog(null)}
-        >
-        </CreateBroadcastDialog>
-      }
-      {
-        updateBroadcastDialog && (
-          <CreateBroadcastDialog 
-            open={!!updateBroadcastDialog}
-            closeDialog={() => setUpdateBroadcastDialog(null)}
-            broadcastMessage={updateBroadcastDialog}
-          />
-        )
-      }
-      {
-        deleteBroadcastDialog && (
-          <ConfirmationDialog
-            open={!!deleteBroadcastDialog}
-            closeDialog={() => setDeleteBroadcastDialog(null)}
-            title="Confirm deleting of this broadcast message"
-            alertMessage="This broadcast message will be deleted"
-            onConfirm={deletePoll}
-            confirmationButtonLabel="Delete Message"
-          />
-        )
-      }
-      {
-        launchBroadcastDialog && (
-          <ConfirmationDialog
-            open={!!launchBroadcastDialog}
-            closeDialog={() => setLaunchBroadcastDialog(null)}
-            title="Confirm publishing of this broadcast message"
-            alertMessage="This broadcast will now be published and attendees will see it on their screen"
-            onConfirm={launchBroadcastMessage}
-            confirmationButtonLabel="Send Broadcast"
-          />
-        )
-      }
+        ></CreateBroadcastDialog>
+      )}
+      {updateBroadcastDialog && (
+        <CreateBroadcastDialog
+          open={!!updateBroadcastDialog}
+          closeDialog={() => setUpdateBroadcastDialog(null)}
+          broadcastMessage={updateBroadcastDialog}
+        />
+      )}
+      {deleteBroadcastDialog && (
+        <ConfirmationDialog
+          open={!!deleteBroadcastDialog}
+          closeDialog={() => setDeleteBroadcastDialog(null)}
+          title="Confirm deleting of this broadcast message"
+          alertMessage="This broadcast message will be deleted"
+          onConfirm={deleteBroadcast}
+          confirmationButtonLabel="Delete Message"
+        />
+      )}
+      {launchBroadcastDialog && (
+        <ConfirmationDialog
+          open={!!launchBroadcastDialog}
+          closeDialog={() => setLaunchBroadcastDialog(null)}
+          title="Confirm publishing of this broadcast message"
+          alertMessage="This broadcast will now be published and attendees will see it on their screen"
+          onConfirm={launchBroadcastMessage}
+          confirmationButtonLabel="Send Broadcast"
+        />
+      )}
     </>
-  )
-}
+  );
+};
 
 export default BroadcastDialogManager;

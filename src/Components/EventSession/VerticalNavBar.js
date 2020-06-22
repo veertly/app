@@ -19,7 +19,7 @@ import PollsIcon from "../../Assets/Icons/Polls";
 import BackstageIcon from "../../Assets/Icons/Backstage2";
 import QnAIcon from "../../Assets/Icons/QnA";
 import HelpIcon from "../../Assets/Icons/Help";
-import Broadcast from "../../Assets/Icons/Broadcast";
+import Broadcast from "../../Assets/Icons/Broadcast2";
 
 import { useHover } from "react-use";
 import { leaveCall } from "../../Modules/eventSessionOperations";

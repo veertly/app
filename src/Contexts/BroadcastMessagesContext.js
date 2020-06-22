@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { BroadcastDialogProvider } from "./BroadcastDialogContext";
 import { useCollectionData } from "react-firebase-hooks/firestore";
-import { POLLS_NAMESPACES } from "../Modules/pollsOperations";
+import { BROADCAST_MESSAGE_NAMESPACES } from "../Modules/broadcastOperations";
 import firebase from "../Modules/firebaseApp";
 import { useSelector } from "react-redux";
 import { getSessionId } from "../Redux/eventSession";
@@ -9,13 +9,15 @@ import moment from "moment";
 
 const initialContext = {
   broadcastMessages: [],
-  activeBroadcastMessage: null,
+  activeBroadcastMessage: null
 };
 
 const BroadcastMessagesContext = React.createContext(initialContext);
 
 export const BroadcastMessagesProvider = ({ children }) => {
-  const [broadcastMessages, setBroadcastMessages] = useState(initialContext.broadcastMessages);
+  const [broadcastMessages, setBroadcastMessages] = useState(
+    initialContext.broadcastMessages
+  );
   const sessionId = useSelector(getSessionId);
   const [activeBroadcastMessage, setActiveBroadcastMessage] = useState(null);
 
@@ -25,11 +27,11 @@ export const BroadcastMessagesProvider = ({ children }) => {
       .collection("eventSessions")
       .doc(sessionId)
       .collection("broadcasts")
-      .doc(POLLS_NAMESPACES.GLOBAL)
+      .doc(BROADCAST_MESSAGE_NAMESPACES.GLOBAL)
       .collection("broadcastsMessages")
     // .where("isArchived", "==", false)
     // .orderBy("sentDate", "desc")
-    // .limit(LIMIT_NUM_MESSAGES_QUERY + 
+    // .limit(LIMIT_NUM_MESSAGES_QUERY +
   );
 
   // const prevBroadcastMessagesDb = usePrevious(broadcastMessagesDb);
@@ -39,19 +41,23 @@ export const BroadcastMessagesProvider = ({ children }) => {
   }, [broadcastMessagesDb]);
 
   React.useEffect(() => {
-    const activeMessages = broadcastMessages ? broadcastMessages.filter(message => {
-      // console.log(moment().diff(moment(message.creationDate)), moment(message.creationDate.seconds * 1000).calendar(), message.creationDate);
-      // console.log(message.creationDate);
-      if (!message.creationDate) {
-        return false;
-      }
-      const timeDiffInMillis = moment().diff(moment(message.creationDate.seconds * 1000));
-      // console.log(moment().diff(moment(message.creationDate)) < message.selfDestructTime);
-      if (timeDiffInMillis < message.selfDestructTime) {
-        return true;
-      }
-      return false;
-    }) : null;
+    const activeMessages = broadcastMessages
+      ? broadcastMessages.filter((message) => {
+          // console.log(moment().diff(moment(message.creationDate)), moment(message.creationDate.seconds * 1000).calendar(), message.creationDate);
+          // console.log(message.creationDate);
+          if (!message.creationDate) {
+            return false;
+          }
+          const timeDiffInMillis = moment().diff(
+            moment(message.creationDate.seconds * 1000)
+          );
+          // console.log(moment().diff(moment(message.creationDate)) < message.selfDestructTime);
+          if (timeDiffInMillis < message.selfDestructTime) {
+            return true;
+          }
+          return false;
+        })
+      : null;
     // console.log(activeMessages);
     let timeoutId;
     if (activeMessages && activeMessages[0]) {
@@ -64,23 +70,21 @@ export const BroadcastMessagesProvider = ({ children }) => {
     }
     return () => {
       if (timeoutId) {
-        clearTimeout(timeoutId)
+        clearTimeout(timeoutId);
       }
-    }
-  }, [broadcastMessages])
+    };
+  }, [broadcastMessages]);
 
   return (
     <BroadcastMessagesContext.Provider
       value={{
         broadcastMessages,
-        activeBroadcastMessage,
+        activeBroadcastMessage
       }}
     >
-      <BroadcastDialogProvider>
-        {children}
-      </BroadcastDialogProvider>
+      <BroadcastDialogProvider>{children}</BroadcastDialogProvider>
     </BroadcastMessagesContext.Provider>
-  )
-}
+  );
+};
 
 export default BroadcastMessagesContext;
