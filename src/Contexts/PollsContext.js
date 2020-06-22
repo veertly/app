@@ -6,7 +6,6 @@ import {
   useDocumentData
 } from "react-firebase-hooks/firestore";
 import firebase from "../Modules/firebaseApp";
-import { usePrevious } from "react-use";
 
 // import { atomFamily } from "recoil";
 import { POLLS_NAMESPACES } from "../Modules/pollsOperations";
@@ -56,21 +55,17 @@ export const PollsContextWrapper = ({ children }) => {
     // .orderBy("sentDate", "desc")
     // .limit(LIMIT_NUM_MESSAGES_QUERY)
   );
-  const prevPollsDb = usePrevious(pollsDb);
+  // const prevPollsDb = usePrevious(pollsDb);
 
   useEffect(() => {
-    if (pollsDb && JSON.stringify(prevPollsDb) !== JSON.stringify(pollsDb)) {
-      // const newMsgs = pollsDb.filter(
-      //   (m) => m.status !== "ARCHIVED"
-      // );
+    if (pollsDb) {
       const sortedPolls = _.reverse(pollsDb);
-
       setPolls((v) => ({
         ...v,
         [POLLS_NAMESPACES.GLOBAL]: sortedPolls
       }));
     }
-  }, [pollsDb, prevPollsDb, sessionId]);
+  }, [pollsDb, sessionId]);
 
   const [myVotesDb /* loading, error */] = useDocumentData(
     firebase
@@ -82,19 +77,16 @@ export const PollsContextWrapper = ({ children }) => {
       .collection("userVotes")
       .doc(userId)
   );
-  const prevMyVotes = usePrevious(myVotesDb);
+  // const prevMyVotes = usePrevious(myVotesDb);
 
   useEffect(() => {
-    if (
-      myVotesDb &&
-      JSON.stringify(prevMyVotes) !== JSON.stringify(myVotesDb)
-    ) {
+    if (myVotesDb) {
       setMyVotes((v) => ({
         ...v,
         [POLLS_NAMESPACES.GLOBAL]: myVotesDb
       }));
     }
-  }, [myVotesDb, pollsDb, prevMyVotes, prevPollsDb, sessionId]);
+  }, [myVotesDb, pollsDb, sessionId]);
 
   return (
     <PollsContext.Provider

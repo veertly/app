@@ -12,11 +12,10 @@ import RoomsTab from "./Rooms/RoomsTab";
 import ChatPane from "../Chat/ChatPane";
 import MainStagePane from "./LocationPanes/MainStagePane";
 import LobbyPane from "./LocationPanes/LobbyPane";
-import PollsPane from "./Polls/PollsPane";
 import QnAPane from "./LocationPanes/QnAPane";
 import HelpPane from "./LocationPanes/HelpPane";
 import SplashScreen from "../Misc/SplashScreen";
-
+import PollsPane from "./Polls/PollsPane";
 // import InfoIcon from "../../Assets/Icons/Info";
 import AttendeesPane, {
   ATTENDEES_PANE_FILTER
@@ -26,7 +25,7 @@ import { getFeatureDetails } from "../../Redux/eventSession";
 import { FEATURES } from "../../Modules/features";
 import _ from "lodash";
 import { DEAFULT_NAV_BAR } from "./VerticalNavBar";
-import { PollsContextWrapper } from "../../Contexts/PollsContext";
+import BroadcastMessagePane from "./BroadcastMessages/BroadcastMessagesPane";
 import BackstagePane from "./LocationPanes/BackstagePane";
 
 export const getSectionTitle = (currentNavBarSelection, navBarItem) => {
@@ -60,6 +59,9 @@ export const getSectionTitle = (currentNavBarSelection, navBarItem) => {
 
     case VERTICAL_NAV_OPTIONS.help:
       return "Help";
+
+    case VERTICAL_NAV_OPTIONS.broadcasts:
+      return navBarItem ? navBarItem.label : "Broadcast";
 
     default:
       return "";
@@ -206,11 +208,14 @@ const VerticalNavPane = (props) => {
             {currentNavBarSelection === VERTICAL_NAV_OPTIONS.chat && (
               <ChatPane />
             )}
-            <PollsContextWrapper>
-              {currentNavBarSelection === VERTICAL_NAV_OPTIONS.polls && (
-                <PollsPane />
-              )}
-            </PollsContextWrapper>
+
+            {currentNavBarSelection === VERTICAL_NAV_OPTIONS.polls && (
+              <PollsPane />
+            )}
+
+            {currentNavBarSelection === VERTICAL_NAV_OPTIONS.broadcasts && (
+              <BroadcastMessagePane />
+            )}
 
             {currentNavBarSelection === VERTICAL_NAV_OPTIONS.qna && <QnAPane />}
 

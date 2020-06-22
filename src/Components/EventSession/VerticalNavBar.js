@@ -19,6 +19,7 @@ import PollsIcon from "../../Assets/Icons/Polls";
 import BackstageIcon from "../../Assets/Icons/Backstage2";
 import QnAIcon from "../../Assets/Icons/QnA";
 import HelpIcon from "../../Assets/Icons/Help";
+import Broadcast from "../../Assets/Icons/Broadcast2";
 
 import { useHover } from "react-use";
 import { leaveCall } from "../../Modules/eventSessionOperations";
@@ -33,6 +34,7 @@ import {
   getUserGroup,
   getUserId,
   getFeatureDetails,
+  isEventOwner,
   getUser
 } from "../../Redux/eventSession";
 import ChatMessagesContext, {
@@ -106,11 +108,18 @@ export const DEAFULT_NAV_BAR = {
     order: 9,
     visible: true
   },
+  [VERTICAL_NAV_OPTIONS.broadcasts]: {
+    id: VERTICAL_NAV_OPTIONS.broadcasts,
+    label: "Broadcast",
+    icon: Broadcast,
+    order: 10,
+    visible: false
+  },
   [VERTICAL_NAV_OPTIONS.backstage]: {
     id: VERTICAL_NAV_OPTIONS.backstage,
     label: "Backstage",
     icon: BackstageIcon,
-    order: 10,
+    order: 11,
     visible: true
   }
 };
@@ -214,6 +223,7 @@ const VerticalNavBar = (props) => {
   const hasBackstage = useMemo(
     () =>
       user &&
+      user.roles &&
       (user.roles.includes(ROLES.SPEAKER.key) ||
         user.roles.includes(ROLES.HOST.key)),
     [user]
@@ -227,6 +237,8 @@ const VerticalNavBar = (props) => {
     userCurrentLocation
   );
   const [lastCurrentSelection, setLastCurrentSelection] = React.useState(null);
+
+  const isOwner = useSelector(isEventOwner);
 
   const [lastGlobalChatOpenCount, setLastGlobalChatOpenCount] = useLocalStorage(
     `veertly/chat/${CHAT_GLOBAL_NS}/${sessionId}/${userId}/count`,
@@ -376,6 +388,19 @@ const VerticalNavBar = (props) => {
 
           if (id === "divider" && visible) {
             return <Divider key="divider" />;
+          } else if (id === VERTICAL_NAV_OPTIONS.broadcasts) {
+            if (isOwner) {
+              return (
+                <MenuIconContainer
+                  key={id}
+                  icon={icon}
+                  label={label}
+                  selected={currentNavBarSelection === id}
+                  onClick={handleClick(id)}
+                  isCurrentLocation={currentLocation === id}
+                />
+              );
+            }
           } else if (visible) {
             return (
               <Box key={id}>
@@ -403,7 +428,7 @@ const VerticalNavBar = (props) => {
           selected={currentNavBarSelection === VERTICAL_NAV_OPTIONS.help}
           onClick={handleClick(VERTICAL_NAV_OPTIONS.help)}
         />
-      </div>{" "}
+      </div>
     </PerfectScrollbar>
   );
 };

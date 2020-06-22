@@ -49,6 +49,9 @@ import { ChatMessagesContextWrapper } from "../../Contexts/ChatMessagesContext";
 import EventSessionContainerTheme from "./EventSessionContainerTheme";
 import ChatDraftMessageProvider from "../../Providers/ChatDraftMessageProvider";
 import { SmallPlayerContextProvider } from "../../Contexts/SmallPlayerContext";
+import { BroadcastMessagesProvider } from "../../Contexts/BroadcastMessagesContext";
+import ParticipantBroadcastDialogContainer from "../../Components/EventSession/ParticipantBroadcastDialogContainer";
+import { PollsContextWrapper } from "../../Contexts/PollsContext";
 
 const EventSessionContainerWrapper = (props) => {
   const dispatch = useDispatch();
@@ -356,13 +359,20 @@ const EventSessionContainerWrapper = (props) => {
           <ChatMessagesContextWrapper>
             <EventSessionContainerTheme>
               <ChatDraftMessageProvider>
-                <EventSessionContainer />
+                <BroadcastMessagesProvider>
+                  <PollsContextWrapper>
+                    <>
+                      <EventSessionContainer />
+                      <ParticipantBroadcastDialogContainer />
+                    </>
+                  </PollsContextWrapper>
+                </BroadcastMessagesProvider>
               </ChatDraftMessageProvider>
             </EventSessionContainerTheme>
           </ChatMessagesContextWrapper>
         </VerticalNavBarContextWrapper>
       </SmallPlayerContextProvider>
-    </JitsiContextProvider>
+    </JitsiContextProvider> 
   );
 };
 

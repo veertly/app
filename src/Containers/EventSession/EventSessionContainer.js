@@ -186,7 +186,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const EventSessionContainer = (props) => {
+const EventSessionContainer = React.memo(() => {
   const theme = useTheme();
   const isDesktop = !useMediaQuery(theme.breakpoints.down("xs"));
 
@@ -390,7 +390,7 @@ const EventSessionContainer = (props) => {
       )}
     </div>
   );
-};
+});
 
 // EventSessionContainer.whyDidYouRender = true;
 
