@@ -31,7 +31,7 @@ import {
 import { FEATURES } from "../../Modules/features";
 import { VERTICAL_NAV_OPTIONS } from "../../Contexts/VerticalNavBarContext";
 import { usePrevious } from "react-use";
-import TechnicalCheckContext from "./TechnicalCheckContext";
+import TechnicalCheckContext from "../../Contexts/TechnicalCheckContext";
 import AudioVideoCheckDialog from "../../Components/EventSession/AudioVideoCheckDialog";
 
 const useStyles = makeStyles((theme) => ({
@@ -77,7 +77,7 @@ export default () => {
   const classes = useStyles();
 
   const { jitsiApi, setJitsiApi } = useContext(JitsiContext);
-  const { showAudioVideoCheck, muteVideo, muteAudio, setMuteAudio, setMuteVideo } = useContext(TechnicalCheckContext);
+  const { showAudioVideoCheck, muteVideo, muteAudio, setMuteAudio, setMuteVideo, selectedAudioInput, selectedVideoInput, selectedAudioOutput } = useContext(TechnicalCheckContext);
 
   const previousMuteVideo = usePrevious(muteVideo);
   const previousMuteAudio = usePrevious(muteAudio);
@@ -206,6 +206,18 @@ export default () => {
         api.executeCommand("toggleVideo");
       }
 
+      if (selectedAudioInput) {
+        api.setAudioInputDevice(selectedAudioInput.label)
+      }
+
+      if (selectedVideoInput) {
+        api.setVideoInputDevice(selectedVideoInput.label)
+      }
+
+      if (selectedAudioOutput) {
+        api.setAudioOutputDevice(selectedAudioOutput.label);
+      }
+
       setLastRoomLoaded(roomName);
       setJitsiApi(api);
     }
@@ -216,22 +228,7 @@ export default () => {
       //   jitsiApi.dispose();
       // }
     };
-  }, [
-    loaded,
-    eventSessionDetails,
-    user,
-    handleCallEnded,
-    jitsiApi,
-    lastRoomLoaded,
-    setJitsiApi,
-    sessionId,
-    removeJitsiLogoFeature,
-    muteAudio,
-    muteVideo,
-    setMuteAudio,
-    setMuteVideo,
-    showAudioVideoCheck,
-  ]);
+  }, [loaded, eventSessionDetails, user, handleCallEnded, jitsiApi, lastRoomLoaded, setJitsiApi, sessionId, removeJitsiLogoFeature, muteAudio, muteVideo, setMuteAudio, setMuteVideo, showAudioVideoCheck, selectedAudioInput, selectedVideoInput, selectedAudioOutput]);
 
   useEffect(() => {
     if (jitsiApi) {   

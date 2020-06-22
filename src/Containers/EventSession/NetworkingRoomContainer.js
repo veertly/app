@@ -22,7 +22,7 @@ import {
 } from "../../Modules/jitsi";
 import { FEATURES } from "../../Modules/features";
 import { usePrevious } from "react-use";
-import TechnicalCheckContext from "./TechnicalCheckContext";
+import TechnicalCheckContext from "../../Contexts/TechnicalCheckContext";
 import AudioVideoCheckDialog from "../../Components/EventSession/AudioVideoCheckDialog";
 // import TechnicalCheckContext from "./TechnicalCheckContext";
 const useStyles = makeStyles((theme) => ({

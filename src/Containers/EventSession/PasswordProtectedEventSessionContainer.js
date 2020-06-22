@@ -16,7 +16,7 @@ import SplashScreen from "../../Components/Misc/SplashScreen";
 import CompatibilityDialog from "../../Components/Shared/CompatibilityDialog";
 import EventSessionContainerWrapper from "./EventSessionContainerWrapper";
 // import AudioVideoCheckDialog from "../../Components/EventSession/AudioVideoCheckDialog";
-import TechnicalCheckProvider from "./TechnicalCheckProvider";
+// import TechnicalCheckProvider from "./TechnicalCheckProvider";
 // import { Switch } from "@material-ui/core";
 // import VideocamIcon from "@material-ui/icons/Videocam";
 // import VideocamOffIcon from "@material-ui/icons/VideocamOff";
@@ -268,14 +268,10 @@ const ProtectedEventSessionContainer = () => {
   // }
   else {
     return (
-      <TechnicalCheckProvider
-        sessionId={sessionId}
-      > 
-        <>
-          <EventSessionContainerWrapper />
-          <CompatibilityDialog />
-        </>
-      </TechnicalCheckProvider>
+      <>
+        <EventSessionContainerWrapper />
+        <CompatibilityDialog />
+      </>
     );
   }
 };

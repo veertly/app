@@ -17,16 +17,17 @@ export const TOPBAR_HEIGHT = 64;
 
 
 export const getButtonText = ({ muteAudio, muteVideo }) =>{
-  let buttonText = "Join event";
+  let buttonText = "Join";
 
   if (muteVideo) {
-    buttonText = " Join event without video";
+    buttonText = " Join without video";
   }
   if (muteAudio) {
-    buttonText = "Join event without audio";
+    buttonText = "Join without audio";
   }
   if (muteVideo && muteAudio) {
-    buttonText = "Join event without audio and video";
+    buttonText = "Join without audio and video";
   }
   return buttonText;
 };
+
