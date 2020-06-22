@@ -12,23 +12,23 @@ export const BROADCAST_MESSAGE_NAMESPACES = {
 
 export const BROADCAST_SELF_DESTRUCT_TIME = 30 * 1000;
 
-export const createBroadcastMessageDrafted  = async ({
+export const createBroadcastMessageDrafted = async ({
   sessionId,
   userId,
   message,
-  namespace = BROADCAST_MESSAGE_NAMESPACES.GLOBAL,
+  namespace = BROADCAST_MESSAGE_NAMESPACES.GLOBAL
 }) => {
   const db = firebase.firestore();
 
   const broadcastMessageId = String(new Date().getTime());
-  const state  = BROADCAST_MESSAGE_STATES.DRAFT;
+  const state = BROADCAST_MESSAGE_STATES.DRAFT;
 
   const broadcastMessageToBeSaved = {
     id: broadcastMessageId,
     owner: userId,
     creationDate: firebase.firestore.FieldValue.serverTimestamp(),
     message,
-    state,
+    state
   };
   try {
     await db
@@ -58,14 +58,14 @@ export const setBroadcastMessageToDrafted = async ({
 
   if (!originalBroadcast) {
     throw new Error("Original broadcast message is not defined");
-  };
+  }
 
   const broadcastToBeSaved = {
     id: broadcastMessageId,
     owner: userId,
     creationDate: firebase.firestore.FieldValue.serverTimestamp(),
     message: newMessage,
-    state: newState,
+    state: newState
   };
 
   const batch = db.batch();
@@ -79,7 +79,7 @@ export const setBroadcastMessageToDrafted = async ({
     .doc(`${broadcastMessageId}`);
 
   batch.update(broadcastRef, broadcastToBeSaved);
-  
+
   await batch.commit();
 };
 
@@ -114,7 +114,7 @@ export const launchDraftedMessage = async ({
 
   if (!originalBroadcast) {
     throw new Error("Original broadcast message is not defined");
-  };
+  }
 
   const broadcastToBeSaved = {
     id: broadcastMessageId,
@@ -122,7 +122,7 @@ export const launchDraftedMessage = async ({
     creationDate: firebase.firestore.FieldValue.serverTimestamp(),
     message: message,
     selfDestructTime: BROADCAST_SELF_DESTRUCT_TIME,
-    state: state,
+    state: state
   };
 
   const batch = db.batch();
@@ -141,13 +141,13 @@ export const launchDraftedMessage = async ({
   } catch (error) {
     console.log(error);
   }
-}
+};
 
 export const launchBroadcastMessage = async ({
   sessionId,
   userId,
   message,
-  namespace = BROADCAST_MESSAGE_NAMESPACES.GLOBAL,
+  namespace = BROADCAST_MESSAGE_NAMESPACES.GLOBAL
 }) => {
   try {
     const db = firebase.firestore();
@@ -160,9 +160,9 @@ export const launchBroadcastMessage = async ({
       creationDate: firebase.firestore.FieldValue.serverTimestamp(),
       message,
       selfDestructTime: BROADCAST_SELF_DESTRUCT_TIME,
-      state: BROADCAST_MESSAGE_STATES.PUBLISHED,
+      state: BROADCAST_MESSAGE_STATES.PUBLISHED
     };
-   
+
     await db
       .collection("eventSessions")
       .doc(sessionId.toLowerCase())
@@ -171,23 +171,23 @@ export const launchBroadcastMessage = async ({
       .collection("broadcastsMessages")
       .doc(broadcastMessageId)
       .set(broadcastMessageToBeSaved);
-    
+
     // await launchBroadcastMessageFirebaseFunction({
     //   sessionId,
     //   userId,
     //   message,
     //   state: BROADCAST_MESSAGE_STATES.ACTIVE,
     //   namespace
-    // });  
+    // });
   } catch (err) {
     console.log(err);
   }
-}
+};
 
 export const deleteBroadcastMessage = async ({
   sessionId,
   broadcastMessageId,
-  namespace=BROADCAST_MESSAGE_NAMESPACES.GLOBAL,
+  namespace = BROADCAST_MESSAGE_NAMESPACES.GLOBAL
 }) => {
   const db = firebase.firestore();
 

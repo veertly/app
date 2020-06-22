@@ -20,7 +20,8 @@ import {
   getUsers,
   getParticipantsJoined,
   getLiveGroupsOriginal,
-  getFeatureDetails
+  getFeatureDetails,
+  isEventOwner as isEventOwnerSelector
 } from "../../Redux/eventSession";
 import {
   isJoinParticipantOpen,
@@ -41,12 +42,19 @@ import {
 import DialogClose from "../Misc/DialogClose";
 import { FEATURES } from "../../Modules/features";
 import { VERTICAL_NAV_OPTIONS } from "../../Contexts/VerticalNavBarContext";
+import { Box } from "@material-ui/core";
+import ParticipantSettingsMenu from "./ParticipantSettingsMenu";
 
 const useStyles = makeStyles((theme) => ({
   content: {
     position: "relative",
     width: theme.breakpoints.values.sm,
     padding: theme.spacing(6)
+  },
+  settingsContainer: {
+    position: "absolute",
+    right: 48,
+    top: 8
   },
   closeContainer: {
     position: "absolute"
@@ -89,7 +97,7 @@ export default function (props) {
   const dispatch = useDispatch();
 
   const open = useSelector(isJoinParticipantOpen);
-  const participant = useSelector(getJoinParticipantEntity, shallowEqual);
+  const participantEntity = useSelector(getJoinParticipantEntity, shallowEqual);
   const sessionId = useSelector(getSessionId);
   const userId = useSelector(getUserId);
   const userGroup = useSelector(getUserLiveGroup, shallowEqual);
@@ -102,6 +110,12 @@ export default function (props) {
   const liveGroups = useSelector(getLiveGroups, shallowEqual);
   const liveGroupsOriginal = useSelector(getLiveGroupsOriginal, shallowEqual);
   const participantsJoined = useSelector(getParticipantsJoined, shallowEqual);
+  const isEventOwner = useSelector(isEventOwnerSelector);
+
+  const participant = React.useMemo(
+    () => (participantEntity ? users[participantEntity.id] : null),
+    [participantEntity, users]
+  );
 
   const participantSession = React.useMemo(
     () =>
@@ -260,7 +274,11 @@ export default function (props) {
       <DialogClose open={open} onClose={handleClose} maxWidth={"sm"}>
         <div className={classes.content}>
           <ParticipantCard participant={participant} />
-
+          {isEventOwner && (
+            <Box className={classes.settingsContainer}>
+              <ParticipantSettingsMenu participant={participant} />
+            </Box>
+          )}
           {isMyUser && (
             <Alert severity="info" className={classes.alert}>
               This is yourself{" "}

@@ -42,6 +42,7 @@ import { VERTICAL_NAV_OPTIONS } from "../../Contexts/VerticalNavBarContext";
 import VerticalNavPane from "../../Components/EventSession/VerticalNavPane";
 import { Box } from "@material-ui/core";
 import { LobbyContainer } from "./LobbyContainer";
+import BackstageContainer from "./BackstageContainer";
 // import CurrentCallActionsVertical from "../../Components/EventSession/CurrentCallActionsVertical";
 
 export const SIDE_PANE_WIDTH = 0;
@@ -333,6 +334,9 @@ const EventSessionContainer = React.memo(() => {
 
             {userCurrentLocation === VERTICAL_NAV_OPTIONS.mainStage && (
               <ConferenceRoomContainer />
+            )}
+            {userCurrentLocation === VERTICAL_NAV_OPTIONS.backstage && (
+              <BackstageContainer />
             )}
             {userGroup && (
               <>

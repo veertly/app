@@ -1,12 +1,13 @@
 const functions = require("firebase-functions");
-const admin = require("firebase-admin");
-admin.initializeApp();
 
-const firestore = admin.firestore();
+const { firestore, admin } = require("./modules/firebase");
+
 const moment = require("moment");
 
 const sendgrid = require("./modules/sendgrid");
 const slack = require("./modules/slack");
+
+const userRolesFunctions = require("./services/userRoles");
 
 const leaveCall = async (sessionId, myUserId) => {
   var eventSessionRef = firestore.collection("eventSessions").doc(sessionId);
@@ -213,7 +214,8 @@ exports.onEventCreated = functions.firestore
 
     let { sessionId } = context.params;
 
-    let baseUrl = functions.config().global.base_url;
+    const config = functions.config();
+    let baseUrl = config.global ? config.global.base_url : "";
 
     var ownerRef = await firestore.collection("users").doc(owner);
 
@@ -359,3 +361,8 @@ exports.loginInEvent = functions.https.onCall(async (data, context) => {
 //     console.log(error);
 //   }
 // });
+exports.setUserRole = functions.https.onCall(userRolesFunctions.setUserRole);
+
+exports.unsetUserRole = functions.https.onCall(
+  userRolesFunctions.unsetUserRole
+);

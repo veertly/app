@@ -26,6 +26,7 @@ import { FEATURES } from "../../Modules/features";
 import _ from "lodash";
 import { DEAFULT_NAV_BAR } from "./VerticalNavBar";
 import BroadcastMessagePane from "./BroadcastMessages/BroadcastMessagesPane";
+import BackstagePane from "./LocationPanes/BackstagePane";
 
 export const getSectionTitle = (currentNavBarSelection, navBarItem) => {
   switch (currentNavBarSelection) {
@@ -53,12 +54,15 @@ export const getSectionTitle = (currentNavBarSelection, navBarItem) => {
     case VERTICAL_NAV_OPTIONS.qna:
       return navBarItem ? navBarItem.label : "Q&A";
 
+    case VERTICAL_NAV_OPTIONS.backstage:
+      return `${navBarItem ? navBarItem.label : "Backstage"} Attendees`;
+
     case VERTICAL_NAV_OPTIONS.help:
       return "Help";
 
     case VERTICAL_NAV_OPTIONS.broadcasts:
       return navBarItem ? navBarItem.label : "Broadcast";
-      
+
     default:
       return "";
   }
@@ -144,6 +148,7 @@ const VerticalNavPane = (props) => {
 
   const showCount =
     currentNavBarSelection === VERTICAL_NAV_OPTIONS.mainStage ||
+    currentNavBarSelection === VERTICAL_NAV_OPTIONS.backstage ||
     currentNavBarSelection === VERTICAL_NAV_OPTIONS.attendees ||
     currentNavBarSelection === VERTICAL_NAV_OPTIONS.rooms;
 
@@ -189,7 +194,9 @@ const VerticalNavPane = (props) => {
             {currentNavBarSelection === VERTICAL_NAV_OPTIONS.networking && (
               <ConversationsPane />
             )}
-
+            {currentNavBarSelection === VERTICAL_NAV_OPTIONS.backstage && (
+              <BackstagePane setTotalUsers={setTitleCount} />
+            )}
             {currentNavBarSelection === VERTICAL_NAV_OPTIONS.attendees && (
               <AttendeesPane
                 paneFilter={ATTENDEES_PANE_FILTER.all}
@@ -201,13 +208,15 @@ const VerticalNavPane = (props) => {
             {currentNavBarSelection === VERTICAL_NAV_OPTIONS.chat && (
               <ChatPane />
             )}
-            
-              {currentNavBarSelection === VERTICAL_NAV_OPTIONS.polls && (
-                <PollsPane />
-              )}
 
-            {currentNavBarSelection === VERTICAL_NAV_OPTIONS.broadcasts && <BroadcastMessagePane />}
-            
+            {currentNavBarSelection === VERTICAL_NAV_OPTIONS.polls && (
+              <PollsPane />
+            )}
+
+            {currentNavBarSelection === VERTICAL_NAV_OPTIONS.broadcasts && (
+              <BroadcastMessagePane />
+            )}
+
             {currentNavBarSelection === VERTICAL_NAV_OPTIONS.qna && <QnAPane />}
 
             {currentNavBarSelection === VERTICAL_NAV_OPTIONS.help && (
