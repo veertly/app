@@ -27,6 +27,7 @@ import { FEATURES } from "../../Modules/features";
 import _ from "lodash";
 import { DEAFULT_NAV_BAR } from "./VerticalNavBar";
 import { PollsContextWrapper } from "../../Contexts/PollsContext";
+import BackstagePane from "./LocationPanes/BackstagePane";
 
 export const getSectionTitle = (currentNavBarSelection, navBarItem) => {
   switch (currentNavBarSelection) {
@@ -53,6 +54,9 @@ export const getSectionTitle = (currentNavBarSelection, navBarItem) => {
 
     case VERTICAL_NAV_OPTIONS.qna:
       return navBarItem ? navBarItem.label : "Q&A";
+
+    case VERTICAL_NAV_OPTIONS.backstage:
+      return `${navBarItem ? navBarItem.label : "Backstage"} Attendees`;
 
     case VERTICAL_NAV_OPTIONS.help:
       return "Help";
@@ -142,6 +146,7 @@ const VerticalNavPane = (props) => {
 
   const showCount =
     currentNavBarSelection === VERTICAL_NAV_OPTIONS.mainStage ||
+    currentNavBarSelection === VERTICAL_NAV_OPTIONS.backstage ||
     currentNavBarSelection === VERTICAL_NAV_OPTIONS.attendees ||
     currentNavBarSelection === VERTICAL_NAV_OPTIONS.rooms;
 
@@ -187,7 +192,9 @@ const VerticalNavPane = (props) => {
             {currentNavBarSelection === VERTICAL_NAV_OPTIONS.networking && (
               <ConversationsPane />
             )}
-
+            {currentNavBarSelection === VERTICAL_NAV_OPTIONS.backstage && (
+              <BackstagePane setTotalUsers={setTitleCount} />
+            )}
             {currentNavBarSelection === VERTICAL_NAV_OPTIONS.attendees && (
               <AttendeesPane
                 paneFilter={ATTENDEES_PANE_FILTER.all}

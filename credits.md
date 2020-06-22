@@ -18,9 +18,4 @@
 - [Amy Chiang](https://thenounproject.com/amyc) from the [Noun Project(https://thenounproject.com)]
 - [Alice Design](https://thenounproject.com/rose-alice-design) from the [Noun Project(https://thenounproject.com)]
 - [Adrien Coquet](https://thenounproject.com/coquet_adrien) from the [Noun Project(https://thenounproject.com)]
-
-https://thenounproject.com/search/?q=video%20camera&i=2073124
-
-https://thenounproject.com/term/tv-show/1706186/
-https://thenounproject.com/term/spotlight/221269/
-https://thenounproject.com/term/spotlight/2714707/
+- [Free Icons](https://thenounproject.com/engineeratanalysis) from the [Noun Project(https://thenounproject.com)]

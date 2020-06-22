@@ -28,10 +28,10 @@ import {
   isParticipantMainStage,
   participantHasFlag,
   participantHasSocials,
-  participantHasSubtitle
+  participantHasSubtitle,
+  isParticipantBackstage
 } from "../../../Helpers/participantsHelper";
-import Label from "../../Misc/Label";
-import { ROLES } from "../../../Modules/rolesOperations";
+import ParticipantRole from "../../Misc/ParticipantRole";
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -138,6 +138,7 @@ const AvailableBadge = withStyles((theme) => ({
 export const ATTENDEES_PANE_FILTER = {
   all: "ALL",
   mainStage: "MAIN_STAGE",
+  backstage: "BACKSTAGE",
   available: "AVAILABLE"
 };
 
@@ -178,6 +179,8 @@ export default function ({
           !isMyUser && isParticipantAvailableForCall(participantSession);
       } else if (paneFilter === ATTENDEES_PANE_FILTER.mainStage) {
         isFiltered = isParticipantMainStage(participantSession);
+      } else if (paneFilter === ATTENDEES_PANE_FILTER.backstage) {
+        isFiltered = isParticipantBackstage(participantSession);
       } else {
         isFiltered = true; // show all attendees
       }
@@ -299,18 +302,18 @@ export default function ({
           </Avatar>
         );
 
-        const getRole = () => {
-          if (participant.roles && participant.roles.length > 0) {
-            let roleKey = participant.roles[0];
-            if (participant.roles.includes(ROLES.SPEAKER.key)) {
-              roleKey = ROLES.SPEAKER.key;
-            } else if (participant.roles.includes(ROLES.HOST.key)) {
-              roleKey = ROLES.HOST.key;
-            }
-            return <Label color="primary">{ROLES[roleKey].label}</Label>;
-          }
-          return null;
-        };
+        // const getRole = () => {
+        //   if (participant.roles && participant.roles.length > 0) {
+        //     let roleKey = participant.roles[0];
+        //     if (participant.roles.includes(ROLES.SPEAKER.key)) {
+        //       roleKey = ROLES.SPEAKER.key;
+        //     } else if (participant.roles.includes(ROLES.HOST.key)) {
+        //       roleKey = ROLES.HOST.key;
+        //     }
+        //     return <Label color="primary">{ROLES[roleKey].label}</Label>;
+        //   }
+        //   return null;
+        // };
 
         return (
           <div
@@ -375,10 +378,8 @@ export default function ({
                 className={classes.flagContainer}
                 style={{ top: hasSocials ? null : hasSubtitle ? 0 : 10 }}
               >
-                {/* <Typography> */}
                 <Flag locationDetails={participant.locationDetails} />
-                {getRole()}
-                {/* </Typography> */}
+                <ParticipantRole roles={participant.roles} />
               </div>
             </div>
           </div>

@@ -5,7 +5,8 @@ export const FEATURES = {
   PASSWORD_PROTECTED: "passwordProtected",
   REMOVE_JITSI_LOGO: "removeJitsiLogo",
   CUSTOM_NAV_BAR: "customNavBar",
-  CUSTOM_THEME: "customTheme"
+  CUSTOM_THEME: "customTheme",
+  STREAMYARD_BACKSTAGE: "streamYardBackstage"
 };
 
 export const getFeatureDetails = (enabledFeatures, feature) => {

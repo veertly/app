@@ -115,6 +115,15 @@ export default () => {
 
     const roomName = "veertly" + prefixStr + "-" + sessionId;
 
+    if (eventSessionDetails.conferenceVideoType !== "JITSI" && loaded) {
+      // dispose existing jitsi
+      if (jitsiApi) {
+        jitsiApi.executeCommand("hangup");
+        jitsiApi.dispose();
+        setLastRoomLoaded(null);
+      }
+    }
+
     if (
       eventSessionDetails.conferenceVideoType === "JITSI" &&
       loaded &&
@@ -127,7 +136,6 @@ export default () => {
       }
 
       const domain = getJistiDomain(eventSessionDetails);
-
       const showJitsiLogo =
         isMeetJitsi(domain) &&
         (!removeJitsiLogoFeature || !removeJitsiLogoFeature.enabled);
