@@ -223,6 +223,7 @@ const VerticalNavBar = (props) => {
   const hasBackstage = useMemo(
     () =>
       user &&
+      user.roles &&
       (user.roles.includes(ROLES.SPEAKER.key) ||
         user.roles.includes(ROLES.HOST.key)),
     [user]
