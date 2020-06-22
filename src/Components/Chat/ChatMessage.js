@@ -5,7 +5,8 @@ import {
   Typography,
   IconButton,
   Menu,
-  MenuItem
+  MenuItem,
+  Box
 } from "@material-ui/core";
 import * as moment from "moment";
 import UserAvatar from "../Misc/UserAvatar";
@@ -15,6 +16,7 @@ import { openJoinParticipant } from "../../Redux/dialogs";
 import Linkify from "react-linkify";
 import MenuIcon from "@material-ui/icons/MoreHoriz";
 import ChatMessagesContext from "../../Contexts/ChatMessagesContext";
+import ParticipantRole from "../Misc/ParticipantRole";
 
 const useStyles = makeStyles((theme) => ({
   root: ({ previewOnly }) => ({
@@ -105,7 +107,7 @@ export default ({ message, users, previewOnly = false, isOwner, userId }) => {
     );
     return null;
   }
-  const { firstName, lastName } = messageUser;
+  const { firstName, lastName, roles } = messageUser;
 
   const handleAvatarClick = React.useCallback(
     () => dispatch(openJoinParticipant(messageUser)),
@@ -137,11 +139,18 @@ export default ({ message, users, previewOnly = false, isOwner, userId }) => {
         />
       </Grid>
       <Grid item className={classes.messageContainer}>
-        <Typography
-          color="textSecondary"
-          className={classes.userName}
-          onClick={handleAvatarClick}
-        >{`${firstName} ${lastName}`}</Typography>
+        <Box display="flex">
+          <Typography
+            color="textSecondary"
+            className={classes.userName}
+            onClick={handleAvatarClick}
+          >
+            {`${firstName} ${lastName}`}
+          </Typography>{" "}
+          <Box ml={2}>
+            <ParticipantRole roles={roles} />
+          </Box>
+        </Box>
         <Typography className={classes.messageText}>
           <Linkify componentDecorator={componentDecorator}>
             {message.message}

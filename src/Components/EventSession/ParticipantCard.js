@@ -11,6 +11,8 @@ import clsx from "clsx";
 import { Tooltip, CircularProgress } from "@material-ui/core";
 import { uploadProfilePicture } from "../../Modules/storage";
 import Flag from "../Misc/Flag";
+import Label from "../Misc/Label";
+import { ROLES } from "../../Modules/rolesOperations";
 
 const useStyles = makeStyles((theme) => ({
   headlineContainer: {
@@ -69,6 +71,10 @@ const useStyles = makeStyles((theme) => ({
     marginTop: -12,
     marginLeft: -12,
     zIndex: 2
+  },
+  role: {
+    marginLeft: theme.spacing(1),
+    marginTop: theme.spacing(0.5)
   }
 }));
 
@@ -253,6 +259,15 @@ export default function (props) {
               >
                 <MailOutlineIcon className={classes.socialNetworkIcon} />
               </a>
+            )}
+          {participant.roles &&
+            participant.roles.length > 0 &&
+            participant.roles.map((r) =>
+              ROLES[r] ? (
+                <Label key={r} className={classes.role} color="primary">
+                  {ROLES[r].label}
+                </Label>
+              ) : null
             )}
         </div>
 

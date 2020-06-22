@@ -16,6 +16,7 @@ import AttendeesIcon from "../../Assets/Icons/Person";
 import NetworkingIcon from "../../Assets/Icons/Conversation1-1";
 import ChatIcon from "../../Assets/Icons/Chat";
 import PollsIcon from "../../Assets/Icons/Polls";
+import BackstageIcon from "../../Assets/Icons/Backstage2";
 import QnAIcon from "../../Assets/Icons/QnA";
 import HelpIcon from "../../Assets/Icons/Help";
 
@@ -31,13 +32,15 @@ import {
   getSessionId,
   getUserGroup,
   getUserId,
-  getFeatureDetails
+  getFeatureDetails,
+  getUser
 } from "../../Redux/eventSession";
 import ChatMessagesContext, {
   CHAT_GLOBAL_NS
 } from "../../Contexts/ChatMessagesContext";
 import { FEATURES } from "../../Modules/features";
 import PerfectScrollbar from "react-perfect-scrollbar";
+import { ROLES } from "../../Modules/rolesOperations";
 
 export const DEAFULT_NAV_BAR = {
   [VERTICAL_NAV_OPTIONS.lobby]: {
@@ -101,6 +104,13 @@ export const DEAFULT_NAV_BAR = {
     label: "Polls",
     icon: PollsIcon,
     order: 9,
+    visible: true
+  },
+  [VERTICAL_NAV_OPTIONS.backstage]: {
+    id: VERTICAL_NAV_OPTIONS.backstage,
+    label: "Backstage",
+    icon: BackstageIcon,
+    order: 10,
     visible: true
   }
 };
@@ -199,6 +209,15 @@ const VerticalNavBar = (props) => {
   const sessionId = useSelector(getSessionId);
   const userGroup = useSelector(getUserGroup);
   const userId = useSelector(getUserId);
+  const user = useSelector(getUser);
+
+  const hasBackstage = useMemo(
+    () =>
+      user &&
+      (user.roles.includes(ROLES.SPEAKER.key) ||
+        user.roles.includes(ROLES.HOST.key)),
+    [user]
+  );
 
   const [lastNavBarSelection, setLastNavBarSelection] = React.useState(null);
 
@@ -351,21 +370,27 @@ const VerticalNavBar = (props) => {
     <PerfectScrollbar>
       <div className={classes.root}>
         {navBarOptions.map(({ icon, label, id, visible }) => {
+          if (id === VERTICAL_NAV_OPTIONS.backstage && !hasBackstage) {
+            return null;
+          }
+
           if (id === "divider" && visible) {
             return <Divider key="divider" />;
           } else if (visible) {
             return (
-              <MenuIconContainer
-                key={id}
-                icon={icon}
-                label={label}
-                selected={currentNavBarSelection === id}
-                onClick={handleClick(id)}
-                isCurrentLocation={currentLocation === id}
-                hasBadge={
-                  id === VERTICAL_NAV_OPTIONS.chat ? hasChatBadge : false
-                }
-              />
+              <Box key={id}>
+                {id === VERTICAL_NAV_OPTIONS.backstage && <Divider />}
+                <MenuIconContainer
+                  icon={icon}
+                  label={label}
+                  selected={currentNavBarSelection === id}
+                  onClick={handleClick(id)}
+                  isCurrentLocation={currentLocation === id}
+                  hasBadge={
+                    id === VERTICAL_NAV_OPTIONS.chat ? hasChatBadge : false
+                  }
+                />
+              </Box>
             );
           }
           return null;

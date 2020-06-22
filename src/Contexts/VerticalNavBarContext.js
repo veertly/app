@@ -9,6 +9,7 @@ export const VERTICAL_NAV_OPTIONS = {
   chat: "CHAT",
   polls: "POLLS",
   qna: "QNA",
+  backstage: "BACKSTAGE",
   help: "HELP"
 };
 
