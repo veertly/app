@@ -2104,7 +2104,7 @@
   dependencies:
     "@types/node" "*"
 
-"@types/draft-js@^0.10.40":
+"@types/draft-js@^0.10.41":
   version "0.10.41"
   resolved "https://registry.yarnpkg.com/@types/draft-js/-/draft-js-0.10.41.tgz#179b652ecafd2c7056f462458b74af9eecd7b414"
   integrity sha512-Q5pf1y1KdprTjAELQgGjDJXa5eSBghk3OvL07kFdgAxDSLqkWXvbxKBqX32JDt/3pizAl8sOpmVbGbRAFcAO9A==
@@ -2248,9 +2248,9 @@
     "@types/react" "*"
 
 "@types/react@*":
-  version "16.9.37"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.9.37.tgz#8fb93e7dbd5b1d3796f69aa979a7fe0439bc7bea"
-  integrity sha512-ZqnAXallQiZ08LTSqMfWMNvAfJEzRLOxdlbbbCIJlYGjU98BEU6bE2uBpKPGeWn+v3hIgCraHKtqUcKZBzMP/Q==
+  version "16.9.38"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.9.38.tgz#868405dace93a4095d3e054f4c4a1de7a1ac0680"
+  integrity sha512-pHAeZbjjNRa/hxyNuLrvbxhhnKyKNiLC6I5fRF2Zr/t/S6zS41MiyzH4+c+1I9vVfvuRt1VS2Lodjr4ZWnxrdA==
   dependencies:
     "@types/prop-types" "*"
     csstype "^2.2.0"
@@ -5193,7 +5193,7 @@ draft-js-utils@^1.4.0:
   resolved "https://registry.yarnpkg.com/draft-js-utils/-/draft-js-utils-1.4.0.tgz#c60af198108f69b0f1df3572555b23836819d1cf"
   integrity sha512-8s9FFuKC+lOWGwJ0b3om2PF+uXrqQPaEQlPJI7UxdzxTYGMeKouMPA9+YlPn52zcAVElIZtd2tXj6eQmvlKelw==
 
-draft-js@^0.11.5:
+draft-js@^0.11.6:
   version "0.11.6"
   resolved "https://registry.yarnpkg.com/draft-js/-/draft-js-0.11.6.tgz#a2b54c211674d10ed65a2234c2ddd12f824cc709"
   integrity sha512-H8OaophZecxm0L/C0LvOo6IZrbMb+s0txPXF7DW3E2oUjSo5ufvWvWb3B/0K2wRqBnwJrRxApqljD899i0fZMA==
@@ -9386,15 +9386,15 @@ ms@^2.0.0, ms@^2.1.1:
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.2.tgz#d09d1f357b443f493382a8eb3ccd183872ae6009"
   integrity sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==
 
-mui-rte@1.19.3:
-  version "1.19.3"
-  resolved "https://registry.yarnpkg.com/mui-rte/-/mui-rte-1.19.3.tgz#5b85f6a61860e67bdf475678cd0cdcf4803e30dd"
-  integrity sha512-lTiDOJVKuJCmmXJqNZGLUIFzll9Ucc1XcEielGSvkhQBeZMDgGS5frirRyfIhBxrKGqSq0uID/d255JtT7xDsw==
+mui-rte@^1.23.0:
+  version "1.23.0"
+  resolved "https://registry.yarnpkg.com/mui-rte/-/mui-rte-1.23.0.tgz#e2b06030262fd2e738110c8911f1ffb48daa9ef7"
+  integrity sha512-LIHdMypxh+tRNbytjfJTVWwc9kIONBIT3KCrnuuq0OQtMP3qPXB/ryL+l2XN/u9z4ddyBZ1qtujuvsWraHjiHg==
   dependencies:
     "@types/classnames" "^2.2.10"
-    "@types/draft-js" "^0.10.40"
+    "@types/draft-js" "^0.10.41"
     classnames "^2.2.6"
-    draft-js "^0.11.5"
+    draft-js "^0.11.6"
     immutable "^3.8.2"
 
 multicast-dns-service-types@^1.1.0:
