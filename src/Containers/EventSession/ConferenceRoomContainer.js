@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import useScript from "../../Hooks/useScript";
 import { makeStyles } from "@material-ui/core/styles";
 import { leaveCall } from "../../Modules/eventSessionOperations";
@@ -15,11 +15,11 @@ import {
 } from "../../Redux/eventSession";
 import ReactPlayer from "react-player";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import JitsiContext from "../../Contexts/JitsiContext";
+// import JitsiContext from "../../Contexts/JitsiContext";
 import { trackPage } from "../../Modules/analytics";
 import {
   getJistiServer,
-  getJitsiOptions,
+  // getJitsiOptions,
   getJistiDomain,
   isMeetJitsi
 } from "../../Modules/jitsi";
@@ -30,9 +30,10 @@ import {
 // import { useHistory } from "react-router-dom";
 import { FEATURES } from "../../Modules/features";
 import { VERTICAL_NAV_OPTIONS } from "../../Contexts/VerticalNavBarContext";
-import { usePrevious } from "react-use";
-import TechnicalCheckContext from "../../Contexts/TechnicalCheckContext";
+// import { usePrevious } from "react-use";
+// import TechnicalCheckContext from "../../Contexts/TechnicalCheckContext";
 import AudioVideoCheckDialog from "../../Components/EventSession/AudioVideoCheckDialog";
+import useJitsi from "../../Hooks/useJitsi";
 
 const useStyles = makeStyles((theme) => ({
   videoContainer: {
@@ -76,13 +77,13 @@ const useStyles = makeStyles((theme) => ({
 export default () => {
   const classes = useStyles();
 
-  const { jitsiApi, setJitsiApi } = useContext(JitsiContext);
-  const { showAudioVideoCheck, muteVideo, muteAudio, setMuteAudio, setMuteVideo, selectedAudioInput, selectedVideoInput, selectedAudioOutput } = useContext(TechnicalCheckContext);
+  // const { jitsiApi, setJitsiApi } = useContext(JitsiContext);
+  // const { showAudioVideoCheck, muteVideo, muteAudio, setMuteAudio, setMuteVideo, selectedAudioInput, selectedVideoInput, selectedAudioOutput } = useContext(TechnicalCheckContext);
 
-  const previousMuteVideo = usePrevious(muteVideo);
-  const previousMuteAudio = usePrevious(muteAudio);
+  // const previousMuteVideo = usePrevious(muteVideo);
+  // const previousMuteAudio = usePrevious(muteAudio);
 
-  const [lastRoomLoaded, setLastRoomLoaded] = useState(null);
+  // const [lastRoomLoaded, setLastRoomLoaded] = useState(null);
   const [loadingPlayer, setLoadingPlayer] = useState(true);
 
   const userId = useSelector(getUserId);
@@ -124,180 +125,189 @@ export default () => {
     shallowEqual
   );
 
-  useEffect(() => {
-    if (!user) {
-      return;
-    }
-    if (showAudioVideoCheck) {
-      return;
-    }
-    let prefix = process.env.REACT_APP_JITSI_ROOM_PREFIX;
-    let prefixStr = prefix !== undefined ? `-${prefix}` : "";
+  const prefix = process.env.REACT_APP_JITSI_ROOM_PREFIX;
+  const prefixStr = prefix !== undefined ? `-${prefix}` : "";
+  const roomName = "veertly" + prefixStr + "-" + sessionId;
+  const domain = getJistiDomain(eventSessionDetails);
+  const subject = "Main Stage";
+  const showJitsiLogo =
+    isMeetJitsi(domain) &&
+    (!removeJitsiLogoFeature || !removeJitsiLogoFeature.enabled);
 
-    const roomName = "veertly" + prefixStr + "-" + sessionId;
+  useJitsi({
+    avatarUrl: user.avatarUrl,
+    displayName: user.firstName + " " + user.lastName,
+    sessionId,
+    conferenceVideoType: eventSessionDetails.conferenceVideoType,
+    containerId: "#conference-container",
+    domain,
+    showJitsiLogo,
+    subject,
+    roomName,
+    callEndedCb: handleCallEnded,
+  });
 
-    if (eventSessionDetails.conferenceVideoType !== "JITSI" && loaded) {
-      // dispose existing jitsi
-      if (jitsiApi) {
-        jitsiApi.executeCommand("hangup");
-        jitsiApi.dispose();
-        setLastRoomLoaded(null);
-      }
-    }
+  // useEffect(() => {
+  //   if (!user) {
+  //     return;
+  //   }
+  //   if (showAudioVideoCheck) {
+  //     return;
+  //   }
+  //   let prefix = process.env.REACT_APP_JITSI_ROOM_PREFIX;
+  //   let prefixStr = prefix !== undefined ? `-${prefix}` : "";
 
-    if (
-      eventSessionDetails.conferenceVideoType === "JITSI" &&
-      loaded &&
-      lastRoomLoaded !== roomName
-    ) {
-      // dispose existing jitsi
-      if (jitsiApi) {
-        jitsiApi.executeCommand("hangup");
-        jitsiApi.dispose();
-      }
+  //   const roomName = "veertly" + prefixStr + "-" + sessionId;
 
-      const domain = getJistiDomain(eventSessionDetails);
-      const showJitsiLogo =
-        isMeetJitsi(domain) &&
-        (!removeJitsiLogoFeature || !removeJitsiLogoFeature.enabled);
+  //   if (
+  //     eventSessionDetails.conferenceVideoType === "JITSI" &&
+  //     loaded &&
+  //     lastRoomLoaded !== roomName
+  //   ) {
+  //     // dispose existing jitsi
+  //     if (jitsiApi) {
+  //       jitsiApi.executeCommand("hangup");
+  //       jitsiApi.dispose();
+  //     }
 
-      const options = getJitsiOptions(
-        roomName,
-        document.querySelector("#conference-container"),
-        true,
-        false,
-        showJitsiLogo
-      );
+  //     const domain = getJistiDomain(eventSessionDetails);
 
-      /*eslint-disable no-undef*/
-      const api = new JitsiMeetExternalAPI(domain, options);
-      /*eslint-enable no-undef*/
-      api.executeCommand("displayName", user.firstName + " " + user.lastName);
-      api.executeCommand("subject", "Main Stage");
+  //     const showJitsiLogo =
+  //       isMeetJitsi(domain) &&
+  //       (!removeJitsiLogoFeature || !removeJitsiLogoFeature.enabled);
 
-      if (user.avatarUrl) {
-        api.executeCommand("avatarUrl", user.avatarUrl);
-      }
-      api.addEventListener("videoConferenceLeft", (event) => {
-        // console.log("videoConferenceLeft: ", event);
-        // handleCallEnded();
-      });
-      api.addEventListener("readyToClose", (event) => {
-        // console.log("readyToClose: ", event);
-        handleCallEnded();
-      });
+  //     const options = getJitsiOptions(
+  //       roomName,
+  //       document.querySelector("#conference-container"),
+  //       true,
+  //       false,
+  //       showJitsiLogo
+  //     );
 
-      api.addEventListener("audioMuteStatusChanged", (event) => {
-        // console.log("mute audio => ",event);
-        if (event.muted !== muteAudio) {
-          setMuteAudio(event.muted)
-        }
-      });
+  //     /*eslint-disable no-undef*/
+  //     const api = new JitsiMeetExternalAPI(domain, options);
+  //     /*eslint-enable no-undef*/
+  //     api.executeCommand("displayName", user.firstName + " " + user.lastName);
+  //     api.executeCommand("subject", "Main Stage");
+
+  //     if (user.avatarUrl) {
+  //       api.executeCommand("avatarUrl", user.avatarUrl);
+  //     }
+  //     api.addEventListener("videoConferenceLeft", (event) => {
+  //       // console.log("videoConferenceLeft: ", event);
+  //       // handleCallEnded();
+  //     });
+  //     api.addEventListener("readyToClose", (event) => {
+  //       handleCallEnded();
+  //     });
+
+  //     api.addEventListener("audioMuteStatusChanged", (event) => {
+  //       setMuteAudio(event.muted)
+        
+  //     });
       
-      api.addEventListener("videoMuteStatusChanged", (event) => {
-        // console.log("mute video ==>",event);
-        if(event.muted !== muteVideo) {
-          setMuteVideo(event.muted);
-        }
-      });
+  //     api.addEventListener("videoMuteStatusChanged", (event) => {
+  //       setMuteVideo(event.muted);
+        
+  //     });
 
-      if (muteAudio) {
-        api.executeCommand("toggleAudio");
-      }
+  //     if (muteAudio) {
+  //       api.executeCommand("toggleAudio");
+  //     }
 
-      if (muteVideo) {
-        api.executeCommand("toggleVideo");
-      }
+  //     if (muteVideo) {
+  //       api.executeCommand("toggleVideo");
+  //     }
 
-      if (selectedAudioInput) {
-        api.setAudioInputDevice(selectedAudioInput.label)
-      }
+  //     if (selectedAudioInput) {
+  //       api.setAudioInputDevice(selectedAudioInput.label)
+  //     }
 
-      if (selectedVideoInput) {
-        api.setVideoInputDevice(selectedVideoInput.label)
-      }
+  //     if (selectedVideoInput) {
+  //       api.setVideoInputDevice(selectedVideoInput.label)
+  //     }
 
-      if (selectedAudioOutput) {
-        api.setAudioOutputDevice(selectedAudioOutput.label);
-      }
+  //     if (selectedAudioOutput) {
+  //       api.setAudioOutputDevice(selectedAudioOutput.label);
+  //     }
 
-      setLastRoomLoaded(roomName);
-      setJitsiApi(api);
-    }
-    return () => {
-      // if (jitsiApi) {
-      //   console.log("ON DISPOSE");
-      //   jitsiApi.executeCommand("hangup");
-      //   jitsiApi.dispose();
-      // }
-    };
-  }, [loaded, eventSessionDetails, user, handleCallEnded, jitsiApi, lastRoomLoaded, setJitsiApi, sessionId, removeJitsiLogoFeature, muteAudio, muteVideo, setMuteAudio, setMuteVideo, showAudioVideoCheck, selectedAudioInput, selectedVideoInput, selectedAudioOutput]);
+  //     setLastRoomLoaded(roomName);
+  //     setJitsiApi(api);
+  //   }
+  //   return () => {
+  //     // if (jitsiApi) {
+  //     //   console.log("ON DISPOSE");
+  //     //   jitsiApi.executeCommand("hangup");
+  //     //   jitsiApi.dispose();
+  //     // }
+  //   };
+  // }, [loaded, eventSessionDetails, user, handleCallEnded, jitsiApi, lastRoomLoaded, setJitsiApi, sessionId, removeJitsiLogoFeature, muteAudio, muteVideo, setMuteAudio, setMuteVideo, showAudioVideoCheck, selectedAudioInput, selectedVideoInput, selectedAudioOutput]);
 
-  useEffect(() => {
-    // console.log("video effect => muteVideo, previeus mute video", muteVideo, previousMuteVideo);
-    const toggleInternal = async () => {
-      if (jitsiApi) {   
-        if (previousMuteVideo !== muteVideo) {
-          const playerVideoMuted = await jitsiApi.isVideoMuted();
-          if (playerVideoMuted !== muteVideo) {
-            jitsiApi.executeCommand("toggleVideo");
-          }
-        } 
-      }
-    }
-    toggleInternal();
-  }, [
-    jitsiApi,
-    muteVideo,
-    previousMuteVideo
-  ]);
+  // useEffect(() => {
+  //   // console.log("video effect => muteVideo, previeus mute video", muteVideo, previousMuteVideo);
+  //   const toggleInternal = async () => {
+  //     if (jitsiApi) {   
+  //       if (previousMuteVideo !== muteVideo) {
+  //         const playerVideoMuted = await jitsiApi.isVideoMuted();
+  //         if (playerVideoMuted !== muteVideo) {
+  //           jitsiApi.executeCommand("toggleVideo");
+  //         }
+  //       } 
+  //     }
+  //   }
+  //   toggleInternal();
+  // }, [
+  //   jitsiApi,
+  //   muteVideo,
+  //   previousMuteVideo
+  // ]);
 
-  useEffect(() => {
-    // console.log("audio effect mute audio and previous mute audio", muteAudio, previousMuteAudio);
-    const toggleInternal = async () => {
-      if (jitsiApi) { 
-        if (previousMuteAudio !== muteAudio) {
-          const playerAudioMuted = await jitsiApi.isAudioMuted();
-          if (playerAudioMuted !== muteAudio) {
-            jitsiApi.executeCommand("toggleAudio");   
-          }
-        }   
-      }
-    }
-    toggleInternal();
-  }, [
-    jitsiApi,
-    muteAudio,
-    previousMuteAudio
-  ]);
+  // useEffect(() => {
+  //   // console.log("audio effect mute audio and previous mute audio", muteAudio, previousMuteAudio);
+  //   const toggleInternal = async () => {
+  //     if (jitsiApi) { 
+  //       if (previousMuteAudio !== muteAudio) {
+  //         const playerAudioMuted = await jitsiApi.isAudioMuted();
+  //         if (playerAudioMuted !== muteAudio) {
+  //           jitsiApi.executeCommand("toggleAudio");   
+  //         }
+  //       }   
+  //     }
+  //   }
+  //   toggleInternal();
+  // }, [
+  //   jitsiApi,
+  //   muteAudio,
+  //   previousMuteAudio
+  // ]);
 
-  useEffect(() => {
-    if (jitsiApi) {  
-      jitsiApi.setAudioInputDevice(selectedAudioInput.label)
-    }
-  }, [
-    selectedAudioInput,
-    jitsiApi
-  ]);
+  // useEffect(() => {
+  //   if (jitsiApi) {  
+  //     jitsiApi.setAudioInputDevice(selectedAudioInput.label)
+  //   }
+  // }, [
+  //   selectedAudioInput,
+  //   jitsiApi
+  // ]);
 
 
-  useEffect(() => {
-    if (jitsiApi) {  
-      jitsiApi.setAudioOutputDevice(selectedAudioOutput.label)
-    }
-  }, [
-    selectedAudioOutput,
-    jitsiApi
-  ]);
+  // useEffect(() => {
+  //   if (jitsiApi) {  
+  //     jitsiApi.setAudioOutputDevice(selectedAudioOutput.label)
+  //   }
+  // }, [
+  //   selectedAudioOutput,
+  //   jitsiApi
+  // ]);
 
-  useEffect(() => {
-    if (jitsiApi) {  
-      jitsiApi.setVideoInputDevice(selectedVideoInput.label)
-    }
-  }, [
-    selectedVideoInput,
-    jitsiApi
-  ]);
+  // useEffect(() => {
+  //   if (jitsiApi) {  
+  //     jitsiApi.setVideoInputDevice(selectedVideoInput.label)
+  //   }
+  // }, [
+  //   selectedVideoInput,
+  //   jitsiApi
+  // ]);
 
   if (error) {
     console.log(error);

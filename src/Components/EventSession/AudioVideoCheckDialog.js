@@ -164,7 +164,15 @@ const AudioInputDevicesDropdown = ({ id, inputs, handleChange, selectedInput, re
   )
 }
 
-const AudioVideoCheckDialog = ({ subtitle="", title="Audio/Video Settings", showClose=false, onCloseClicked=()=>{}, overrideShow=false, showModal }) => {
+const AudioVideoCheckDialog = ({
+  subtitle="",
+  title="Audio/Video Settings",
+  showClose=false,
+  onCloseClicked=()=>{},
+  overrideShow=false,
+  showModal,
+  okText="Join Event",
+}) => {
   const styles = useStyles();
   const mediaDevices = useMediaDevices();
 
@@ -499,7 +507,7 @@ const AudioVideoCheckDialog = ({ subtitle="", title="Audio/Video Settings", show
             variant="contained"
             color="primary"
             >
-              Join Event
+              {okText}
             </Button>
           }
 

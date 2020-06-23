@@ -11,8 +11,6 @@ const useJitsi = ({
   sessionId,
   conferenceVideoType="JITSI",
   containerId,
-  // jitsiApi,
-  // setJitsiApi,
   domain="meet.jit.si",
   showJitsiLogo,
   subject="",
@@ -26,7 +24,7 @@ const useJitsi = ({
   const [loaded] = useScript("https://meet.jit.si/external_api.js");
   const [lastRoomLoaded, setLastRoomLoaded] = useState(null);
 
-  const { muteVideo, muteAudio, setMuteAudio, setMuteVideo, selectedAudioInput, selectedVideoInput, selectedAudioOutput  } = useContext(TechnicalCheckContext);
+  const { showAudioVideoCheck ,muteVideo, muteAudio, setMuteAudio, setMuteVideo, selectedAudioInput, selectedVideoInput, selectedAudioOutput  } = useContext(TechnicalCheckContext);
 
   const previousMuteVideo = usePrevious(muteVideo);
   const previousMuteAudio = usePrevious(muteAudio);
@@ -34,6 +32,10 @@ const useJitsi = ({
   useEffect(() => {
 
     if (!displayName) {
+      return;
+    }
+
+    if (showAudioVideoCheck) {
       return;
     }
 
@@ -83,11 +85,7 @@ const useJitsi = ({
       }
 
       api.addEventListener("audioMuteStatusChanged", (event) => {
-        console.log("mute audio => ",event);
-        setMuteAudio((audioMute) => {
-          console.log()
-          return event.muted
-        })
+        setMuteAudio(event.muted)
       });
       
       api.addEventListener("videoMuteStatusChanged", (event) => {
@@ -95,13 +93,13 @@ const useJitsi = ({
       });
 
       api.addEventListener("videoConferenceLeft", (event) => {
-        if (callEndedCb) {
+        if (onVideoConferenceLeft) {
           onVideoConferenceLeft(event);
         }
       });
 
       api.addEventListener("videoConferenceJoined", (event) => {
-        if (callEndedCb) {
+        if (onVideoConferenceJoined) {
           onVideoConferenceJoined(event);
         }
       });
@@ -116,14 +114,20 @@ const useJitsi = ({
       setJitsiApi(api);
     }
     return () => {};
-  }, [loaded, jitsiApi, setJitsiApi, displayName, avatarUrl, sessionId, conferenceVideoType, lastRoomLoaded, containerId, showJitsiLogo, domain, subject, roomName, muteAudio, muteVideo, callEndedCb, onVideoConferenceLeft, onVideoConferenceJoined, selectedAudioInput, selectedAudioOutput, selectedVideoInput, setMuteAudio, setMuteVideo]);
+  }, [showAudioVideoCheck , loaded, jitsiApi, setJitsiApi, displayName, avatarUrl, sessionId, conferenceVideoType, lastRoomLoaded, containerId, showJitsiLogo, domain, subject, roomName, muteAudio, muteVideo, callEndedCb, onVideoConferenceLeft, onVideoConferenceJoined, selectedAudioInput, selectedAudioOutput, selectedVideoInput, setMuteAudio, setMuteVideo]);
 
   useEffect(() => {
-    if (jitsiApi) {   
-      if (previousMuteVideo !== muteVideo) {
-        jitsiApi.executeCommand("toggleVideo");
-      } 
+    const toggleInternal = async () => {
+      if (jitsiApi) {   
+        if (previousMuteVideo !== muteVideo) {
+          const playerVideoMuted = await jitsiApi.isVideoMuted();
+          if (playerVideoMuted !== muteVideo) {
+            jitsiApi.executeCommand("toggleVideo");
+          }
+        } 
+      }
     }
+    toggleInternal();
   }, [
     jitsiApi,
     muteVideo,
@@ -131,11 +135,17 @@ const useJitsi = ({
   ]);
 
   useEffect(() => {
-    if (jitsiApi) {  
-      if (previousMuteAudio !== muteAudio) {
-        jitsiApi.executeCommand("toggleAudio");   
-      }  
+    const toggleInternal = async () => {
+      if (jitsiApi) { 
+        if (previousMuteAudio !== muteAudio) {
+          const playerAudioMuted = await jitsiApi.isAudioMuted();
+          if (playerAudioMuted !== muteAudio) {
+            jitsiApi.executeCommand("toggleAudio");   
+          }
+        }   
+      }
     }
+    toggleInternal();
   }, [
     jitsiApi,
     muteAudio,

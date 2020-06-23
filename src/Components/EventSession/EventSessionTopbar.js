@@ -308,6 +308,7 @@ const EventSessionTopbar = () => {
         showModal={showTechCheckModal}
         showClose={true}
         onCloseClicked={handleShowTechCheckClicked}
+        okText="OK"
       />
     </React.Fragment>
   );
