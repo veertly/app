@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 
 import Alert from "@material-ui/lab/Alert";
 import Button from "@material-ui/core/Button";
@@ -22,8 +22,9 @@ import VolumeUpIcon from "@material-ui/icons/VolumeUp";
 // import firebase from "../../Modules/firebaseApp";
 // import { getButtonText } from "../../Utils";
 import TechnicalCheckContext from "../../Contexts/TechnicalCheckContext";
-import { useMediaDevices } from "react-use";
+import { useMediaDevices, useMountedState, usePrevious } from "react-use";
 import { getButtonText } from "../../Utils";
+import JitsiContext from "../../Contexts/JitsiContext";
 // import { useMediaDevices } from "react-use";
 
 const useStyles = makeStyles((theme) => ({
@@ -163,14 +164,14 @@ const AudioInputDevicesDropdown = ({ id, inputs, handleChange, selectedInput, re
   )
 }
 
-const AudioVideoCheckDialog = ({ sessionId, subtitle="", title="Audio/Video Settings", showClose=false, onCloseClicked=()=>{}, overrideShow=false, showModal }) => {
+const AudioVideoCheckDialog = ({ subtitle="", title="Audio/Video Settings", showClose=false, onCloseClicked=()=>{}, overrideShow=false, showModal }) => {
   const styles = useStyles();
   const mediaDevices = useMediaDevices();
 
   const audioInputs = mediaDevices.devices && mediaDevices.devices.filter(device => device.kind === "audioinput");
   const videoInputs = mediaDevices.devices && mediaDevices.devices.filter(device => device.kind === "videoinput");
   const audioOutputs = mediaDevices.devices && mediaDevices.devices.filter(device => device.kind === "audiooutput");
-  
+
   // const [eventSessionData] = useDocumentData(
   //   firebase
   //   .firestore()
@@ -197,9 +198,67 @@ const AudioVideoCheckDialog = ({ sessionId, subtitle="", title="Audio/Video Sett
 
   const [showAlert, setShowAlert] = useState(false);
   const [errorState, setErrorState] = useState(PERMISSION_ERROR_STATUS.UNKNOWN);
+  const isMounted = useMountedState();
 
+  const { jitsiApi } = useContext(JitsiContext);
+
+  const [calledTimes, setCalledTimes] = useState(0);
+
+  const previousShowModal = usePrevious(showModal);
+
+  // As jitsi does not have a device change listener, so this serves as a workaround
+  // This ensures selected device is changed in our context  
+  useEffect(() => {
+    const setCorrectDevices = async () => {
+      if (jitsiApi && showModal && isMounted && calledTimes < 1) {
+        const devices = await jitsiApi.getCurrentDevices();
+        
+        const jitsiSelectedAudioInput = devices.audioInput;
+        const jitsiSelectedVideoInput = devices.videoInput;
+        const jitsiSelectedAudioOutput = devices.audioOutput;
+
+        if (selectedAudioInput.label !== jitsiSelectedAudioInput.label) {
+          const correctSelectedAudioInput = audioInputs.filter(input => input.label === jitsiSelectedAudioInput.label);
+          setSelectedAudioInput(correctSelectedAudioInput[0]);
+        }
+
+        if (selectedVideoInput.label !== jitsiSelectedVideoInput.label) {
+          const correctSelectedVideoInput = videoInputs.filter(input => input.label === jitsiSelectedVideoInput.label);
+          setSelectedVideoInput(correctSelectedVideoInput[0]);
+        }
+
+        if (selectedAudioOutput.label !== jitsiSelectedAudioOutput.label) {
+          const correctSelectedAudioOutput = audioOutputs.filter(input => input.label === jitsiSelectedAudioOutput.label);
+          setSelectedAudioOutput(correctSelectedAudioOutput[0]);
+        }
+        setCalledTimes(time => time + 1);
+      }  
+    }
+    setCorrectDevices();
+  }, [
+    showModal,
+    jitsiApi,
+    selectedAudioInput.label,
+    selectedVideoInput.label,
+    selectedAudioOutput.label,
+    audioInputs,
+    setSelectedAudioInput,
+    setSelectedVideoInput,
+    setSelectedAudioOutput,
+    videoInputs,
+    audioOutputs,
+    isMounted,
+    calledTimes
+  ]);
   // const muteVideo = useSelector(getMuteVideoOnEnter)
   // const muteAudio = useSelector(getMuteAudioOnEnter);
+
+
+  useEffect(() => {
+    if (previousShowModal && showModal !== previousShowModal) {
+      setCalledTimes(0);
+    }
+  }, [showModal, previousShowModal])
 
   const handleVideoToggle = () => {
     // setMuteVideo(!muteVideo)
@@ -223,13 +282,11 @@ const AudioVideoCheckDialog = ({ sessionId, subtitle="", title="Audio/Video Sett
     }
   };
 
-
   const handleTryAgain = () => {
     window.location.reload();
   }
 
   const handleChangeAudioDevice = (event) => {
-    console.log(event.target.value);
     setSelectedAudioInput(event.target.value);
   }
 
