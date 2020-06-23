@@ -28,7 +28,6 @@ import {
   getUserCurrentLocation
 } from "../../Redux/eventSession";
 import JoinParticipantDialog from "../../Components/EventSession/JoinParticipantDialog";
-import JitsiContext from "../../Contexts/JitsiContext";
 import SmallPlayerContainer from "./SmallPlayerContainer";
 import {
   SMALL_PLAYER_INITIAL_HEIGHT,
@@ -194,7 +193,7 @@ const EventSessionContainer = React.memo(() => {
   const history = useHistory();
 
   const { hasNavBarPaneOpen } = React.useContext(VerticalNavBarContext);
-  const { jitsiApi, setJitsiApi } = React.useContext(JitsiContext);
+  // const { jitsiApi, setJitsiApi } = React.useContext(JitsiContext);
 
   const classes = useStyles({ hasNavBarPaneOpen });
 
@@ -340,10 +339,7 @@ const EventSessionContainer = React.memo(() => {
             )}
             {userGroup && (
               <>
-                <NetworkingRoomContainer
-                  jitsiApi={jitsiApi}
-                  setJitsiApi={setJitsiApi}
-                />
+                <NetworkingRoomContainer />
                 {/* <Box className={classes.callActionsContainer}>
                   <CurrentCallActionsVertical />
                 </Box> */}

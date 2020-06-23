@@ -167,8 +167,6 @@ const AudioVideoCheckDialog = ({ sessionId, subtitle="", title="Audio/Video Sett
   const styles = useStyles();
   const mediaDevices = useMediaDevices();
 
-  console.log(mediaDevices);
-
   const audioInputs = mediaDevices.devices && mediaDevices.devices.filter(device => device.kind === "audioinput");
   const videoInputs = mediaDevices.devices && mediaDevices.devices.filter(device => device.kind === "videoinput");
   const audioOutputs = mediaDevices.devices && mediaDevices.devices.filter(device => device.kind === "audiooutput");
@@ -218,7 +216,11 @@ const AudioVideoCheckDialog = ({ sessionId, subtitle="", title="Audio/Video Sett
   };
 
   const handleClickPreview = () => {
-    setShowAudioVideoCheck(false);
+    if (overrideShow) {
+      onCloseClicked();
+    } else {
+      setShowAudioVideoCheck(false);
+    }
   };
 
 

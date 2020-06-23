@@ -2,7 +2,7 @@ import { useLocalStorage, useMediaDevices } from "react-use";
 import { useState, useEffect } from "react";
 
 // Time after which the page refresh will show the preview dialog 
-// TODO: increase it. right now its 15 minutes
+// TODO: increase it. right now its 6 hours
 const TECH_CHECK_EXPIRATION = 6 * 60 * 60 * 1000;
 
 const isVideoPermissionGiven = (devices) => {

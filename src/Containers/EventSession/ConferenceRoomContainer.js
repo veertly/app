@@ -187,16 +187,19 @@ export default () => {
         handleCallEnded();
       });
 
-      // api.addEventListener("audioMuteStatusChanged", (event) => {
-      //   console.log("mute audio => ",event);
-      //   setMuteAudio(event.muted)
-      // });
+      api.addEventListener("audioMuteStatusChanged", (event) => {
+        // console.log("mute audio => ",event);
+        if (event.muted !== muteAudio) {
+          setMuteAudio(event.muted)
+        }
+      });
       
-      // api.addEventListener("videoMuteStatusChanged", (event) => {
-      //   // console.log("mute video",event);
-      //   setMuteVideo(event.muted);
-      // });
-
+      api.addEventListener("videoMuteStatusChanged", (event) => {
+        // console.log("mute video ==>",event);
+        if(event.muted !== muteVideo) {
+          setMuteVideo(event.muted);
+        }
+      });
 
       if (muteAudio) {
         api.executeCommand("toggleAudio");
@@ -231,11 +234,18 @@ export default () => {
   }, [loaded, eventSessionDetails, user, handleCallEnded, jitsiApi, lastRoomLoaded, setJitsiApi, sessionId, removeJitsiLogoFeature, muteAudio, muteVideo, setMuteAudio, setMuteVideo, showAudioVideoCheck, selectedAudioInput, selectedVideoInput, selectedAudioOutput]);
 
   useEffect(() => {
-    if (jitsiApi) {   
-      if (previousMuteVideo !== muteVideo) {
-        jitsiApi.executeCommand("toggleVideo");
-      } 
+    // console.log("video effect => muteVideo, previeus mute video", muteVideo, previousMuteVideo);
+    const toggleInternal = async () => {
+      if (jitsiApi) {   
+        if (previousMuteVideo !== muteVideo) {
+          const playerVideoMuted = await jitsiApi.isVideoMuted();
+          if (playerVideoMuted !== muteVideo) {
+            jitsiApi.executeCommand("toggleVideo");
+          }
+        } 
+      }
     }
+    toggleInternal();
   }, [
     jitsiApi,
     muteVideo,
@@ -243,17 +253,51 @@ export default () => {
   ]);
 
   useEffect(() => {
-    if (jitsiApi) {  
-      if (previousMuteAudio !== muteAudio) {
-        jitsiApi.executeCommand("toggleAudio");   
-      }  
+    // console.log("audio effect mute audio and previous mute audio", muteAudio, previousMuteAudio);
+    const toggleInternal = async () => {
+      if (jitsiApi) { 
+        if (previousMuteAudio !== muteAudio) {
+          const playerAudioMuted = await jitsiApi.isAudioMuted();
+          if (playerAudioMuted !== muteAudio) {
+            jitsiApi.executeCommand("toggleAudio");   
+          }
+        }   
+      }
     }
+    toggleInternal();
   }, [
     jitsiApi,
     muteAudio,
     previousMuteAudio
   ]);
 
+  useEffect(() => {
+    if (jitsiApi) {  
+      jitsiApi.setAudioInputDevice(selectedAudioInput.label)
+    }
+  }, [
+    selectedAudioInput,
+    jitsiApi
+  ]);
+
+
+  useEffect(() => {
+    if (jitsiApi) {  
+      jitsiApi.setAudioOutputDevice(selectedAudioOutput.label)
+    }
+  }, [
+    selectedAudioOutput,
+    jitsiApi
+  ]);
+
+  useEffect(() => {
+    if (jitsiApi) {  
+      jitsiApi.setVideoInputDevice(selectedVideoInput.label)
+    }
+  }, [
+    selectedVideoInput,
+    jitsiApi
+  ]);
 
   if (error) {
     console.log(error);
