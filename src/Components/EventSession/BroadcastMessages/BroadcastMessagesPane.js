@@ -15,26 +15,52 @@ import { BROADCAST_MESSAGE_STATES } from "../../../Modules/broadcastOperations";
 // import DraftIcon from "../../../Assets/Icons/Draft";
 import BroadcastMessagesMenu from "./BroadcastMessagesMenu";
 // import { Archive as ArchiveIcon } from "react-feather";
-// import LiveIcon from "../../../Assets/Icons/Live";
+import LiveIcon from "../../../Assets/Icons/Live";
 import { Alert } from "@material-ui/lab";
 
 const useStyles = makeStyles({
   divider: {
-    marginTop: 12,
-    marginBottom: 12,
+    marginTop: 4,
+    marginBottom: 4,
     marginLeft: 16,
     marginRight: 16
   },
   alert: {
-    marginTop: 16
+    // marginTop: 16
+  },
+  liveIcon: {
+    animation: "$ripple 1.2s infinite ease-in-out"
+  },
+  "@keyframes ripple": {
+    "0%": {
+      transform: "scale(.6)",
+      opacity: 1
+    },
+    "100%": {
+      transform: "scale(1.5)",
+      opacity: 0
+    }
   }
 });
 
 const BroadcastMessageItem = ({
   broadcastMessage,
   showMenu = true,
-  showPublish = true
+  showPublish = true,
+  isActiveMessage = false
 }) => {
+  const classes = useStyles();
+
+  const color = React.useMemo(() => {
+    if (broadcastMessage.state === BROADCAST_MESSAGE_STATES.DRAFT) {
+      return "textSecondary";
+    } else if (isActiveMessage) {
+      return "secondary";
+    } else {
+      return "textPrimary";
+    }
+  }, [broadcastMessage.state, isActiveMessage]);
+
   return (
     <Box
       width="100%"
@@ -45,7 +71,15 @@ const BroadcastMessageItem = ({
       paddingLeft={2}
       paddingRight={2}
     >
-      <Typography>{broadcastMessage.message}</Typography>
+      <Box display="flex" alignContent="center">
+        {isActiveMessage ? (
+          <Box mr={1}>
+            <LiveIcon color="secondary" className={classes.liveIcon} />
+            {/* <AvailableBadge /> */}
+          </Box>
+        ) : null}
+        <Typography color={color}>{broadcastMessage.message}</Typography>
+      </Box>
       {showMenu && (
         <Box alignSelf="flex-start">
           <BroadcastMessagesMenu
@@ -63,7 +97,9 @@ const LocalDivider = () => {
   return <Divider className={classes.divider}></Divider>;
 };
 
-// const sortMessagesByTime = (a,b) => a.
+const sortMessagesByTime = (a, b) => {
+  return Number(b.id) - Number(a.id);
+};
 
 const BroadcastMessagePane = () => {
   // const eventSessionDetails = useSelector(getEventSessionDetails, shallowEqual);
@@ -77,32 +113,8 @@ const BroadcastMessagePane = () => {
     BroadcastMessagesContext
   );
 
-  // const sortedMessages = useMemo(() => {
-  //   return broadcastMessages
-  //     ? broadcastMessages.sort( (a, b) => {
-  //       const isDraftA = a.state === BROADCAST_MESSAGE_STATES.DRAFT;
-  //       const isDraftB = a.state === BROADCAST_MESSAGE_STATES.DRAFT;
-  //     }
-  //       (
-  //         (message) => message.state === BROADCAST_MESSAGE_STATES.PUBLISHED
-  //       )
-  //     : [];
-  // }, [broadcastMessages]);
-
-  const publishedMessages = useMemo(() => {
-    return broadcastMessages
-      ? broadcastMessages.filter(
-          (message) => message.state === BROADCAST_MESSAGE_STATES.PUBLISHED
-        )
-      : [];
-  }, [broadcastMessages]);
-
-  const draftMessages = useMemo(() => {
-    return broadcastMessages
-      ? broadcastMessages.filter(
-          (message) => message.state === BROADCAST_MESSAGE_STATES.DRAFT
-        )
-      : [];
+  const sortedMessages = useMemo(() => {
+    return broadcastMessages ? broadcastMessages.sort(sortMessagesByTime) : [];
   }, [broadcastMessages]);
 
   const classes = useStyles();
@@ -120,92 +132,37 @@ const BroadcastMessagePane = () => {
         justifyContent="center"
         alignItems="center"
       >
-        <Button
-          disabled={!!activeBroadcastMessage}
-          onClick={() => setCreateBroadcastDialog(true)}
-          variant="contained"
-          color="primary"
-        >
-          Create Broadcast
-        </Button>
+        {!activeBroadcastMessage && (
+          <Button
+            disabled={!!activeBroadcastMessage}
+            onClick={() => setCreateBroadcastDialog(true)}
+            variant="contained"
+            color="primary"
+          >
+            Create Broadcast
+          </Button>
+        )}
         {!!activeBroadcastMessage && (
           <Alert className={classes.alert} severity="info">
-            Cannot publish while there is a live broadcast. Please wait 40
-            seconds
+            Cannot publish while there is a live broadcast
           </Alert>
         )}
       </Box>
-      <Box>
-        <>
-          {/* <Box m={2} marginTop={1} display="flex">
-            <LiveIcon color="primary" style={{ marginRight: 8 }} />
-            <Typography variant="button" color="primary">
-              Live Messages
-            </Typography>
-          </Box>  */}
-          {activeBroadcastMessage && (
-            <>
-              <BroadcastMessageItem
-                key={activeBroadcastMessage.id}
-                broadcastMessage={activeBroadcastMessage}
-                showMenu={false}
-              />
-              <LocalDivider />
-            </>
-          )}
-          {/* {
-            !activeBroadcastMessage && (
-              <Box paddingLeft={2} paddingRight={2}>
-                <Typography>
-                  No active broadcast messages
-                </Typography>
-              </Box> 
-            )
-          } */}
-        </>
-
-        {draftMessages.length > 0 && (
+      <Box mt={2}>
+        {sortedMessages.length > 0 && (
           <>
-            {/* <Box m={2} mt={6} display="flex">
-              <SvgIcon color="primary" style={{ marginRight: 8 }}>
-                <DraftIcon />
-              </SvgIcon>
-              <Typography variant="button" color="primary">
-                Draft Messages
-              </Typography>
-            </Box> */}
-            {draftMessages.map((message, index) => {
+            {sortedMessages.map((message, index) => {
               return (
                 <Box key={message.id}>
                   <BroadcastMessageItem
                     broadcastMessage={message}
                     showPublish={!activeBroadcastMessage}
+                    isActiveMessage={
+                      activeBroadcastMessage &&
+                      activeBroadcastMessage.id === message.id
+                    }
                   />
-                  {index !== draftMessages.length - 1 && <LocalDivider />}
-                </Box>
-              );
-            })}
-          </>
-        )}
-
-        {publishedMessages.length > 0 && (
-          <>
-            {/* <Box m={2} mt={6} display="flex">
-              <SvgIcon color="primary" style={{ marginRight: 8 }}>
-                <ArchiveIcon />
-              </SvgIcon>
-              <Typography variant="button" color="primary">
-                Published Messages
-              </Typography>
-            </Box> */}
-            {publishedMessages.map((message, index) => {
-              return (
-                <Box key={message.id}>
-                  <BroadcastMessageItem
-                    broadcastMessage={message}
-                    showPublish={!activeBroadcastMessage}
-                  />
-                  {index !== publishedMessages.length - 1 && <LocalDivider />}
+                  {index !== sortedMessages.length - 1 && <LocalDivider />}
                 </Box>
               );
             })}
