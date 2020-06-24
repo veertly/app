@@ -22,10 +22,11 @@ import VolumeUpIcon from "@material-ui/icons/VolumeUp";
 // import firebase from "../../Modules/firebaseApp";
 // import { getButtonText } from "../../Utils";
 import TechnicalCheckContext from "../../Contexts/TechnicalCheckContext";
-import { useMediaDevices, useMountedState, usePrevious } from "react-use";
+import { useMediaDevices, useMountedState, usePrevious, useAudio } from "react-use";
 import { getButtonText } from "../../Utils";
 import JitsiContext from "../../Contexts/JitsiContext";
 // import { useMediaDevices } from "react-use";
+import testSound from "../../Sounds/testSound.mp3";
 
 const useStyles = makeStyles((theme) => ({
   dialog: {
@@ -116,6 +117,18 @@ const PERMISSION_ERROR_STATUS = {
   UNKNOWN: "UNKNOWN"
 };
 
+const getObjectFromId = (id, devices) => {
+  if (!devices || !id) {
+    return "";
+  };
+
+  if (!Array.isArray(devices)) {
+    return "";
+  }
+
+  return devices.filter((device) => (device.deviceId === id))[0];
+}
+
 const getPermissionStatusForError = (error="") => {
   if (error.toLowerCase().indexOf("denied") !== -1) {
     return PERMISSION_ERROR_STATUS.BLOCKED;
@@ -126,39 +139,74 @@ const getPermissionStatusForError = (error="") => {
   }
 };
 
-const AudioInputDevicesDropdown = ({ id, inputs, handleChange, selectedInput, renderIconProp }) => {
+const BrowserDevicesDropdown = ({ id, inputs, handleChange, selectedInput, renderIconProp, showTestAudio=false }) => {
   const classes = useStyles();
+ 
+  
+  const [audio, state, controls, ref] = useAudio({ // eslint-disable-line no-unused-vars
+    src: testSound,
+    autoPlay: false,
+  });
+
   if (!inputs || inputs.length < 1) {
-    return null;
+    return (
+      <>
+        {audio}
+      </>
+    );
   }
+
   return (
-    <Box 
+    <Box
       marginTop={2}
       paddingLeft={2}
       paddingRight={2}
-      display="flex"
-      flexDirection="row"
-      alignItems="center"
-      justifyContent="space-around"
       width={"100%"}
+      display="flex"
+      flexDirection="column"
+      alignItems="flex-end"
     >
-      
-      {renderIconProp({ className: classes.dropIcon })}
-
-      <Select
-        fullWidth
-        id={id}
-        value={selectedInput ? selectedInput : inputs[0]}
-        onChange={handleChange}
+      <Box 
+        display="flex"
+        flexDirection="row"
+        alignItems="center"
+        justifyContent="space-around"
+        width={"100%"}
       >
-        {
-          inputs.map((input) => {
-            return (
-              <MenuItem key={input.deviceId} value={input}>{input.label}</MenuItem>
-            )
-          })
-        }
-      </Select>
+        
+        {renderIconProp({ className: classes.dropIcon })}
+
+        <Select
+          fullWidth
+          id={id}
+          value={selectedInput ? selectedInput.deviceId : inputs[0].deviceId}
+          onChange={handleChange}
+        >
+          {
+            inputs.map((input) => {
+              return (
+                <MenuItem key={input.deviceId} value={input.deviceId}>{input.label}</MenuItem>
+              )
+            })
+          }
+        </Select>
+      </Box>
+      {audio}
+      {
+        showTestAudio && (
+        <>
+          <Button
+            color="primary"
+            size="small"
+            onClick={() => {
+              controls.play()
+            }}>
+            Play test Sound
+          </Button>
+        </>
+        )
+      }
+
     </Box>
     
   )
@@ -295,15 +343,18 @@ const AudioVideoCheckDialog = ({
   }
 
   const handleChangeAudioDevice = (event) => {
-    setSelectedAudioInput(event.target.value);
+    const device = getObjectFromId(event.target.value, audioInputs);
+    setSelectedAudioInput(device);
   }
 
   const handleChangeVideoDevice = (event) => {
-    setSelectedVideoInput(event.target.value);
+    const device = getObjectFromId(event.target.value, videoInputs)
+    setSelectedVideoInput(device);
   }
 
   const handleChangeAudioOutputDevice = (event) => {
-    setSelectedAudioOutput(event.target.value);
+    const device = getObjectFromId(event.target.value, audioOutputs)
+    setSelectedAudioOutput(device);
   }
 
   const VideoSwitch = ({ color = "white", activeColor }) => {
@@ -366,7 +417,6 @@ const AudioVideoCheckDialog = ({
               </Typography>
             }          
           </Box>
-
 
           <Paper className={styles.cameraContainer}>
             <Webcam
@@ -467,8 +517,8 @@ const AudioVideoCheckDialog = ({
               </Alert> */}
             </>
           }
-
-          <AudioInputDevicesDropdown
+          <Box mt={1.5} />
+          <BrowserDevicesDropdown
             id="audio-in-device-select"
             inputs={audioInputs}
             selectedInput={selectedAudioInput}
@@ -476,9 +526,9 @@ const AudioVideoCheckDialog = ({
             renderIconProp={({ ...props }) => <MicIcon {...props} />}
           >
 
-          </AudioInputDevicesDropdown>
+          </BrowserDevicesDropdown>
 
-          <AudioInputDevicesDropdown
+          <BrowserDevicesDropdown
             id="video-device-select"
             inputs={videoInputs}
             selectedInput={selectedVideoInput}
@@ -486,17 +536,18 @@ const AudioVideoCheckDialog = ({
             renderIconProp={({ ...props }) => <VideocamIcon {...props} />}
           >
 
-          </AudioInputDevicesDropdown>
+          </BrowserDevicesDropdown>
 
-          <AudioInputDevicesDropdown
+          <BrowserDevicesDropdown
             id="audio-out-device-select"
             inputs={audioOutputs}
             selectedInput={selectedAudioOutput}
             handleChange={handleChangeAudioOutputDevice}
+            showTestAudio={true}
             renderIconProp={({ ...props }) => <VolumeUpIcon {...props} />}
           >
 
-          </AudioInputDevicesDropdown>
+          </BrowserDevicesDropdown>
 
           {
             devicesPermissionGiven && 
