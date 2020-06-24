@@ -100,7 +100,7 @@ export const setBroadcastMessageToDrafted = async ({
 //   });
 // };
 
-export const launchDraftedMessage = async ({
+export const launchExistingMessage = async ({
   sessionId,
   userId,
   message,
