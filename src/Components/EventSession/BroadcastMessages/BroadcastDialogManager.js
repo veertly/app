@@ -4,7 +4,7 @@ import CreateBroadcastDialog from "./CreateBroadcastDialog";
 import ConfirmationDialog from "../../Misc/ConfirmationDialog";
 import {
   deleteBroadcastMessage,
-  launchDraftedMessage
+  launchExistingMessage
 } from "../../../Modules/broadcastOperations";
 
 const BroadcastDialogManager = ({ sessionId, userId }) => {
@@ -21,18 +21,7 @@ const BroadcastDialogManager = ({ sessionId, userId }) => {
 
   const launchBroadcastMessage = React.useCallback(async () => {
     if (launchBroadcastDialog) {
-      // await setBroadcastState({
-      //   sessionId,
-      //   userId,
-      //   originalBroadcast: launchBroadcastDialog,
-      //   newState: BROADCAST_MESSAGE_STATES.PUBLISHED
-      // });
-      // await launchBroadcastMessageDb({
-      //   sessionId,
-      //   userId,
-      //   message: launchBroadcastDialog.message
-      // })
-      await launchDraftedMessage({
+      await launchExistingMessage({
         sessionId,
         userId,
         message: launchBroadcastDialog.message,

@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import BroadcastMessagesContext from "../../Contexts/BroadcastMessagesContext";
-import { useSelector } from "react-redux";
-import { isEventOwner } from "../../Redux/eventSession";
+// import { useSelector } from "react-redux";
+// import { isEventOwner } from "../../Redux/eventSession";
 import { Dialog, DialogContent, DialogActions, DialogTitle, Button, makeStyles, Typography } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
@@ -16,7 +16,7 @@ const ParticipantBroadcastDialogContainer = React.memo(() => {
     activeBroadcastMessage
   } = useContext(BroadcastMessagesContext);
   
-  const isOwner = useSelector(isEventOwner);
+  // const isOwner = useSelector(isEventOwner);
 
   const [showDialog, setShowDialog] = useState(false);
 
@@ -28,7 +28,7 @@ const ParticipantBroadcastDialogContainer = React.memo(() => {
     setShowDialog(!!activeBroadcastMessage);
   }, [activeBroadcastMessage, setShowDialog])
 
-  if (activeBroadcastMessage && !isOwner) {
+  if (activeBroadcastMessage) {
     return (
       <Dialog fullWidth open={showDialog} onClose={handleClose}>
         <DialogTitle className={classes.dialogTitle}>Announcement</DialogTitle>

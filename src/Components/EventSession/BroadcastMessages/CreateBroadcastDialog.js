@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { makeStyles, DialogTitle, DialogContent, TextField, DialogActions, Button } from "@material-ui/core";
 import DialogClose from "../../Misc/DialogClose";
-import { createBroadcastMessageDrafted, setBroadcastMessageToDrafted, launchBroadcastMessage } from "../../../Modules/broadcastOperations";
+import { createBroadcastMessageDrafted, setBroadcastMessageToDrafted, launchBroadcastMessage, launchExistingMessage } from "../../../Modules/broadcastOperations";
 import { useSelector } from "react-redux";
 import { getSessionId, getUserId } from "../../../Redux/eventSession";
+import BroadcastMessagesContext from "../../../Contexts/BroadcastMessagesContext";
 
 const useStyles = makeStyles((theme) => ({
   dialogTitle: {
@@ -25,6 +26,10 @@ const CreateBroadcastDialog = ({ open, closeDialog, broadcastMessage = null }) =
   const sessionId = useSelector(getSessionId);
   const userId = useSelector(getUserId);
 
+  const { activeBroadcastMessage } = useContext(
+    BroadcastMessagesContext
+  );
+
   const handleClose = () => {
     closeDialog();
     setExecutingAction(false);
@@ -33,16 +38,26 @@ const CreateBroadcastDialog = ({ open, closeDialog, broadcastMessage = null }) =
   const handleCreateBroadcast = async (event) => {
     event.preventDefault()
     setExecutingAction(true);
+    if (broadcastMessage) {
+      await launchExistingMessage({
+        sessionId,
+        userId,
+        message,
+        originalBroadcast: broadcastMessage
+      });
+    } else {
+      await launchBroadcastMessage({
+        sessionId,
+        userId,
+        message
+      });
+    }
     // await createBroadcastMessage({
     //   sessionId,
     //   userId,
     //   message,
     // });
-    await launchBroadcastMessage({
-      sessionId,
-      userId,
-      message
-    })
+    
     handleClose();
   };
 
@@ -123,7 +138,7 @@ const CreateBroadcastDialog = ({ open, closeDialog, broadcastMessage = null }) =
             color="primary"
             variant="contained"
             type="submit"
-            disabled={executingAction}
+            disabled={executingAction || !!activeBroadcastMessage}
           >
             Publish
           </Button>
