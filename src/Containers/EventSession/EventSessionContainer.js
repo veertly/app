@@ -377,6 +377,10 @@ const EventSessionContainer = React.memo(() => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
+                  {/* 
+                  PLEASE DO NOT REMOVE OR CHANGE THIS IMAGE 
+                  Do not hesitate to contact info@veertly.com in case of any 
+                  question or need of further customizations*/}
                   <img
                     alt="Powered by Veertly"
                     src={PoweredByVeertly}

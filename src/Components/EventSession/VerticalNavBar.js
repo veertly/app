@@ -120,7 +120,7 @@ export const DEAFULT_NAV_BAR = {
     label: "Backstage",
     icon: BackstageIcon,
     order: 11,
-    visible: true
+    visible: false
   }
 };
 
@@ -220,13 +220,20 @@ const VerticalNavBar = (props) => {
   const userId = useSelector(getUserId);
   const user = useSelector(getUser);
 
+  const backstageFeature = useSelector(
+    getFeatureDetails(FEATURES.STREAMYARD_BACKSTAGE),
+    shallowEqual
+  );
+
   const hasBackstage = useMemo(
     () =>
       user &&
       user.roles &&
+      backstageFeature &&
+      backstageFeature.enabled &&
       (user.roles.includes(ROLES.SPEAKER.key) ||
         user.roles.includes(ROLES.HOST.key)),
-    [user]
+    [backstageFeature, user]
   );
 
   const [lastNavBarSelection, setLastNavBarSelection] = React.useState(null);
