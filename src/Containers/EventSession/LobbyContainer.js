@@ -8,7 +8,7 @@ import {
 } from "../../Redux/eventSession";
 import { VERTICAL_NAV_OPTIONS } from "../../Contexts/VerticalNavBarContext";
 import EventPage from "../../Components/Event/EventPage";
-import { Button } from "@material-ui/core";
+import { Button, Box } from "@material-ui/core";
 import { setUserCurrentLocation } from "../../Modules/userOperations";
 
 export const LobbyContainer = () => {
@@ -31,7 +31,7 @@ export const LobbyContainer = () => {
   const sessionId = useSelector(getSessionId);
 
   return (
-    <>
+    <Box mb={2.5}>
       <div style={{ width: "100%", textAlign: "center" }}>
         <Button
           variant="contained"
@@ -49,6 +49,6 @@ export const LobbyContainer = () => {
         hideButtons={true}
         isPreview={true}
       />
-    </>
+    </Box>
   );
 };

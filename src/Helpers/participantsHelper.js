@@ -7,6 +7,13 @@ export const isParticipantMainStage = (participantSession) => {
   );
 };
 
+export const isParticipantBackstage = (participantSession) => {
+  return (
+    participantSession &&
+    participantSession.currentLocation === VERTICAL_NAV_OPTIONS.backstage
+  );
+};
+
 export const isParticipantLobby = (participantSession) => {
   return (
     participantSession &&
@@ -19,7 +26,8 @@ export const isParticipantAvailableForCall = (participantSession) => {
     participantSession &&
     participantSession.availableForCall !== false &&
     !participantSession.groupId &&
-    participantSession.currentLocation !== VERTICAL_NAV_OPTIONS.mainStage
+    participantSession.currentLocation !== VERTICAL_NAV_OPTIONS.mainStage &&
+    participantSession.currentLocation !== VERTICAL_NAV_OPTIONS.backstage
   );
 };
 
@@ -27,7 +35,8 @@ export const participantCanNetwork = (participantSession) => {
   return (
     participantSession &&
     !participantSession.groupId &&
-    participantSession.currentLocation !== VERTICAL_NAV_OPTIONS.mainStage
+    participantSession.currentLocation !== VERTICAL_NAV_OPTIONS.mainStage &&
+    participantSession.currentLocation !== VERTICAL_NAV_OPTIONS.backstage
   );
 };
 
