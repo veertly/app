@@ -120,7 +120,7 @@ export const DEAFULT_NAV_BAR = {
     label: "Backstage",
     icon: BackstageIcon,
     order: 11,
-    visible: false
+    visible: true
   }
 };
 
