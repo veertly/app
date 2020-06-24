@@ -1,6 +1,6 @@
 import { useEffect, useState, useContext } from "react";
 import useScript from "./useScript";
-import { getJitsiOptions } from "../Modules/jitsi";
+import { getJitsiOptions, DEFAULT_JITSI_SERVER, JITSI_MEET_SDK_URL } from "../Modules/jitsi";
 import TechnicalCheckContext from "../Contexts/TechnicalCheckContext";
 import { usePrevious } from "react-use";
 import JitsiContext from "../Contexts/JitsiContext";
@@ -9,9 +9,8 @@ const useJitsi = ({
   avatarUrl,
   displayName,
   sessionId,
-  conferenceVideoType="JITSI",
   containerId,
-  domain="meet.jit.si",
+  domain=DEFAULT_JITSI_SERVER,
   showJitsiLogo,
   subject="",
   roomName,
@@ -21,7 +20,7 @@ const useJitsi = ({
 }) => {
   const { jitsiApi, setJitsiApi } = useContext(JitsiContext);
 
-  const [loaded] = useScript("https://meet.jit.si/external_api.js");
+  const [loaded] = useScript(JITSI_MEET_SDK_URL);
   const [lastRoomLoaded, setLastRoomLoaded] = useState(null);
 
   const { showAudioVideoCheck ,muteVideo, muteAudio, setMuteAudio, setMuteVideo, selectedAudioInput, selectedVideoInput, selectedAudioOutput  } = useContext(TechnicalCheckContext);
@@ -39,7 +38,7 @@ const useJitsi = ({
       return;
     }
 
-    if (conferenceVideoType === "JITSI" && loaded && lastRoomLoaded !== roomName) {
+    if (loaded && lastRoomLoaded !== roomName) {
       // dispose existing jitsi
       if (jitsiApi) {
         jitsiApi.executeCommand("hangup");
@@ -114,7 +113,31 @@ const useJitsi = ({
       setJitsiApi(api);
     }
     return () => {};
-  }, [showAudioVideoCheck , loaded, jitsiApi, setJitsiApi, displayName, avatarUrl, sessionId, conferenceVideoType, lastRoomLoaded, containerId, showJitsiLogo, domain, subject, roomName, muteAudio, muteVideo, callEndedCb, onVideoConferenceLeft, onVideoConferenceJoined, selectedAudioInput, selectedAudioOutput, selectedVideoInput, setMuteAudio, setMuteVideo]);
+  }, [
+    showAudioVideoCheck,
+    loaded,
+    jitsiApi,
+    setJitsiApi,
+    displayName,
+    avatarUrl,
+    sessionId,
+    lastRoomLoaded,
+    containerId,
+    showJitsiLogo,
+    domain,
+    subject,
+    roomName,
+    muteAudio,
+    muteVideo,
+    callEndedCb,
+    onVideoConferenceLeft,
+    onVideoConferenceJoined,
+    selectedAudioInput,
+    selectedAudioOutput,
+    selectedVideoInput,
+    setMuteAudio,
+    setMuteVideo
+  ]);
 
   useEffect(() => {
     const toggleInternal = async () => {

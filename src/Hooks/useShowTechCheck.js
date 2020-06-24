@@ -1,5 +1,6 @@
 import { useLocalStorage, useMediaDevices } from "react-use";
 import { useState, useEffect } from "react";
+import { SHOW_TECH_CHECK_LOCAL_STORAGE } from "../Utils/constants";
 
 // Time after which the page refresh will show the preview dialog 
 // TODO: increase it. right now its 6 hours
@@ -28,7 +29,7 @@ const isAudioPermissionGiven = (devices) => {
 }
 
 const useShowTechCheck = (sessionId) => {
-  const [techCheckState, setTechCheckState] = useLocalStorage("vrtly_show_tech_check", {});
+  const [techCheckState, setTechCheckState] = useLocalStorage(SHOW_TECH_CHECK_LOCAL_STORAGE, {});
 
   // Permission api in chrome are experimental right now
   // const microphone = usePermission({ name: "microphone" });

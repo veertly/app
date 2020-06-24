@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { useLocalStorage } from "react-use";
+import { VEERTLY_MUTE_AUDIO_STATES, VEERTLY_MUTE_VIDEO_STATES } from "../Utils/constants";
 
 const useMuteAudioVideo = (sessionId) => {
 
-  const [muteAudioObject, setMuteAudioInternal] = useLocalStorage("vrtly_mute_audio_state", {});
-  const [muteVideoObject, setMuteVideoInternal] = useLocalStorage("vrtly_mute_video_state", {});
+  const [muteAudioObject, setMuteAudioInternal] = useLocalStorage(VEERTLY_MUTE_AUDIO_STATES, {});
+  const [muteVideoObject, setMuteVideoInternal] = useLocalStorage(VEERTLY_MUTE_VIDEO_STATES, {});
 
   const [muteAudio, setMuteAudio] = useState(muteAudioObject[sessionId] ? muteAudioObject[sessionId] : false);
   const [muteVideo, setMuteVideo] = useState(muteVideoObject[sessionId] ? muteVideoObject[sessionId] : false);
