@@ -17,6 +17,7 @@ import BroadcastMessagesMenu from "./BroadcastMessagesMenu";
 // import { Archive as ArchiveIcon } from "react-feather";
 import LiveIcon from "../../../Assets/Icons/Live";
 import { Alert } from "@material-ui/lab";
+import Label from "../../Misc/Label";
 
 const useStyles = makeStyles({
   divider: {
@@ -40,7 +41,8 @@ const useStyles = makeStyles({
       transform: "scale(1.5)",
       opacity: 0
     }
-  }
+  },
+  label: { marginLeft: 8 }
 });
 
 const BroadcastMessageItem = ({
@@ -61,6 +63,11 @@ const BroadcastMessageItem = ({
     }
   }, [broadcastMessage.state, isActiveMessage]);
 
+  const isDraft = React.useMemo(
+    () => broadcastMessage.state === BROADCAST_MESSAGE_STATES.DRAFT,
+    [broadcastMessage.state]
+  );
+
   return (
     <Box
       width="100%"
@@ -78,7 +85,21 @@ const BroadcastMessageItem = ({
             {/* <AvailableBadge /> */}
           </Box>
         ) : null}
-        <Typography color={color}>{broadcastMessage.message}</Typography>
+        <Typography color={color}>
+          {broadcastMessage.message}
+          {isDraft && (
+            // <Box ml={1}>
+            <Label className={classes.label} color="grey">
+              draft
+            </Label>
+            // </Box>
+          )}
+        </Typography>
+        {/* {isDraft && (
+          <Box ml={1}>
+            <Label color="grey">draft</Label>
+          </Box>
+        )} */}
       </Box>
       {showMenu && (
         <Box alignSelf="flex-start">
