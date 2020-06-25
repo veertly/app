@@ -11749,6 +11749,11 @@ react-use@^15.1.0:
     ts-easing "^0.2.0"
     tslib "^2.0.0"
 
+react-webcam@^5.0.2:
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/react-webcam/-/react-webcam-5.2.0.tgz#da3991336d262d6dd6c51e6265402927bb0343ef"
+  integrity sha512-mz/ehO/iTpnU6RcJgGRg1vjLh+ydm0jfJb84Fwws4YrXYf2IjrZlOn9eZ/Iu+/EJeKf8SlZEnu3G8Pz7atRN8w==
+
 react-window@^1.8.5:
   version "1.8.5"
   resolved "https://registry.yarnpkg.com/react-window/-/react-window-1.8.5.tgz#a56b39307e79979721021f5d06a67742ecca52d1"

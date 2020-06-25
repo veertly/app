@@ -1,22 +1,20 @@
 import React, { useMemo } from "react";
-import { withRouter, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import clsx from "clsx";
 // import Button from "@material-ui/core/Button";
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
-
 import { makeStyles } from "@material-ui/styles";
 import {
   AppBar,
   Toolbar,
   Typography,
-  Divider
+  Divider,
   // Hidden,
   // IconButton
 } from "@material-ui/core";
 // import MenuIcon from "@material-ui/icons/Menu";
 import VeertlyLogo from "../../Assets/Veertly_white.svg";
-
 // import AvatarLogin from "../Topbar/AvatarLogin";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme } from "@material-ui/core/styles";
@@ -38,6 +36,7 @@ import { logout } from "../../Redux/account";
 import PresenceSwitch from "./PresenceSwitch";
 import { trackEvent } from "../../Modules/analytics";
 import { FEATURES } from "../../Modules/features";
+import AudioVideoCheckDialog from "./AudioVideoCheckDialog";
 
 // import routes from "../../Config/routes";
 const useStyles = makeStyles((theme) => ({
@@ -92,7 +91,10 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center"
   },
   presenceContainer: { marginRight: theme.spacing(3) },
-  menuIcon: { color: "white" }
+  menuIcon: { color: "white" },
+  iconButton: {
+    color: "white",
+  }
 }));
 
 // const RoomButton = ({ onClick, disabled, isCurrentRoom, children, icon }) => {
@@ -133,7 +135,7 @@ const useStyles = makeStyles((theme) => ({
 //   );
 // };
 
-export default withRouter((props) => {
+const EventSessionTopbar = () => {
   const theme = useTheme();
 
   const isMobile = useMediaQuery(theme.breakpoints.down("xs"));
@@ -148,6 +150,9 @@ export default withRouter((props) => {
   const userGroup = useSelector(getUserGroup, shallowEqual);
   const sessionId = useSelector(getSessionId);
   const eventSessionDetails = useSelector(getEventSessionDetails, shallowEqual);
+
+  const [showTechCheckModal, setShowTechCheckModal] = React.useState(false);
+
   const customThemeFeature = useSelector(
     getFeatureDetails(FEATURES.CUSTOM_THEME)
   );
@@ -199,6 +204,10 @@ export default withRouter((props) => {
     trackEvent("Cockpit clicked", { sessionId });
     window.open("https://cockpit.veertly.com/event/" + sessionId, "_blank");
   };
+  
+  const handleShowTechCheckClicked = () => {
+    setShowTechCheckModal(!showTechCheckModal);
+  }
 
   const logo = useMemo(() => {
     return customThemeFeature && customThemeFeature.logo
@@ -239,6 +248,23 @@ export default withRouter((props) => {
           </div>
           {/* </Hidden> */}
 
+          {/* <Box paddingLeft={0} paddingRight={0}>
+            <Tooltip title="Enter call with video On or Off">
+              <IconButton aria-label="toggle video" color="secondary" onClick={handleVideoToggle}>
+                {!muteVideo && <VideocamIcon />}
+                {muteVideo && <VideocamOffIcon />}
+              </IconButton>
+            </Tooltip>
+          </Box>
+          <Box paddingLeft={0} paddingRight={1}>
+            <Tooltip title="Enter call with mic On or Off">
+              <IconButton aria-label="toggle audio" color="secondary" onClick={handleAudioToggle}>
+                {muteAudio && <MicOffIcon />}
+                {!muteAudio && <MicIcon />}
+              </IconButton>
+            </Tooltip>
+          </Box> */}
+
           <div className={classes.avatarContainer}>
             {/* <AvatarLogin eventSession={eventSession} /> */}
             <UserAvatar user={user} onClick={handleMenu} />
@@ -258,6 +284,11 @@ export default withRouter((props) => {
               onClose={handleMenuClose}
             >
               <MenuItem onClick={handleEditProfileClick}>Edit profile</MenuItem>
+              
+              <MenuItem onClick={handleShowTechCheckClicked}>
+                  Devices Settings
+              </MenuItem>
+
               {isOwner && <Divider />}
               {isOwner && (
                 <MenuItem onClick={handleEditEventClick}>Edit event</MenuItem>
@@ -272,6 +303,15 @@ export default withRouter((props) => {
           </div>
         </Toolbar>
       </AppBar>
+      <AudioVideoCheckDialog 
+        overrideShow={true}
+        showModal={showTechCheckModal}
+        showClose={true}
+        onCloseClicked={handleShowTechCheckClicked}
+        okText="OK"
+      />
     </React.Fragment>
   );
-});
+};
+
+export default EventSessionTopbar;

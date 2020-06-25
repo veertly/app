@@ -1,4 +1,5 @@
 export const DEFAULT_JITSI_SERVER = "https://meet.jit.si/";
+export const JITSI_MEET_SDK_URL = "https://meet.jit.si/external_api.js";
 
 export const getJistiServer = (eventSessionDetails) => {
   if (

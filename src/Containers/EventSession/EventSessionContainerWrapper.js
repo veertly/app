@@ -8,7 +8,6 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { useSelector, useDispatch, shallowEqual } from "react-redux";
 import firebase from "../../Modules/firebaseApp";
 import { leaveCall } from "../../Modules/eventSessionOperations";
-
 import routes from "../../Config/routes";
 import {
   initFirebasePresenceSync,
@@ -52,6 +51,7 @@ import { SmallPlayerContextProvider } from "../../Contexts/SmallPlayerContext";
 import { BroadcastMessagesProvider } from "../../Contexts/BroadcastMessagesContext";
 import ParticipantBroadcastDialogContainer from "../../Components/EventSession/ParticipantBroadcastDialogContainer";
 import { PollsContextWrapper } from "../../Contexts/PollsContext";
+import { TechnicalCheckProvider } from "../../Contexts/TechnicalCheckContext";
 
 const EventSessionContainerWrapper = (props) => {
   const dispatch = useDispatch();
@@ -359,14 +359,17 @@ const EventSessionContainerWrapper = (props) => {
           <ChatMessagesContextWrapper>
             <EventSessionContainerTheme>
               <ChatDraftMessageProvider>
-                <BroadcastMessagesProvider>
-                  <PollsContextWrapper>
-                    <>
-                      <EventSessionContainer />
-                      <ParticipantBroadcastDialogContainer />
-                    </>
-                  </PollsContextWrapper>
-                </BroadcastMessagesProvider>
+                <TechnicalCheckProvider
+                  sessionId={sessionId}>
+                  <BroadcastMessagesProvider>
+                    <PollsContextWrapper>
+                      <>
+                        <EventSessionContainer />
+                        <ParticipantBroadcastDialogContainer />
+                      </>
+                    </PollsContextWrapper>
+                  </BroadcastMessagesProvider>
+                </TechnicalCheckProvider>
               </ChatDraftMessageProvider>
             </EventSessionContainerTheme>
           </ChatMessagesContextWrapper>
