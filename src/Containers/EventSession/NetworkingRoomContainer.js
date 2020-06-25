@@ -24,12 +24,18 @@ import { FEATURES } from "../../Modules/features";
 // import { usePrevious } from "react-use";
 // import TechnicalCheckContext from "../../Contexts/TechnicalCheckContext";
 import AudioVideoCheckDialog from "../../Components/EventSession/AudioVideoCheckDialog";
-import useJitsi from "../../Hooks/useJitsi";
+import JitsiPlayerComponent from "../../Components/EventSession/JitsiPlayerComponent";
+import { Box } from "@material-ui/core";
 // import TechnicalCheckContext from "./TechnicalCheckContext";
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: "100%",
-    height: "100%"
+    // width: "100%",
+    // height: "100%"
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    right: 0,
+    left: 0
   }
 }));
 
@@ -109,35 +115,36 @@ const NetworkingRoomContainer = () => {
     handleCallEnded();
   }
 
-  useJitsi({
-    avatarUrl: user.avatarUrl,
-    displayName: user.firstName + " " + user.lastName,
-    sessionId,
-    containerId: "#conference-container",
-    domain,
-    showJitsiLogo,
-    subject,
-    roomName,
-    onVideoConferenceJoined: handleVideoConferencingJoined,
-    onVideoConferenceLeft: handleVideoConferencingLeft,
-    callEndedCb: handleCallEndedCb,
-  });
+  // useJitsi({
+  //   avatarUrl: user.avatarUrl,
+  //   displayName: user.firstName + " " + user.lastName,
+  //   sessionId,
+  //   containerId: "#conference-container",
+  //   domain,
+  //   showJitsiLogo,
+  //   subject,
+  //   roomName,
+  //   onVideoConferenceJoined: handleVideoConferencingJoined,
+  //   onVideoConferenceLeft: handleVideoConferencingLeft,
+  //   callEndedCb: handleCallEndedCb,
+  // });
 
   if (error) {
     console.log(error);
     return <p>Error :(</p>;
   }
-  if (!loaded) return <div id="conference-container">Loading...</div>;
+  if (!loaded) return <div>Loading...</div>;
   if (loaded) {
     return (
-      <>
-        <div className={classes.root} id="conference-container" />
-
-          {/* <JitsiPlayerComponent 
+      <Box height="100%" width="100%" position="relative">
+        <div className={classes.root}
+          // id="conference-container"
+          >
+            <JitsiPlayerComponent 
             avatarUrl= {user.avatarUrl}
             displayName={user.firstName + " " + user.lastName}
             sessionId={sessionId}
-            containerId="#conference-container"
+            // containerId="#conference-container"
             domain={domain}
             showJitsiLogo={showJitsiLogo}
             subject={subject}
@@ -145,7 +152,9 @@ const NetworkingRoomContainer = () => {
             onVideoConferenceJoined={handleVideoConferencingJoined}
             onVideoConferenceLeft={handleVideoConferencingLeft}
             callEndedCb= {handleCallEndedCb}
-          />           */}
+          />
+        </div>
+
         <AudioVideoCheckDialog
           title={currentGroup.isRoom ? `${currentGroup.roomName} Room` : "Networking Conference call"}
           subtitle={"You are going into video call. Please ensure that mic and camera are working properly."}
@@ -153,7 +162,7 @@ const NetworkingRoomContainer = () => {
           showClose
           onCloseClicked={handleCallEnded}
         />
-      </>
+      </Box>
     )
   }
 };

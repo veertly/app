@@ -176,7 +176,7 @@ const useJitsi = ({
   ]);
 
   useEffect(() => {
-    if (jitsiApi) {  
+    if (jitsiApi && selectedAudioInput) {
       jitsiApi.setAudioInputDevice(selectedAudioInput.label)
     }
   }, [
@@ -185,7 +185,7 @@ const useJitsi = ({
   ]);
 
   useEffect(() => {
-    if (jitsiApi) {  
+    if (jitsiApi && selectedAudioOutput) {  
       jitsiApi.setAudioOutputDevice(selectedAudioOutput.label)
     }
   }, [
@@ -194,7 +194,7 @@ const useJitsi = ({
   ]);
 
   useEffect(() => {
-    if (jitsiApi) {  
+    if (jitsiApi && selectedVideoInput) {  
       jitsiApi.setVideoInputDevice(selectedVideoInput.label)
     }
   }, [

@@ -31,3 +31,14 @@ export const getButtonText = ({ muteAudio, muteVideo }) =>{
   return buttonText;
 };
 
+export const getObjectFromId = (id, devices) => {
+  if (!devices || !id) {
+    return "";
+  };
+
+  if (!Array.isArray(devices)) {
+    return "";
+  }
+
+  return devices.filter((device) => (device.deviceId === id))[0];
+}

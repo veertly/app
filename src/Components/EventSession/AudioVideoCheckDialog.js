@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext } from "react";
 
 import Alert from "@material-ui/lab/Alert";
 import Button from "@material-ui/core/Button";
@@ -10,23 +10,15 @@ import { makeStyles } from "@material-ui/core/styles";
 // import { useSnackbar } from "material-ui-snackbar-provider";
 import Webcam from "react-webcam";
 // import { Paper } from "@material-ui/core";
-import { Switch, Paper, Box, Typography, Select, MenuItem } from "@material-ui/core";
+import { Switch, Paper, Box, Typography } from "@material-ui/core";
 import VideocamIcon from "@material-ui/icons/Videocam";
 import VideocamOffIcon from "@material-ui/icons/VideocamOff";
 import MicIcon from "@material-ui/icons/Mic";
 import MicOffIcon from "@material-ui/icons/MicOff";
 import CloseIcon from "@material-ui/icons/Close";
-import VolumeUpIcon from "@material-ui/icons/VolumeUp";
-// import { setVideoMuteStatusDB, setAudioMuteStatusDB } from "../../Modules/eventSessionOperations";
-// import { useDocumentData } from "react-firebase-hooks/firestore";
-// import firebase from "../../Modules/firebaseApp";
-// import { getButtonText } from "../../Utils";
 import TechnicalCheckContext from "../../Contexts/TechnicalCheckContext";
-import { useMediaDevices, useMountedState, usePrevious, useAudio } from "react-use";
 import { getButtonText } from "../../Utils";
-import JitsiContext from "../../Contexts/JitsiContext";
-// import { useMediaDevices } from "react-use";
-import testSound from "../../Sounds/testSound.mp3";
+import DevicesOptions from "./DevicesOptions";
 
 const useStyles = makeStyles((theme) => ({
   dialog: {
@@ -97,37 +89,12 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-// const WhiteSwitch = withStyles({
-//   switchBase: {
-//     color: "white",
-//     "&$checked": {
-//       color: "white",
-//     },
-//     "&$checked + $track": {
-//       backgroundColor: "white",
-//     },
-//   },
-//   checked: {},
-//   track: {},
-// })(Switch);
-
 const PERMISSION_ERROR_STATUS = {
   BLOCKED: "BLOCKED",
   DISMISSED: "DISMISSED",
   UNKNOWN: "UNKNOWN"
 };
 
-const getObjectFromId = (id, devices) => {
-  if (!devices || !id) {
-    return "";
-  };
-
-  if (!Array.isArray(devices)) {
-    return "";
-  }
-
-  return devices.filter((device) => (device.deviceId === id))[0];
-}
 
 const getPermissionStatusForError = (error="") => {
   if (error.toLowerCase().indexOf("denied") !== -1) {
@@ -139,78 +106,6 @@ const getPermissionStatusForError = (error="") => {
   }
 };
 
-const BrowserDevicesDropdown = ({ id, inputs, handleChange, selectedInput, renderIconProp, showTestAudio=false }) => {
-  const classes = useStyles();
- 
-  
-  const [audio, state, controls, ref] = useAudio({ // eslint-disable-line no-unused-vars
-    src: testSound,
-    autoPlay: false,
-  });
-
-  if (!inputs || inputs.length < 1) {
-    return (
-      <>
-        {audio}
-      </>
-    );
-  }
-
-  return (
-    <Box
-      marginTop={2}
-      paddingLeft={2}
-      paddingRight={2}
-      width={"100%"}
-      display="flex"
-      flexDirection="column"
-      alignItems="flex-end"
-    >
-      <Box 
-        display="flex"
-        flexDirection="row"
-        alignItems="center"
-        justifyContent="space-around"
-        width={"100%"}
-      >
-        
-        {renderIconProp({ className: classes.dropIcon })}
-
-        <Select
-          fullWidth
-          id={id}
-          value={selectedInput ? selectedInput.deviceId : inputs[0].deviceId}
-          onChange={handleChange}
-        >
-          {
-            inputs.map((input) => {
-              return (
-                <MenuItem key={input.deviceId} value={input.deviceId}>{input.label}</MenuItem>
-              )
-            })
-          }
-        </Select>
-      </Box>
-      {audio}
-      {
-        showTestAudio && (
-        <>
-          <Button
-            color="primary"
-            size="small"
-            onClick={() => {
-              controls.play()
-            }}>
-            Play test Sound
-          </Button>
-        </>
-        )
-      }
-
-    </Box>
-    
-  )
-}
 
 const AudioVideoCheckDialog = ({
   subtitle="",
@@ -222,18 +117,7 @@ const AudioVideoCheckDialog = ({
   okText="Join Event",
 }) => {
   const styles = useStyles();
-  const mediaDevices = useMediaDevices();
 
-  const audioInputs = mediaDevices.devices && mediaDevices.devices.filter(device => device.kind === "audioinput");
-  const videoInputs = mediaDevices.devices && mediaDevices.devices.filter(device => device.kind === "videoinput");
-  const audioOutputs = mediaDevices.devices && mediaDevices.devices.filter(device => device.kind === "audiooutput");
-
-  // const [eventSessionData] = useDocumentData(
-  //   firebase
-  //   .firestore()
-  //   .collection("eventSessions")
-  //   .doc(sessionId)
-  // )
   const {
     showAudioVideoCheck,
     setShowAudioVideoCheck,
@@ -244,89 +128,16 @@ const AudioVideoCheckDialog = ({
     muteAudio,
     setMuteAudio,
     setMuteVideo,
-    selectedAudioInput,
-    setSelectedAudioInput,
-    selectedVideoInput,
-    setSelectedVideoInput,
-    selectedAudioOutput,
-    setSelectedAudioOutput,
   } = useContext(TechnicalCheckContext);
 
   const [showAlert, setShowAlert] = useState(false);
   const [errorState, setErrorState] = useState(PERMISSION_ERROR_STATUS.UNKNOWN);
-  const isMounted = useMountedState();
-
-  const { jitsiApi } = useContext(JitsiContext);
-
-  const [calledTimes, setCalledTimes] = useState(0);
-
-  const previousShowModal = usePrevious(showModal);
-
-  // As jitsi does not have a device change listener, so this serves as a workaround
-  // This ensures selected device is changed in our context  
-  useEffect(() => {
-    const setCorrectDevices = async () => {
-      if (jitsiApi && showModal && isMounted && calledTimes < 1) {
-        const devices = await jitsiApi.getCurrentDevices();
-        
-        const jitsiSelectedAudioInput = devices.audioInput;
-        const jitsiSelectedVideoInput = devices.videoInput;
-        const jitsiSelectedAudioOutput = devices.audioOutput;
-
-        if (selectedAudioInput.label !== jitsiSelectedAudioInput.label) {
-          const correctSelectedAudioInput = audioInputs.filter(input => input.label === jitsiSelectedAudioInput.label);
-          setSelectedAudioInput(correctSelectedAudioInput[0]);
-        }
-
-        if (selectedVideoInput.label !== jitsiSelectedVideoInput.label) {
-          const correctSelectedVideoInput = videoInputs.filter(input => input.label === jitsiSelectedVideoInput.label);
-          setSelectedVideoInput(correctSelectedVideoInput[0]);
-        }
-
-        if (selectedAudioOutput.label !== jitsiSelectedAudioOutput.label) {
-          const correctSelectedAudioOutput = audioOutputs.filter(input => input.label === jitsiSelectedAudioOutput.label);
-          setSelectedAudioOutput(correctSelectedAudioOutput[0]);
-        }
-        setCalledTimes(time => time + 1);
-      }  
-    }
-    setCorrectDevices();
-  }, [
-    showModal,
-    jitsiApi,
-    selectedAudioInput.label,
-    selectedVideoInput.label,
-    selectedAudioOutput.label,
-    audioInputs,
-    setSelectedAudioInput,
-    setSelectedVideoInput,
-    setSelectedAudioOutput,
-    videoInputs,
-    audioOutputs,
-    isMounted,
-    calledTimes
-  ]);
-  // const muteVideo = useSelector(getMuteVideoOnEnter)
-  // const muteAudio = useSelector(getMuteAudioOnEnter);
-
-
-  useEffect(() => {
-    if (previousShowModal && showModal !== previousShowModal) {
-      setCalledTimes(0);
-    }
-  }, [showModal, previousShowModal])
 
   const handleVideoToggle = () => {
-    // setMuteVideo(!muteVideo)
-    // dispatch(setMuteVideo(sessionId))
-    // setVideoMuteStatusDB(!muteVideo, sessionId);
     setMuteVideo(!muteVideo);
   };
 
   const handleAudioToggle = () => {
-    // setMuteAudio(!muteAudio)
-    // dispatch(setMuteAudio(sessionId))
-    // setAudioMuteStatusDB(!muteAudio, sessionId);
     setMuteAudio(!muteAudio)
   };
 
@@ -340,21 +151,6 @@ const AudioVideoCheckDialog = ({
 
   const handleTryAgain = () => {
     window.location.reload();
-  }
-
-  const handleChangeAudioDevice = (event) => {
-    const device = getObjectFromId(event.target.value, audioInputs);
-    setSelectedAudioInput(device);
-  }
-
-  const handleChangeVideoDevice = (event) => {
-    const device = getObjectFromId(event.target.value, videoInputs)
-    setSelectedVideoInput(device);
-  }
-
-  const handleChangeAudioOutputDevice = (event) => {
-    const device = getObjectFromId(event.target.value, audioOutputs)
-    setSelectedAudioOutput(device);
   }
 
   const VideoSwitch = ({ color = "white", activeColor }) => {
@@ -518,36 +314,13 @@ const AudioVideoCheckDialog = ({
             </>
           }
           <Box mt={1.5} />
-          <BrowserDevicesDropdown
-            id="audio-in-device-select"
-            inputs={audioInputs}
-            selectedInput={selectedAudioInput}
-            handleChange={handleChangeAudioDevice}
-            renderIconProp={({ ...props }) => <MicIcon {...props} />}
-          >
 
-          </BrowserDevicesDropdown>
-
-          <BrowserDevicesDropdown
-            id="video-device-select"
-            inputs={videoInputs}
-            selectedInput={selectedVideoInput}
-            handleChange={handleChangeVideoDevice}
-            renderIconProp={({ ...props }) => <VideocamIcon {...props} />}
-          >
-
-          </BrowserDevicesDropdown>
-
-          <BrowserDevicesDropdown
-            id="audio-out-device-select"
-            inputs={audioOutputs}
-            selectedInput={selectedAudioOutput}
-            handleChange={handleChangeAudioOutputDevice}
-            showTestAudio={true}
-            renderIconProp={({ ...props }) => <VolumeUpIcon {...props} />}
-          >
-
-          </BrowserDevicesDropdown>
+          {devicesPermissionGiven &&
+            <DevicesOptions 
+              showModal={showModal}
+            />
+            
+          }
 
           {
             devicesPermissionGiven && 
