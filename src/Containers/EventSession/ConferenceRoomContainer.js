@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useContext } from "react";
 import useScript from "../../Hooks/useScript";
 import { makeStyles } from "@material-ui/core/styles";
 import { leaveCall } from "../../Modules/eventSessionOperations";
@@ -34,6 +34,7 @@ import { VERTICAL_NAV_OPTIONS } from "../../Contexts/VerticalNavBarContext";
 // import TechnicalCheckContext from "../../Contexts/TechnicalCheckContext";
 import AudioVideoCheckDialog from "../../Components/EventSession/AudioVideoCheckDialog";
 import JitsiPlayerComponent from "../../Components/EventSession/JitsiPlayerComponent";
+import JitsiContext from "../../Contexts/JitsiContext";
 
 const useStyles = makeStyles((theme) => ({
   videoContainer: {
@@ -92,6 +93,17 @@ export default () => {
     trackPage("ConferenceRoom/" + sessionId);
   }, [sessionId]);
 
+  const { jitsiApi } = useContext(JitsiContext);
+
+  useEffect(() => {
+    if (eventSessionDetails.conferenceVideoType !== "JITSI") {
+      if (jitsiApi) {
+        jitsiApi.executeCommand("hangup");
+        jitsiApi.dispose();
+      }
+    }
+  }, [eventSessionDetails.conferenceVideoType, jitsiApi])
+
   const handleCallEnded = React.useCallback(async () => {
     await leaveCall(sessionId, userGroup, userId);
     // await setOffline(sessionId, userGroup);
@@ -104,11 +116,26 @@ export default () => {
     shallowEqual
   );
 
+  const customNavBarFeature = useSelector(
+    getFeatureDetails(FEATURES.CUSTOM_NAV_BAR),
+    shallowEqual
+  );
+
+  const mainStageTitle = useMemo(() => {
+    if (
+      customNavBarFeature &&
+      customNavBarFeature[VERTICAL_NAV_OPTIONS.mainStage]
+    ) {
+      return customNavBarFeature[VERTICAL_NAV_OPTIONS.mainStage].label;
+    }
+    return "Main Stage";
+  }, [customNavBarFeature]);
+
   const prefix = process.env.REACT_APP_JITSI_ROOM_PREFIX;
   const prefixStr = prefix !== undefined ? `-${prefix}` : "";
   const roomName = "veertly" + prefixStr + "-" + sessionId;
   const domain = getJistiDomain(eventSessionDetails);
-  const subject = "Main Stage";
+  const subject = mainStageTitle;
   const showJitsiLogo =
     isMeetJitsi(domain) &&
     (!removeJitsiLogoFeature || !removeJitsiLogoFeature.enabled);
@@ -183,7 +210,6 @@ export default () => {
                 subject={subject}
                 roomName={roomName}
                 callEndedCb={handleCallEnded} />
-
             </div>
             <AudioVideoCheckDialog
               title="Main Stage conference call"

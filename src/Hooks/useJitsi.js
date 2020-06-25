@@ -202,6 +202,19 @@ const useJitsi = ({
     jitsiApi
   ]);
 
+
+  const previousJitsiAPI = usePrevious(jitsiApi);
+
+  // dispose the instance if a user is changing from the on jitsi call to another
+  // Earlier it was gc'd if it was
+  useEffect(() => {
+    if (previousJitsiAPI && previousJitsiAPI !== jitsiApi) {
+      previousJitsiAPI.executeCommand("hangup");
+      previousJitsiAPI.dispose();
+    }
+  }, [previousJitsiAPI, jitsiApi]);
+
+
   return jitsiApi;
 };
 

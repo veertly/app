@@ -36,6 +36,7 @@ const JitsiPlayerComponent =({
     onVideoConferenceLeft,
     callEndedCb,
   });
+
   return (
     <div id="conference-container" className={classes.root} />
   )
