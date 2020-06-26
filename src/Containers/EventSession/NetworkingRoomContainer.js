@@ -156,7 +156,7 @@ const NetworkingRoomContainer = () => {
         </div>
 
         <AudioVideoCheckDialog
-          title={currentGroup.isRoom ? `${currentGroup.roomName} Room` : "Networking Conference call"}
+          title={currentGroup.isRoom ? `${currentGroup.roomName}` : "Networking Conference call"}
           subtitle={"You are going into video call. Please ensure that mic and camera are working properly."}
           sessionId={sessionId}
           showClose
