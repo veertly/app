@@ -110,7 +110,6 @@ const DevicesOptions = ({ showModal }) => {
 
   const previousShowModal = usePrevious(showModal);
 
-
   const {
     selectedAudioInput,
     setSelectedAudioInput,

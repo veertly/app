@@ -161,6 +161,7 @@ const NetworkingRoomContainer = () => {
           sessionId={sessionId}
           showClose
           onCloseClicked={handleCallEnded}
+          okText={currentGroup.isRoom ? "Join room" : " Join call"}
         />
       </Box>
     )
