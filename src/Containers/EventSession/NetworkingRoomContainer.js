@@ -141,26 +141,27 @@ const NetworkingRoomContainer = () => {
           // id="conference-container"
           >
             <JitsiPlayerComponent 
-            avatarUrl= {user.avatarUrl}
-            displayName={user.firstName + " " + user.lastName}
-            sessionId={sessionId}
-            // containerId="#conference-container"
-            domain={domain}
-            showJitsiLogo={showJitsiLogo}
-            subject={subject}
-            roomName={roomName}
-            onVideoConferenceJoined={handleVideoConferencingJoined}
-            onVideoConferenceLeft={handleVideoConferencingLeft}
-            callEndedCb= {handleCallEndedCb}
-          />
+              avatarUrl= {user.avatarUrl}
+              displayName={user.firstName + " " + user.lastName}
+              sessionId={sessionId}
+              // containerId="#conference-container"
+              domain={domain}
+              showJitsiLogo={showJitsiLogo}
+              subject={subject}
+              roomName={roomName}
+              onVideoConferenceJoined={handleVideoConferencingJoined}
+              onVideoConferenceLeft={handleVideoConferencingLeft}
+              callEndedCb= {handleCallEndedCb}
+            />
         </div>
 
         <AudioVideoCheckDialog
-          title={currentGroup.isRoom ? `${currentGroup.roomName} Room` : "Networking Conference call"}
+          title={currentGroup.isRoom ? `${currentGroup.roomName}` : "Networking Conference call"}
           subtitle={"You are going into video call. Please ensure that mic and camera are working properly."}
           sessionId={sessionId}
           showClose
           onCloseClicked={handleCallEnded}
+          okText={currentGroup.isRoom ? "Join room" : " Join call"}
         />
       </Box>
     )
