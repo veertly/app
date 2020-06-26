@@ -141,18 +141,18 @@ const NetworkingRoomContainer = () => {
           // id="conference-container"
           >
             <JitsiPlayerComponent 
-            avatarUrl= {user.avatarUrl}
-            displayName={user.firstName + " " + user.lastName}
-            sessionId={sessionId}
-            // containerId="#conference-container"
-            domain={domain}
-            showJitsiLogo={showJitsiLogo}
-            subject={subject}
-            roomName={roomName}
-            onVideoConferenceJoined={handleVideoConferencingJoined}
-            onVideoConferenceLeft={handleVideoConferencingLeft}
-            callEndedCb= {handleCallEndedCb}
-          />
+              avatarUrl= {user.avatarUrl}
+              displayName={user.firstName + " " + user.lastName}
+              sessionId={sessionId}
+              // containerId="#conference-container"
+              domain={domain}
+              showJitsiLogo={showJitsiLogo}
+              subject={subject}
+              roomName={roomName}
+              onVideoConferenceJoined={handleVideoConferencingJoined}
+              onVideoConferenceLeft={handleVideoConferencingLeft}
+              callEndedCb= {handleCallEndedCb}
+            />
         </div>
 
         <AudioVideoCheckDialog

@@ -340,9 +340,6 @@ const EventSessionContainer = React.memo(() => {
             {userGroup && (
               <>
                 <NetworkingRoomContainer />
-                {/* <Box className={classes.callActionsContainer}>
-                  <CurrentCallActionsVertical />
-                </Box> */}
               </>
             )}
             {!userGroup &&
