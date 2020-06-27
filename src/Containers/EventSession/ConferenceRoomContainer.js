@@ -11,7 +11,7 @@ import {
   getSessionId,
   getUserId,
   getEventSessionDetails,
-  getFeatureDetails,
+  getFeatureDetails
 } from "../../Redux/eventSession";
 import ReactPlayer from "react-player";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -102,7 +102,7 @@ export default () => {
         jitsiApi.dispose();
       }
     }
-  }, [eventSessionDetails.conferenceVideoType, jitsiApi])
+  }, [eventSessionDetails.conferenceVideoType, jitsiApi]);
 
   const handleCallEnded = React.useCallback(async () => {
     await leaveCall(sessionId, userGroup, userId);
@@ -177,7 +177,7 @@ export default () => {
               height="100%"
               // height="none"
               className={classes.reactPlayer}
-              // playing
+              playing
               controls={true}
               onReady={() => setLoadingPlayer(false)}
             />
@@ -202,41 +202,42 @@ export default () => {
             <div className={classes.root}>
               <JitsiPlayerComponent
                 avatarUrl={user.avatarUrl}
-                displayName= {user.firstName + " " + user.lastName}
+                displayName={user.firstName + " " + user.lastName}
                 sessionId={sessionId}
                 // containerId= "#conference-container"
                 domain={domain}
                 showJitsiLogo={showJitsiLogo}
                 subject={subject}
                 roomName={roomName}
-                callEndedCb={handleCallEnded} />
+                callEndedCb={handleCallEnded}
+              />
             </div>
             <AudioVideoCheckDialog
               title="Main Stage conference call"
               subtitle="You are about enter to the main stage conference call. Please ensure that mic and camera are working properly."
-              sessionId={sessionId} 
+              sessionId={sessionId}
               showClose
               onCloseClicked={() => {
-                setUserCurrentLocation(sessionId, VERTICAL_NAV_OPTIONS.lobby)
+                setUserCurrentLocation(sessionId, VERTICAL_NAV_OPTIONS.lobby);
               }}
             />
           </>
-        )
+        );
       default:
         return (
-            <div className={classes.videoContainer}>
-              <Typography align="center" gutterBottom style={{ marginTop: 64 }}>
-                Livestream not correctly configured...
-              </Typography>
-              <Typography variant="caption" display="block" align="center">
-                Please contact the event organizer or Veertly team
-              </Typography>
-              <img
-                alt="No Video available"
-                src={NoVideoImage}
-                className={classes.noVideoImage}
-              />
-            </div>
+          <div className={classes.videoContainer}>
+            <Typography align="center" gutterBottom style={{ marginTop: 64 }}>
+              Livestream not correctly configured...
+            </Typography>
+            <Typography variant="caption" display="block" align="center">
+              Please contact the event organizer or Veertly team
+            </Typography>
+            <img
+              alt="No Video available"
+              src={NoVideoImage}
+              className={classes.noVideoImage}
+            />
+          </div>
         );
     }
   }
