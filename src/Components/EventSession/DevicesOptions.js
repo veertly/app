@@ -32,6 +32,13 @@ const BrowserDevicesDropdown = ({ id, inputs, handleChange, selectedInput, rende
     );
   }
 
+  const onChange = (event) => {
+    if (showTestAudio && ref.current && ref.current.setSinkId) {
+      ref.current.setSinkId(event.target.value);
+    }
+    handleChange(event);
+  }
+
   return (
     <Box
       marginTop={2}
@@ -56,7 +63,7 @@ const BrowserDevicesDropdown = ({ id, inputs, handleChange, selectedInput, rende
           fullWidth
           id={id}
           value={selectedInput ? selectedInput.deviceId : inputs[0].deviceId}
-          onChange={handleChange}
+          onChange={onChange}
         >
           {
             inputs.map((input) => {
@@ -102,7 +109,6 @@ const DevicesOptions = ({ showModal }) => {
   const isMounted = useMountedState();
 
   const previousShowModal = usePrevious(showModal);
-
 
   const {
     selectedAudioInput,
@@ -191,13 +197,12 @@ const DevicesOptions = ({ showModal }) => {
   return (
     <>
       <BrowserDevicesDropdown
-      id="audio-in-device-select"
-      inputs={audioInputs}
-      selectedInput={selectedAudioInput}
-      handleChange={handleChangeAudioDevice}
+        id="audio-in-device-select"
+        inputs={audioInputs}
+        selectedInput={selectedAudioInput}
+        handleChange={handleChangeAudioDevice}
         renderIconProp={({ ...props }) => <MicIcon {...props} />}
-      >
-      </BrowserDevicesDropdown>
+      />
 
       <BrowserDevicesDropdown
         id="video-device-select"
@@ -205,10 +210,8 @@ const DevicesOptions = ({ showModal }) => {
         selectedInput={selectedVideoInput}
         handleChange={handleChangeVideoDevice}
         renderIconProp={({ ...props }) => <VideocamIcon {...props} />}
-      >
-
-      </BrowserDevicesDropdown>
-
+      />
+     
       <BrowserDevicesDropdown
         id="audio-out-device-select"
         inputs={audioOutputs}
@@ -216,9 +219,8 @@ const DevicesOptions = ({ showModal }) => {
         handleChange={handleChangeAudioOutputDevice}
         showTestAudio={true}
         renderIconProp={({ ...props }) => <VolumeUpIcon {...props} />}
-      >
-
-      </BrowserDevicesDropdown>
+      />
+     
     </>
   )
 }

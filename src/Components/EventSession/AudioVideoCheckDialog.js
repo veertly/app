@@ -50,13 +50,16 @@ const useStyles = makeStyles((theme) => ({
     opacity: 1,
     width: "90%",
     alignSelf: "center",
-    marginTop: theme.spacing(4)
+    marginTop: theme.spacing(2)
   },
   enterWithoutButton : {
     width: "90%",
     alignSelf: "center",
     marginTop: theme.spacing(2)
   },
+  needHelpButton: {
+    marginTop: theme.spacing(2)
+  }, 
   cameraContainer: {
     height: "100%",
     width: "100%",
@@ -86,6 +89,19 @@ const useStyles = makeStyles((theme) => ({
   },
   dropIcon: {
     marginRight: theme.spacing(2),
+  },
+  whiteTextContainer: {
+    display: "flex",
+    flexDirection: "row",
+    width: "100%",
+    justifyContent: "space-around",
+    position: "absolute",
+    bottom: 0,
+    background: "#bdbdbd"
+  },
+  whiteText: {
+    paddingTop: theme.spacing(0.8),
+    paddingBottom: theme.spacing(0.8),
   }
 }));
 
@@ -128,6 +144,7 @@ const AudioVideoCheckDialog = ({
     muteAudio,
     setMuteAudio,
     setMuteVideo,
+    selectedVideoInput,
   } = useContext(TechnicalCheckContext);
 
   const [showAlert, setShowAlert] = useState(false);
@@ -190,6 +207,18 @@ const AudioVideoCheckDialog = ({
     return null;
   }
 
+  const videoConstraint = {
+    deviceId: selectedVideoInput,
+  };
+
+  const handleNeedHelpClicked = () => {
+    // window.$crisp.push(["do", "chat:open"]);
+    window.open(
+      "https://go.crisp.chat/chat/embed/?website_id=e2d77fef-388b-4609-a944-238bdcc2fc70",
+      "_blank"
+    );
+  };
+
   return (
     // <Paper>
       <Dialog open={overrideShow ? showModal : true} className={styles.dialog} fullWidth maxWidth="xs">
@@ -216,6 +245,7 @@ const AudioVideoCheckDialog = ({
 
           <Paper className={styles.cameraContainer}>
             <Webcam
+              videoConstraints={videoConstraint}
               onUserMedia={() => {
                 setAudioVideoPermissionFromOutside(true);
               }}
@@ -228,7 +258,23 @@ const AudioVideoCheckDialog = ({
               height="100%"
               width="100%"
             />
-
+            
+            { muteVideo &&
+              <Box
+                top="0"
+                left="0"
+                position="absolute"
+                bgcolor="#f5f5f5"
+                height="100%"
+                width="100%"
+                display="flex"
+                flexDirection="row"
+                justifyContent="center"
+                alignItems="center"
+              >
+                <VideocamOffIcon style={{fontSize: 32, flex: 1}} color="primary" />
+              </Box>
+            }
 
             <div className={styles.switchesContainer}>
               <VideoSwitch activeColor="secondary" />
@@ -259,8 +305,27 @@ const AudioVideoCheckDialog = ({
             }
 
             { showAlert &&
-              <Box top="0" left="0" position="absolute" bgcolor="#EEEEEE" height="100%" width="100%" display="flex" flexDirection="row" justifyContent="center" alignItems="center">
-                <VideocamOffIcon style={{fontSize: 32}} color="error" />
+              <Box
+                top="0"
+                left="0"
+                position="absolute"
+                bgcolor="#f5f5f5"
+                height="100%"
+                width="100%"
+                display="flex"
+                flexDirection="row"
+                justifyContent="center"
+                alignItems="center"
+              >
+                <VideocamOffIcon style={{fontSize: 32, flex: 1}} color="primary" />
+                <Box 
+                  flex={0.2}
+                  width="100%"
+                  className={styles.whiteTextContainer}>
+                    <Typography className={styles.whiteText}>
+                      Please give access to audio and video
+                    </Typography>
+                </Box>
               </Box>
             }
 
@@ -325,11 +390,11 @@ const AudioVideoCheckDialog = ({
           {
             devicesPermissionGiven && 
             <Button
-            className={styles.button}
-            onClick={handleClickPreview}
-            // type="submit"
-            variant="contained"
-            color="primary"
+              className={styles.button}
+              onClick={handleClickPreview}
+              // type="submit"
+              variant="contained"
+              color="primary"
             >
               {okText}
             </Button>
@@ -339,11 +404,11 @@ const AudioVideoCheckDialog = ({
 
             <>
               <Button
-              className={styles.tryAgainButton}
-              onClick={handleTryAgain}
-              // type="submit"
-              variant="contained"
-              color="primary"
+                className={styles.tryAgainButton}
+                onClick={handleTryAgain}
+                // type="submit"
+                variant="contained"
+                color="primary"
               >
                 Reload
               </Button>
@@ -356,6 +421,13 @@ const AudioVideoCheckDialog = ({
                 color="primary"
               >
                 Enter without devices 
+              </Button>
+            
+              <Button
+                className={styles.needHelpButton}
+                variant="primary"
+                onClick={handleNeedHelpClicked}>
+                Need help?
               </Button>
             </>
             
