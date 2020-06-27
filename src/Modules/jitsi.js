@@ -46,12 +46,16 @@ export const getJitsiOptions = (
   return {
     roomName,
     parentNode,
+
+    // configOverwrite: {
+    //   enableWelcomePage: false,
+    //   noticeMessage: "Hello this is my message!"
+    // },
     interfaceConfigOverwrite: {
       // filmStripOnly: true,
       DEFAULT_REMOTE_DISPLAY_NAME: "Veertlier",
-      enableWelcomePage: false,
       SHOW_JITSI_WATERMARK: showJitsiLogo,
-      // JITSI_WATERMARK_LINK: "https://veertly.com",
+      JITSI_WATERMARK_LINK: showJitsiLogo ? null : "https://veertly.com",
 
       TOOLBAR_ALWAYS_VISIBLE: true,
       SHOW_WATERMARK_FOR_GUESTS: showJitsiLogo,
