@@ -85,8 +85,10 @@ export default () => {
   const sessionId = useSelector(getSessionId);
   const eventSessionDetails = useSelector(getEventSessionDetails, shallowEqual);
 
+  const jitsiServer = getJistiServer(eventSessionDetails) + "external_api.js";
+  
   const [loaded, error] = useScript(
-    getJistiServer(eventSessionDetails) + "external_api.js"
+    jitsiServer
   );
 
   useEffect(() => {
@@ -210,6 +212,7 @@ export default () => {
                 subject={subject}
                 roomName={roomName}
                 callEndedCb={handleCallEnded}
+                jitsiServer={jitsiServer}
               />
             </div>
             <AudioVideoCheckDialog

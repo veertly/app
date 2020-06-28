@@ -17,10 +17,11 @@ const useJitsi = ({
   onVideoConferenceJoined=()=> {},
   onVideoConferenceLeft=()=>{},
   callEndedCb=()=>{},
+  jitsiServer=JITSI_MEET_SDK_URL,
 }) => {
   const { jitsiApi, setJitsiApi } = useContext(JitsiContext);
 
-  const [loaded] = useScript(JITSI_MEET_SDK_URL);
+  const [loaded] = useScript(jitsiServer);
   const [lastRoomLoaded, setLastRoomLoaded] = useState(null);
 
   const { showAudioVideoCheck ,muteVideo, muteAudio, setMuteAudio, setMuteVideo, selectedAudioInput, selectedVideoInput, selectedAudioOutput  } = useContext(TechnicalCheckContext);

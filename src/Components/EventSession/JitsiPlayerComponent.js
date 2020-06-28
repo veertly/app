@@ -1,6 +1,7 @@
 import React from "react";
 import useJitsi from "../../Hooks/useJitsi";
 import { makeStyles } from "@material-ui/core";
+import { JITSI_MEET_SDK_URL } from "../../Modules/jitsi";
 
 const useStyles = makeStyles(()=> ({
   root: {
@@ -21,6 +22,7 @@ const JitsiPlayerComponent =({
   onVideoConferenceJoined=()=> {},
   onVideoConferenceLeft=()=>{},
   callEndedCb=()=>{},
+  jitsiServer=JITSI_MEET_SDK_URL,
 }) => {
   const classes = useStyles();
   useJitsi({
@@ -35,6 +37,7 @@ const JitsiPlayerComponent =({
     onVideoConferenceJoined,
     onVideoConferenceLeft,
     callEndedCb,
+    jitsiServer,
   });
 
   return (

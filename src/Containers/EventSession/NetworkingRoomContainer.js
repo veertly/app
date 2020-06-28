@@ -53,10 +53,12 @@ const NetworkingRoomContainer = () => {
     shallowEqual
   );
 
+  const jitsiServer = (currentGroup && currentGroup.customJitsiServer
+    ? getJistiServer(currentGroup)
+    : getJistiServer(eventSessionDetails)) + "external_api.js";
+
   const [loaded, error] = useScript(
-    (currentGroup && currentGroup.customJitsiServer
-      ? getJistiServer(currentGroup)
-      : getJistiServer(eventSessionDetails)) + "external_api.js"
+    jitsiServer
   );
 
   useEffect(() => {
@@ -152,6 +154,7 @@ const NetworkingRoomContainer = () => {
               onVideoConferenceJoined={handleVideoConferencingJoined}
               onVideoConferenceLeft={handleVideoConferencingLeft}
               callEndedCb= {handleCallEndedCb}
+              jitsiServer={jitsiServer}
             />
         </div>
 
