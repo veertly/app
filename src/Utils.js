@@ -14,3 +14,31 @@ export const SMALL_PLAYER_INITIAL_HEIGHT = Math.floor(
 export const SMALL_PLAYER_INITIAL_WIDTH =
   (SMALL_PLAYER_INITIAL_HEIGHT * 14) / 9;
 export const TOPBAR_HEIGHT = 64;
+
+
+export const getButtonText = ({ muteAudio, muteVideo }) =>{
+  let buttonText = "Join";
+
+  if (muteVideo) {
+    buttonText = " Join without video";
+  }
+  if (muteAudio) {
+    buttonText = "Join without audio";
+  }
+  if (muteVideo && muteAudio) {
+    buttonText = "Join without audio and video";
+  }
+  return buttonText;
+};
+
+export const getObjectFromId = (id, devices) => {
+  if (!devices || !id) {
+    return "";
+  };
+
+  if (!Array.isArray(devices)) {
+    return "";
+  }
+
+  return devices.filter((device) => (device.deviceId === id))[0];
+}

@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import {
-  // makeStyles,
+  makeStyles,
   Switch,
   FormControlLabel,
-  Tooltip
+  Tooltip,
+  Box,
+  Typography
 } from "@material-ui/core";
 import { useSelector } from "react-redux";
 import {
@@ -15,18 +17,14 @@ import { participantCanNetwork } from "../../Helpers/participantsHelper";
 import { setUserAvailableForCall } from "../../Modules/userOperations";
 import useIsMobile from "../../Hooks/useIsMobile";
 
-// const useStyles = makeStyles((theme) => ({
-//   emptyPane: {
-//     marginTop: theme.spacing(4),
-//     textAlign: "center"
-//   },
-//   emptyImage: {
-//     width: "55%",
-//     marginBottom: theme.spacing(1)
-//   }
-// }));
+const useStyles = makeStyles((theme) => ({
+  label: {
+    opacity:0.5,
+  },
+}));
+
 const PresenceSwitch = () => {
-  // const classes = useStyles();
+  const classes = useStyles();
   const sessionId = useSelector(getSessionId);
   const userSession = useSelector(getUserSession);
   const isAvailableForCall = useSelector(getUserAvailableForCall);
@@ -66,13 +64,18 @@ const PresenceSwitch = () => {
       )}
       {!canNetwork && (
         <Tooltip title="While in a conversation, you will not be interrupted">
-          <FormControlLabel
+          <Box display="flex" flex="row" alignItems="center">
+            <Typography className={classes.label} variant="subtitle1">{switchValue ? "Available" : "Do not disturb"}</Typography>
+            <Switch checked={switchValue} onChange={handleChange} disabled />
+          </Box>
+          {/* <FormControlLabel
             // label={"In a conversation"}
+            className={classes.label}
             label={switchValue ? "Available" : "Do not disturb"}
             control={<Switch checked={switchValue} onChange={handleChange} />}
             labelPlacement="start"
             disabled
-          />
+          /> */}
         </Tooltip>
       )}
     </div>
