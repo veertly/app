@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo, useContext } from "react";
-import useScript from "../../Hooks/useScript";
 import { makeStyles } from "@material-ui/core/styles";
 import { leaveCall } from "../../Modules/eventSessionOperations";
 import NoVideoImage from "../../Assets/illustrations/undraw_video_call_kxyp.svg";
@@ -21,7 +20,8 @@ import {
   getJistiServer,
   // getJitsiOptions,
   getJistiDomain,
-  isMeetJitsi
+  isMeetJitsi,
+  // JITSI_MEET_SDK_URL
 } from "../../Modules/jitsi";
 import {
   // setOffline,
@@ -86,10 +86,11 @@ export default () => {
   const eventSessionDetails = useSelector(getEventSessionDetails, shallowEqual);
 
   const jitsiServer = getJistiServer(eventSessionDetails) + "external_api.js";
-  
-  const [loaded, error] = useScript(
-    jitsiServer
-  );
+
+  // const [loaded, error] = useScript(
+  //   // jitsiServer
+  //   JITSI_MEET_SDK_URL  
+  // );
 
   useEffect(() => {
     trackPage("ConferenceRoom/" + sessionId);
@@ -142,106 +143,106 @@ export default () => {
     isMeetJitsi(domain) &&
     (!removeJitsiLogoFeature || !removeJitsiLogoFeature.enabled);
 
-  if (error) {
-    console.log(error);
-    return <p>Error :(</p>;
-  }
-  if (!loaded) return <div id="conference-container">Loading...</div>;
-  if (loaded) {
-    const getYoutubeFrame = () => {
-      let videoId = eventSessionDetails.conferenceRoomYoutubeVideoId;
-      return (
-        <div className={classes.root}>
-          <iframe
-            className={classes.videoContainer}
-            src={`https://www.youtube.com/embed/${videoId}?autoplay=1&fs=0&modestbranding=0`}
-            frameBorder="0"
-            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            title="livestream"
-          ></iframe>
-        </div>
-      );
-    };
+  // if (error) {
+  //   console.log(error);
+  //   return <p>Error :(</p>;
+  // }
+  // if (!loaded) return <div id="conference-container">Loading...</div>;
+  // if (loaded) {
+  const getYoutubeFrame = () => {
+    let videoId = eventSessionDetails.conferenceRoomYoutubeVideoId;
+    return (
+      <div className={classes.root}>
+        <iframe
+          className={classes.videoContainer}
+          src={`https://www.youtube.com/embed/${videoId}?autoplay=1&fs=0&modestbranding=0`}
+          frameBorder="0"
+          allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          title="livestream"
+        ></iframe>
+      </div>
+    );
+  };
 
-    const getFacebookFrame = () => {
-      let facebookVideoId = eventSessionDetails.conferenceRoomFacebookVideoId;
-      let facebookUrl = eventSessionDetails.conferenceRoomFacebookLink;
-      let url = facebookUrl
-        ? facebookUrl
-        : `https://www.facebook.com/facebook/videos/${facebookVideoId}`;
-      return (
-        <div className={classes.root}>
-          <div className={classes.reactPlayerContainer}>
-            <ReactPlayer
-              url={url}
-              width="100%"
-              height="100%"
-              // height="none"
-              className={classes.reactPlayer}
-              playing
-              controls={true}
-              onReady={() => setLoadingPlayer(false)}
-            />
-            {loadingPlayer && (
-              <div className={classes.reactPlayer}>
-                <CircularProgress color="secondary" />
-              </div>
-            )}
-          </div>
-        </div>
-      );
-    };
-
-    switch (eventSessionDetails.conferenceVideoType) {
-      case "YOUTUBE":
-        return getYoutubeFrame();
-      case "FACEBOOK":
-        return getFacebookFrame();
-      case "JITSI":
-        return (
-          <>
-            <div className={classes.root}>
-              <JitsiPlayerComponent
-                avatarUrl={user.avatarUrl}
-                displayName={user.firstName + " " + user.lastName}
-                sessionId={sessionId}
-                // containerId= "#conference-container"
-                domain={domain}
-                showJitsiLogo={showJitsiLogo}
-                subject={subject}
-                roomName={roomName}
-                callEndedCb={handleCallEnded}
-                jitsiServer={jitsiServer}
-              />
+  const getFacebookFrame = () => {
+    let facebookVideoId = eventSessionDetails.conferenceRoomFacebookVideoId;
+    let facebookUrl = eventSessionDetails.conferenceRoomFacebookLink;
+    let url = facebookUrl
+      ? facebookUrl
+      : `https://www.facebook.com/facebook/videos/${facebookVideoId}`;
+    return (
+      <div className={classes.root}>
+        <div className={classes.reactPlayerContainer}>
+          <ReactPlayer
+            url={url}
+            width="100%"
+            height="100%"
+            // height="none"
+            className={classes.reactPlayer}
+            playing
+            controls={true}
+            onReady={() => setLoadingPlayer(false)}
+          />
+          {loadingPlayer && (
+            <div className={classes.reactPlayer}>
+              <CircularProgress color="secondary" />
             </div>
-            <AudioVideoCheckDialog
-              title="Main Stage conference call"
-              subtitle="You are about enter to the main stage conference call. Please ensure that mic and camera are working properly."
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  switch (eventSessionDetails.conferenceVideoType) {
+    case "YOUTUBE":
+      return getYoutubeFrame();
+    case "FACEBOOK":
+      return getFacebookFrame();
+    case "JITSI":
+      return (
+        <>
+          <div className={classes.root}>
+            <JitsiPlayerComponent
+              avatarUrl={user.avatarUrl}
+              displayName={user.firstName + " " + user.lastName}
               sessionId={sessionId}
-              showClose
-              onCloseClicked={() => {
-                setUserCurrentLocation(sessionId, VERTICAL_NAV_OPTIONS.lobby);
-              }}
-            />
-          </>
-        );
-      default:
-        return (
-          <div className={classes.videoContainer}>
-            <Typography align="center" gutterBottom style={{ marginTop: 64 }}>
-              Livestream not correctly configured...
-            </Typography>
-            <Typography variant="caption" display="block" align="center">
-              Please contact the event organizer or Veertly team
-            </Typography>
-            <img
-              alt="No Video available"
-              src={NoVideoImage}
-              className={classes.noVideoImage}
+              // containerId= "#conference-container"
+              domain={domain}
+              showJitsiLogo={showJitsiLogo}
+              subject={subject}
+              roomName={roomName}
+              callEndedCb={handleCallEnded}
+              jitsiServer={jitsiServer}
             />
           </div>
-        );
-    }
+          <AudioVideoCheckDialog
+            title="Main Stage conference call"
+            subtitle="You are about enter to the main stage conference call. Please ensure that mic and camera are working properly."
+            sessionId={sessionId}
+            showClose
+            onCloseClicked={() => {
+              setUserCurrentLocation(sessionId, VERTICAL_NAV_OPTIONS.lobby);
+            }}
+          />
+        </>
+      );
+    default:
+      return (
+        <div className={classes.videoContainer}>
+          <Typography align="center" gutterBottom style={{ marginTop: 64 }}>
+            Livestream not correctly configured...
+          </Typography>
+          <Typography variant="caption" display="block" align="center">
+            Please contact the event organizer or Veertly team
+          </Typography>
+          <img
+            alt="No Video available"
+            src={NoVideoImage}
+            className={classes.noVideoImage}
+          />
+        </div>
+      );
   }
+  // }
 };

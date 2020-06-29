@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import useScript from "../../Hooks/useScript";
 import { makeStyles } from "@material-ui/core/styles";
 import { leaveCall } from "../../Modules/eventSessionOperations";
 
@@ -57,9 +56,9 @@ const NetworkingRoomContainer = () => {
     ? getJistiServer(currentGroup)
     : getJistiServer(eventSessionDetails)) + "external_api.js";
 
-  const [loaded, error] = useScript(
-    jitsiServer
-  );
+  // const [loaded, error] = useScript(
+  //   jitsiServer
+  // );
 
   useEffect(() => {
     trackPage("NetworkingRoom/" + sessionId);
@@ -131,44 +130,44 @@ const NetworkingRoomContainer = () => {
   //   callEndedCb: handleCallEndedCb,
   // });
 
-  if (error) {
-    console.log(error);
-    return <p>Error :(</p>;
-  }
-  if (!loaded) return <div>Loading...</div>;
-  if (loaded) {
-    return (
-      <Box height="100%" width="100%" position="relative">
-        <div className={classes.root}
-          // id="conference-container"
-          >
-            <JitsiPlayerComponent 
-              avatarUrl= {user.avatarUrl}
-              displayName={user.firstName + " " + user.lastName}
-              sessionId={sessionId}
-              // containerId="#conference-container"
-              domain={domain}
-              showJitsiLogo={showJitsiLogo}
-              subject={subject}
-              roomName={roomName}
-              onVideoConferenceJoined={handleVideoConferencingJoined}
-              onVideoConferenceLeft={handleVideoConferencingLeft}
-              callEndedCb= {handleCallEndedCb}
-              jitsiServer={jitsiServer}
-            />
-        </div>
+  // if (error) {
+  //   console.log(error);
+  //   return <p>Error :(</p>;
+  // }
+  // if (!loaded) return <div>Loading...</div>;
+  // if (loaded) {
+  return (
+    <Box height="100%" width="100%" position="relative">
+      <div className={classes.root}
+        // id="conference-container"
+        >
+          <JitsiPlayerComponent 
+            avatarUrl= {user.avatarUrl}
+            displayName={user.firstName + " " + user.lastName}
+            sessionId={sessionId}
+            // containerId="#conference-container"
+            domain={domain}
+            showJitsiLogo={showJitsiLogo}
+            subject={subject}
+            roomName={roomName}
+            onVideoConferenceJoined={handleVideoConferencingJoined}
+            onVideoConferenceLeft={handleVideoConferencingLeft}
+            callEndedCb= {handleCallEndedCb}
+            jitsiServer={jitsiServer}
+          />
+      </div>
 
-        <AudioVideoCheckDialog
-          title={currentGroup.isRoom ? `${currentGroup.roomName}` : "Networking Conference call"}
-          subtitle={"You are going into video call. Please ensure that mic and camera are working properly."}
-          sessionId={sessionId}
-          showClose
-          onCloseClicked={handleCallEnded}
-          okText={currentGroup.isRoom ? "Join room" : " Join call"}
-        />
-      </Box>
+      <AudioVideoCheckDialog
+        title={currentGroup.isRoom ? `${currentGroup.roomName}` : "Networking Conference call"}
+        subtitle={"You are going into video call. Please ensure that mic and camera are working properly."}
+        sessionId={sessionId}
+        showClose
+        onCloseClicked={handleCallEnded}
+        okText={currentGroup.isRoom ? "Join room" : " Join call"}
+      />
+    </Box>
     )
-  }
+  // }
 };
 // NetworkingRoomContainer.whyDidYouRender = true;
 export default NetworkingRoomContainer;
