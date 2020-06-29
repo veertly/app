@@ -208,7 +208,7 @@ const AudioVideoCheckDialog = ({
   }
 
   const videoConstraint = {
-    deviceId: selectedVideoInput,
+    deviceId: selectedVideoInput.deviceId,
   };
 
   const handleNeedHelpClicked = () => {

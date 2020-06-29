@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function ChatPane(props) {
+const ChatPane = React.memo(() => {
   const classes = useStyles();
   const sessionId = useSelector(getSessionId);
   const users = useSelector(getUsers, shallowEqual);
@@ -46,6 +46,8 @@ export default function ChatPane(props) {
   const globalChatMessages = useMemo(() => chatMessages[CHAT_GLOBAL_NS], [
     chatMessages
   ]);
+
+  // console.log(globalChatMessages.length);
 
   const handleMessageSend = async (message) => {
     if (message && message.trim() !== "") {
@@ -73,4 +75,8 @@ export default function ChatPane(props) {
       </div>
     </div>
   );
-}
+});
+
+// ChatPane.whyDidYouRender = true;
+export default ChatPane;
+

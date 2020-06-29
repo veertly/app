@@ -207,7 +207,7 @@ export default ({ user, users, messages }) => {
           <img
             className={classes.emptyImage}
             src={NoChatMessagesImg}
-            alt="Polls coming soon"
+            alt="No messages"
           />
           <Typography variant="body2" color="textSecondary" display="block">
             No messages sent yet. Say hi to everyone...

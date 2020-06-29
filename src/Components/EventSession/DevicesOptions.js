@@ -53,7 +53,7 @@ const BrowserDevicesDropdown = ({ id, inputs, handleChange, selectedInput, rende
         display="flex"
         flexDirection="row"
         alignItems="center"
-        justifyContent="space-around"
+        justifyContent="space-between"
         width={"100%"}
       >
         
