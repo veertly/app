@@ -98,10 +98,10 @@ const ParticipantSettingsMenu = ({ participant }) => {
         onClose={handleMenuClose}
       >
         <MenuItem onClick={handleToggleRole(ROLES.HOST)}>
-          {isHost ? "Unset from Host" : "Set as Host"}
+          {isHost ? "Remove from Host" : "Set as Host"}
         </MenuItem>
         <MenuItem onClick={handleToggleRole(ROLES.SPEAKER)}>
-          {isSpeaker ? "Unset from Speaker" : "Set as Speaker"}
+          {isSpeaker ? "Remove from Speaker" : "Set as Speaker"}
         </MenuItem>
       </Menu>
     </Box>
