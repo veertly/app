@@ -63,7 +63,7 @@ const JitsiPlayerComponent =({
   );
   if (error) {
     return (
-      <div id="conference-container" className={classes.errorContainer}>
+      <div className={classes.errorContainer}>
         <ServerDown height="50%" width="50%" fill={theme.palette.primary.main} />
         <Typography variant="h6" >
           Server configuration is wrong. Please contact the organizer or Veertly team
