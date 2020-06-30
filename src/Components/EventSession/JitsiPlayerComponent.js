@@ -24,6 +24,36 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+const ErrorComponent= () => {
+  const theme = useTheme();
+  const classes = useStyles();
+
+  return (
+    <div className={classes.errorContainer}>
+      <ServerDown
+        height="40%"
+        width="40%"
+        fill={theme.palette.primary.main}
+      />
+      {/* <Typography variant="h6" >
+        Server configuration is wrong. Please contact the organizer or Veertly team
+      </Typography> */}
+      <Typography align="center" gutterBottom style={{ paddingTop: 16 }}>
+        It seems the video-conferencing system is down or not configured
+        correctly...
+      </Typography>
+      <Typography variant="caption" display="block" align="center">
+        Please contact the event organizer or Veertly team
+      </Typography>
+      {/* <img
+        alt="Not available"
+        src={NoVideoImage}
+        className={classes.noVideoImage}
+      /> */}
+    </div>
+  );
+}
+
 const JitsiPlayerComponent = ({
   avatarUrl,
   displayName,
@@ -55,35 +85,42 @@ const JitsiPlayerComponent = ({
     callEndedCb,
     jitsiServer
   });
-  const theme = useTheme();
   if (!loaded) return <div id="conference-container">Loading...</div>;
+
   if (error) {
     return (
-      <div className={classes.errorContainer}>
-        <ServerDown
-          height="40%"
-          width="40%"
-          fill={theme.palette.primary.main}
-        />
-        {/* <Typography variant="h6" >
-          Server configuration is wrong. Please contact the organizer or Veertly team
-        </Typography> */}
-        <Typography align="center" gutterBottom style={{ paddingTop: 16 }}>
-          It seems the video-conferencing system is down or not configured
-          correctly...
-        </Typography>
-        <Typography variant="caption" display="block" align="center">
-          Please contact the event organizer or Veertly team
-        </Typography>
-        {/* <img
-          alt="Not available"
-          src={NoVideoImage}
-          className={classes.noVideoImage}
-        /> */}
-      </div>
-    );
+      <ErrorComponent />
+    )
   }
   return <div id="conference-container" className={classes.root} />;
 };
 
-export default JitsiPlayerComponent;
+class JitsiPlayerComponentWithError extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      hasError: false,
+    }
+  }
+  static getDerivedStateFromError(error) {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    // You can also log the error to an error reporting service
+    console.log(error, errorInfo);
+  }
+  render () {
+    if (this.state.hasError) {
+      return (
+        <ErrorComponent />
+      )
+    }
+    return (
+      <JitsiPlayerComponent {...this.props} />
+    )
+  }
+ 
+}
+
+export default JitsiPlayerComponentWithError;
