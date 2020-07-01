@@ -1,5 +1,4 @@
 import { useEffect, useState, useContext } from "react";
-import useScript from "./useScript";
 import { getJitsiOptions, DEFAULT_JITSI_SERVER, JITSI_MEET_SDK_URL } from "../Modules/jitsi";
 import TechnicalCheckContext from "../Contexts/TechnicalCheckContext";
 import { usePrevious } from "react-use";
@@ -18,10 +17,11 @@ const useJitsi = ({
   onVideoConferenceLeft=()=>{},
   callEndedCb=()=>{},
   jitsiServer=JITSI_MEET_SDK_URL,
+  loaded,
 }) => {
   const { jitsiApi, setJitsiApi } = useContext(JitsiContext);
 
-  const [loaded] = useScript(jitsiServer);
+  // const [loaded] = useScript(jitsiServer);
   const [lastRoomLoaded, setLastRoomLoaded] = useState(null);
 
   const { showAudioVideoCheck ,muteVideo, muteAudio, setMuteAudio, setMuteVideo, selectedAudioInput, selectedVideoInput, selectedAudioOutput  } = useContext(TechnicalCheckContext);
@@ -30,7 +30,6 @@ const useJitsi = ({
   const previousMuteAudio = usePrevious(muteAudio);
 
   useEffect(() => {
-
     if (!displayName) {
       return;
     }
@@ -38,6 +37,8 @@ const useJitsi = ({
     if (showAudioVideoCheck) {
       return;
     }
+
+    console.log(loaded, lastRoomLoaded !== roomName)
 
     if (loaded && lastRoomLoaded !== roomName) {
       // dispose existing jitsi
@@ -137,7 +138,8 @@ const useJitsi = ({
     selectedAudioOutput,
     selectedVideoInput,
     setMuteAudio,
-    setMuteVideo
+    setMuteVideo,
+    jitsiServer
   ]);
 
   useEffect(() => {

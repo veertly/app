@@ -18,7 +18,6 @@ export default function useScript(src) {
           error: false
         });
       } else {
-        cachedScripts.push(src);
 
         // Create script
         let script = document.createElement("script");
@@ -27,6 +26,7 @@ export default function useScript(src) {
 
         // Script event listener callbacks for load and error
         const onScriptLoad = () => {
+          cachedScripts.push(src);
           setState({
             loaded: true,
             error: false

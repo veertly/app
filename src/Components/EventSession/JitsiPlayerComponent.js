@@ -66,8 +66,9 @@ const JitsiPlayerComponent = ({
   onVideoConferenceJoined = () => {},
   onVideoConferenceLeft = () => {},
   callEndedCb = () => {},
-  jitsiServer = JITSI_MEET_SDK_URL
+  jitsiServer = JITSI_MEET_SDK_URL,
 }) => {
+  
   const [loaded, error] = useScript(jitsiServer);
 
   const classes = useStyles();
@@ -83,16 +84,18 @@ const JitsiPlayerComponent = ({
     onVideoConferenceJoined,
     onVideoConferenceLeft,
     callEndedCb,
-    jitsiServer
+    jitsiServer,
+    loaded
   });
-  if (!loaded) return <div id="conference-container">Loading...</div>;
 
   if (error) {
     return (
       <ErrorComponent />
     )
   }
-  return <div id="conference-container" className={classes.root} />;
+  return <div id="conference-container" className={classes.root}>
+    {!loaded ?  "Loading..." : ""}
+  </div>;
 };
 
 class JitsiPlayerComponentWithError extends React.Component {
