@@ -38,7 +38,7 @@ const useJitsi = ({
       return;
     }
 
-    console.log(loaded, lastRoomLoaded !== roomName)
+    // console.log(loaded, lastRoomLoaded !== roomName)
 
     if (loaded && lastRoomLoaded !== roomName) {
       // dispose existing jitsi
