@@ -1,0 +1,73 @@
+# Workflow to deploy Veertly on the production environment
+
+name: Deploy Veertly
+
+on:
+  push:
+    branches: [branch]
+
+jobs:
+  front-end:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@master
+
+      - name: Setup node
+        uses: actions/setup-node@master
+        with:
+          node-version: 10.x
+
+      - name: Install firebase tools
+        run: npm install -g firebase-tools
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: Build
+        run: yarn build
+        env:
+          CI: true
+          REACT_APP_FIREBASE_API_KEY: ${{ secrets.REACT_APP_FIREBASE_API_KEY }}
+          REACT_APP_FIREBASE_DATABASE_URL: ${{ secrets.REACT_APP_FIREBASE_DATABASE_URL }}
+          REACT_APP_FIREBASE_AUTH_DOMAIN: ${{ secrets.REACT_APP_FIREBASE_AUTH_DOMAIN }}
+          REACT_APP_FIREBASE_PROJECT_ID: ${{ secrets.REACT_APP_FIREBASE_PROJECT_ID }}
+          REACT_APP_FIREBASE_STORAGE_BUCKET: ${{ secrets.REACT_APP_FIREBASE_STORAGE_BUCKET }}
+          REACT_APP_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.REACT_APP_FIREBASE_MESSAGING_SENDER_ID }}
+          REACT_APP_FIREBASE_APP_ID: ${{ secrets.REACT_APP_FIREBASE_APP_ID }}
+          REACT_APP_ENV: PROD
+          REACT_APP_GOOGLE_MAPS_API_KEY: ${{ secrets.REACT_APP_GOOGLE_MAPS_API_KEY }}
+
+      - name: Deploy hosting
+        run: |
+          firebase use --token ${{ secrets.FIREBASE_DEPLOY_KEY }} ${{ secrets.REACT_APP_FIREBASE_PROJECT_ID }}
+          firebase deploy -m "Deployed from github actions (${{ github.run_id }}) by ${{ github.actor }}" --token ${{ secrets.FIREBASE_DEPLOY_KEY }} --only hosting
+
+  functions:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@master
+
+      - name: Setup node
+        uses: actions/setup-node@master
+        with:
+          node-version: 10.x
+
+      - name: Install firebase tools
+        run: npm install -g firebase-tools
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: ./functions
+
+      - name: Select firebase project
+        run: firebase use --token ${{ secrets.FIREBASE_DEPLOY_KEY }} ${{ secrets.REACT_APP_FIREBASE_PROJECT_ID }}
+
+      - name: Set firebase config
+        run: firebase --token ${{ secrets.FIREBASE_DEPLOY_KEY }} functions:config:set global.base_url="${{ secrets.FIREBASE_BASE_URL }}" slack.webhook="${{ secrets.SLACK_WEBHOOK }}" sendgrid.key="${{ secrets.SENDGRID_KEY }}"
+
+      - name: Deploy functions
+        run: firebase deploy --token ${{ secrets.FIREBASE_DEPLOY_KEY }} --only functions
