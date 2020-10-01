@@ -250,7 +250,7 @@ exports.onUserRegisteredEvent = functions.firestore
       let eventLink = baseUrl + "/v/" + sessionId;
 
       let eventDate = moment(eventBeginDate.toDate()).format(
-        "Do MMMM YYYY HH:mm"
+        "DD MMMM YYYY HH:mm"
       ); //TODO: make it in the format of the user's locale
 
       if (email && email.trim() !== "") {
