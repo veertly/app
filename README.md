@@ -25,3 +25,13 @@ We decided to open source this project in order to have a collaborative effort t
 All the code used for this application is hosted here and the front-end client is a ReactJS application. On the backend, we use [Firestore](https://firebase.google.com/docs/firestore) database, from Firebase.
 
 If you need any help hosting Veertly on your environment, please do not hesitate to contact me @joaoaguiam on twitter or telegram.
+
+## ❤️ Contributors
+
+Thanks go to these wonderful people:
+
+<table>
+  <tr>
+    <td align="center"><a href="https://github.com/joaoaguiam"><img src="https://avatars1.githubusercontent.com/u/5901730?s=460&u=231e84ee0fdbd62d82e49389803e799b9c524b31&v=4" width="100px;" alt="Joao Aguiam"/><br /><sub><b>Joao Aguiam</b></sub></a><br /></td>
+   </tr>
+</table>    
