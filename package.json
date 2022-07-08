@@ -33,7 +33,7 @@
     "lint-staged": "^10.1.5",
     "lodash": "^4.17.15",
     "material-ui-snackbar-provider": "^1.4.0",
-    "moment": "2.24.0",
+    "moment": "2.29.4",
     "moment-duration-format": "^2.3.2",
     "moment-timezone": "^0.5.28",
     "mui-rte": "^1.23.0",
