@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "bluebird": "^3.7.2",
-    "firebase-admin": "^8.6.0",
+    "firebase-admin": "^11.4.1",
     "firebase-functions": "^3.7.0",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.28",
