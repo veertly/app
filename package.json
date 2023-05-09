@@ -31,7 +31,7 @@
     "graphql-tag": "^2.5.0",
     "husky": "^4.2.5",
     "lint-staged": "^10.1.5",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "material-ui-snackbar-provider": "^1.4.0",
     "moment": "2.24.0",
     "moment-duration-format": "^2.3.2",
